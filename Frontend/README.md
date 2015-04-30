@@ -12,15 +12,15 @@ Es werden höchstwahrscheinlicht große Teile vom alten Frontend übernommen und
 -------------
 - /api/ais
   * *gibt eine Liste von KIs zurück, die deren Punktzahl und deren Besitzer beinhaltet.*
-- /api/ai/<id>
+- /api/ai/\<id\>
   * *gibt den Besitzer, die Punktzahl und ähnliches zurück.*
 - /api/users
   * *gibt eine Liste aller Nutzer zurück.*
-- /api/user/<id>
+- /api/user/\<id\>
   * *gibt alle KIs und andere Infos über den Nutzer zurück.*
 - /api/games
   * *gibt alle Spielids (und mehr infos?) zurück.*
-- /api/game/<id>
+- /api/game/\<id\>
   * *gibt Infos (und Spielverlauf?) zurück.*
 
 #####POSTs
