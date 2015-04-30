@@ -8,7 +8,7 @@ Es werden höchstwahrscheinlicht große Teile vom alten Frontend übernommen und
 
 ##API-Spezifikation (wird sich noch ändern)
 
-#####GETs
+#####GETs (offen zugänglich / ohne Authentifizierung)
 -------------
 - /api/ais
   * *gibt eine Liste von KIs zurück, die deren Punktzahl und deren Besitzer beinhaltet.*
@@ -23,8 +23,29 @@ Es werden höchstwahrscheinlicht große Teile vom alten Frontend übernommen und
 - /api/game/\<id\>
   * *gibt Infos (und Spielverlauf?) zurück.*
 
-#####POSTs
+#####POSTs (verändern was - brauchen Authentifizierung)
 --------------
+- /api/ai/create
+- /api/ai/\<id\>/submitCode
+  * *multipart uploading?*
+- /api/ai/\<id\>/fight?id=\<id\>&id=\<id\>
+  * *alternativ Layouts:*
+  * */api/ais/fight/\<id\>/\<id\>/...*
+  * */api/ai/\<id\>/fight/\<id\>/*
+  * */api/ai/\<id\>/fight?ids=[\<id\>, \<id\>]*
 
-#####PUTs
+
+#####PUTs (verändern was - brauchen Authentifizierung)
 --------------
+- /api/ai/\<id\>/update
+  * *updatet infos zur Ki.*
+- /api/user/update
+  * *updatet infos zum Nutzer.*
+
+
+#####Authentifizierungsmöglichkeiten
+--------------
+- jeder Nutzer hat einen API-key
+  * *einfach und keine großen Sicherheitsprobleme.*
+- OAuth (1 oder 2)
+  * *braucht Bibliotheken und ist komisch, wird aber überall benutzt.*
