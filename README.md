@@ -1,7 +1,8 @@
 ##Tunierserver
 
 Hier der Aufbau wie er besprochen wurde:
-![Bild](https://raw.githubusercontent.com/LuckyLukert/Turnierserver/master/turnierserver-grafik.png?token=ADu4-cDL3omI9oXf2NOyEf4hNE4jWSJGks5VRMUWwA%3D%3D)
+
+![Bild](https://github.com/LuckyLukert/Turnierserver/blob/master/turnierserver-grafik.png)
 
 Und hier die einzelnen Spezifikationen, der Module (aus [#1](https://github.com/LuckyLukert/Turnierserver/issues/1) ).
 
