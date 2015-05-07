@@ -28,4 +28,8 @@ public class AiWrapper
 	{
 		throw new UnsupportedOperationException();
 	}
+	
+	/** Hier kann die Spiellogik Informationen über die KI abspeichern. */
+	@Getter @Setter
+	private Object userObject;
 }
