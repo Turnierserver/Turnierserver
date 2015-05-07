@@ -8,6 +8,8 @@ Es werden höchstwahrscheinlicht große Teile vom alten Frontend übernommen und
 
 ##API-Spezifikation (wird sich noch ändern)
 
+[Hier] (https://github.com/LuckyLukert/Turnierserver/blob/master/Frontend/testapi.py) gibt es eine API implementation, gegen die man sein Zeugs testen kann.
+
 #####GETs (offen zugänglich / ohne Authentifizierung)
 -------------
 - /api/ais
@@ -40,10 +42,9 @@ Es werden höchstwahrscheinlicht große Teile vom alten Frontend übernommen und
   * *updatet infos zum Nutzer.*
 
 
-#####Authentifizierungsmöglichkeiten
+#####Authentifizierung
 --------------
-- API-keys
-  * *einfach und keine großen Sicherheitsprobleme.*
-- Kekse
+Kekse:
   * */api/login setzt Cookies und alle anderen Anfragen benutzen diese.*
-  * *sollte auch einfach integrierbar sein.*
+  * */api/logout loggt aus.*
+  * *sollte einfach integrierbar sein.*
