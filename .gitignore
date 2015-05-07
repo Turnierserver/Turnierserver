@@ -1,4 +1,9 @@
 .directory
 
+.metadata/
+bin/
+.classpath
+.project
 *.class
+
 *.o
