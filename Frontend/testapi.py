@@ -70,6 +70,8 @@ def load_user(userid):
 class CommonErrors:
 	INVALID_ID = ({'error': 'Invalid id.'}, 404)
 	NO_ACCESS = ({'error': 'Insufficient permissions.'}, 401)
+	IM_A_TEAPOT = ({'error': 'I\'m a teapot.'}, 418)
+	NOT_IMPLEMENTED = ({'error': 'Not implemented.'}, 501)
 
 
 @app.route("/api/", methods=["GET"])
@@ -139,6 +141,15 @@ def api_logged_in():
 		if not current_user.is_anonymous:
 			return current_user.d
 	return CommonErrors.NO_ACCESS
+
+
+@app.route("/api/ai/create")
+@app.route("/api/ai/<int:id>/submitCode")
+@app.route("/api/ai/<int:id>/update")
+@app.route("/api/user/update")
+@json_out
+def not_implemented(*args, **kwargs):
+	return CommonErrors.NOT_IMPLEMENTED
 
 
 app.run(host="0.0.0.0", port=5000)
