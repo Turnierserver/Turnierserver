@@ -22,10 +22,6 @@ public class AiObject {
 	private AiWrapper ai;
 	
 	/**
-	 * Updated die Rechenpunkte
-	 */
-	private Thread updateThread;
-	/**
 	 * Gibt an, ob geupdated werden soll
 	 */
 	private boolean updating = false;
@@ -46,12 +42,15 @@ public class AiObject {
 	 * Startet den Berechnungtimer
 	 * 
 	 * @param Die Intervalle, in welchen die Rechenpunkte geupdated werden sollen (<= 0, wenn sie nicht automatisch geupdated werden sollen)
-	 */
+	 */ 
 	public void startCalculationTimer(final int updateTime) {
+		if(lastCalculationStart != -1) {
+			return;
+		}
 		lastCalculationStart = System.currentTimeMillis();
 		if(updateTime > 0) {
 			updating = true;
-			updateThread = new Thread(() -> {
+			new Thread(() -> {
 				while(updating) {
 					try {
 						Thread.sleep(updateTime);
@@ -60,7 +59,7 @@ public class AiObject {
 					}
 					updateCalculationTimer();
 				}
-			});
+			}).start();
 		}
 	}
 	
@@ -73,7 +72,6 @@ public class AiObject {
 		}
 		if(updating) {
 			updating = false;
-			updateThread = null;
 		}
 		millisLeft -= System.currentTimeMillis()  - lastCalculationStart;
 		lastCalculationStart = -1;
