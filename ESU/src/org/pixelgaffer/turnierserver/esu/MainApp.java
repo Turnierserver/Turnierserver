@@ -1,4 +1,4 @@
-package esu;
+package org.pixelgaffer.turnierserver.esu;
 
 import java.io.IOException;
 

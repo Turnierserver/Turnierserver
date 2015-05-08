@@ -1,6 +1,4 @@
-package esu.view;
-
-
+package org.pixelgaffer.turnierserver.esu.view;
 
 import javax.swing.JOptionPane;
 
@@ -10,7 +8,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import esu.MainApp;
+import org.pixelgaffer.turnierserver.esu.MainApp;
 
 
 public class Controller {
