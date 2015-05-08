@@ -10,7 +10,7 @@ import org.pixelgaffer.turnierserver.backend.Game;
 public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogic<E, R> {
 	
 	/**
-	 * Die AIs, wessen Antworten erhalten wurden
+	 * Die AIs, deren Antworten erhalten wurden
 	 */
 	private Set<AiWrapper> received;
 	

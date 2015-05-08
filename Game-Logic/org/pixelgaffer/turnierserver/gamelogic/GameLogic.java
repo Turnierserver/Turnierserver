@@ -24,7 +24,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 */
 	private Map<String, String> gamestate;
 	/**
-	 * Die Sachen, welche sich im Gamestate verändert haben
+	 * Die Sachen, welche sich im Gamestate verÃ¤ndert haben
 	 */
 	private Map<String, String> changed;
 	/**
@@ -56,7 +56,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 */
 	protected abstract void receive(R response, AiWrapper ai);
 	/**
-	 * Wird aufgerufen, wenn eine AI aufgegeben hat (oder aufgegeben wurde, z.B. aufgrund illegaler Aktionen oder wenn keine Rechenpunkte mehr übrig sind)
+	 * Wird aufgerufen, wenn eine AI aufgegeben hat (oder aufgegeben wurde, z.B. aufgrund illegaler Aktionen oder wenn keine Rechenpunkte mehr Ã¼brig sind)
 	 * 
 	 * @param ai Die AI, welche aufgegeben hat
 	 */
@@ -64,14 +64,14 @@ public abstract class GameLogic<E extends AiObject, R> {
 	/**
 	 * Erstellt ein neues AIWrapper Objekt
 	 * 
-	 * @param ai Die AI, für die das Objekt erstellt werden soll
+	 * @param ai Die AI, fÃ¼r die das Objekt erstellt werden soll
 	 * @return Das AI Objekt
 	 */
 	protected abstract E createUserObject(AiWrapper ai);
 	
 	
 	/**
-	 * Schickt die Änderungen des GameStates an alle AIs
+	 * Schickt die Ã„nderungen des GameStates an alle AIs
 	 * 
 	 * @throws IOException
 	 */
@@ -94,9 +94,9 @@ public abstract class GameLogic<E extends AiObject, R> {
 	}
 	
 	/**
-	 * Setzt einen Schlüssel im Gamestate
+	 * Setzt einen SchlÃ¼ssel im Gamestate
 	 * 
-	 * @param key Der Schlüssel
+	 * @param key Der SchlÃ¼ssel
 	 * @param value Der Wert
 	 */
 	protected void set(String key, String value) {
@@ -105,9 +105,9 @@ public abstract class GameLogic<E extends AiObject, R> {
 	}
 	
 	/**
-	 * Holt sich den Wert eines Schlüssels im Gamestate
+	 * Holt sich den Wert eines SchlÃ¼ssels im Gamestate
 	 * 
-	 * @param key Der Schlüssel
+	 * @param key Der SchlÃ¼ssel
 	 * @return Der Wert
 	 */
 	protected String get(String key) {

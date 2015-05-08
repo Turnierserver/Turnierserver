@@ -12,7 +12,7 @@ public class AiObject {
 	public boolean lost = false;
 	
 	/**
-	 * DIe übrigen Rechenpunkte dieser AI
+	 * Die Ã¼brigen Rechenpunkte dieser AI
 	 */
 	public int millisLeft;
 	
@@ -64,7 +64,7 @@ public class AiObject {
 	}
 	
 	/**
-	 * Hält den Berechnungstimer an
+	 * HÃ¤lt den Berechnungstimer an
 	 */
 	public void stopCalculationTimer() {
 		if(lastCalculationStart == -1) {
@@ -82,7 +82,7 @@ public class AiObject {
 	}
 	
 	/**
-	 * Updated die übrige Berechnungszeit
+	 * Updated die Ã¼brige Berechnungszeit
 	 */
 	public void updateCalculationTimer() {
 		if(lastCalculationStart == -1) {
