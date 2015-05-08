@@ -1,0 +1,157 @@
+from flask import Blueprint, Response, request
+from flask.ext.login import current_user, login_user, logout_user, LoginManager, UserMixin
+from functools import wraps
+import json
+
+from database import AI, User, Game
+
+def json_out(f):
+	@wraps(f)
+	def wrapper(*args, **kwargs):
+		def jsonify_wrap(obj):
+			return Response(json.dumps(obj), mimetype='application/json')
+
+		result = f(*args, **kwargs)
+		if isinstance(result, tuple):
+			# (resp, status_code)
+			return jsonify_wrap(result[0]), result[1]
+		if isinstance(result, dict):
+			return jsonify_wrap(result)
+		if isinstance(result, list):
+			return jsonify_wrap(result)
+
+		# isnt tuple, dict or list -> must be a Response
+		return result
+
+	return wrapper
+
+
+login_manager = LoginManager()
+
+
+@login_manager.user_loader
+def load_user(username):
+	return User.query.filter(User.name == username).first()
+
+
+
+
+class CommonErrors:
+	INVALID_ID = ({'error': 'Invalid id.'}, 404)
+	NO_ACCESS = ({'error': 'Insufficient permissions.'}, 401)
+	IM_A_TEAPOT = ({'error': 'I\'m a teapot.'}, 418)
+	NOT_IMPLEMENTED = ({'error': 'Not implemented.'}, 501)
+
+
+api = Blueprint("api", __name__, url_prefix="/api")
+
+@api.route("/", methods=["GET"])
+def api_index():
+	return "Ein API Skelett, damit anderes Zeugs implementiert werden kann."
+
+@api.route("/ais", methods=["GET"])
+@json_out
+def api_ais():
+	return [ai.info() for ai in AI.query.all()]
+
+@api.route("/ai/<int:id>", methods=["GET"])
+@json_out
+def api_ai(id):
+	ai = AI.query.get(id)
+	if ai:
+		return ai.info()
+	else:
+		return CommonErrors.INVALID_ID
+
+@api.route("/games")
+@json_out
+def api_games():
+	return [game.info() for game in Game.query.all()]
+
+@api.route("/game/<int:id>", methods=["GET"])
+@json_out
+def api_game(id):
+	game = Game.query.get(id)
+	if game:
+		return game.info()
+	else:
+		return CommonErrors.INVALID_ID
+
+@api.route("/users", methods=["GET"])
+@json_out
+def api_users():
+	return [user.info() for user in User.query.all()]
+
+@api.route("/user/<int:id>", methods=["GET"])
+@json_out
+def api_user(id):
+	user = User.query.get(id)
+	if user:
+		return user.info()
+	else:
+		return CommonErrors.INVALID_ID
+
+
+@api.route("/login", methods=['POST'])
+@json_out
+def api_login():
+	username = request.form['username']
+	password = request.form['password']
+	if not username or not password:
+		return { 'error': 'Missing username or password' }, 400
+
+	user = User.query.filter(User.name.ilike(username)).first()
+
+	if not user:
+		return { 'error': 'Invalid Username.' }, 404
+
+	##Check for PW here :P
+	if not True:
+		return CommonErrors.NO_ACCESS
+
+	login_user(user)
+
+	return { 'error': False }
+
+@api.route("/logout", methods=["GET", "POST"])
+@json_out
+def api_logout():
+	if not current_user.is_authenticated():
+		return {'error': 'Not logged in.'}
+	logout_user()
+	return { 'error': False }
+
+@api.route("/loggedin", methods=['GET'])
+@json_out
+def api_logged_in():
+	if current_user:
+		if current_user.is_authenticated():
+			return current_user.info()
+	return CommonErrors.NO_ACCESS
+
+
+@api.route("/ai/create")
+@api.route("/ai/<int:id>/submitCode")
+@api.route("/ai/<int:id>/update")
+@api.route("/user/update")
+@json_out
+def not_implemented(*args, **kwargs):
+	return CommonErrors.NOT_IMPLEMENTED
+
+
+
+
+#github-bequemlichkeit
+@api.route("/gh-webhook", methods=["POST"])
+@json_out
+def gh_webhook(*args, **kwargs):
+	print("gh-webhook triggered")
+	print(*args, **kwargs)
+	func = request.environ.get('werkzeug.server.shutdown')
+	if func is None:
+		raise RuntimeError('Not running with the Werkzeug Server')
+	func()
+	return {"error": False}, 200
+
+
+
