@@ -21,4 +21,20 @@ public class Game
 	{
 		return ais.size();
 	}
+	
+	/**
+	 * Wird aufgerufen, wenn das Spiel fertig ist.
+	 */
+	public void finish ()
+	{
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Wird aufgerufen, wenn eine KI verloren hat.
+	 */
+	public void finish (int ai)
+	{
+		throw new UnsupportedOperationException();
+	}
 }
