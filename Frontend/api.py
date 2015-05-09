@@ -3,7 +3,25 @@ from flask.ext.login import current_user, login_user, logout_user, LoginManager,
 from functools import wraps
 import json
 
-from database import AI, User, Game
+from database import AI, User, Game, db
+
+def authenticated(f):
+	@wraps(f)
+	def wrapper(*args, **kwargs):
+		if current_user:
+			if current_user.is_authenticated():
+				try:
+					ret = f(*args, **kwargs)
+					db.session.commit()
+					print("commited", ret)
+					return ret
+				except:
+					db.session.rollback()
+					db.session.close()
+					raise
+		return CommonErrors.NO_ACCESS
+	return wrapper
+
 
 def json_out(f):
 	@wraps(f)
@@ -123,17 +141,48 @@ def api_logout():
 
 @api.route("/loggedin", methods=['GET'])
 @json_out
+@authenticated
 def api_logged_in():
-	if current_user:
-		if current_user.is_authenticated():
-			return current_user.info()
-	return CommonErrors.NO_ACCESS
+	return current_user.info()
 
 
 @api.route("/ai/create")
-@api.route("/ai/<int:id>/submitCode")
-@api.route("/ai/<int:id>/update")
+@json_out
+@authenticated
+def api_ai_create():
+	name = request.args.get('name', 'unbenannte ki')
+	desc = request.args.get('desc', 'unbeschriebene ki')
+	ai = AI(name=name, user=current_user, desc=desc)
+	db.session.add(ai)
+	# es muss zur Datenbank geschrieben werden, um die ID zu bekommen
+	db.session.commit()
+	return {'error': False, 'ai': ai.info()}
+
+
 @api.route("/user/update")
+@json_out
+@authenticated
+def api_user_update():
+	u = current_user
+	u.name = request.args.get('name', u.name)
+	return u.info()
+
+
+@api.route("/ai/<int:id>/update")
+@json_out
+@authenticated
+def api_ai_update(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return {'error': 'Invalid ID'}, 404
+
+	ai.name = request.args.get('name', ai.name)
+	ai.desc = request.args.get('description', ai.desc)
+
+	return ai.info()
+
+
+@api.route("/ai/<int:id>/submitCode")
 @json_out
 def not_implemented(*args, **kwargs):
 	return CommonErrors.NOT_IMPLEMENTED
