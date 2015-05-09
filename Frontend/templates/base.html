@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	{% block title %}
+	<title>Turnierserver</title>
+	{% endblock %}
+</head>
+<body>
+<nav>
+	<ul>
+		<li>
+			<a href="{{ url_for("anonymous.index") }}">
+				Index
+			</a>
+		</li>
+		<li>
+			<a href="{{ url_for("anonymous.ai_list") }}">
+				KI Liste
+			</a>
+		</li>
+		<li>
+			<a href="{{ url_for("anonymous.user_list") }}">
+				User Liste
+			</a>
+		</li>
+		<li>
+			<a href="{{ url_for("anonymous.game_list") }}">
+				Spiel Liste
+			</a>
+		</li>
+	</ul>
+</nav>
+<h3>-------------------------</h3>
+{% block body %}
+{% endblock %}
+</body>
+</html>

@@ -1,14 +1,16 @@
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 
-import api
+from api import api, login_manager
+from anonymous import anonymous
 from database import db, create_mock_objects, AI
 
 app = Flask("Turnierserver - Frontend")
 app.secret_key = "foobar"
-api.login_manager.init_app(app)
+login_manager.init_app(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///test.db"
-app.register_blueprint(api.api)
+app.register_blueprint(api)
+app.register_blueprint(anonymous)
 
 
 db.init_app(app)

@@ -158,6 +158,18 @@ def api_ai_create():
 	db.session.commit()
 	return {'error': False, 'ai': ai.info()}
 
+@api.route("/ai/<int:id>/code")
+@json_out
+@authenticated
+def api_ai_code(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not ai in current_user.ai_list:
+		return CommonErrors.NO_ACCESS
+
+	return CommonErrors.NOT_IMPLEMENTED
+
 
 @api.route("/user/update")
 @json_out
@@ -174,7 +186,7 @@ def api_user_update():
 def api_ai_update(id):
 	ai = AI.query.get(id)
 	if not ai:
-		return {'error': 'Invalid ID'}, 404
+		return CommonErrors.INVALID_ID
 
 	ai.name = request.args.get('name', ai.name)
 	ai.desc = request.args.get('description', ai.desc)
@@ -183,6 +195,7 @@ def api_ai_update(id):
 
 
 @api.route("/ai/<int:id>/submitCode")
+@api.route("/ai/<int:id>/icon")
 @json_out
 def not_implemented(*args, **kwargs):
 	return CommonErrors.NOT_IMPLEMENTED

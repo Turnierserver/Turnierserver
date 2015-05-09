@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block body %}
+
+<ul>
+{% for game in game_list %}
+	<li><a href="{{ url_for("anonymous.game", id=game.id) }}"> {{ game.ai_list }}</a></li>
+{% endfor %}
+</ul>
+
+{% endblock %}

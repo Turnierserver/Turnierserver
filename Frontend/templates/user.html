@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block body %}
+
+User: {{ user.name }}
+
+<br />
+KIs:
+<ul>
+{% for ai in user.ai_list %}
+	<li><a href="{{ url_for("anonymous.ai", id=ai.id) }}"> {{ ai.name }}</a></li>
+{% endfor %}
+</ul>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+
+KI: {{ ai.name }}
+von <a href="{{ url_for("anonymous.user", id=ai.user.id) }}">{{ ai.user.name }}</a>
+<br />
+Beschreibung:
+{{ ai.desc }}
+<br />
+Spiele:
+<ul>
+{% for game in ai.games %}
+	<li><a href="{{ url_for("anonymous.game", id=game.id) }}"> {{ game.ai_list }} </a></li>
+{% endfor %}
+</ul>
+
+{% endblock %}
