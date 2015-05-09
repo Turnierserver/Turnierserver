@@ -56,11 +56,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 */
 	protected abstract void receive(R response, AiWrapper ai);
 	/**
-<<<<<<< Updated upstream
 	 * Wird aufgerufen, wenn eine AI aufgegeben hat (oder aufgegeben wurde, z.B. aufgrund illegaler Aktionen oder wenn keine Rechenpunkte mehr übrig sind)
-=======
-	 * Wird aufgerufen, wenn eine AI aufgegeben hat (oder aufgegeben wurde, z.B. aufgrund illegaler Aktionen oder wenn keine Rechenpunkte mehrübrig sind)
->>>>>>> Stashed changes
 	 * 
 	 * @param ai Die AI, welche aufgegeben hat
 	 */
@@ -111,11 +107,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	}
 	
 	/**
-<<<<<<< Updated upstream
 	 * Holt sich den Wert eines Schlüssels im Gamestate
-=======
-	 * Holt sich den Wert eines Schl�ssels im Gamestate
->>>>>>> Stashed changes
 	 * 
 	 * @param key Der Schlüssel
 	 * @return Der Wert
