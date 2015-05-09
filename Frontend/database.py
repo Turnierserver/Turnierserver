@@ -5,7 +5,7 @@ db = SQLAlchemy()
 class User(db.Model):
 	__tablename__ = 'PMSDB.users'
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String)
+	name = db.Column(db.String, unique=True)
 	ai_list = db.relationship("AI", order_by="AI.id", backref="User")
 
 	def info(self):
@@ -25,7 +25,7 @@ class User(db.Model):
 		return self.name
 
 
-ai_game_table = db.Table('ai_game', db.Model.metadata,
+ai_game_table = db.Table('PMSDB.ai_game', db.Model.metadata,
 	db.Column('ai_id', db.Integer, db.ForeignKey('PMSDB.ais.id')),
 	db.Column('game_id', db.Integer, db.ForeignKey('PMSDB.games.id'))
 )
@@ -35,12 +35,13 @@ class AI(db.Model):
 	__tablename__ = 'PMSDB.ais'
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String, nullable=False)
+	desc = db.Column(db.String)
 	user_id = db.Column(db.Integer, db.ForeignKey('PMSDB.users.id'))
 	user = db.relationship("User", backref=db.backref('PMSDB.ais', order_by=id))
 	games = db.relationship("Game", order_by="Game.id", secondary=ai_game_table, backref="PMSDB.ais")
 
 	def info(self):
-		return {"id": self.id, "name": self.name, "author": self.user.name}
+		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc}
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}>".format(self.id, self.name, self.user_id)
