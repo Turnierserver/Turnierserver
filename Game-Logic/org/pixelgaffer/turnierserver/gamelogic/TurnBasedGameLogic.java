@@ -38,20 +38,31 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogi
 			lost(ai);
 			return;
 		}
+		
 		getUserObject(ai).stopCalculationTimer();
 		received.add(ai);
 		processResponse(response, ai);
+		
 		if(received.size() == game.getAiCount()) {
 			update();
+			
 			try {
 				sendGameState();
 				for(AiWrapper wrapper : game.getAis()) {
-					getUserObject(wrapper).startCalculationTimer();
+					if(!getUserObject(wrapper).lost) {
+						getUserObject(wrapper).startCalculationTimer();
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
 			received.clear();
+			for(AiWrapper wrapper : game.getAis()) {
+				if(getUserObject(wrapper).lost) {
+					received.add(wrapper);
+				}
+			}
 		}
 	}
 	

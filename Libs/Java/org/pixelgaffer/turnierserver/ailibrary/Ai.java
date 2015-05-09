@@ -65,7 +65,7 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	protected abstract R update(E state);
 	/**
-	 * Gibt den momentanen Spielzustand zurück
+	 * Gibt den momentanen Spielzustand zurÃ¼ck
 	 * 
 	 * @return Der momentane Spielzustand
 	 */
