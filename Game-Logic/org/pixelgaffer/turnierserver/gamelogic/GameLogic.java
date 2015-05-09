@@ -45,7 +45,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	
 	
 	/**
-	 * Erstellt das Spiel, inseriert alle Keys in den Gamestate
+	 * Erstellt das Spiel, inseriert alle Keys in den Gamestate (falls dieser verwendet wird)
 	 */
 	protected abstract void setup();
 	/**
@@ -148,6 +148,32 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 */
 	public void sendToFronted(Object object) {
 		throw new UnsupportedOperationException();
+	}
+	
+	private int update = 1; 
+	
+	/**
+	 * Sendet die Daten zum rendern an das Frontend
+	 * 
+	 * @param data
+	 */
+	public void sendRenderData(Object data) {
+		RenderData renderData = new RenderData();
+		renderData.update = update;
+		update++;
+		renderData.data = data;
+		sendToFronted(renderData);
+	}
+	
+	/**
+	 * Sendet ein Objekt an die AI
+	 * 
+	 * @param object Das Objekt, das gesendet werden soll
+	 * @param ai Die AI, der das Objekt gesendet werden soll
+	 * @throws IOException
+	 */
+	public void sendToAi(Object object, AiWrapper ai) throws IOException {
+		ai.sendMessage(new String(msgpack.write(object), "UTF-8"));
 	}
 	
 	/**

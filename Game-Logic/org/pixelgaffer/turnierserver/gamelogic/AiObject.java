@@ -71,9 +71,9 @@ public class AiObject {
 	/**
 	 * Hält den Berechnungstimer an
 	 */
-	public void stopCalculationTimer() {
+	public boolean stopCalculationTimer() {
 		if(lastCalculationStart == -1) {
-			return;
+			return lost;
 		}
 		if(updating) {
 			updating = false;
@@ -81,9 +81,9 @@ public class AiObject {
 		millisLeft -= System.currentTimeMillis()  - lastCalculationStart;
 		lastCalculationStart = -1;
 		if(millisLeft <= 0) {
-			lost = true;
-			logic.lost(ai);
+			loose();
 		}
+		return lost;
 	}
 	
 	/**
@@ -96,11 +96,14 @@ public class AiObject {
 		millisLeft -= System.currentTimeMillis()  - lastCalculationStart;
 		lastCalculationStart = System.currentTimeMillis();
 		if(millisLeft <= 0) {
-			lost = true;
+			loose();
 		}
 	}
 	
 	public void loose() {
+		if(lost) {
+			return;
+		}
 		logic.game.finish(ai.getId());
 		logic.lost(ai);
 		lost = true;
