@@ -16,6 +16,11 @@ public class AiObject {
 	 */
 	public int millisLeft;
 	
+	/**
+	 * Der score der AI, der am Ende in die Datenbank gespeichert wird (z.B. +1 für den Sieger, -1 für den Verlierer)
+	 */
+	public int score = 0;
+	
 	@Setter
 	private GameLogic<?, ?> logic;
 	@Setter
@@ -93,6 +98,12 @@ public class AiObject {
 		if(millisLeft <= 0) {
 			lost = true;
 		}
+	}
+	
+	public void loose() {
+		logic.game.finish(ai.getId());
+		logic.lost(ai);
+		lost = true;
 	}
 	
 }

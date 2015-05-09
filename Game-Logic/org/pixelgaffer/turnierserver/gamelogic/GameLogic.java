@@ -131,14 +131,38 @@ public abstract class GameLogic<E extends AiObject, R> {
 			return;
 		}
 		if(message.equals("SURRENDER")) {
-			lost(ai);
+			getUserObject(ai).loose();
 			return;
 		}
 		try {
 			receive(msgpack.read(message.getBytes("UTF-8"), responseType), ai);
 		} catch (IOException e) {
-			lost(ai);
+			getUserObject(ai).loose();
 		}
+	}
+	
+	/**
+	 * Sendet ein Objekt an das Frontend
+	 * 
+	 * @param object Das Objekt, das gesendet werden soll
+	 */
+	public void sendToFronted(Object object) {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * Beendet das Spiel (Die scores müssen davor gesetzt werden!)
+	 */
+	public void endGame() {
+		GameFinished message = new GameFinished();
+		message.leftoverMillis = new int[game.getAiCount()];
+		message.scores = new int[game.getAiCount()];
+		for(AiWrapper ai : game.getAis()) {
+			message.leftoverMillis[ai.getId()] = getUserObject(ai).millisLeft;
+			message.scores[ai.getId()] = getUserObject(ai).score;
+		}
+		sendToFronted(message);
+		game.finish();
 	}
 	
 	/**

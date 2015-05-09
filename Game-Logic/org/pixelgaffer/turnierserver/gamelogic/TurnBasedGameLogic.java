@@ -21,8 +21,10 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogi
 	
 	/**
 	 * Wird aufgerufen, wenn alle AIs geantwortet haben, und der Gamestate geupdated werden muss
+	 * 
+	 * @return Das Objekt für den renderer
 	 */
-	protected abstract void update();
+	protected abstract Object update();
 	
 	/**
 	 * Verarbeitet eine Antwort einer AI
@@ -32,10 +34,12 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogi
 	 */
 	protected abstract void processResponse(R message, AiWrapper ai);
 	
+	private int updateCounter = 1;
+	
 	@Override
 	protected void receive(R response, AiWrapper ai) {
 		if(received.contains(ai)) {
-			lost(ai);
+			getUserObject(ai).loose();
 			return;
 		}
 		
@@ -44,7 +48,12 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogi
 		processResponse(response, ai);
 		
 		if(received.size() == game.getAiCount()) {
-			update();
+			Object update = update();
+			RenderData data = new RenderData();
+			data.update = updateCounter;
+			updateCounter++;
+			data.data = update;
+			sendToFronted(data);
 			
 			try {
 				sendGameState();
