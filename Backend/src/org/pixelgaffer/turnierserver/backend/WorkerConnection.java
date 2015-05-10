@@ -1,18 +1,19 @@
 package org.pixelgaffer.turnierserver.backend;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import org.msgpack.annotation.Message;
 import org.pixelgaffer.turnierserver.backend.server.BackendConnectionHandler;
+import org.pixelgaffer.turnierserver.backend.workerclient.WorkerClient;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 
 /**
  * Diese Klasse speichert Informationen über einen verbundenen Worker.
  */
-@RequiredArgsConstructor
-@Message
 public class WorkerConnection
 {
 	/**
@@ -20,15 +21,23 @@ public class WorkerConnection
 	 */
 	@Getter
 	@Setter
-	@NonNull
 	private int sandboxes;
 	
 	/** Die Anzahl der benutzten Sandboxen. */
 	private int usedSandboxes = 0;
 	
-	/** Die Connection zum Worker. */
-	@NonNull
+	/** Die Connection vom Backend zum Worker. */
 	private BackendConnectionHandler connection;
+	
+	/** Die Connection vom Worker zum Backend. */
+	private WorkerClient client;
+	
+	public WorkerConnection (@NonNull BackendConnectionHandler con, InetSocketAddress addr, WorkerInfo info) throws IOException
+	{
+		connection = con;
+		sandboxes = info.getSandboxes();
+		
+	}
 	
 	/**
 	 * Gibt an, ob der Worker gerade Aufträge annehmen kann oder ob er

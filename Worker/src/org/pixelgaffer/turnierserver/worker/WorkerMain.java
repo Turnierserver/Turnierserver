@@ -1,24 +1,20 @@
-package org.pixelgaffer.turnierserver.backend;
+package org.pixelgaffer.turnierserver.worker;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import naga.ConnectionAcceptor;
 
-import org.pixelgaffer.turnierserver.backend.server.BackendServer;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
+import org.pixelgaffer.turnierserver.worker.server.WorkerServer;
 
-/**
- * Diese Klasse startet das Backend und enthält einige für das ganze Programm
- * nützliche Funktionen.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class BackendMain
+public class WorkerMain
 {
+	public static final WorkerInfo workerInfo = new WorkerInfo();
+	
 	/** Gibt den Standartlogger zurück. */
 	public static Logger getLogger ()
 	{
@@ -50,9 +46,9 @@ public class BackendMain
 		
 		// Server starten
 		getLogger().info("BackendServer starting");
-		int port = getIntProp("turnierserver.backend.server.port", BackendServer.DEFAULT_PORT);
-		int maxClients = getIntProp("turnierserver.backend.server.maxClients", -1);
-		BackendServer server = new BackendServer(port, maxClients);
+		int port = getIntProp("turnierserver.worker.server.port", WorkerServer.DEFAULT_PORT);
+		int maxClients = getIntProp("turnierserver.worker.server.maxClients", -1);
+		WorkerServer server = new WorkerServer(port, maxClients);
 		server.setConnectionAcceptor(ConnectionAcceptor.ALLOW);
 		new Thread( () -> NetworkService.mainLoop(), "NetworkService").start();
 		getLogger().info("BackendServer started");

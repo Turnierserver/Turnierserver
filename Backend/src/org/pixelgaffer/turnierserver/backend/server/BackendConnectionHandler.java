@@ -1,101 +1,55 @@
 package org.pixelgaffer.turnierserver.backend.server;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
-
-import lombok.NonNull;
+import lombok.Getter;
 import naga.NIOSocket;
-import naga.SocketObserver;
 
+import org.msgpack.MessagePack;
 import org.pixelgaffer.turnierserver.backend.BackendMain;
+import org.pixelgaffer.turnierserver.backend.WorkerConnection;
+import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
+import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 
 /**
  * Diese Klasse ist der ConnectionHandler für den BackendServer.
  */
-public class BackendConnectionHandler implements SocketObserver
+public class BackendConnectionHandler extends ConnectionHandler
 {
-	private enum State
-	{
-		/** Das Socket ist nicht verbunden. */
-		DISCONNECTED,
-		/** Das Socket ist verbunden, hat aber noch kein Passwort geschickt. */
-		CONNECTED,
-		/** Das Socket ist verbunden und hat das richtige Passwort geschickt. */
-		VERIFIED
-	}
-	
-	/** Der aktuelle Status der Connection. */
-	private State state = State.DISCONNECTED;
-	
-	/** Der Salt, den der Client dem Passwort zufügen muss. */
-	private byte[] salt;
-	/** Der erwartete Passworthash. */
-	private byte[] hash;
+	@Getter
+	private boolean connected = false;
 	
 	/** Der lokale Buffer mit den noch nicht gelesenen bytes. */
-	private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+	private DataBuffer buffer = new DataBuffer();
 	
-	/** Gibt die ersten length bytes zurück und schneidet diese vom buffer ab. */
-	private byte[] cutFromBuffer (int length)
+	/** Die erstellte WorkerConnection. */
+	private WorkerConnection workerConnection;
+	
+	
+	public BackendConnectionHandler (NIOSocket socket)
 	{
-		if (buffer.size() < length)
-			return null;
-		byte b[] = new byte[length];
-		System.arraycopy(buffer.toByteArray(), 0, b, 0, length);
-		byte buf[] = new byte[buffer.size() - length];
-		System.arraycopy(buffer.toByteArray(), length, buf, 0, buf.length);
-		buffer.reset();
-		buffer.write(buf, 0, buf.length);
-		return b;
+		super(socket);
 	}
 	
-	public BackendConnectionHandler (@NonNull NIOSocket socket)
-	{
-		salt = BackendMain.generateSalt(20);
-		hash = BackendMain.sha256(System.getProperty("turnierserver.backend.server.password").getBytes(), salt, 50);
-		System.out.println(new String(hash));
-		
-		// client = socket;
-		socket.listen(this);
-	}
-	
-	@Override
-	public void connectionOpened (NIOSocket socket)
-	{
-		BackendMain.getLogger().info("BackendConnectionHandler: connection opened: " + socket);
-		state = State.CONNECTED;
-		socket.write(salt);
-	}
-	
-	@Override
-	public void connectionBroken (NIOSocket nioSocket, Exception exception)
-	{
-		
-	}
-	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void packetReceived (NIOSocket socket, byte[] packet)
 	{
-		switch (state)
+		buffer.add(packet);
+		byte line[];
+		while ((line = buffer.readLine()) != null)
 		{
-			case CONNECTED:
-				// wenn das Passwort noch nicht gesendet wurde, solange
-				// mitschneiden, bis das Passwort gelesen wurde
-				buffer.write(packet, 0, packet.length);
-				byte receivedHash[] = cutFromBuffer(hash.length);
-				if (receivedHash != null && !Arrays.equals(receivedHash, hash))
+			if (workerConnection == null)
+			{
+				try
 				{
-					BackendMain.getLogger().warning("BackendConnectionHandler: Wrong hash received from " + socket);
-					socket.close();
-					return;
+					workerConnection = new WorkerConnection(this, socket.getAddress(), MessagePack.unpack(line,
+							WorkerInfo.class));
 				}
-				break;
+				catch (Exception e)
+				{
+					BackendMain.getLogger().severe("BackendConnectionHandler: while creating WorkerConnection: " + e);
+				}
+			}
 		}
-	}
-	
-	@Override
-	public void packetSent (NIOSocket socket, Object tag)
-	{
-		
 	}
 }

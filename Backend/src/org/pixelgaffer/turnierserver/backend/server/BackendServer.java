@@ -2,36 +2,27 @@ package org.pixelgaffer.turnierserver.backend.server;
 
 import java.io.IOException;
 
-import lombok.Getter;
-import naga.ConnectionAcceptor;
-import naga.NIOServerSocket;
 import naga.NIOSocket;
-import naga.ServerSocketObserver;
 
 import org.pixelgaffer.turnierserver.backend.BackendMain;
+import org.pixelgaffer.turnierserver.networking.Server;
 
 /**
  * Diese Klasse öffnet einen Server, auf dem sich alle zur Verfügung stehenden
  * Worker melden. Dieser Server dient nicht dazu, dass sich dort die KIs melden!
  * Der Server für die KIs läuft auf dem Worker.
  */
-public class BackendServer implements ServerSocketObserver
+public class BackendServer extends Server<BackendConnectionPool>
 {
 	/** Der Standart-Port für diesen Server. */
 	public static final int DEFAULT_PORT = 1332;
-	
-	private NIOServerSocket server;
-	@Getter
-	private BackendConnectionPool pool = new BackendConnectionPool();
 	
 	/**
 	 * Öffnet den Server auf dem angegebenen Port.
 	 */
 	public BackendServer (int port) throws IOException
 	{
-		server = BackendMain.getNioService().openServerSocket(port);
-		server.listen(this);
-		server.setConnectionAcceptor(ConnectionAcceptor.ALLOW);
+		super(port, new BackendConnectionPool());
 		BackendMain.getLogger().info("BackendServer opened successfully on port " + port);
 	}
 	
@@ -41,8 +32,7 @@ public class BackendServer implements ServerSocketObserver
 	 */
 	public BackendServer (int port, int maxClients) throws IOException
 	{
-		this(port);
-		pool.setMaxConnections(maxClients);
+		super(port, new BackendConnectionPool(), maxClients);
 	}
 	
 	@Override
