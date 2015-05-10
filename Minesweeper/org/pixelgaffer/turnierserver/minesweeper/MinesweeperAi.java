@@ -4,6 +4,10 @@ import org.pixelgaffer.turnierserver.ailibrary.Ai;
 
 public abstract class MinesweeperAi extends Ai<MinesweeperState, MinesweeperResponse> {
 
+	public MinesweeperAi(String[] args) {
+		super(args);
+	}
+
 	private int xFlag = -1, yFlag = -1;
 	private int xStep = -1, yStep = -1;
 	

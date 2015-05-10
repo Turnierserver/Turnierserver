@@ -206,4 +206,8 @@ public abstract class GameLogic<E extends AiObject, R> {
 		setup();
 	}
 	
+	public static void main(String[] args) {
+		
+	}
+	
 }

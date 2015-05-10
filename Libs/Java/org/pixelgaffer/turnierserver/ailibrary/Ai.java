@@ -41,11 +41,12 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	protected Map<String, String> gamestate;
 	
-	public Ai() {
+	public Ai(String[] args) {
 		try {
 			con = new Socket("localhost", 1337);
 			out = new PrintWriter(con.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			out.println(args[0]);
 			System.setOut(new PrintStream(new OutputStream() {
 				public void write(int b) throws IOException {
 					output.append((char) b);
@@ -120,6 +121,13 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	public final void start() {
 		new Thread(this).start();
+		synchronized (this) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				surrender();
+			}
+		}
 	}
 	
 }
