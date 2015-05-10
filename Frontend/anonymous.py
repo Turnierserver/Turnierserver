@@ -41,8 +41,8 @@ def game(id):
 		abort(404)
 	with open("gametypes.json", "r") as f:
 		d = json.load(f)
-		if str(game.id) in d:
-			type = d[str(game.id)]
+		if str(game.type) in d:
+			type = d[str(game.type)]
 		else:
 			type = {'name': 'Invalid ID!', 'viz': 'game.html'}
 
