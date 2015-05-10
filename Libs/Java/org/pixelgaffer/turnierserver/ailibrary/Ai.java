@@ -46,7 +46,7 @@ public abstract class Ai<E, R> implements Runnable {
 			con = new Socket("localhost", 1337);
 			out = new PrintWriter(con.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			out.println(args[0]);
+			out.println("A" + args[0]);
 			System.setOut(new PrintStream(new OutputStream() {
 				public void write(int b) throws IOException {
 					output.append((char) b);
