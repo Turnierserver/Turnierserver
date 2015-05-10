@@ -3,7 +3,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 from api import api, login_manager
 from anonymous import anonymous
-from database import db, create_mock_objects, AI
+from database import db, populate, AI
 
 app = Flask("Turnierserver - Frontend")
 app.secret_key = "foobar"
@@ -17,7 +17,7 @@ db.init_app(app)
 with app.app_context():
 	db.drop_all()
 	db.create_all()
-	create_mock_objects()
+	populate()
 
 
 app.run(host="0.0.0.0", port=80, debug=True)

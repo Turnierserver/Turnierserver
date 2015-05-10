@@ -50,15 +50,16 @@ class Game(db.Model):
 	__tablename__ = 'PMSDB.games'
 	id = db.Column(db.Integer, primary_key=True)
 	ai_list = db.relationship("AI", order_by="AI.id", secondary=ai_game_table, backref="PMSDB.games")
+	type = db.Column(db.Integer, nullable=False)
 
 	def info(self):
 		return {"id": self.id, "ais": [ai.info() for ai in self.ai_list]}
 
 	def __repr__(self):
-		return "<Game(id={})>".format(self.id)
+		return "<Game(id={}, type={})>".format(self.id, self.type)
 
 
-def create_mock_objects(count=10):
+def populate(count=10):
 	import random
 	users = [User(name="testuser"+str(i), id=i) for i in range(count)]
 	users_left = users[:]
@@ -67,13 +68,13 @@ def create_mock_objects(count=10):
 		users_left.remove(u)
 		return u
 	ais = [AI(id=i, user=choose_user(), name="testai") for i in range(count)]
-	games = [Game(id=i, ai_list=random.sample(ais, 2)) for i in range(count)]
+	games = [Game(id=i, ai_list=random.sample(ais, 2), type=1) for i in range(count)]
 	db.session.add_all(users + ais + games)
 	db.session.commit()
 
 
 if __name__ == '__main__':
-	create_mock_objects()
+	populate(20)
 	for user in db.query(User).all():
 		print(user)
 		print(user.info())

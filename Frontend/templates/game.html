@@ -2,6 +2,8 @@
 {% block body %}
 
 Spiel ID: {{ game.id }}
+<br />
+Typ: {{ type.name }}
 
 <br />
 Von:
@@ -10,5 +12,8 @@ Von:
 	<li><a href="{{ url_for("anonymous.ai", id=ai.id) }}"> {{ ai.name }}</a></li>
 {% endfor %}
 </ul>
+
+{% block viz %}
+{% endblock %}
 
 {% endblock %}

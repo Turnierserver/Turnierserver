@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, abort
 from database import AI, User, Game
+import json
 
 anonymous = Blueprint("anonymous", __name__)
 
@@ -38,4 +39,11 @@ def game(id):
 	game = Game.query.get(id)
 	if not game:
 		abort(404)
-	return render_template("game.html", game=game)
+	with open("gametypes.json", "r") as f:
+		d = json.load(f)
+		if str(game.id) in d:
+			type = d[str(game.id)]
+		else:
+			type = {'name': 'Invalid ID!', 'viz': 'game.html'}
+
+	return render_template(type["viz"], game=game, type=type)
