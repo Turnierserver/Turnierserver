@@ -10,41 +10,45 @@ Es werden höchstwahrscheinlicht große Teile vom alten Frontend übernommen und
 
 [Hier] (https://github.com/LuckyLukert/Turnierserver/blob/master/Frontend/testapi.py) gibt es eine API implementation, gegen die man sein Zeugs testen kann.
 
+Alle implementierten sind gehäkelt.
+
 #####GETs (offen zugänglich / ohne Authentifizierung)
 -------------
-- /api/ais
+- [x] /api/ais
   * *gibt eine Liste von KIs zurück, die deren Punktzahl und deren Besitzer beinhaltet.*
-- /api/ai/\<id\>
+- [x] /api/ai/\<id\>
   * *gibt den Besitzer, die Punktzahl und ähnliches zurück.*
-- /api/users
+- [x] /api/ai/\<id\>/games
+  * *gibt eine Liste von Spielen der KI zurück.*
+- [x] /api/users
   * *gibt eine Liste aller Nutzer zurück.*
-- /api/user/\<id\>
+- [x] /api/user/\<id\>
   * *gibt alle KIs und andere Infos über den Nutzer zurück.*
-- /api/games
+- [x] /api/games
   * *gibt alle Spielids (und mehr infos?) zurück.*
-- /api/game/\<id\>
+- [x] /api/game/\<id\>
   * *gibt Infos (und Spielverlauf?) zurück.*
 
 #####POSTs (mit Authentifizierung)
 --------------
-- /api/ai/create
-- /api/ai/\<id\>/submitCode
+- [x] /api/ai/create
+- [ ] /api/ai/\<id\>/submitCode
   * *multipart uploading?*
-- /api/ai/\<id\>/fight?id=\<id\>&id=\<id\>
+- [ ] /api/ai/\<id\>/fight?id=\<id\>&id=\<id\>
   * *alternativ Layouts:*
   * */api/ais/fight/\<id\>/\<id\>/...*
   * */api/ai/\<id\>/fight/\<id\>/*
   * */api/ai/\<id\>/fight?ids=[\<id\>, \<id\>]*
 
-- /api/ai/\<id\>/update
+- [x] /api/ai/\<id\>/update
   * *updatet infos zur Ki.*
-- /api/user/update
+- [x] /api/user/update
   * *updatet infos zum Nutzer.*
 
 
 #####Authentifizierung
 --------------
 Kekse:
-  * */api/login setzt Cookies und alle anderen Anfragen benutzen diese.*
-  * */api/logout loggt aus.*
+  * [x] */api/login setzt Cookies und alle anderen Anfragen benutzen diese.*
+  * [x] */api/logout loggt aus.*
   * *sollte einfach integrierbar sein.*
