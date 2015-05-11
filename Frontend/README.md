@@ -1,14 +1,19 @@
 ###Frontend
 
 Server, der den Usern eine Webseite (mit ESU-API) liefert, auf der sie ihre KI managen und spielen lassen können.
-Sprache: Python (mit [Django](https://www.djangoproject.com))
+Sprache: Python 3 (mit [Flask](http://flask.pocoo.org))
 
-Es werden höchstwahrscheinlicht große Teile vom alten Frontend übernommen und verbessert.
+Libs:
+- [Flask](http://flask.pocoo.org)
+  * [Flask-Login](https://flask-login.readthedocs.org)
+- [SQLAlchemy](http://www.sqlalchemy.org)
+  * [Flask-SQLAlchemy](https://pythonhosted.org/Flask-SQLAlchemy/)
+
+Es werden höchstwahrscheinlich Teile vom alten Frontend übernommen und verbessert.
 
 
 ##API-Spezifikation (wird sich noch ändern)
-
-[Hier] (https://github.com/LuckyLukert/Turnierserver/blob/master/Frontend/testapi.py) gibt es eine API implementation, gegen die man sein Zeugs testen kann.
+[Hier] (https://github.com/LuckyLukert/Turnierserver/blob/master/Frontend/api.py) gibt es die aktuelle API implementation.
 
 Alle implementierten sind gehäkelt.
 
@@ -25,9 +30,11 @@ Alle implementierten sind gehäkelt.
 - [x] /api/user/\<id\>
   * *gibt alle KIs und andere Infos über den Nutzer zurück.*
 - [x] /api/games
-  * *gibt alle Spielids (und mehr infos?) zurück.*
+  * *gibt alle Spielids (und mehr infos) zurück.*
 - [x] /api/game/\<id\>
-  * *gibt Infos (und Spielverlauf?) zurück.*
+  * *gibt Infos zurück.*
+- [ ] /api/game/\<id\>/log
+  * *gibt den Spielverlauf zurück.*
 
 #####POSTs (mit Authentifizierung)
 --------------
