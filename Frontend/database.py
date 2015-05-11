@@ -25,10 +25,12 @@ class User(db.Model):
 		return self.name
 
 
-ai_game_table = db.Table('t_ai_game', db.Model.metadata,
-	db.Column('ai_id', db.Integer, db.ForeignKey('t_ais.id')),
-	db.Column('game_id', db.Integer, db.ForeignKey('t_games.id'))
-)
+class AI_Game_Assoc(db.Model):
+	__tablename__ = 't_ai_game_assoc'
+	game_id = db.Column(db.Integer, db.ForeignKey('t_games.id'), primary_key=True)
+	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'), primary_key=True)
+	role = db.Column(db.String(50))
+	ai = db.relationship("AI", backref="game_assocs")
 
 
 class AI(db.Model):
@@ -38,7 +40,6 @@ class AI(db.Model):
 	desc = db.Column(db.Text)
 	user_id = db.Column(db.Integer, db.ForeignKey('t_users.id'))
 	user = db.relationship("User", backref=db.backref('t_ais', order_by=id))
-	games = db.relationship("Game", order_by="Game.id", secondary=ai_game_table, backref="t_ais")
 
 	def info(self):
 		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc}
@@ -49,11 +50,11 @@ class AI(db.Model):
 class Game(db.Model):
 	__tablename__ = 't_games'
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-	ai_list = db.relationship("AI", order_by="AI.id", secondary=ai_game_table, backref="t_games")
+	ai_assocs = db.relationship("AI_Game_Assoc", backref="game")
 	type = db.Column(db.Integer, nullable=False)
 
 	def info(self):
-		return {"id": self.id, "ais": [ai.info() for ai in self.ai_list]}
+		return {"id": self.id, "ais": [assoc.ai.info() for assoc in self.ai_assocs]}
 
 	def __repr__(self):
 		return "<Game(id={}, type={})>".format(self.id, self.type)
@@ -66,8 +67,10 @@ def populate(count=20):
 	users = [User(name="testuser"+str(i), id=i) for i in r]
 	random.shuffle(users)
 	ais = [AI(id=i, user=users[i-1], name="testai"+str(i), desc="Beschreibung") for i in r]
-	games = [Game(id=i, ai_list=random.sample(ais, 2), type=1) for i in r]
-	db.session.add_all(users + ais + games)
+	games = [Game(id=i, type=1) for i in r]
+	assocs = [AI_Game_Assoc(game_id=games[i-1].id, ai_id=ais[i-1].id, role="builder") for i in r]
+	assocs += [AI_Game_Assoc(game_id=games[i-1].id, ai_id=ais[i-2].id, role="solver") for i in r]
+	db.session.add_all(users + ais + games + assocs)
 	#db.session.add_all(users)
 	db.session.commit()
 

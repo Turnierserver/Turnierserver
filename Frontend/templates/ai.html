@@ -9,8 +9,8 @@ Beschreibung:
 <br />
 Spiele:
 <ul>
-{% for game in ai.games %}
-	<li><a href="{{ url_for("anonymous.game", id=game.id) }}"> {{ game.ai_list }} </a></li>
+{% for assoc in ai.game_assocs %}
+	<li><a href="{{ url_for("anonymous.game", id=assoc.game.id) }}"> {{ assoc.game }} </a></li>
 {% endfor %}
 </ul>
 

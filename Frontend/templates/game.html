@@ -8,8 +8,8 @@ Typ: {{ type.name }}
 <br />
 Von:
 <ul>
-{% for ai in game.ai_list %}
-	<li><a href="{{ url_for("anonymous.ai", id=ai.id) }}"> {{ ai.name }}</a></li>
+{% for assoc in game.ai_assocs %}
+	<li><a href="{{ url_for("anonymous.ai", id=assoc.ai.id) }}"> {{ assoc.ai.name }} als {{ assoc.role }}</a></li>
 {% endfor %}
 </ul>
 
