@@ -81,6 +81,15 @@ def api_ai(id):
 	else:
 		return CommonErrors.INVALID_ID
 
+@api.route("/ai/<int:id>/games", methods=["GET"])
+@json_out
+def api_ai_games(id):
+	ai = AI.query.get(id)
+	if ai:
+		return [assoc.game.info() for assoc in ai.game_assocs]
+	else:
+		return CommonErrors.INVALID_ID
+
 @api.route("/games")
 @json_out
 def api_games():
@@ -187,6 +196,9 @@ def api_ai_update(id):
 	ai = AI.query.get(id)
 	if not ai:
 		return CommonErrors.INVALID_ID
+
+	if not ai in current_user.ai_list:
+		return CommonErrors.NO_ACCESS
 
 	ai.name = request.args.get('name', ai.name)
 	ai.desc = request.args.get('description', ai.desc)
