@@ -2,6 +2,10 @@
 	"1": {
 		"name": "Minesweeper",
 		"viz": "vizs/minesweeper.html",
-		"logic": "Minesweeper"
+		"logic": "Minesweeper",
+		"roles": [
+			"solver",
+			"builder"
+		]
 	}
 }

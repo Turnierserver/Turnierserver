@@ -68,10 +68,13 @@ def populate(count=20):
 	random.shuffle(users)
 	ais = [AI(id=i, user=users[i-1], name="testai"+str(i), desc="Beschreibung") for i in r]
 	games = [Game(id=i, type=1) for i in r]
-	assocs = [AI_Game_Assoc(game_id=games[i-1].id, ai_id=ais[i-1].id, role="builder") for i in r]
-	assocs += [AI_Game_Assoc(game_id=games[i-1].id, ai_id=ais[i-2].id, role="solver") for i in r]
+	assocs = []
+	with open("gametypes.json") as f:
+		import json
+		gametype = json.load(f)["1"]
+	for ri, role in enumerate(gametype['roles'], 1):
+		assocs += [AI_Game_Assoc(game_id=games[i-1].id, ai_id=ais[i-ri].id, role=role) for i in r]
 	db.session.add_all(users + ais + games + assocs)
-	#db.session.add_all(users)
 	db.session.commit()
 
 
