@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 import lombok.AllArgsConstructor;
@@ -20,6 +22,16 @@ import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 @AllArgsConstructor
 public abstract class Compiler
 {
+	public static Compiler getCompiler (String user, String ai, int version, String language)
+			throws ReflectiveOperationException
+	{
+		Class<?> clazz = Class.forName("org.pixelgaffer.turnierserver.compile." + language + "Compiler");
+		Compiler c = (Compiler)clazz
+				.getConstructor(String.class, String.class, Integer.TYPE)
+				.newInstance(user, ai, version);
+		return c;
+	}
+	
 	@Getter
 	private String user, ai;
 	@Getter
@@ -45,10 +57,16 @@ public abstract class Compiler
 		{
 			// packen
 			File archive = Files.createTempFile("aibin", ".tar.bz2").toFile();
-			execute(bindir, pw, "tar", "cfj", archive.getAbsolutePath(), "*");
+			String files[] = bindir.list((dir, name) -> !name.startsWith("libraries"));
+			String cmd[] = new String[files.length + 3];
+			cmd[0] = "tar";
+			cmd[1] = "cfj";
+			cmd[2] = archive.getAbsolutePath();
+			System.arraycopy(files, 0, cmd, 3, files.length);
+			System.out.println(execute(bindir, pw, cmd));
 			
 			// hochladen
-			DatastoreFtpClient.storeAi(getUser(), getAi(), new FileInputStream(archive));
+			DatastoreFtpClient.storeAi(getUser(), getAi(), getVersion(), new FileInputStream(archive));
 			
 			// aufräumen
 			// archive.delete();
@@ -64,8 +82,31 @@ public abstract class Compiler
 	public abstract boolean compile (File srcdir, File bindir, PrintWriter output)
 			throws IOException, InterruptedException;
 	
+	protected String relativePath (File absolute, File base)
+	{
+		Path absolutePath = absolute.toPath();
+		Path basePath = base.toPath();
+		Path relative = basePath.relativize(absolutePath);
+		return relative.toString();
+	}
+	
+	protected void copy (File in, File out) throws IOException
+	{
+		System.out.println("copy: " + in + " → " + out);
+		out.mkdirs();
+		out.delete();
+		FileInputStream fis = new FileInputStream(in);
+		FileOutputStream fos = new FileOutputStream(out);
+		byte buf[] = new byte[8192]; int read;
+		while ((read = fis.read(buf)) > 0)
+			fos.write(buf, 0, read);
+		fis.close();
+		fos.close();
+	}
+	
 	protected int execute (File wd, PrintWriter output, String ... command) throws IOException, InterruptedException
 	{
+		output.print(wd.getAbsolutePath());
 		output.print("$");
 		for (String cmd : command)
 		{
@@ -77,6 +118,9 @@ public abstract class Compiler
 		output.println();
 		
 		ProcessBuilder pb = new ProcessBuilder(command);
+		File log = Files.createTempFile("compiler", ".txt").toFile();
+		pb.redirectErrorStream(true);
+		pb.redirectOutput(log);
 		if (wd != null)
 			pb.directory(wd);
 		Process p = pb.start();
@@ -90,6 +134,13 @@ public abstract class Compiler
 		System.setProperties(p);
 		
 		Compiler comp = new JavaCompiler("Nico", "MinesweeperAi", 1);
-		comp.compileAndUpload();
+		CompileResult r = comp.compileAndUpload();
+		System.out.println("---------------------------------------------------------------------------------------");
+		FileInputStream fis = new FileInputStream(r.getOutput());
+		byte buf[] = new byte[8192]; int read;
+		while ((read = fis.read(buf)) != -1)
+			System.out.write(buf, 0, read);
+		fis.close();
+		System.out.println(r.isSuccessfull());
 	}
 }

@@ -17,6 +17,8 @@ import org.apache.commons.net.ftp.FTPReply;
 /**
  * Diese Klasse verbindet sich zum FTP Server auf dem Datastore und enthält
  * Methoden zum Abrufen der Daten.
+ * 
+ * NICHT MULTITHREAD-SICHER
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DatastoreFtpClient
@@ -78,14 +80,18 @@ public class DatastoreFtpClient
 	{
 		connect();
 		System.out.println("retrieveDir: " + remote);
+		String cwd = client.printWorkingDirectory();
+		if (!client.changeWorkingDirectory(remote))
+			throw new IOException("Failed to change working directory: " + client.getReplyString());
 		local.mkdirs();
-		for (FTPFile f : client.listFiles(remote))
+		for (FTPFile f : client.listFiles())
 		{
 			if (f.isFile())
-				retrieveFile(remote + "/" + f.getName(), new FileOutputStream(new File(local, f.getName())));
+				retrieveFile(f.getName(), new FileOutputStream(new File(local, f.getName())));
 			else
-				retrieveDir(remote + "/" + f.getName(), new File(local, f.getName()));
+				retrieveDir(f.getName(), new File(local, f.getName()));
 		}
+		client.cwd(cwd);
 	}
 	
 	/**
@@ -130,6 +136,7 @@ public class DatastoreFtpClient
 	public static void storeFile (String remote, InputStream local) throws IOException
 	{
 		connect();
+		System.out.println("storeFile: " + client.printWorkingDirectory() + " / " + remote);
 		if (!client.storeFile(remote, local))
 			throw new IOException("Failed to store file to " + remote + ": " + client.getReplyString());
 		local.close();
@@ -139,8 +146,8 @@ public class DatastoreFtpClient
 	 * Lädt den Inhalt des InputStreams local als Binary-tar-bz2-Archiv der KI
 	 * hoch.
 	 */
-	public static void storeAi (String user, String ai, InputStream local) throws IOException
+	public static void storeAi (String user, String ai, int version, InputStream local) throws IOException
 	{
-		storeFile(aiPath(user, ai), local);
+		storeFile(aiPath(user, ai) + "/v" + version + ".tar.bz2", local);
 	}
 }
