@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, abort
+from flask.ext.login import current_user
 from database import AI, User, Game
 import json
 
