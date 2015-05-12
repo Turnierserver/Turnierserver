@@ -13,6 +13,7 @@ from anonymous import anonymous
 from profile import profile
 from database import db, populate, AI
 from _cfg import env
+from activityfeed import activity_feed, Activity
 from time import time
 
 
@@ -43,6 +44,9 @@ with app.app_context():
 	populate(5)
 
 cache.init_app(app)
+
+
+Activity("Serverstart abgeschlossen...", extratext="Hier gehts los.\nAlle voherigen Events sollten nicht wichtig sein.")
 
 
 app.run(host="0.0.0.0", port=80, debug=True)

@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, abort
 from flask.ext.login import current_user
 from database import AI, User, Game
+from activityfeed import activity_feed, Activity
 import json
 
 anonymous = Blueprint("anonymous", __name__)
@@ -48,3 +49,9 @@ def game(id):
 			type = {'name': 'Invalid ID!', 'viz': 'game.html'}
 
 	return render_template(type["viz"], game=game, type=type)
+
+
+@anonymous.route("/activityfeed")
+def activityfeed():
+	return render_template("activityfeed.html", activities=activity_feed.feed[::-1])
+

@@ -1,7 +1,9 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask import send_file, abort
 from ftplib import FTP, error_perm
+import socket, errno
 from _cfg import env
+from activityfeed import Activity
 from io import BytesIO
 import arrow
 
@@ -11,6 +13,7 @@ ftp = FTP(env.ftp_url, timeout=1)
 print("FTP-Status:", ftp.login(env.ftp_uname, env.ftp_pw))
 
 def send_from_ftp(path):
+	global ftp
 	f = BytesIO()
 	try:
 		ftp.retrbinary('RETR ' + path, f.write)
@@ -18,6 +21,22 @@ def send_from_ftp(path):
 		print(path)
 		print(e)
 		abort(404)
+	except socket.error as e:
+		print("Connection down, socket err")
+		print("Connecting to FTP @", env.ftp_url)
+		ftp = FTP(env.ftp_url, timeout=1)
+		print("FTP-Status:", ftp.login(env.ftp_uname, env.ftp_pw))
+		return send_from_ftp(path)
+	except IOError as e:
+		print(e.errno)
+		if e.errno == errno.EPIPE:
+			print("Connection down, IOError")
+			print("Connecting to FTP @", env.ftp_url)
+			ftp = FTP(env.ftp_url, timeout=1)
+			print("FTP-Status:", ftp.login(env.ftp_uname, env.ftp_pw))
+		else:
+			raise e
+
 	f.seek(0)
 	return send_file(f)
 
@@ -26,7 +45,10 @@ class User(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50), unique=True, nullable=False)
 	ai_list = db.relationship("AI", order_by="AI.id", backref="User")
-	tmp_icon = None
+
+	def __init__(self, *args, **kwargs):
+		super(User, self).__init__(*args, **kwargs)
+		Activity(str(self) +" erschafft")
 
 	def info(self):
 		return {"id": self.id, "name": self.name, "ais": [ai.info() for ai in self.ai_list]}
@@ -66,14 +88,18 @@ class AI(db.Model):
 	lang_id = db.Column(db.Integer, db.ForeignKey('t_langs.id'))
 	lang = db.relationship("Lang", backref=db.backref('t_ais', order_by=id))
 
+	def __init__(self, *args, **kwargs):
+		super(AI, self).__init__(*args, **kwargs)
+		Activity(str(self) +" erschafft")
+
 	def info(self):
-		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc}
+		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc, "lang": self.lang.info()}
 
 	def icon(self):
 		return send_from_ftp("AIs/"+str(self.id)+"/icon.png")
 
 	def __repr__(self):
-		return "<AI(id={}, name={}, user_id={}, lang={}>".format(self.id, self.name, self.user_id, self.lang)
+		return "<AI(id={}, name={}, user_id={}, lang={}>".format(self.id, self.name, self.user_id, self.lang.name)
 
 class Lang(db.Model):
 	__tablename__ = "t_langs"
@@ -81,6 +107,13 @@ class Lang(db.Model):
 	name = db.Column(db.Text)
 	url = db.Column(db.Text)
 	ai_list = db.relationship("AI", order_by="AI.id", backref="Lang")
+
+	def __init__(self, *args, **kwargs):
+		super(Lang, self).__init__(*args, **kwargs)
+		Activity(str(self) +" erschafft")
+
+	def info(self):
+		return {"id": self.id, "name": self.name, "url": self.url}
 
 	def __repr__(self):
 		return "<Lang(id={}, name={}, url={}>".format(self.id, self.name, self.url)
@@ -95,6 +128,7 @@ class Game(db.Model):
 	def __init__(self, *args, **kwargs):
 		super(Game, self).__init__(*args, **kwargs)
 		self.timestamp = arrow.utcnow().timestamp
+		Activity(str(self) +" erschafft")
 
 	def time(self, locale):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
@@ -111,7 +145,7 @@ def populate(count=20):
 	import random
 	db.create_all()
 
-	py = Lang(name="Python", url="https://www.python.org")
+	py = Lang(id=1, name="Python", url="https://www.python.org")
 
 	users = [User(name="testuser"+str(i), id=i) for i in r]
 	random.shuffle(users)
