@@ -1,37 +1,94 @@
 <!DOCTYPE html>
 <html>
 <head>
-	{% block title %}
-	<title>Turnierserver</title>
-	{% endblock %}
+		<meta charset="utf-8">
+		{% block title %}
+		<title>Turnierserver</title>
+		{% endblock %}
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.12.2/semantic.min.css"></link>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.12.2/semantic.min.js"></script>
 </head>
 <body>
-<nav>
-	<ul>
-		<li>
-			<a href="{{ url_for("anonymous.index") }}">
-				Index
-			</a>
-		</li>
-		<li>
-			<a href="{{ url_for("anonymous.ai_list") }}">
-				KI Liste
-			</a>
-		</li>
-		<li>
-			<a href="{{ url_for("anonymous.user_list") }}">
-				User Liste
-			</a>
-		</li>
-		<li>
-			<a href="{{ url_for("anonymous.game_list") }}">
-				Spiel Liste
-			</a>
-		</li>
-	</ul>
-</nav>
-<h3>-------------------------</h3>
-{% block body %}
-{% endblock %}
+	<nav class="ui menu inverted navbar page grid">
+		<a href="{{ url_for("anonymous.index") }}" class="brand item">Turnierserver</a>
+		<div class="right menu">
+			<a href="{{ url_for("anonymous.ai_list") }}" class="item">KI Liste</a>
+			<a href="{{ url_for("anonymous.user_list") }}" class="item">User Liste</a>
+			<a href="{{ url_for("anonymous.game_list") }}" class="item">Spiel Liste</a>
+			{% if current_user.is_authenticated() %}
+				<a href="{{ url_for("profile.current_profile") }}" class="item">{{ current_user.name }}</a>
+				<div class="item"><button id="logout" class="ui green button">Ausloggen</button></div>
+				<script>
+					$("#logout").on("click", function() {
+						$.post("/api/logout").done(function() { location.reload() })
+					});
+				</script>
+			{% else %}
+				<div class="item">
+					<div class="ui input">
+						<input id="username" type="input" placeholder="Nutzername">
+					</div>
+				</div>
+				<div class="item">
+					<div class="ui input">
+						<input id="password" type="password" placeholder="Passwort">
+					</div>
+				</div>
+				<div class="item"><button id="login" class="ui green button">Einloggen</button></div>
+				<script>
+					var f = function() {
+						console.log("Logging in...")
+						var pw = $("#password").val()
+						var name = $("#username").val()
+						$.post("/api/login", {username: name, password: pw}).done(function(data) {
+							console.log("Logged in.")
+							location.reload();
+						}).fail(function(xhr, textStatus, errorThrown) {
+							console.log(xhr.responseText.error)
+							alert(JSON.parse(xhr.responseText).error)
+						})
+					}
+					$("#login").on("click", f)
+					$('#username, #password').keypress(function(event){
+						var keycode = (event.keyCode ? event.keyCode : event.which);
+							if(keycode == '13'){
+								f()
+							}
+					});
+				</script>
+			{% endif %}
+		</div>
+	</nav>
+	<div class="ui page grid">
+			<div class="ui grid">
+					<div class="row">
+							<div class="column">
+									<div class="ui huge message page grid center aligned">
+											<h1 class="ui huge header">#Yolo Swag Yolonese</h1>
+											<p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+											<a class="ui green button">Ein grüner Knopf</a>
+									</div>
+							</div>
+					</div>
+			</div>
+			<div class="ui hidden divider"></div>
+
+			<div class="one column row">
+					<div class="column">
+							{% block body %}
+							{% endblock %}
+					</div>
+			</div>
+
+			<div class="ui grid">
+					<div class="row">
+							<div class="column">
+									<div class="ui divider"></div>
+									<span>&copy; Deine Mudda 2016</span>
+							</div>
+					</div>
+			</div>
+	</div>
 </body>
 </html>

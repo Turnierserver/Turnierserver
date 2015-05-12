@@ -4,6 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 from api import api, login_manager
 from anonymous import anonymous
+from profile import profile
 from database import db, populate, AI
 from _cfg import env
 from time import time
@@ -21,6 +22,7 @@ login_manager.init_app(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = env.db_url
 app.register_blueprint(api)
 app.register_blueprint(anonymous)
+app.register_blueprint(profile)
 
 if env.airbrake:
 	#airbrake.io
