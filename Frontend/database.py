@@ -1,16 +1,38 @@
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask import send_file, abort
+from ftplib import FTP, error_perm
+from _cfg import env
+from io import BytesIO
 import arrow
 
 db = SQLAlchemy()
+print("Connecting to FTP @", env.ftp_url)
+ftp = FTP(env.ftp_url, timeout=1)
+print("FTP-Status:", ftp.login(env.ftp_uname, env.ftp_pw))
+
+def send_from_ftp(path):
+	f = BytesIO()
+	try:
+		ftp.retrbinary('RETR ' + path, f.write)
+	except error_perm as e:
+		print(path)
+		print(e)
+		abort(404)
+	f.seek(0)
+	return send_file(f)
 
 class User(db.Model):
 	__tablename__ = 't_users'
-	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50), unique=True, nullable=False)
 	ai_list = db.relationship("AI", order_by="AI.id", backref="User")
+	tmp_icon = None
 
 	def info(self):
 		return {"id": self.id, "name": self.name, "ais": [ai.info() for ai in self.ai_list]}
+
+	def icon(self):
+		return send_from_ftp("Users/"+str(self.id)+"/icon.png")
 
 	def __repr__(self):
 		return "<User(id={}, name={})".format(self.id, self.name)
@@ -41,12 +63,27 @@ class AI(db.Model):
 	desc = db.Column(db.Text)
 	user_id = db.Column(db.Integer, db.ForeignKey('t_users.id'))
 	user = db.relationship("User", backref=db.backref('t_ais', order_by=id))
+	lang_id = db.Column(db.Integer, db.ForeignKey('t_langs.id'))
+	lang = db.relationship("Lang", backref=db.backref('t_ais', order_by=id))
 
 	def info(self):
 		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc}
 
+	def icon(self):
+		return send_from_ftp("AIs/"+str(self.id)+"/icon.png")
+
 	def __repr__(self):
-		return "<AI(id={}, name={}, user_id={}>".format(self.id, self.name, self.user_id)
+		return "<AI(id={}, name={}, user_id={}, lang={}>".format(self.id, self.name, self.user_id, self.lang)
+
+class Lang(db.Model):
+	__tablename__ = "t_langs"
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	name = db.Column(db.Text)
+	url = db.Column(db.Text)
+	ai_list = db.relationship("AI", order_by="AI.id", backref="Lang")
+
+	def __repr__(self):
+		return "<Lang(id={}, name={}, url={}>".format(self.id, self.name, self.url)
 
 class Game(db.Model):
 	__tablename__ = 't_games'
@@ -73,9 +110,12 @@ def populate(count=20):
 	r = list(range(1, count+1))
 	import random
 	db.create_all()
+
+	py = Lang(name="Python", url="https://www.python.org")
+
 	users = [User(name="testuser"+str(i), id=i) for i in r]
 	random.shuffle(users)
-	ais = [AI(id=i, user=users[i-1], name="testai"+str(i), desc="Beschreibung") for i in r]
+	ais = [AI(id=i, user=users[i-1], name="testai"+str(i), desc="Beschreibung", lang=py) for i in r]
 	games = [Game(id=i, type=1) for i in r]
 	assocs = []
 	with open("gametypes.json") as f:
