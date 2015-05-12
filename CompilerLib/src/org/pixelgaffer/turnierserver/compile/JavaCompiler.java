@@ -5,9 +5,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+
+import it.sauronsoftware.ftp4j.FTPAbortedException;
+import it.sauronsoftware.ftp4j.FTPDataTransferException;
+import it.sauronsoftware.ftp4j.FTPException;
+import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
+import it.sauronsoftware.ftp4j.FTPListParseException;
 
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 
@@ -42,7 +45,8 @@ public class JavaCompiler extends Compiler
 					classpath += ":" + line + "/" + jar;
 				output.println("done");
 			}
-			catch (IOException ioe)
+			catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
+					| FTPAbortedException | FTPListParseException ioe)
 			{
 				libdir.delete();
 				output.println(ioe.getMessage());
@@ -77,7 +81,9 @@ public class JavaCompiler extends Compiler
 			// .java-Dateien kompilieren
 			if (filename.endsWith(".java"))
 			{
-				execute(bindir, output, "javac", "-classpath", classpath, "-implicit:none", relativePath(currentDir, srcdir) + "/" + filename);
+				execute(bindir, output, "javac", "-classpath", classpath, "-implicit:none", relativePath(currentDir,
+						srcdir)
+						+ "/" + filename);
 			}
 		}
 		

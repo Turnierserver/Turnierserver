@@ -1,14 +1,20 @@
 package org.pixelgaffer.turnierserver.compile;
 
+import it.sauronsoftware.ftp4j.FTPAbortedException;
+import it.sauronsoftware.ftp4j.FTPDataTransferException;
+import it.sauronsoftware.ftp4j.FTPException;
+import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
+import it.sauronsoftware.ftp4j.FTPListParseException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.ProcessBuilder.Redirect;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Properties;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,7 +44,9 @@ public abstract class Compiler
 	@Getter
 	private int version;
 	
-	public CompileResult compileAndUpload () throws IOException, InterruptedException
+	public CompileResult compileAndUpload ()
+			throws IOException, InterruptedException, FTPIllegalReplyException, FTPException, FTPDataTransferException,
+			FTPAbortedException, FTPListParseException
 	{
 		// source runterladen
 		File srcdir = DatastoreFtpClient.retrieveAiSource(getUser(), getAi(), getVersion());
@@ -58,7 +66,7 @@ public abstract class Compiler
 		{
 			// packen
 			File archive = Files.createTempFile("aibin", ".tar.bz2").toFile();
-			String files[] = bindir.list((dir, name) -> !name.startsWith("libraries"));
+			String files[] = bindir.list( (dir, name) -> !name.startsWith("libraries"));
 			String cmd[] = new String[files.length + 3];
 			cmd[0] = "tar";
 			cmd[1] = "cfj";
@@ -98,7 +106,8 @@ public abstract class Compiler
 		out.delete();
 		FileInputStream fis = new FileInputStream(in);
 		FileOutputStream fos = new FileOutputStream(out);
-		byte buf[] = new byte[8192]; int read;
+		byte buf[] = new byte[8192];
+		int read;
 		while ((read = fis.read(buf)) > 0)
 			fos.write(buf, 0, read);
 		fis.close();
@@ -107,7 +116,7 @@ public abstract class Compiler
 	
 	protected int execute (File wd, PrintWriter output, String ... command) throws IOException, InterruptedException
 	{
-		output.print(wd.getAbsolutePath());
+//		output.print(wd.getAbsolutePath());
 		output.print("$");
 		for (String cmd : command)
 		{
@@ -125,10 +134,19 @@ public abstract class Compiler
 		if (wd != null)
 			pb.directory(wd);
 		Process p = pb.start();
-		return p.waitFor();
+		int returncode = p.waitFor();
+		Reader in = new FileReader(log);
+		char buf[] = new char[8192]; int read;
+		while ((read = in.read(buf)) > 0)
+			output.write(buf, 0, read);
+		in.close();
+		output.flush();
+		return returncode;
 	}
 	
-	public static void main (String args[]) throws IOException, InterruptedException
+	public static void main (String args[])
+			throws IOException, InterruptedException, FTPIllegalReplyException, FTPException, FTPDataTransferException,
+			FTPAbortedException, FTPListParseException
 	{
 		PropertiesLoader.loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
 		
@@ -136,7 +154,8 @@ public abstract class Compiler
 		CompileResult r = comp.compileAndUpload();
 		System.out.println("---------------------------------------------------------------------------------------");
 		FileInputStream fis = new FileInputStream(r.getOutput());
-		byte buf[] = new byte[8192]; int read;
+		byte buf[] = new byte[8192];
+		int read;
 		while ((read = fis.read(buf)) != -1)
 			System.out.write(buf, 0, read);
 		fis.close();
