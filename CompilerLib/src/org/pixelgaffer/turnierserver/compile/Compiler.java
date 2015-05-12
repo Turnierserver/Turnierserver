@@ -13,6 +13,7 @@ import java.util.Properties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import org.pixelgaffer.turnierserver.PropertiesLoader;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 
 /**
@@ -129,9 +130,7 @@ public abstract class Compiler
 	
 	public static void main (String args[]) throws IOException, InterruptedException
 	{
-		Properties p = new Properties(System.getProperties());
-		p.load(new FileInputStream(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop"));
-		System.setProperties(p);
+		PropertiesLoader.loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
 		
 		Compiler comp = new JavaCompiler("Nico", "MinesweeperAi", 1);
 		CompileResult r = comp.compileAndUpload();

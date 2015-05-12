@@ -1,14 +1,13 @@
 package org.pixelgaffer.turnierserver.backend;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import naga.ConnectionAcceptor;
 
+import org.pixelgaffer.turnierserver.PropertiesLoader;
 import org.pixelgaffer.turnierserver.backend.server.BackendServer;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 
@@ -37,16 +36,7 @@ public class BackendMain
 	public static void main (String args[]) throws IOException
 	{
 		// Properties laden
-		Properties p = new Properties(System.getProperties());
-		try
-		{
-			p.load(new FileInputStream(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop"));
-		}
-		catch (IOException ioe)
-		{
-			getLogger().info("Failed to load properties, will use default values instead.");
-		}
-		System.setProperties(p);
+		PropertiesLoader.loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
 		
 		// Server starten
 		getLogger().info("BackendServer starting");
