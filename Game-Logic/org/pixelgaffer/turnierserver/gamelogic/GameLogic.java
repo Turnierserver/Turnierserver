@@ -186,6 +186,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		for(AiWrapper ai : game.getAis()) {
 			message.leftoverMillis[ai.getId()] = getUserObject(ai).millisLeft;
 			message.scores[ai.getId()] = getUserObject(ai).score;
+			message.won[ai.getId()] = !getUserObject(ai).lost;
 		}
 		sendToFronted(message);
 		game.finish();
