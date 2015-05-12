@@ -1,5 +1,6 @@
 from database import db
 from flask.ext.login import current_user
+from flask.ext.cache import Cache
 from functools import wraps
 
 
@@ -19,3 +20,6 @@ def authenticated(f):
 					raise
 		return CommonErrors.NO_ACCESS
 	return wrapper
+
+
+cache = Cache(config={'CACHE_TYPE': 'simple'})

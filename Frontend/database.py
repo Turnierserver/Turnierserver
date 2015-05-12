@@ -7,19 +7,17 @@ import arrow
 
 db = SQLAlchemy()
 print("Connecting to FTP @", env.ftp_url)
-ftp = FTP(env.ftp_url)
+ftp = FTP(env.ftp_url, timeout=1)
 print("FTP-Status:", ftp.login(env.ftp_uname, env.ftp_pw))
 
 def send_from_ftp(path):
-	spl = path.split("/")
 	f = BytesIO()
 	try:
-		ftp.cwd("/".join(spl[:-1]))
+		ftp.retrbinary('RETR ' + path, f.write)
 	except error_perm as e:
-		print(path, spl)
+		print(path)
 		print(e)
 		abort(404)
-	ftp.retrbinary('RETR ' + spl[-1], f.write)
 	f.seek(0)
 	return send_file(f)
 

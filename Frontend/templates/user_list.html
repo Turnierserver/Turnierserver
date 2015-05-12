@@ -1,10 +1,17 @@
 {% extends "base.html" %}
 {% block body %}
 
-<ul>
+<div class="ui link items">
 {% for user in user_list %}
-	<li><a href="{{ url_for("anonymous.user", id=user.id) }}"> {{ user.name }}</a></li>
+	<a class="item" href="{{ url_for("anonymous.user", id=user.id) }}">
+		<div class="ui tiny image">
+			<img src="{{ url_for("api.api_user_icon", id=user.id) }}">
+		</div>
+		<div class="content">
+			<div class="header">{{ user.name }}</div>
+		</div>
+	</a>
 {% endfor %}
-</ul>
+</div>
 
 {% endblock %}

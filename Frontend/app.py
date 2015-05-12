@@ -5,6 +5,7 @@ print("-"*36 + "\n"*2)
 
 from flask import Flask, got_request_exception
 from flask.ext.sqlalchemy import SQLAlchemy
+from commons import cache
 
 
 from api import api, login_manager
@@ -39,7 +40,9 @@ print("Connecting to", env.db_url)
 db.init_app(app)
 with app.app_context():
 	db.drop_all()
-	populate()
+	populate(5)
+
+cache.init_app(app)
 
 
 app.run(host="0.0.0.0", port=80, debug=True)
