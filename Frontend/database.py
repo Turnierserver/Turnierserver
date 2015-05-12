@@ -1,4 +1,5 @@
 from flask.ext.sqlalchemy import SQLAlchemy
+import arrow
 
 db = SQLAlchemy()
 
@@ -52,6 +53,14 @@ class Game(db.Model):
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	ai_assocs = db.relationship("AI_Game_Assoc", backref="game")
 	type = db.Column(db.Integer, nullable=False)
+	timestamp = db.Column(db.BigInteger)
+
+	def __init__(self, *args, **kwargs):
+		super(Game, self).__init__(*args, **kwargs)
+		self.timestamp = arrow.utcnow().timestamp
+
+	def time(self, locale):
+		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
 
 	def info(self):
 		return {"id": self.id, "ais": [assoc.ai.info() for assoc in self.ai_assocs]}
