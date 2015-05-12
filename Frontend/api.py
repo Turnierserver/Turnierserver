@@ -105,9 +105,8 @@ def api_user(id):
 		return CommonErrors.INVALID_ID
 
 @api.route("/user/<int:id>/icon", methods=["GET"])
-@cache.memoize(timeout=600)
+@cache.memoize(timeout=60*5)
 def api_user_icon(id):
-	print("called user icion", id)
 	user = User.query.get(id)
 	if user:
 		return user.icon()

@@ -63,6 +63,8 @@ class AI(db.Model):
 	desc = db.Column(db.Text)
 	user_id = db.Column(db.Integer, db.ForeignKey('t_users.id'))
 	user = db.relationship("User", backref=db.backref('t_ais', order_by=id))
+	lang_id = db.Column(db.Integer, db.ForeignKey('t_langs.id'))
+	lang = db.relationship("Lang", backref=db.backref('t_ais', order_by=id))
 
 	def info(self):
 		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc}
@@ -71,7 +73,17 @@ class AI(db.Model):
 		return send_from_ftp("AIs/"+str(self.id)+"/icon.png")
 
 	def __repr__(self):
-		return "<AI(id={}, name={}, user_id={}>".format(self.id, self.name, self.user_id)
+		return "<AI(id={}, name={}, user_id={}, lang={}>".format(self.id, self.name, self.user_id, self.lang)
+
+class Lang(db.Model):
+	__tablename__ = "t_langs"
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	name = db.Column(db.Text)
+	url = db.Column(db.Text)
+	ai_list = db.relationship("AI", order_by="AI.id", backref="Lang")
+
+	def __repr__(self):
+		return "<Lang(id={}, name={}, url={}>".format(self.id, self.name, self.url)
 
 class Game(db.Model):
 	__tablename__ = 't_games'
@@ -98,9 +110,12 @@ def populate(count=20):
 	r = list(range(1, count+1))
 	import random
 	db.create_all()
+
+	py = Lang(name="Python", url="https://www.python.org")
+
 	users = [User(name="testuser"+str(i), id=i) for i in r]
 	random.shuffle(users)
-	ais = [AI(id=i, user=users[i-1], name="testai"+str(i), desc="Beschreibung") for i in r]
+	ais = [AI(id=i, user=users[i-1], name="testai"+str(i), desc="Beschreibung", lang=py) for i in r]
 	games = [Game(id=i, type=1) for i in r]
 	assocs = []
 	with open("gametypes.json") as f:

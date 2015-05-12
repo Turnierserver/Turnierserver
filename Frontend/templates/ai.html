@@ -7,6 +7,9 @@ von <a href="{{ url_for("anonymous.user", id=ai.user.id) }}">{{ ai.user.name }}<
 Beschreibung:
 {{ ai.desc }}
 <br />
+Sprache:
+<a href="{{ ai.lang.url }}">{{ ai.lang.name }}</a>
+<br />
 Spiele:
 <ul>
 {% for assoc in ai.game_assocs %}
