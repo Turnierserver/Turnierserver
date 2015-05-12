@@ -5,5 +5,8 @@ class LocalEnvironment:
 	airbrake = False
 	airbrake_key = None
 	airbrake_id = None
+	ftp_url = "127.0.0.1"
+	ftp_uname = "user"
+	ftp_pw = "pw"
 
 env = LocalEnvironment

@@ -1,16 +1,40 @@
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask import send_file, abort
+from ftplib import FTP, error_perm
+from _cfg import env
+from io import BytesIO
 import arrow
 
 db = SQLAlchemy()
+print("Connecting to FTP @", env.ftp_url)
+ftp = FTP(env.ftp_url)
+print("FTP-Status:", ftp.login(env.ftp_uname, env.ftp_pw))
+
+def send_from_ftp(path):
+	spl = path.split("/")
+	f = BytesIO()
+	try:
+		ftp.cwd("/".join(spl[:-1]))
+	except error_perm as e:
+		print(path, spl)
+		print(e)
+		abort(404)
+	ftp.retrbinary('RETR ' + spl[-1], f.write)
+	f.seek(0)
+	return send_file(f)
 
 class User(db.Model):
 	__tablename__ = 't_users'
-	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50), unique=True, nullable=False)
 	ai_list = db.relationship("AI", order_by="AI.id", backref="User")
+	tmp_icon = None
 
 	def info(self):
 		return {"id": self.id, "name": self.name, "ais": [ai.info() for ai in self.ai_list]}
+
+	def icon(self):
+		return send_from_ftp("Users/"+str(self.id)+"/icon.png")
 
 	def __repr__(self):
 		return "<User(id={}, name={})".format(self.id, self.name)
@@ -44,6 +68,9 @@ class AI(db.Model):
 
 	def info(self):
 		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc}
+
+	def icon(self):
+		return send_from_ftp("AIs/"+str(self.id)+"/icon.png")
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}>".format(self.id, self.name, self.user_id)

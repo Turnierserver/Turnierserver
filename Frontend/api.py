@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request
+from flask import Blueprint, Response, request, abort
 from flask.ext.login import current_user, login_user, logout_user, LoginManager, UserMixin
 from functools import wraps
 import json
@@ -104,6 +104,14 @@ def api_user(id):
 	else:
 		return CommonErrors.INVALID_ID
 
+@api.route("/user/<int:id>/icon", methods=["GET"])
+def api_user_icon(id):
+	user = User.query.get(id)
+	if user:
+		return user.icon()
+	else:
+		abort(404)
+
 
 @api.route("/login", methods=['POST'])
 @json_out
@@ -153,6 +161,14 @@ def api_ai_create():
 	db.session.commit()
 	return {'error': False, 'ai': ai.info()}
 
+@api.route("/ai/<int:id>/icon", methods=["GET"])
+def api_ai_icon(id):
+	ai = AI.query.get(id)
+	if ai:
+		return ai.icon()
+	else:
+		abort(404)
+
 @api.route("/ai/<int:id>/code")
 @json_out
 @authenticated
@@ -193,7 +209,6 @@ def api_ai_update(id):
 
 
 @api.route("/ai/<int:id>/submitCode")
-@api.route("/ai/<int:id>/icon")
 @json_out
 def not_implemented(*args, **kwargs):
 	return CommonErrors.NOT_IMPLEMENTED

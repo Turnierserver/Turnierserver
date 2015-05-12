@@ -25,6 +25,8 @@ Alle implementierten sind gehäkelt.
   * *gibt den Besitzer, die Punktzahl und ähnliches zurück.*
 - [x] /api/ai/\<id\>/games
   * *gibt eine Liste von Spielen der KI zurück.*
+- [x] /api/ai/\<id\>/icon
+  * *gibt das Icon der KI zurück.*
 - [x] /api/users
   * *gibt eine Liste aller Nutzer zurück.*
 - [x] /api/user/\<id\>

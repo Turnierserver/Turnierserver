@@ -1,3 +1,8 @@
+import arrow
+print("\n"*2 + "-"*36)
+print("Turnierserver - Frontend - ", arrow.utcnow().to('local').format("HH:mm:ss"))
+print("-"*36 + "\n"*2)
+
 from flask import Flask, got_request_exception
 from flask.ext.sqlalchemy import SQLAlchemy
 
@@ -9,12 +14,8 @@ from database import db, populate, AI
 from _cfg import env
 from time import time
 
-import arrow
 
 
-print("\n"*2 + "-"*36)
-print("Turnierserver - Frontend - ", arrow.utcnow().to('local').format("HH:mm:ss"))
-print("-"*36 + "\n"*2)
 
 app = Flask("Turnierserver - Frontend")
 app.secret_key = env.secret_key
