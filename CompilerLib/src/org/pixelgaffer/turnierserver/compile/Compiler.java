@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Properties;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,6 +44,8 @@ public abstract class Compiler
 	private String user, ai;
 	@Getter
 	private int version;
+	@Getter
+	private String game;
 	
 	public CompileResult compileAndUpload ()
 			throws IOException, InterruptedException, FTPIllegalReplyException, FTPException, FTPDataTransferException,
@@ -56,17 +59,21 @@ public abstract class Compiler
 		File output = Files.createTempFile("compiler", ".txt").toFile();
 		PrintWriter pw = new PrintWriter(new FileOutputStream(output), true);
 		
+		// properties lesen
+		Properties p = new Properties();
+		p.load(new FileInputStream(new File(srcdir, "settings.prop")));
+		
 		// compilieren
-		boolean success = compile(srcdir, bindir, pw);
+		boolean success = compile(srcdir, bindir, p, pw);
 		
 		// aufräumen
-		// srcdir.delete();
+		srcdir.delete();
 		
 		if (success)
 		{
 			// packen
 			File archive = Files.createTempFile("aibin", ".tar.bz2").toFile();
-			String files[] = bindir.list( (dir, name) -> !name.startsWith("libraries"));
+			String files[] = bindir.list( (dir, name) -> !name.equals("libraries.txt") && !name.equals("settings.prop"));
 			String cmd[] = new String[files.length + 3];
 			cmd[0] = "tar";
 			cmd[1] = "cfj";
@@ -78,17 +85,17 @@ public abstract class Compiler
 			DatastoreFtpClient.storeAi(getUser(), getAi(), getVersion(), new FileInputStream(archive));
 			
 			// aufräumen
-			// archive.delete();
+			archive.delete();
 		}
 		
 		// aufräumen
-		// bindir.delete();
+		bindir.delete();
 		
 		pw.close();
 		return new CompileResult(success, output);
 	}
 	
-	public abstract boolean compile (File srcdir, File bindir, PrintWriter output)
+	public abstract boolean compile (File srcdir, File bindir, Properties p, PrintWriter output)
 			throws IOException, InterruptedException;
 	
 	protected String relativePath (File absolute, File base)
@@ -140,6 +147,7 @@ public abstract class Compiler
 		while ((read = in.read(buf)) > 0)
 			output.write(buf, 0, read);
 		in.close();
+		log.delete();
 		output.flush();
 		return returncode;
 	}
@@ -150,7 +158,7 @@ public abstract class Compiler
 	{
 		PropertiesLoader.loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
 		
-		Compiler comp = new JavaCompiler("Nico", "MinesweeperAi", 1);
+		Compiler comp = new JavaCompiler("Nico", "MinesweeperAi", 1, "Minesweeper");
 		CompileResult r = comp.compileAndUpload();
 		System.out.println("---------------------------------------------------------------------------------------");
 		FileInputStream fis = new FileInputStream(r.getOutput());

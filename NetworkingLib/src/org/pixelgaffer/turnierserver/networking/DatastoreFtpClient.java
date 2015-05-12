@@ -125,6 +125,16 @@ public class DatastoreFtpClient
 	}
 	
 	/**
+	 * Speichert die AiLibrary der angegebenen Sprache im Verzeichnis local.
+	 */
+	public static void retrieveAiLibrary (String game, String language, File local)
+			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
+			FTPListParseException
+	{
+		retrieveDir("Games/" + game + "/" + language, local);
+	}
+	
+	/**
 	 * Speichert die jar-Archive der Bibliothek im Verzeichnis local.
 	 */
 	public static void retrieveLibrary (String lib, String language, File local)
