@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% set active_page = "edit_ai" %}
+{% block body %}
+<form class="ui form">
+	<h4 class="ui dividing header">Ki Infos</h4>
+	<div class="two fields">
+		<div class="field">
+			<label>Name</label>
+			<div class="two fields">
+				<div class="field">
+					<input type="text" name="name" id="name" placeholder="Name" value="{{ ai.name }}">
+				</div>
+			</div>
+		</div>
+	</div>
+	<br />
+	<div class="two fields">
+		<div class="field">
+			<label>Sprache</label>
+			<select class="ui search dropdown" id="lang">
+				<option value="{{ ai.lang.id }}">{{ ai.lang.name}}</option>
+				{% for lang in langs %}
+					{% if lang != ai.lang %}
+					<option value="{{ lang.id }}">{{ lang.name }}</option>
+					{% endif %}
+				{% endfor %}
+			</select>
+		</div>
+		<div class="field">
+			<label>Extras</label>
+			<select name="extras" multiple="" class="ui fluid dropdown" id="extras">
+				<option value="">Extras:</option>
+				<option value="pypy">Pypy</option>
+				<option value="lombok">Lombok</option>
+				<option value="dmlib">DeineMudda</option>
+				<option value="swag">Swag</option>
+				<option value="yolo">Y∂l∂</option>
+			</select>
+		</div>
+	</div>
+	<div class="field">
+		<label>Beschreibung</label>
+		<textarea id="desc">{{ ai.desc }}</textarea>
+	</div>
+	<div id="submit" class="ui huge teal submit button">Update</div>
+</form>
+
+
+
+<script>
+
+$('.ui.checkbox').checkbox();
+$('select.dropdown').dropdown();
+
+
+var f = function() {
+	console.log("Updating AI in...")
+	var name = $("#name").val()
+	var lang = $("#lang").val()
+	var desc = $("#desc").val()
+	var extras = $("#extras").val()
+
+	var d = {
+		name: name,
+		lang: lang,
+		description: desc,
+		extras: extras
+	}
+	console.log(name, lang, desc, extras)
+
+	$.post("/api/ai/{{ai.id}}/update", d).done(function(data) {
+		console.log("AI changed.")
+		//location.reload();
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error)
+		alert(JSON.parse(xhr.responseText).error)
+	})
+}
+$("#submit").on("click", f)
+
+
+</script>
+{% endblock %}

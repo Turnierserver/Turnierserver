@@ -8,7 +8,7 @@
 	<div class="row">
 	{% for ai in column %}
 		<div class="column">
-			{{ render_ai(ai) }}
+			{{ render_ai(ai, current_user) }}
 		</div>
 	{% endfor %}
 	</div>

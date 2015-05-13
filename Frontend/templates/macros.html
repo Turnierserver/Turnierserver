@@ -1,4 +1,4 @@
-{% macro render_ai(ai) %}
+{% macro render_ai(ai, current_user) %}
 <div class="ui link items">
 	<div class="item" href="{{ url_for("anonymous.ai", id=ai.id) }}">
 		<div class="ui tiny image">
@@ -11,6 +11,11 @@
 			</div>
 			<div class"extra">
 				von <a href="{{ url_for("anonymous.user", id=ai.user.id) }}">{{ ai.user.name }}</a>
+				{% if ai.user == current_user %}
+				<a class="ui right floated button" href="{{ url_for("profile.edit_ai", id=ai.id)}}">
+					Bearbeiten
+				</a>
+				{% endif %}
 			</div>
 		</div>
 	</div>

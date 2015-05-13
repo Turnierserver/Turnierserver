@@ -3,7 +3,7 @@ from flask.ext.login import current_user, login_user, logout_user, LoginManager,
 from functools import wraps
 import json
 
-from database import AI, User, Game, db
+from database import AI, User, Game, Lang, db
 from commons import authenticated, cache
 from _cfg import env
 from activityfeed import Activity
@@ -200,7 +200,7 @@ def api_user_update():
 	return u.info()
 
 
-@api.route("/ai/<int:id>/update")
+@api.route("/ai/<int:id>/update", methods=["POST"])
 @json_out
 @authenticated
 def api_ai_update(id):
@@ -211,8 +211,16 @@ def api_ai_update(id):
 	if not ai in current_user.ai_list:
 		return CommonErrors.NO_ACCESS
 
-	ai.name = request.args.get('name', ai.name)
-	ai.desc = request.args.get('description', ai.desc)
+	ai.name = request.form.get('name', ai.name)
+	ai.desc = request.form.get('description', ai.desc)
+	if 'lang' in request.form:
+		l = Lang.query.get(request.form.get('lang'))
+		if l:
+			ai.lang = l
+
+
+	# es muss zur Datenbank geschrieben werden, um die aktuellen Infos zu bekommen
+	db.session.commit()
 
 	return ai.info()
 

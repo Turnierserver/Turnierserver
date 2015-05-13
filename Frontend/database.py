@@ -143,6 +143,9 @@ def populate(count=20):
 	db.create_all()
 
 	py = Lang(id=1, name="Python", url="https://www.python.org")
+	java = Lang(id=2, name="Java", url="https://www.java.com/?isthaesslig=1")
+	brainfuck = Lang(id=3, name="Brainfuck", url="https://esolangs.org/wiki/Brainfuck")
+	langs = [py, java, brainfuck]
 
 	users = [User(name="testuser"+str(i), id=i) for i in r]
 	random.shuffle(users)
@@ -154,7 +157,7 @@ def populate(count=20):
 		gametype = json.load(f)["1"]
 	for ri, role in enumerate(gametype['roles'], 1):
 		assocs += [AI_Game_Assoc(game_id=games[i-1].id, ai_id=ais[i-ri].id, role=role) for i in r]
-	db.session.add_all(users + ais + games + assocs)
+	db.session.add_all(users + ais + games + assocs + langs)
 	db.session.commit()
 
 
