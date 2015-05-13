@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.pixelgaffer.turnierserver.backend.AiWrapper;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
@@ -14,9 +13,7 @@ import org.pixelgaffer.turnierserver.minesweeper.Grid;
 import org.pixelgaffer.turnierserver.minesweeper.MinesweeperResponse;
 
 public class MinesweeperLogic extends GameLogic<MinesweeperObject, MinesweeperResponse> {
-			
-	private Random random;
-	
+				
 	private Grid[] generated;
 	private int[] steps;
 	private ArrayList<MinesweeperRenderData>[] renderData;
