@@ -8,5 +8,6 @@ class LocalEnvironment:
 	ftp_url = "127.0.0.1"
 	ftp_uname = "user"
 	ftp_pw = "pw"
+	cache_max_age = 60
 
 env = LocalEnvironment

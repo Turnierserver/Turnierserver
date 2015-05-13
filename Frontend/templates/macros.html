@@ -1,0 +1,18 @@
+{% macro render_ai(ai) %}
+<div class="ui link items">
+	<div class="item" href="{{ url_for("anonymous.ai", id=ai.id) }}">
+		<div class="ui tiny image">
+			<img src="/api/ai/{{ ai.id }}/icon">
+		</div>
+		<div class="content">
+			<a class="header" href="{{ url_for("anonymous.ai", id=ai.id) }}">{{ ai.name }}</a>
+			<div class="description">
+				<p>{{ ai.desc }}</p>
+			</div>
+			<div class"extra">
+				von <a href="{{ url_for("anonymous.user", id=ai.user.id) }}">{{ ai.user.name }}</a>
+			</div>
+		</div>
+	</div>
+</div>
+{% endmacro %}

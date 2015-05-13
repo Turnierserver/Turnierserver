@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.msgpack.MessagePack;
+import org.pixelgaffer.turnierserver.PropertiesLoader;
 
 public abstract class Ai<E, R> implements Runnable {
 	
@@ -41,12 +42,13 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	protected Map<String, String> gamestate;
 	
-	public Ai(String[] args) {
+	public Ai() {
 		try {
-			con = new Socket("localhost", 1337);
+			PropertiesLoader.loadProperties("ai.prop");
+			con = new Socket("localhost", Integer.parseInt(System.getProperty("ai.con.port")));
 			out = new PrintWriter(con.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			out.println("A" + args[0]);
+			out.println("A" + System.getProperty("ai.con.id"));
 			System.setOut(new PrintStream(new OutputStream() {
 				public void write(int b) throws IOException {
 					output.append((char) b);

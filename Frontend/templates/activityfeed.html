@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h2>Activity Feed</h2>
+<div class="ui feed">
+{% for a in activities %}
+	<div class="event">
+		{% if a.img %}
+			<div class="label">
+				<img src="{{ a.img }}">
+			</div>
+		{% endif %}
+		<div class="content">
+			<div class="summary">
+				{{ a.msg }}
+				<div class="date">
+					{{ a.time() }}
+				</div>
+			</div>
+			{% if a.extratext %}
+				<div class="extra text">
+					{{ a.extratext | safe }}
+				</div>
+			{% endif %}
+		</div>
+	</div>
+{% endfor %}
+</ul>
+
+{% endblock %}
