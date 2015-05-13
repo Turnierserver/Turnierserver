@@ -1,11 +1,18 @@
+{% from "macros.html" import render_ai %}
 {% extends "base.html" %}
 {% set active_page = "ai_list" %}
 {% block body %}
 
-<ul>
-{% for ai in ai_list %}
-	<li><a href="{{ url_for("anonymous.ai", id=ai.id) }}"> {{ ai.name }} von {{ ai.user.name }}</a></li>
+<div class="ui three column divided grid">
+{% for column in columns %}
+	<div class="row">
+	{% for ai in column %}
+		<div class="column">
+			{{ render_ai(ai) }}
+		</div>
+	{% endfor %}
+	</div>
 {% endfor %}
-</ul>
+</div>
 
 {% endblock %}

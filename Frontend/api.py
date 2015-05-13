@@ -6,6 +6,7 @@ import json
 from database import AI, User, Game, db
 from commons import authenticated, cache
 from _cfg import env
+from activityfeed import Activity
 
 
 
@@ -134,6 +135,8 @@ def api_login():
 
 	login_user(user)
 
+	Activity(user.name + " hat sich erfolgreich eingeloggt.")
+
 	return { 'error': False }
 
 @api.route("/logout", methods=["GET", "POST"])
@@ -157,7 +160,10 @@ def api_logged_in():
 def api_ai_create():
 	name = request.args.get('name', 'unbenannte ki')
 	desc = request.args.get('desc', 'unbeschriebene ki')
-	ai = AI(name=name, user=current_user, desc=desc)
+	lang = Lang.query.get(request.args.get('lang', -1))
+	if not lang:
+		return {'error', 'Invalid Language'}, 404
+	ai = AI(name=name, user=current_user, desc=desc, lang=lang)
 	db.session.add(ai)
 	# es muss zur Datenbank geschrieben werden, um die ID zu bekommen
 	db.session.commit()

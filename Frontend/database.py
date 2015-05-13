@@ -89,7 +89,7 @@ class AI(db.Model):
 		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc, "lang": self.lang.info()}
 
 	def icon(self):
-		return send_from_ftp("AIs/"+str(self.id)+"/icon.png")
+		return ftp.send_file(("AIs/"+str(self.id)+"/icon.png"))
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}>".format(self.id, self.name, self.user_id, self.lang.name)

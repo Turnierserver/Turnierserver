@@ -12,7 +12,9 @@ def index():
 
 @anonymous.route("/ai_list")
 def ai_list():
-	return render_template("ai_list.html", ai_list=AI.query.all())
+	ais = AI.query.all()
+	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
+	return render_template("ai_list.html", columns=columns)
 
 @anonymous.route("/ai/<int:id>")
 def ai(id):
