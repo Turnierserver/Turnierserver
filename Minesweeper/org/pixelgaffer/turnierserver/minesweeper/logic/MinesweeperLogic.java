@@ -49,6 +49,13 @@ public class MinesweeperLogic extends GameLogic<MinesweeperObject, MinesweeperRe
 			
 			Grid grid = new Grid(response.newField);
 			generated[ai.getId()] = grid;
+			
+			MinesweeperRenderData data = new MinesweeperRenderData();
+			data.calculationTime = obj.millisLeft;
+			data.field = response.newField;
+			data.output = response.output;
+			renderData[ai.getId()].add(data);
+			
 			if(grid.hasEmpty() || grid.getBombs() != Cell.BOMB_COUNT) {
 				obj.loose();
 				return;
