@@ -1,11 +1,18 @@
 package org.pixelgaffer.turnierserver.backend.server;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.io.IOException;
+
+import lombok.NonNull;
 import naga.NIOSocket;
 
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.BackendMain;
 import org.pixelgaffer.turnierserver.backend.WorkerConnection;
+import org.pixelgaffer.turnierserver.backend.Workers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 
@@ -26,6 +33,19 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 		super(socket);
 	}
 	
+	public void sendCommand (@NonNull WorkerCommand cmd) throws IOException
+	{
+		getClient().write(Parsers.getWorker().parse(cmd));
+		getClient().write("\n".getBytes(UTF_8));
+	}
+	
+	@Override
+	protected void disconnected ()
+	{
+		Workers.removeWorker(workerConnection);
+		workerConnection.disconnectClient();
+	}
+	
 	@Override
 	public void packetReceived (NIOSocket socket, byte[] packet)
 	{
@@ -37,8 +57,9 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 			{
 				try
 				{
-					workerConnection = new WorkerConnection(this, socket.getAddress(),
+					workerConnection = new WorkerConnection(this, socket.getIp(),
 							Parsers.getWorker().parse(line, WorkerInfo.class));
+					Workers.addWorker(workerConnection);
 				}
 				catch (Exception e)
 				{

@@ -8,24 +8,35 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 /**
- * Diese Singleton-Klasse speichert alle verfügbaren Worker ab.
+ * Diese Klasse speichert alle verfügbaren Worker ab.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Workers
 {
-	private static Workers workers = null;
-	
-	private static Workers getInstance ()
+	public static boolean addWorker (@NonNull WorkerConnection worker)
 	{
-		if (workers == null)
-			workers = new Workers();
-		return workers;
+		return workerConnections.add(worker);
 	}
 	
-	public static void addWorker (@NonNull WorkerConnection worker)
+	public static boolean removeWorker (WorkerConnection worker)
 	{
-		getInstance().workerConnections.add(worker);
+		return workerConnections.remove(worker);
 	}
 	
-	private Set<WorkerConnection> workerConnections = new HashSet<>();
+	public static WorkerConnection getAvailableWorker ()
+	{
+		while (true)
+		{
+			synchronized (workerConnections)
+			{
+				for (WorkerConnection worker : workerConnections)
+					if (worker.isAvailable())
+						return worker;
+				System.out.println("todo:Workers:37: hier muss iwi gewartet werden");
+				return null;
+			}
+		}
+	}
+	
+	private static final Set<WorkerConnection> workerConnections = new HashSet<>();
 }

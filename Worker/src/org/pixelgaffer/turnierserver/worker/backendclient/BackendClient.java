@@ -8,7 +8,7 @@ import naga.SocketObserver;
 
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
-import org.pixelgaffer.turnierserver.networking.messages.StartAi;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
 
@@ -54,10 +54,8 @@ public class BackendClient implements SocketObserver
 		{
 			try
 			{
-				// der einzige Befehl des Backends über diese Verbindung ist
-				// "starte KI sowieso mit UUID sowieso"
-				StartAi sai = Parsers.getWorker().parse(line, StartAi.class);
-				System.out.println(sai);
+				WorkerCommand cmd = Parsers.getWorker().parse(line, WorkerCommand.class);
+				System.out.println("BackendClient:59: " + cmd);
 			}
 			catch (Exception e)
 			{

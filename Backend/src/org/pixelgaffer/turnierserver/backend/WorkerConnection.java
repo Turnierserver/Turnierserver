@@ -1,7 +1,7 @@
 package org.pixelgaffer.turnierserver.backend;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.util.UUID;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import org.pixelgaffer.turnierserver.backend.server.BackendWorkerConnectionHandler;
 import org.pixelgaffer.turnierserver.backend.workerclient.WorkerClient;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 
 /**
@@ -32,11 +33,20 @@ public class WorkerConnection
 	/** Die Connection vom Worker zum Backend. */
 	private WorkerClient client;
 	
-	public WorkerConnection (@NonNull BackendWorkerConnectionHandler con, InetSocketAddress addr, WorkerInfo info) throws IOException
+	public WorkerConnection (@NonNull BackendWorkerConnectionHandler con, String addr, WorkerInfo info)
+			throws IOException
 	{
 		connection = con;
 		sandboxes = info.getSandboxes();
-		
+		client = new WorkerClient(addr, info);
+	}
+	
+	/**
+	 * Disconnected den Client zum Worker.
+	 */
+	public void disconnectClient ()
+	{
+		client.disconnect();
 	}
 	
 	/**
@@ -46,6 +56,26 @@ public class WorkerConnection
 	public boolean isAvailable ()
 	{
 		return (usedSandboxes < sandboxes);
+	}
+	
+	/**
+	 * Schickt einen Kompilieren-Befehl an den Worker, ai enthält
+	 * ${ai-id}v${ai-version}.
+	 */
+	public void compile (String ai) throws IOException
+	{
+		String s[] = ai.split("v");
+		if (s.length != 2)
+			throw new IllegalArgumentException(ai);
+		compile(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
+	}
+	
+	/**
+	 * Schickt einen Kompilieren-Befehl an den Worker.
+	 */
+	public void compile (int aiId, int version) throws IOException
+	{
+		connection.sendCommand(new WorkerCommand(WorkerCommand.COMPILE, aiId, version, UUID.randomUUID()));
 	}
 	
 	public synchronized boolean addJob (AiWrapper ai)

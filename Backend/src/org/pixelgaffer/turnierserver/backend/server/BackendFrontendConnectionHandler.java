@@ -3,6 +3,8 @@ package org.pixelgaffer.turnierserver.backend.server;
 import naga.NIOSocket;
 
 import org.pixelgaffer.turnierserver.Parsers;
+import org.pixelgaffer.turnierserver.backend.BackendMain;
+import org.pixelgaffer.turnierserver.backend.Workers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 
@@ -26,7 +28,17 @@ public class BackendFrontendConnectionHandler extends ConnectionHandler
 			try
 			{
 				BackendFrontendCommand cmd = Parsers.getFrontend().parse(line, BackendFrontendCommand.class);
-				System.out.println(cmd);
+				if (cmd.getAction().equals("compile"))
+				{
+					Workers.getAvailableWorker().compile(cmd.getId());
+				}
+				else if (cmd.getAction().equals("start"))
+				{
+					System.out.println(cmd);
+				}
+				else
+					BackendMain.getLogger().severe(
+							"Unknown action from Frontend (" + socket.getIp() + "): " + cmd.getAction());
 			}
 			catch (Exception e)
 			{
