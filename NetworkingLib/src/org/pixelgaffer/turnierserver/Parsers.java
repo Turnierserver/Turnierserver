@@ -16,7 +16,12 @@ public class Parsers {
 		compressSandboxByDefault = Boolean.parseBoolean(System.getProperty("turnierserver.serializer.compress.sandbox"));
 	}
 	
-	
+	/**
+	 * Gibt einen Parser zurück
+	 * 
+	 * @param compress True wenn die Nachrichten komprimiert werden sollen
+	 * @return Den Parser
+	 */
 	public static Parser getParser(boolean compress) {
 		if(compress) {
 			if(compressingParser == null) {
@@ -31,18 +36,38 @@ public class Parsers {
 		}
 	}
 	
+	/**
+	 * Gibt einen Parser zurück. Die System-Property "turnierserver.serializer.compress" gibt an, ob der Parser den diese Methode zurückgibt, komprimiert.
+	 * 
+	 * @return Einen Parser
+	 */
 	public static Parser getParser() {
 		return getParser(compressByDefault);
 	}
 	
+	/**
+	 * Gibt einen Parser zurück, der für die Kommunikation zu den Workern verwendet werden soll. Die System-Property "turnierserver.serializer.compress.worker" gibt an, ob der Parser den diese Methode zurückgibt, komprimiert.
+	 * 
+	 * @return Einen Parser
+	 */
 	public static Parser getWorker() {
 		return getParser(compressWorkerByDefault);
 	}
 	
+	/**
+	 * Gibt einen Parser zurück, der für die Kommunikation zum Frontend verwendet werden soll. Die System-Property "turnierserver.serializer.compress.frontend" gibt an, ob der Parser den diese Methode zurückgibt, komprimiert.
+	 * 
+	 * @return Einen Parser
+	 */
 	public static Parser getFrontend() {
 		return getParser(compressFrontendByDefault);
 	}
 	
+	/**
+	 * Gibt einen Parser zurück, der für die Kommunikation zur Sandbox verwendet werden soll. Die System-Property "turnierserver.serializer.compress.sandbox" gibt an, ob der Parser den diese Methode zurückgibt, komprimiert.
+	 * 
+	 * @return Einen Parser
+	 */
 	public static Parser getSandbox() {
 		return getParser(compressSandboxByDefault);
 	}
