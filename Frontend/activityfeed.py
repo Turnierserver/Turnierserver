@@ -13,11 +13,13 @@ class Activity:
 	def __init__(self, msg, img=None, extratext=None):
 		self.created = arrow.utcnow()
 		self.msg = msg
+		print(self.created.to('local').format("HH:mm:ss"), self.msg)
 		self.type = "simple"
 		self.img = img
 		self.extratext = extratext
 		if self.extratext:
 			self.extratext = self.extratext.replace("\n", "<br />")
+			print(self.extratext)
 		activity_feed.add(self)
 
 	def time(self):

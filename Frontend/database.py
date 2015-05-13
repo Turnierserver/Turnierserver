@@ -1,44 +1,32 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask import send_file, abort
-from ftplib import FTP, error_perm
-import socket, errno
 from _cfg import env
 from activityfeed import Activity
 from io import BytesIO
+import ftputil
 import arrow
 
 db = SQLAlchemy()
-print("Connecting to FTP @", env.ftp_url)
-ftp = FTP(env.ftp_url, timeout=1)
-print("FTP-Status:", ftp.login(env.ftp_uname, env.ftp_pw))
 
-def send_from_ftp(path):
-	global ftp
-	f = BytesIO()
-	try:
-		ftp.retrbinary('RETR ' + path, f.write)
-	except error_perm as e:
-		print(path)
-		print(e)
-		abort(404)
-	except socket.error as e:
-		print("Connection down, socket err")
-		print("Connecting to FTP @", env.ftp_url)
-		ftp = FTP(env.ftp_url, timeout=1)
-		print("FTP-Status:", ftp.login(env.ftp_uname, env.ftp_pw))
-		return send_from_ftp(path)
-	except IOError as e:
-		print(e.errno)
-		if e.errno == errno.EPIPE:
-			print("Connection down, IOError")
-			print("Connecting to FTP @", env.ftp_url)
-			ftp = FTP(env.ftp_url, timeout=1)
-			print("FTP-Status:", ftp.login(env.ftp_uname, env.ftp_pw))
-		else:
-			raise e
+class SyncedFTP:
+	def __init__(self):
+		self.connect()
 
-	f.seek(0)
-	return send_file(f)
+	def connect(self):
+		Activity("Connecting to FTP @ " + env.ftp_url)
+		self.ftp_host = ftputil.FTPHost(env.ftp_url, env.ftp_uname, env.ftp_pw)
+
+	def send_file(self, path):
+		self.connect()
+		if not self.ftp_host.path.exists(path):
+			Activity("Remote File" + path + " doesnt exist.")
+			abort(404)
+		with self.ftp_host.open(path, "rb") as remote_obj:
+			f = BytesIO(remote_obj.read())
+			f.seek(0)
+			return send_file(f)
+
+ftp = SyncedFTP()
 
 class User(db.Model):
 	__tablename__ = 't_users'
@@ -54,7 +42,7 @@ class User(db.Model):
 		return {"id": self.id, "name": self.name, "ais": [ai.info() for ai in self.ai_list]}
 
 	def icon(self):
-		return send_from_ftp("Users/"+str(self.id)+"/icon.png")
+		return ftp.send_file("Users/"+str(self.id)+"/icon.png")
 
 	def __repr__(self):
 		return "<User(id={}, name={})".format(self.id, self.name)

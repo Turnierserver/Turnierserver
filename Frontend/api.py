@@ -5,6 +5,7 @@ import json
 
 from database import AI, User, Game, db
 from commons import authenticated, cache
+from _cfg import env
 
 
 
@@ -105,7 +106,7 @@ def api_user(id):
 		return CommonErrors.INVALID_ID
 
 @api.route("/user/<int:id>/icon", methods=["GET"])
-@cache.memoize(timeout=60*5)
+@cache.memoize(timeout=env.cache_max_age)
 def api_user_icon(id):
 	user = User.query.get(id)
 	if user:
