@@ -1,3 +1,10 @@
+{% set nav_menu = [
+	(url_for("anonymous.ai_list"), "ai_list", "KI-Liste"),
+	(url_for("anonymous.user_list"), "user_list", "Nutzer-Liste"),
+	(url_for("anonymous.game_list"), "game_list", "Spiel-Liste")
+]%}
+{% set active_page = active_page | default('index')%}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,13 +18,13 @@
 </head>
 <body>
 	<nav class="ui menu inverted navbar page grid">
-		<a href="{{ url_for("anonymous.index") }}" class="brand item">Turnierserver</a>
+		<a href="{{ url_for("anonymous.index") }}" class="brand {{'active' if active_page == 'index'}} item">Turnierserver</a>
 		<div class="right menu">
-			<a href="{{ url_for("anonymous.ai_list") }}" class="item">KI Liste</a>
-			<a href="{{ url_for("anonymous.user_list") }}" class="item">User Liste</a>
-			<a href="{{ url_for("anonymous.game_list") }}" class="item">Spiel Liste</a>
+			{% for url, id, name in nav_menu %}
+				<a href="{{ url | e }}" class="{{'active' if id == active_page}} item">{{ name | e }}</a>
+			{% endfor %}
 			{% if current_user.is_authenticated() %}
-				<a href="{{ url_for("profile.current_profile") }}" class="item">{{ current_user.name }}</a>
+				<a href="{{ url_for("profile.current_profile") }}" class="{{'active' if active_page == 'profile'}} item">{{ current_user.name }}</a>
 				<div class="item"><button id="logout" class="ui green button">Ausloggen</button></div>
 				<script>
 					$("#logout").on("click", function() {
