@@ -12,36 +12,37 @@ public class GsonGzipParser extends GsonParser {
 
 	@Override
 	public <E> E parse(byte[] data, Class<E> type) throws IOException {
-				
-		ByteArrayInputStream in = new ByteArrayInputStream(data);
-		GZIPInputStream gzip = new GZIPInputStream(in);
-		byte[] buffer = new byte[data.length];
-		gzip.read(buffer);
-		gzip.close();
-		
-		return super.parse(buffer, type);
+		return super.parse(uncompress(data), type);
 	}
 
 	@Override
 	public <E> E parse(byte[] data, TypeToken<E> token) throws IOException {
-		
-		ByteArrayInputStream in = new ByteArrayInputStream(data);
-		GZIPInputStream gzip = new GZIPInputStream(in);
-		byte[] buffer = new byte[data.length];
-		gzip.read(buffer);
-		gzip.close();
-		
-		return super.parse(buffer, token);
+		return super.parse(uncompress(data), token);
 		
 	}
 
 	@Override
 	public byte[] parse(Object obj) throws IOException {
-		byte[] data = super.parse(obj);
-		
-		ByteArrayOutputStream out = new ByteArrayOutputStream(data.length);
+		return compress(super.parse(obj));
+	}
+	
+	private byte[] compress(byte[] uncompressed) throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream(uncompressed.length);
 		GZIPOutputStream gzip = new GZIPOutputStream(out);
-		gzip.write(super.parse(obj));
+		gzip.write(uncompressed);
+		gzip.close();
+		return out.toByteArray();
+	}
+	
+	private byte[] uncompress(byte[] compressed) throws IOException {
+		ByteArrayInputStream in = new ByteArrayInputStream(compressed);
+		GZIPInputStream gzip = new GZIPInputStream(in);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		byte buf[] = new byte[9182]; 
+		int read; 
+		while ((read = gzip.read(buf)) > 0) {
+			out.write(buf, 0, read);
+		}
 		gzip.close();
 		
 		return out.toByteArray();
