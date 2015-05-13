@@ -25,7 +25,11 @@ public class ConnectionPool <H extends ConnectionHandler>
 	{
 		handler.setPool(this);
 		if ((handler == null) || ((maxConnections > 0) && (connections.size() > maxConnections)))
+		{
+			if (handler != null)
+				handler.disconnect();
 			return false;
+		}
 		return connections.add(handler);
 	}
 	

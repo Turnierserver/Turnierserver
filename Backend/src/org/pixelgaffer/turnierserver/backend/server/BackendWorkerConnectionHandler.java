@@ -1,6 +1,5 @@
 package org.pixelgaffer.turnierserver.backend.server;
 
-import lombok.Getter;
 import naga.NIOSocket;
 
 import org.msgpack.MessagePack;
@@ -13,11 +12,8 @@ import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 /**
  * Diese Klasse ist der ConnectionHandler für den BackendServer.
  */
-public class BackendConnectionHandler extends ConnectionHandler
+public class BackendWorkerConnectionHandler extends ConnectionHandler
 {
-	@Getter
-	private boolean connected = false;
-	
 	/** Der lokale Buffer mit den noch nicht gelesenen bytes. */
 	private DataBuffer buffer = new DataBuffer();
 	
@@ -25,7 +21,7 @@ public class BackendConnectionHandler extends ConnectionHandler
 	private WorkerConnection workerConnection;
 	
 	
-	public BackendConnectionHandler (NIOSocket socket)
+	public BackendWorkerConnectionHandler (NIOSocket socket)
 	{
 		super(socket);
 	}

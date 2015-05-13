@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import org.pixelgaffer.turnierserver.backend.server.BackendConnectionHandler;
+import org.pixelgaffer.turnierserver.backend.server.BackendWorkerConnectionHandler;
 import org.pixelgaffer.turnierserver.backend.workerclient.WorkerClient;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 
@@ -27,12 +27,12 @@ public class WorkerConnection
 	private int usedSandboxes = 0;
 	
 	/** Die Connection vom Backend zum Worker. */
-	private BackendConnectionHandler connection;
+	private BackendWorkerConnectionHandler connection;
 	
 	/** Die Connection vom Worker zum Backend. */
 	private WorkerClient client;
 	
-	public WorkerConnection (@NonNull BackendConnectionHandler con, InetSocketAddress addr, WorkerInfo info) throws IOException
+	public WorkerConnection (@NonNull BackendWorkerConnectionHandler con, InetSocketAddress addr, WorkerInfo info) throws IOException
 	{
 		connection = con;
 		sandboxes = info.getSandboxes();

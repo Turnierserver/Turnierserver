@@ -5,7 +5,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import org.pixelgaffer.turnierserver.backend.server.BackendConnectionHandler;
+import org.pixelgaffer.turnierserver.backend.server.BackendWorkerConnectionHandler;
 
 /**
  * Diese Klasse repräsentiert eine KI intern für Backend und Spiellogik.
@@ -21,9 +21,9 @@ public class AiWrapper
 	@Setter @Getter
 	private int id;
 	
-	/** Der {@link BackendConnectionHandler} dieser KI. */
+	/** Der {@link BackendWorkerConnectionHandler} dieser KI. */
 	@Setter @Getter
-	private BackendConnectionHandler connectionHandler;
+	private BackendWorkerConnectionHandler connectionHandler;
 	
 	/** Empfängt eine Nachricht und leitet sie an die Speillogik weiter. */
 	public void receiveMessage (String message)

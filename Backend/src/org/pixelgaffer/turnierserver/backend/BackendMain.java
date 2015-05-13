@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import naga.ConnectionAcceptor;
 
 import org.pixelgaffer.turnierserver.PropertiesLoader;
-import org.pixelgaffer.turnierserver.backend.server.BackendServer;
+import org.pixelgaffer.turnierserver.backend.server.BackendFrontendServer;
+import org.pixelgaffer.turnierserver.backend.server.BackendWorkerServer;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 
 /**
@@ -40,10 +41,13 @@ public class BackendMain
 		
 		// Server starten
 		getLogger().info("BackendServer starting");
-		int port = getIntProp("turnierserver.backend.server.port", BackendServer.DEFAULT_PORT);
-		int maxClients = getIntProp("turnierserver.backend.server.maxClients", -1);
-		BackendServer server = new BackendServer(port, maxClients);
-		server.setConnectionAcceptor(ConnectionAcceptor.ALLOW);
+		int port = getIntProp("turnierserver.backend.server.port", BackendWorkerServer.DEFAULT_PORT);
+		int maxClients = getIntProp("turnierserver.backend.workerserver.maxClients", -1);
+		BackendWorkerServer server0 = new BackendWorkerServer(port, maxClients);
+		port = getIntProp("turnierserver.backend.frontendserver.port", BackendFrontendServer.DEFAULT_PORT);
+		BackendFrontendServer server1 = new BackendFrontendServer(port, 1);
+		server0.setConnectionAcceptor(ConnectionAcceptor.ALLOW);
+		server1.setConnectionAcceptor(ConnectionAcceptor.ALLOW);
 		new Thread( () -> NetworkService.mainLoop(), "NetworkService").start();
 		getLogger().info("BackendServer started");
 	}

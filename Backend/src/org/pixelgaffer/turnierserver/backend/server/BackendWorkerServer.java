@@ -12,7 +12,7 @@ import org.pixelgaffer.turnierserver.networking.Server;
  * Worker melden. Dieser Server dient nicht dazu, dass sich dort die KIs melden!
  * Der Server für die KIs läuft auf dem Worker.
  */
-public class BackendServer extends Server<BackendConnectionPool>
+public class BackendWorkerServer extends Server<BackendWorkerConnectionPool>
 {
 	/** Der Standart-Port für diesen Server. */
 	public static final int DEFAULT_PORT = 1332;
@@ -20,9 +20,9 @@ public class BackendServer extends Server<BackendConnectionPool>
 	/**
 	 * Öffnet den Server auf dem angegebenen Port.
 	 */
-	public BackendServer (int port) throws IOException
+	public BackendWorkerServer (int port) throws IOException
 	{
-		super(port, new BackendConnectionPool());
+		super(port, new BackendWorkerConnectionPool());
 		BackendMain.getLogger().info("BackendServer opened successfully on port " + port);
 	}
 	
@@ -30,9 +30,9 @@ public class BackendServer extends Server<BackendConnectionPool>
 	 * Öffnet den Server auf dem angegebenen Port mit der maximalen Anzahl an
 	 * Clients.
 	 */
-	public BackendServer (int port, int maxClients) throws IOException
+	public BackendWorkerServer (int port, int maxClients) throws IOException
 	{
-		super(port, new BackendConnectionPool(), maxClients);
+		super(port, new BackendWorkerConnectionPool(), maxClients);
 	}
 	
 	@Override
