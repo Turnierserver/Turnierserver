@@ -11,8 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.msgpack.MessagePack;
+import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.PropertiesLoader;
+
+import com.google.gson.reflect.TypeToken;
 
 public abstract class Ai<E, R> implements Runnable {
 	
@@ -28,10 +30,6 @@ public abstract class Ai<E, R> implements Runnable {
 	 * Der BufferedReader der Connection
 	 */
 	private BufferedReader in;
-	/**
-	 * Die MessagePack Instanz, die zum parsen der Objekte verwendet wird
-	 */
-	private MessagePack msgpack;
 	
 	/**
 	 * Der kummulierte String von System.out 
@@ -74,7 +72,6 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	protected abstract E getState();
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public final void run() {
 		
@@ -84,13 +81,13 @@ public abstract class Ai<E, R> implements Runnable {
 					System.exit(0);
 				}
 				String line = in.readLine();
-				Map<String, String> updates = msgpack.read(line.getBytes("UTF-8"), HashMap.class);
+				Map<String, String> updates = Parsers.getWorker().parse(line.getBytes("UTF-8"), new TypeToken<HashMap<String, String>>() {});
 				for(Entry<String, String> update : updates.entrySet()) {
 					gamestate.put(update.getKey(), update.getValue());
 				}
 				R response = update(getState());
 				if(response != null) {
-					out.println(new String(msgpack.write(response), "UTF-8"));
+					out.println(new String(Parsers.getParser(true).parse(response), "UTF-8"));
 				}
 			}
 		}
@@ -105,7 +102,7 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	protected final void send(Object o) {
 		try {
-			out.println(new String(msgpack.write(o), "UTF-8"));
+			out.println(new String(Parsers.getWorker().parse(o), "UTF-8"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

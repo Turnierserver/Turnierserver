@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.msgpack.MessagePack;
+import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.AiWrapper;
 import org.pixelgaffer.turnierserver.backend.Game;
 
@@ -27,10 +27,6 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * Die Sachen, welche sich im Gamestate verändert haben
 	 */
 	private Map<String, String> changed;
-	/**
-	 * Die MessagePack Instanz, welche zum parsen verwendet wird
-	 */
-	private MessagePack msgpack;
 	
 	/**
 	 * Der Konstruktor, MUSS verwendet werden
@@ -79,7 +75,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		for(AiWrapper ai : game.getAis()) {
 			getUserObject(ai).updateCalculationTimer();
 			if(!getUserObject(ai).lost)
-				ai.sendMessage(new String(msgpack.write(changed), "UTF-8"));
+				sendToAi(changed, ai);
 		}
 		changed.clear();
 	}
@@ -135,7 +131,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 			return;
 		}
 		try {
-			receive(msgpack.read(message.getBytes("UTF-8"), responseType), ai);
+			receive(Parsers.getWorker().parse(message.getBytes("UTF-8"), responseType), ai);
 		} catch (IOException e) {
 			getUserObject(ai).loose();
 		}
@@ -173,7 +169,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @throws IOException
 	 */
 	public void sendToAi(Object object, AiWrapper ai) throws IOException {
-		ai.sendMessage(new String(msgpack.write(object), "UTF-8"));
+		ai.sendMessage(new String(Parsers.getWorker().parse(object), "UTF-8"));
 	}
 	
 	/**

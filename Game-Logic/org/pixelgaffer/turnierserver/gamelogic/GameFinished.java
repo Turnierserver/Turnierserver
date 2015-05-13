@@ -1,11 +1,7 @@
 package org.pixelgaffer.turnierserver.gamelogic;
 
-import org.msgpack.annotation.Message;
-
-@Message
 public class GameFinished {
 	
-	public String type = "GameFinished";
 	/**
 	 * Die Scores der AIs, soriert nach IDs
 	 */

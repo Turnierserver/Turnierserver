@@ -1,11 +1,7 @@
 package org.pixelgaffer.turnierserver.gamelogic;
 
-import org.msgpack.annotation.Message;
-
-@Message
 public class RenderData {
 	
-	public String type = "RenderData";
 	/**
 	 * Die ID des Spieles
 	 */
