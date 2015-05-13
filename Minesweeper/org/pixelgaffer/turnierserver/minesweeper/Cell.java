@@ -1,26 +1,41 @@
 package org.pixelgaffer.turnierserver.minesweeper;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import lombok.Getter;
 import lombok.Setter;
 
 public class Cell {
 	
+	/**
+	 * Die Größe des Feldes
+	 */
 	public static final int FIELD_SIZE = 8;
+	/**
+	 * Die Anzahl an Bomben pro Feld
+	 */
 	public static final int BOMB_COUNT = 12;
 	
 	public enum Type {
 		BOMB, EMPTY, COVERED;
 	}
 	
+	/**
+	 * True, wenn sich eine Flagge auf der Zelle befindet
+	 */
 	@Getter @Setter
 	private boolean flagged;
+	/**
+	 * True, wenn die Zelle uncovered wurde (wird von der GameLogic verwendet)
+	 */
 	@Getter
 	private boolean uncovered;
-	@Getter
-	private int bombsArround;
+	/**
+	 * Die Anzahl an Bomben, welche sich um dieses Feld herum befinden. -1, wenn das Feld nicht aufgedeckt wurde.
+	 */
+	@Getter @Setter
+	private int bombsArround = -1;
+	/**
+	 * Der Typ dieser Zelle
+	 */
 	@Getter
 	private Type type;
 	
@@ -33,48 +48,32 @@ public class Cell {
 		this.type = type;
 	}
 	
-	private Cell() {}
-	
-	void countSurroundingBombs(Cell[][] field, int x, int y) {
-		bombsArround = 0;
-		bombsArround += isBomb(x + 1, y, field);
-		bombsArround += isBomb(x + 1, y + 1, field);
-		bombsArround += isBomb(x + 1, y - 1, field);
-		bombsArround += isBomb(x, y + 1, field);
-		bombsArround += isBomb(x, y - 1, field);
-		bombsArround += isBomb(x - 1, y, field);
-		bombsArround += isBomb(x - 1, y + 1, field);
-		bombsArround += isBomb(x - 1, y - 1, field);
-	}
-	
-	int isBomb(int x, int y, Cell[][] field) {
-		if(x < 0 || x >= FIELD_SIZE || y < 0 || y >= FIELD_SIZE) {
-			return 0;
+	/**
+	 * Erstellt eine neue Cell aus einem String (NICHT VERWENDEN)
+	 * 
+	 * @param string
+	 */
+	public Cell(String string) {
+		if(string.startsWith("0")) {
+			type = Type.COVERED;
+			flagged = Boolean.parseBoolean(string.split(" ")[1]);
 		}
-		return field[x][y].type == Type.BOMB ? 1 : 0;
-	}
-	
-	Map<String, String> uncover(Cell[][] field, int x, int y) {	
-		return uncover(field, x, y, new HashMap<>());
-	}
-	
-	private Map<String, String> uncover(Cell[][] field, int x, int y, Map<String, String> map) {	
-		if(type == Type.BOMB) {
-			return null;
+		if(string.equals("1")) {
+			type = Type.BOMB;
+			uncovered = true;
 		}
+		if(string.startsWith("2")) {
+			type = Type.EMPTY;
+			uncovered = true;
+			bombsArround = Integer.parseInt(string.split(" ")[1]);
+		}
+	}
+	
+	/**
+	 * Diese Methode wird nichts ändern. Verwende MinesweeperAi.uncover(x, y)
+	 */
+	public void uncover() {
 		uncovered = true;
-		map.put(x + ":" + y, toString());
-		if(bombsArround == 0) {
-			uncover(field, x + 1, y, map);
-			uncover(field, x + 1, y + 1, map);
-			uncover(field, x + 1, y - 1, map);
-			uncover(field, x, y + 1, map);
-			uncover(field, x, y - 1, map);
-			uncover(field, x - 1, y, map);
-			uncover(field, x - 1, y + 1, map);
-			uncover(field, x - 1, y - 1, map);
-		}
-		return map;
 	}
 	
 	@Override
@@ -88,54 +87,13 @@ public class Cell {
 		return "2 " + bombsArround;
 	}
 	
-	static Cell fromString(String string) {
-		Cell cell = new Cell();
-		if(string.startsWith("0")) {
-			cell.type = Type.COVERED;
-			cell.flagged = Boolean.parseBoolean(string.split(" ")[1]);
-			return cell;
-		}
-		if(string.equals("1")) {
-			cell.type = Type.BOMB;
-			cell.uncovered = true;
-			return cell;
-		}
-		if(string.startsWith("2")) {
-			cell.type = Type.EMPTY;
-			cell.uncovered = true;
-			cell.bombsArround = Integer.parseInt(string.split(" ")[1]);
-			return cell;
-		}
-		return null;
-	}
-	
-	static Cell[][] toCellArray(Map<String, String> map) {
-		Cell[][] field = new Cell[FIELD_SIZE][FIELD_SIZE];
-		
-		for(int i = 0; i < FIELD_SIZE; i++) {
-			for(int j = 0; j < FIELD_SIZE; j++) {
-				field[i][j] = fromString(map.get(i + ":" + j));
-			}
-		}
-		
-		return field;
-	}
-	
-	static Map<String, String> toMap(Cell[][] field) {
-		if(field == null) {
-			return null;
-		}
-		Map<String, String> map = new HashMap<String, String>();
-		
-		for(int i = 0; i < field.length; i++) {
-			for(int j = 0; j < field.length; j++) {
-				map.put(i + ":" + j, field[i][j].toString());
-			}
-		}
-		
-		return map;
-	}
-	
+	/**
+	 * True, wenn die Koordinate sich im Feld befindet
+	 * 
+	 * @param x Die x-Koordinate
+	 * @param y Die y-Koordinate
+	 * @return Ob sich die Koordinate im Feld befindet
+	 */
 	public static boolean isInField(int x, int y) {
 		return x >= 0 && x < FIELD_SIZE && y >= 0 && y < FIELD_SIZE;
 	}

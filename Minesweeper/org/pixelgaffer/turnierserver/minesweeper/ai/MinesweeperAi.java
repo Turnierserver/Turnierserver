@@ -1,6 +1,9 @@
-package org.pixelgaffer.turnierserver.minesweeper;
+package org.pixelgaffer.turnierserver.minesweeper.ai;
 
 import org.pixelgaffer.turnierserver.ailibrary.Ai;
+import org.pixelgaffer.turnierserver.minesweeper.Cell;
+import org.pixelgaffer.turnierserver.minesweeper.Grid;
+import org.pixelgaffer.turnierserver.minesweeper.MinesweeperResponse;
 
 public abstract class MinesweeperAi extends Ai<MinesweeperState, MinesweeperResponse> {
 
@@ -11,7 +14,7 @@ public abstract class MinesweeperAi extends Ai<MinesweeperState, MinesweeperResp
 	protected MinesweeperResponse update(MinesweeperState state) {
 		MinesweeperResponse response = new MinesweeperResponse();
 		if(state.isGenerating()) {
-			response.newField = Cell.toMap(generateField());
+			response.newField = new Grid(generateField()).toMap();
 			return response;
 		}
 		step(state);
@@ -24,7 +27,7 @@ public abstract class MinesweeperAi extends Ai<MinesweeperState, MinesweeperResp
 
 	@Override
 	protected MinesweeperState getState() {
-		return new MinesweeperState(Cell.toCellArray(gamestate), Boolean.parseBoolean(gamestate.get("creating")));
+		return new MinesweeperState(new Grid(gamestate).getField(), Boolean.parseBoolean(gamestate.get("creating")));
 	}
 	
 	/**

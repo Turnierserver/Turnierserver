@@ -1,4 +1,6 @@
-package org.pixelgaffer.turnierserver.minesweeper;
+package org.pixelgaffer.turnierserver.minesweeper.ai;
+
+import org.pixelgaffer.turnierserver.minesweeper.Cell;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

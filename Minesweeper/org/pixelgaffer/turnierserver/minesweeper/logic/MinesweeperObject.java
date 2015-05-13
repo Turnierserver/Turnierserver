@@ -1,4 +1,4 @@
-package org.pixelgaffer.turnierserver.minesweeper;
+package org.pixelgaffer.turnierserver.minesweeper.logic;
 
 import org.pixelgaffer.turnierserver.gamelogic.AiObject;
 
