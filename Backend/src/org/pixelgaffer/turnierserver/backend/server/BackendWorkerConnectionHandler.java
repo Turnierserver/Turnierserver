@@ -38,7 +38,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 				try
 				{
 					workerConnection = new WorkerConnection(this, socket.getAddress(),
-							Parsers.getParser(false).parse(line, WorkerInfo.class));
+							Parsers.getWorker().parse(line, WorkerInfo.class));
 				}
 				catch (Exception e)
 				{

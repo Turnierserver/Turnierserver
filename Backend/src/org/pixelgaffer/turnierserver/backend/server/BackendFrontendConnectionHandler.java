@@ -25,7 +25,7 @@ public class BackendFrontendConnectionHandler extends ConnectionHandler
 		{
 			try
 			{
-				BackendFrontendCommand cmd = Parsers.getParser(false).parse(line, BackendFrontendCommand.class);
+				BackendFrontendCommand cmd = Parsers.getFrontend().parse(line, BackendFrontendCommand.class);
 				System.out.println(cmd);
 			}
 			catch (Exception e)

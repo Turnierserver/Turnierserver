@@ -56,7 +56,7 @@ public class BackendClient implements SocketObserver
 			{
 				// der einzige Befehl des Backends über diese Verbindung ist
 				// "starte KI sowieso mit UUID sowieso"
-				StartAi sai = Parsers.getParser(false).parse(line, StartAi.class);
+				StartAi sai = Parsers.getWorker().parse(line, StartAi.class);
 				System.out.println(sai);
 			}
 			catch (Exception e)

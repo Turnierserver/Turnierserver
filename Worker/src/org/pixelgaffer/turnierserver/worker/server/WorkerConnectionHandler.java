@@ -91,7 +91,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 							MessageForward mf = new MessageForward(type.getUuid(), line);
 							DataBuffer buf = new DataBuffer();
 							buf.add((byte)'M');
-							buf.add(Parsers.getParser(false).parse(mf));
+							buf.add(Parsers.getWorker().parse(mf));
 							buf.add((byte)'\n');
 							WorkerServer.backendConnection.getClient().write(buf.readAll());
 						}
@@ -109,7 +109,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					// weiterleiten
 					try
 					{
-						MessageForward mf = Parsers.getParser(false).parse(line, MessageForward.class);
+						MessageForward mf = Parsers.getWorker().parse(line, MessageForward.class);
 						System.out.println(mf);
 					}
 					catch (Exception e)
