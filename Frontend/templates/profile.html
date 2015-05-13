@@ -2,7 +2,25 @@
 {% set active_page = "profile" %}
 {% block body %}
 
-Hier ist dein Profil.
-#Yoloswag
+	<div class="ui hidden divider"></div>
+	<div class="ui page grid">
+		<div class="three column row">
+			<div class="column">
+				<h2 class="ui header">Deine KIs</h2>
+				<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
+				<a class="ui tiny button m-top-10" href="{{ url_for("profile.create_ai" )}}">Erstell ne KI &raquo;</a>
+			</div>
+			<div class="column">
+				<h2 class="ui header">Deine Spiele</h2>
+				<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
+				<button class="ui tiny button m-top-10">Alle Spiele &raquo;</button>
+			</div>
+			<div class="column">
+				<h2 class="ui header">Neuigkeiten</h2>
+				<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
+				<button class="ui tiny button m-top-10">Alle Neuigkeiten &raquo;</button>
+			</div>
+		</div>
+	</div>
 
 {% endblock %}

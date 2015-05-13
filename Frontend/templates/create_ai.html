@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% set active_page = "create_ai" %}
+{% block body %}
+
+	<div class="ui hidden divider"></div>
+	<div class="ui page grid">
+		<h1>KI-Ersteller</h1>
+
+		<div class="row">
+			<div class="column">
+			<div class="ui segment">
+			<div class="ui selection dropdown">
+				<input type="hidden" name="gender">
+				<div class="default text">Gender</div>
+				<i class="dropdown icon"></i>
+				<div class="menu">
+					<div class="item" data-value="1">Male</div>
+					<div class="item" data-value="0">Female</div>
+				</div>
+			</div>
+			</div>
+			</div>
+		</div>
+
+{#
+		<div class="ui divider"></div>
+		<div class="ui segment" style="min-height: 8rem;">
+			<div class="ui ribbon label">Ki-Vorschau</div>
+		</div>
+#}
+	</div>
+
+{% endblock %}

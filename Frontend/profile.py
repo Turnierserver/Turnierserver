@@ -6,3 +6,7 @@ profile = Blueprint("profile", __name__)
 @profile.route("/profile")
 def current_profile():
 	return render_template("profile.html")
+
+@profile.route("/create_ai")
+def create_ai():
+	return render_template("create_ai.html")

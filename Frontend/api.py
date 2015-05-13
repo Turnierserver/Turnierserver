@@ -170,6 +170,7 @@ def api_ai_create():
 	return {'error': False, 'ai': ai.info()}
 
 @api.route("/ai/<int:id>/icon", methods=["GET"])
+@cache.memoize(timeout=env.cache_max_age)
 def api_ai_icon(id):
 	ai = AI.query.get(id)
 	if ai:

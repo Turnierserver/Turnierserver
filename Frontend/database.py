@@ -10,6 +10,7 @@ db = SQLAlchemy()
 
 class SyncedFTP:
 	def __init__(self):
+		self.cached = set()
 		self.connect()
 
 	def connect(self):
@@ -17,7 +18,7 @@ class SyncedFTP:
 		self.ftp_host = ftputil.FTPHost(env.ftp_url, env.ftp_uname, env.ftp_pw)
 
 	def send_file(self, path):
-		self.connect()
+		print("Downloading from FTP: ", path)
 		if not self.ftp_host.path.exists(path):
 			Activity("Datei '" + path + "' existiert auf dem FTP nicht.")
 			abort(404)
@@ -25,6 +26,9 @@ class SyncedFTP:
 			f = BytesIO(remote_obj.read())
 			f.seek(0)
 			return send_file(f)
+
+	def send_cached(self, path):
+		pass
 
 ftp = SyncedFTP()
 
