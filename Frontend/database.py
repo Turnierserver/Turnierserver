@@ -13,13 +13,13 @@ class SyncedFTP:
 		self.connect()
 
 	def connect(self):
-		Activity("Connecting to FTP @ " + env.ftp_url)
+		Activity("Verbinde zum FTP @ " + env.ftp_url)
 		self.ftp_host = ftputil.FTPHost(env.ftp_url, env.ftp_uname, env.ftp_pw)
 
 	def send_file(self, path):
 		self.connect()
 		if not self.ftp_host.path.exists(path):
-			Activity("Remote File" + path + " doesnt exist.")
+			Activity("Datei '" + path + "' existiert auf dem FTP nicht.")
 			abort(404)
 		with self.ftp_host.open(path, "rb") as remote_obj:
 			f = BytesIO(remote_obj.read())
@@ -27,6 +27,11 @@ class SyncedFTP:
 			return send_file(f)
 
 ftp = SyncedFTP()
+
+def db_obj_init_msg(obj):
+	import inspect, pprint
+	callername = inspect.getouterframes(inspect.currentframe(), 2)[5][3]
+	Activity(str(obj) + " erschafft.", extratext="Aufgerufen von '" + callername + "'.")
 
 class User(db.Model):
 	__tablename__ = 't_users'
@@ -36,7 +41,7 @@ class User(db.Model):
 
 	def __init__(self, *args, **kwargs):
 		super(User, self).__init__(*args, **kwargs)
-		Activity(str(self) +" erschafft")
+		db_obj_init_msg(self)
 
 	def info(self):
 		return {"id": self.id, "name": self.name, "ais": [ai.info() for ai in self.ai_list]}
@@ -78,7 +83,7 @@ class AI(db.Model):
 
 	def __init__(self, *args, **kwargs):
 		super(AI, self).__init__(*args, **kwargs)
-		Activity(str(self) +" erschafft")
+		db_obj_init_msg(self)
 
 	def info(self):
 		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc, "lang": self.lang.info()}
@@ -98,7 +103,7 @@ class Lang(db.Model):
 
 	def __init__(self, *args, **kwargs):
 		super(Lang, self).__init__(*args, **kwargs)
-		Activity(str(self) +" erschafft")
+		db_obj_init_msg(self)
 
 	def info(self):
 		return {"id": self.id, "name": self.name, "url": self.url}
@@ -116,7 +121,7 @@ class Game(db.Model):
 	def __init__(self, *args, **kwargs):
 		super(Game, self).__init__(*args, **kwargs)
 		self.timestamp = arrow.utcnow().timestamp
-		Activity(str(self) +" erschafft")
+		db_obj_init_msg(self)
 
 	def time(self, locale):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)

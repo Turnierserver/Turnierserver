@@ -25,4 +25,4 @@ class Activity:
 	def time(self):
 		return str(self.created.humanize(locale="de_DE"))
 
-Activity("Feed angefangen", extratext="Dieser Feed zeigt viele 'wichtige' Aktivitäten, die seit dem letzten Neustart passiert sind.")
+Activity("Feed angefangen", extratext="Dieser Feed zeigt viele 'wichtige' Aktivitaeten, die seit dem letzten Neustart passiert sind.")
