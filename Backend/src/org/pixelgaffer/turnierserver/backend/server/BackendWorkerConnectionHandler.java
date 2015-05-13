@@ -2,7 +2,7 @@ package org.pixelgaffer.turnierserver.backend.server;
 
 import naga.NIOSocket;
 
-import org.msgpack.MessagePack;
+import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.BackendMain;
 import org.pixelgaffer.turnierserver.backend.WorkerConnection;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
@@ -26,7 +26,6 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 		super(socket);
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void packetReceived (NIOSocket socket, byte[] packet)
 	{
@@ -38,8 +37,8 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 			{
 				try
 				{
-					workerConnection = new WorkerConnection(this, socket.getAddress(), MessagePack.unpack(line,
-							WorkerInfo.class));
+					workerConnection = new WorkerConnection(this, socket.getAddress(),
+							Parsers.getParser(false).parse(line, WorkerInfo.class));
 				}
 				catch (Exception e)
 				{

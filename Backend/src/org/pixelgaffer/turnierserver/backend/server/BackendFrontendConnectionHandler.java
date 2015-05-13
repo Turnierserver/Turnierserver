@@ -2,8 +2,7 @@ package org.pixelgaffer.turnierserver.backend.server;
 
 import naga.NIOSocket;
 
-import org.msgpack.MessagePack;
-import org.pixelgaffer.turnierserver.backend.BackendMain;
+import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 
@@ -26,13 +25,12 @@ public class BackendFrontendConnectionHandler extends ConnectionHandler
 		{
 			try
 			{
-				@SuppressWarnings("deprecation")
-				BackendFrontendCommand cmd = MessagePack.unpack(line, BackendFrontendCommand.class);
+				BackendFrontendCommand cmd = Parsers.getParser(false).parse(line, BackendFrontendCommand.class);
 				System.out.println(cmd);
 			}
 			catch (Exception e)
 			{
-				BackendMain.getLogger().severe("BackendConnectionHandler: while creating WorkerConnection: " + e);
+				e.printStackTrace();
 			}
 		}
 	}

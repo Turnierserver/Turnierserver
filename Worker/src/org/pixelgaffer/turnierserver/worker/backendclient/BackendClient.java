@@ -6,7 +6,7 @@ import lombok.Getter;
 import naga.NIOSocket;
 import naga.SocketObserver;
 
-import org.msgpack.MessagePack;
+import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.messages.StartAi;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
@@ -56,9 +56,8 @@ public class BackendClient implements SocketObserver
 			{
 				// der einzige Befehl des Backends über diese Verbindung ist
 				// "starte KI sowieso mit UUID sowieso"
-				@SuppressWarnings("deprecation")
-				StartAi sai = MessagePack.unpack(line, StartAi.class);
-				
+				StartAi sai = Parsers.getParser(false).parse(line, StartAi.class);
+				System.out.println(sai);
 			}
 			catch (Exception e)
 			{
