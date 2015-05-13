@@ -3,10 +3,9 @@ package org.pixelgaffer.turnierserver.networking.messages;
 import java.util.UUID;
 
 import lombok.Getter;
+import lombok.ToString;
 
-import org.msgpack.annotation.Message;
-
-@Message
+@ToString
 public class StartAi
 {
 	@Getter

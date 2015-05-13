@@ -7,7 +7,7 @@ import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnection
 import lombok.Getter;
 import naga.NIOSocket;
 
-import org.msgpack.MessagePack;
+import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType;
@@ -53,7 +53,6 @@ public class WorkerConnectionHandler extends ConnectionHandler
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void packetReceived (NIOSocket socket, byte[] packet)
 	{
@@ -92,7 +91,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 							MessageForward mf = new MessageForward(type.getUuid(), line);
 							DataBuffer buf = new DataBuffer();
 							buf.add((byte)'M');
-							buf.add(MessagePack.pack(mf));
+							buf.add(Parsers.getParser(false).parse(mf));
 							buf.add((byte)'\n');
 							WorkerServer.backendConnection.getClient().write(buf.readAll());
 						}
@@ -110,7 +109,8 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					// weiterleiten
 					try
 					{
-						MessageForward mf = MessagePack.unpack(line, MessageForward.class);
+						MessageForward mf = Parsers.getParser(false).parse(line, MessageForward.class);
+						System.out.println(mf);
 					}
 					catch (Exception e)
 					{
