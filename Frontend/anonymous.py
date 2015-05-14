@@ -43,14 +43,8 @@ def game(id):
 	game = Game.query.get(id)
 	if not game:
 		abort(404)
-	with open("gametypes.json", "r") as f:
-		d = json.load(f)
-		if str(game.type) in d:
-			type = d[str(game.type)]
-		else:
-			type = {'name': 'Invalid ID!', 'viz': 'game.html'}
 
-	return render_template(type["viz"], game=game, type=type)
+	return render_template(game.type.viz, game=game)
 
 
 @anonymous.route("/activityfeed")

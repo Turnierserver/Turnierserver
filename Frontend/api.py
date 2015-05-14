@@ -211,6 +211,9 @@ def api_ai_update(id):
 	if not ai in current_user.ai_list:
 		return CommonErrors.NO_ACCESS
 
+	a = Activity("AI " + ai.name + " geaendert")
+	a.extratext = "Von " + str(ai)
+
 	ai.name = request.form.get('name', ai.name)
 	ai.desc = request.form.get('description', ai.desc)
 	if 'lang' in request.form:
@@ -221,6 +224,9 @@ def api_ai_update(id):
 
 	# es muss zur Datenbank geschrieben werden, um die aktuellen Infos zu bekommen
 	db.session.commit()
+
+
+	a.extratext += "\nZu " + str(ai)
 
 	return ai.info()
 

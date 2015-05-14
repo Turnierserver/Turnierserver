@@ -3,7 +3,7 @@
 
 Spiel ID: {{ game.id }}
 <br />
-Typ: {{ type.name }}
+Typ: {{ game.type.name }}
 <br />
 Wann: {{ game.time(locale="de_DE") }}
 
@@ -11,7 +11,7 @@ Wann: {{ game.time(locale="de_DE") }}
 Von:
 <ul>
 {% for assoc in game.ai_assocs %}
-	<li><a href="{{ url_for("anonymous.ai", id=assoc.ai.id) }}"> {{ assoc.ai.name }} als {{ assoc.role }}</a></li>
+	<li><a href="{{ url_for("anonymous.ai", id=assoc.ai.id) }}"> {{ assoc.ai.name }} als {{ assoc.role.name }}</a></li>
 {% endfor %}
 </ul>
 

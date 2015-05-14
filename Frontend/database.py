@@ -42,19 +42,20 @@ class User(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50), unique=True, nullable=False)
 	ai_list = db.relationship("AI", order_by="AI.id", backref="User")
+	admin = db.Column(db.Boolean, default=False)
 
 	def __init__(self, *args, **kwargs):
 		super(User, self).__init__(*args, **kwargs)
 		db_obj_init_msg(self)
 
 	def info(self):
-		return {"id": self.id, "name": self.name, "ais": [ai.info() for ai in self.ai_list]}
+		return {"id": self.id, "name": self.name, "ais": [ai.info() for ai in self.ai_list], "admin": self.admin}
 
 	def icon(self):
 		return ftp.send_file("Users/"+str(self.id)+"/icon.png")
 
 	def __repr__(self):
-		return "<User(id={}, name={})".format(self.id, self.name)
+		return "<User(id={}, name={}, admin={})".format(self.id, self.name, self.admin)
 
 	# Flask.Login zeugs
 	def is_authenticated(self):
@@ -71,8 +72,10 @@ class AI_Game_Assoc(db.Model):
 	__tablename__ = 't_ai_game_assoc'
 	game_id = db.Column(db.Integer, db.ForeignKey('t_games.id'), primary_key=True)
 	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'), primary_key=True)
-	role = db.Column(db.String(50))
 	ai = db.relationship("AI", backref="game_assocs")
+	role_id = db.Column(db.Integer, db.ForeignKey('t_gametyperoles.id', primary_key=True))
+	role = db.relationship("GameTypeRole", backref="assocs")
+	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id', primary_key=True))
 
 
 class AI(db.Model):
@@ -119,8 +122,9 @@ class Game(db.Model):
 	__tablename__ = 't_games'
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	ai_assocs = db.relationship("AI_Game_Assoc", backref="game")
-	type = db.Column(db.Integer, nullable=False)
 	timestamp = db.Column(db.BigInteger)
+	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
+	type = db.relationship("GameType", backref=db.backref('t_games', order_by=id))
 
 	def __init__(self, *args, **kwargs):
 		super(Game, self).__init__(*args, **kwargs)
@@ -131,10 +135,37 @@ class Game(db.Model):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
 
 	def info(self):
-		return {"id": self.id, "ais": [assoc.ai.info() for assoc in self.ai_assocs]}
+		return {"id": self.id, "ais": [assoc.ai.info() for assoc in self.ai_assocs], "type": self.type.info()}
 
 	def __repr__(self):
-		return "<Game(id={}, type={})>".format(self.id, self.type)
+		return "<Game(id={}, type={})>".format(self.id, self.type.name)
+
+
+
+class GameType(db.Model):
+	__tablename__ = 't_gametypes'
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	name = db.Column(db.Text, nullable=False)
+	viz = db.Column(db.Text, nullable=False)
+	games = db.relationship("Game", order_by="Game.id", backref="GameType")
+	roles = db.relationship("GameTypeRole", backref="GameType")
+	assocs = db.relationship("AI_Game_Assoc", backref="GameType")
+
+	def __init__(self, *args, **kwargs):
+		super(GameType, self).__init__(*args, **kwargs)
+		db_obj_init_msg(self)
+
+	def info(self):
+		return {"id": self.id, "name": self.name}
+
+	def __repr__(self):
+		return "<GameType(id={}, name={})>".format(self.id, self.name)
+
+class GameTypeRole(db.Model):
+	__tablename__ = 't_gametyperoles'
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	name=db.Column(db.Text, nullable=False)
+	gametype_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
 
 
 def populate(count=20):
@@ -147,17 +178,19 @@ def populate(count=20):
 	brainfuck = Lang(id=3, name="Brainfuck", url="https://esolangs.org/wiki/Brainfuck")
 	langs = [py, java, brainfuck]
 
+	minesweeper = GameType(id=1, name="Minesweeper", viz="vizs/minesweeper.html", roles=[
+		GameTypeRole(id=0, name="builder"), GameTypeRole(id=1, name="solver")
+	])
+	gametypes = [minesweeper]
+
 	users = [User(name="testuser"+str(i), id=i) for i in r]
 	random.shuffle(users)
 	ais = [AI(id=i, user=users[i-1], name="testai"+str(i), desc="Beschreibung", lang=py) for i in r]
-	games = [Game(id=i, type=1) for i in r]
+	games = [Game(id=i, type=minesweeper) for i in r]
 	assocs = []
-	with open("gametypes.json") as f:
-		import json
-		gametype = json.load(f)["1"]
-	for ri, role in enumerate(gametype['roles'], 1):
+	for ri, role in enumerate(minesweeper.roles, 1):
 		assocs += [AI_Game_Assoc(game_id=games[i-1].id, ai_id=ais[i-ri].id, role=role) for i in r]
-	db.session.add_all(users + ais + games + assocs + langs)
+	db.session.add_all(users + ais + games + assocs + langs + gametypes)
 	db.session.commit()
 
 
