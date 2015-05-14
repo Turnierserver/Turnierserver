@@ -185,7 +185,7 @@ def api_ai_code(id):
 	ai = AI.query.get(id)
 	if not ai:
 		return CommonErrors.INVALID_ID
-	if not ai in current_user.ai_list:
+	if not current_user.can_access(ai):
 		return CommonErrors.NO_ACCESS
 
 	return CommonErrors.NOT_IMPLEMENTED
@@ -208,7 +208,7 @@ def api_ai_update(id):
 	if not ai:
 		return CommonErrors.INVALID_ID
 
-	if not ai in current_user.ai_list:
+	if not current_user.can_access(ai):
 		return CommonErrors.NO_ACCESS
 
 	a = Activity("AI " + ai.name + " geaendert")

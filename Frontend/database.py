@@ -54,6 +54,9 @@ class User(db.Model):
 	def icon(self):
 		return ftp.send_file("Users/"+str(self.id)+"/icon.png")
 
+	def can_access(self, ai):
+		return ai in self.ai_list or self.admin
+
 	def __repr__(self):
 		return "<User(id={}, name={}, admin={})".format(self.id, self.name, self.admin)
 
@@ -190,6 +193,9 @@ def populate(count=20):
 	assocs = []
 	for ri, role in enumerate(minesweeper.roles, 1):
 		assocs += [AI_Game_Assoc(game_id=games[i-1].id, ai_id=ais[i-ri].id, role=role) for i in r]
+
+	users.append(User(name="admin", admin=True))
+
 	db.session.add_all(users + ais + games + assocs + langs + gametypes)
 	db.session.commit()
 

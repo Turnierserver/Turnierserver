@@ -13,7 +13,6 @@ def authenticated(f):
 				try:
 					ret = f(*args, **kwargs)
 					db.session.commit()
-					print("commited", ret)
 					return ret
 				except:
 					db.session.rollback()
@@ -31,7 +30,6 @@ def authenticated_web(f):
 				try:
 					ret = f(*args, **kwargs)
 					db.session.commit()
-					print("commited", ret)
 					return ret
 				except:
 					db.session.rollback()

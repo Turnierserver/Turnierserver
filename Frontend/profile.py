@@ -24,7 +24,7 @@ def edit_ai(id):
 		abort(404)
 	if not current_user.is_authenticated():
 		abort(401)
-	if not ai.user == current_user:
+	if not current_user.can_access(ai):
 		abort(401)
 	return render_template("edit_ai.html", ai=ai, langs=Lang.query.all())
 
