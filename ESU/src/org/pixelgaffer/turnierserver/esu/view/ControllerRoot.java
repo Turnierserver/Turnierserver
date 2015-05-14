@@ -5,6 +5,8 @@ import java.util.ResourceBundle;
 import java.io.IOException;
 import java.net.URL;
 
+import org.pixelgaffer.turnierserver.esu.MainApp;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -13,7 +15,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 
-public class ControllerRoot implements Initializable{
+public class ControllerRoot{
 	
 	@FXML TabPane tabPane;
 	@FXML Tab tabStartPage;
@@ -27,22 +29,47 @@ public class ControllerRoot implements Initializable{
 	AnchorPane anchorRanking;
 	AnchorPane anchorSubmission;
 	
-	public void initialize(URL url, ResourceBundle resourceBundle){
+	MainApp mainApp;
+	
+	public void setMainApp(MainApp app){
+		mainApp = app;
+		mainApp.cRoot = this;
 		
 		try {
-			anchorStartPage = (AnchorPane) FXMLLoader.load(getClass().getResource("StartPage.fxml"));
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("StartPage.fxml"));
+			anchorStartPage = (AnchorPane) loader.load();
 			tabStartPage.setContent(anchorStartPage);
-			anchorKiManagement = (AnchorPane) FXMLLoader.load(getClass().getResource("KiManagement.fxml"));
+			((ControllerStartPage) loader.getController()).setMainApp(mainApp);
+
+			loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("KiManagement.fxml"));
+			anchorKiManagement = (AnchorPane) loader.load();
 			tabKiManagement.setContent(anchorKiManagement);
-			anchorGameManagement = (AnchorPane) FXMLLoader.load(getClass().getResource("GameManagement.fxml"));
+			((ControllerKiManagement) loader.getController()).setMainApp(mainApp);
+
+			loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("GameManagement.fxml"));
+			anchorGameManagement = (AnchorPane) loader.load();
 			tabGameManagement.setContent(anchorGameManagement);
-			anchorRanking = (AnchorPane) FXMLLoader.load(getClass().getResource("Ranking.fxml"));
+			((ControllerGameManagement) loader.getController()).setMainApp(mainApp);
+
+			loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("Ranking.fxml"));
+			anchorRanking = (AnchorPane) loader.load();
 			tabRanking.setContent(anchorRanking);
-			anchorSubmission = (AnchorPane) FXMLLoader.load(getClass().getResource("Submission.fxml"));
+			((ControllerRanking) loader.getController()).setMainApp(mainApp);
+
+			loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("Submission.fxml"));
+			anchorSubmission = (AnchorPane) loader.load();
 			tabSubmission.setContent(anchorSubmission);
+			((ControllerSubmission) loader.getController()).setMainApp(mainApp);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+	
 
 }

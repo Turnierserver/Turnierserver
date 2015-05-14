@@ -3,14 +3,17 @@ package org.pixelgaffer.turnierserver.esu.view;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.pixelgaffer.turnierserver.esu.MainApp;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 
-public class ControllerKiManagement implements Initializable{
+public class ControllerKiManagement{
 	
-	
+
+	MainApp mainApp;
 	@FXML Button btAbort;
 	@FXML Button btEdit;
 	@FXML Button btNewVersion;
@@ -38,8 +41,10 @@ public class ControllerKiManagement implements Initializable{
 	@FXML TabPane tpCode;
 	
 
-	public void initialize(URL url, ResourceBundle resourceBundle){
-		
+
+	public void setMainApp(MainApp app){
+		mainApp = app;
+		mainApp.cKi = this;
 	}
 	
 	
