@@ -11,7 +11,7 @@
 			</div>
 			<div class"extra">
 				von <a href="{{ url_for("anonymous.user", id=ai.user.id) }}">{{ ai.user.name }}</a>
-				{% if ai.user == current_user %}
+				{% if current_user.is_authenticated() and current_user.can_access(ai) %}
 				<a class="ui right floated button" href="{{ url_for("profile.edit_ai", id=ai.id)}}">
 					Bearbeiten
 				</a>

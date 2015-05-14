@@ -28,7 +28,7 @@
 				<div class="item"><button id="logout" class="ui green button">Ausloggen</button></div>
 				<script>
 					$("#logout").on("click", function() {
-						$.post("/api/logout").done(function() { location.reload() })
+						$.post("/api/logout").done(function() { window.location.href = "/" })
 					});
 				</script>
 			{% else %}
