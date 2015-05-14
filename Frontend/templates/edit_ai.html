@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% set active_page = "edit_ai" %}
 {% block body %}
-<form class="ui form">
+<form class="ui form" id="form">
 	<h4 class="ui dividing header">Ki Infos</h4>
 	<div class="two fields">
 		<div class="field">
@@ -55,6 +55,7 @@ $('select.dropdown').dropdown();
 
 var f = function() {
 	console.log("Updating AI in...")
+	$('#form').addClass('loading')
 	var name = $("#name").val()
 	var lang = $("#lang").val()
 	var desc = $("#desc").val()
@@ -70,7 +71,7 @@ var f = function() {
 
 	$.post("/api/ai/{{ai.id}}/update", d).done(function(data) {
 		console.log("AI changed.")
-		//location.reload();
+		location.reload();
 	}).fail(function(xhr, textStatus, errorThrown) {
 		console.log(xhr.responseText.error)
 		alert(JSON.parse(xhr.responseText).error)

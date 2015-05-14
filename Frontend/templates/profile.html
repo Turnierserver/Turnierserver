@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import render_ai %}
 {% set active_page = "profile" %}
 {% block body %}
 
@@ -19,6 +20,22 @@
 				<h2 class="ui header">Neuigkeiten</h2>
 				<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
 				<button class="ui tiny button m-top-10">Alle Neuigkeiten &raquo;</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="column">
+				<h2 class="ui header">Deine KIs</h2>
+				<div class="ui three column divided grid">
+				{% for column in columns %}
+					<div class="row">
+					{% for ai in column %}
+						<div class="column">
+							{{ render_ai(ai, current_user) }}
+						</div>
+					{% endfor %}
+					</div>
+				{% endfor %}
+				</div>
 			</div>
 		</div>
 	</div>

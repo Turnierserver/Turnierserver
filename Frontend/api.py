@@ -212,7 +212,7 @@ def api_ai_update(id):
 		return CommonErrors.NO_ACCESS
 
 	a = Activity("AI " + ai.name + " geaendert")
-	a.extratext = "Von " + str(ai)
+	a.extratext = str(ai) + " -> "
 
 	ai.name = request.form.get('name', ai.name)
 	ai.desc = request.form.get('description', ai.desc)
@@ -226,7 +226,7 @@ def api_ai_update(id):
 	db.session.commit()
 
 
-	a.extratext += "\nZu " + str(ai)
+	a.extratext += str(ai)
 
 	return ai.info()
 
