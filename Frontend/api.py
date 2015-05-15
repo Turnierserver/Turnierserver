@@ -221,14 +221,28 @@ def api_ai_update(id):
 		if l:
 			ai.lang = l
 
-
 	# es muss zur Datenbank geschrieben werden, um die aktuellen Infos zu bekommen
 	db.session.commit()
 
-
 	a.extratext += str(ai)
 
+	ai.ftp_sync()
+
 	return ai.info()
+
+@api.route("/ai/<int:id>/delete", methods=["GET", "POST"])
+@json_out
+@authenticated
+def api_ai_delete(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+
+	Activity("AI " + ai.name + " von " + current_user.name + " gelöscht!")
+	ai.delete()
 
 
 @api.route("/ai/<int:id>/submitCode")
