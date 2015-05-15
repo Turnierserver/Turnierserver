@@ -30,5 +30,11 @@ public interface Ai {
 	 * @return Das AiObject dieser Ai
 	 */
 	public AiObject getObject();
+	/**
+	 * Setzt das AiObject dieser Ai
+	 * 
+	 * @param object Das AiObject
+	 */
+	public void setObject(AiObject object);
 	
 }
