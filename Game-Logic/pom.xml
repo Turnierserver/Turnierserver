@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.pixelgaffer.turnierserver</groupId>
-  <artifactId>backend</artifactId>
+  <artifactId>gamelogic</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>Backend</name>
+  <name>Game-Logic</name>
   <url>https://github.com/LuckyLukert/Turnierserver</url>
   
   <properties>
@@ -14,18 +14,6 @@
   </properties>
   
   <dependencies>
-      
-    <dependency>
-      <groupId>it.sauronsoftware.ftp4j</groupId>
-      <artifactId>ftp4j</artifactId>
-      <version>1.7.2</version>
-    </dependency>
-    
-    <dependency>
-        <groupId>naga</groupId>
-        <artifactId>naga</artifactId>
-        <version>1.1</version>
-    </dependency>
     
     <dependency>
         <groupId>org.projectlombok</groupId>
@@ -33,23 +21,11 @@
         <version>1.16.4</version>
     </dependency>
     
-    <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>2.3.1</version>
-    </dependency>
-    
     <!-- meine libs -->
     
     <dependency>
         <groupId>org.pixelgaffer.turnierserver</groupId>
         <artifactId>networking</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </dependency>
-    
-    <dependency>
-        <groupId>org.pixelgaffer.turnierserver</groupId>
-        <artifactId>gamelogic</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
       

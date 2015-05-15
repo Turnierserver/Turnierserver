@@ -5,7 +5,7 @@
   <artifactId>networking</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>backend</name>
+  <name>Networking</name>
   <url>https://github.com/LuckyLukert/Turnierserver</url>
   
   <properties>
