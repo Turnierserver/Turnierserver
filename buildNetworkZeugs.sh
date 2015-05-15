@@ -10,7 +10,7 @@ function buildDir ()
         if [ -d "$file" ]
         then
             buildDir "$1" "$file" "$3"
-        elif [ -r "$file" ]
+        elif [ -r "$file" ] && [[ "$file" == *.java ]]
         then
             
             echo "Compiling $file"
@@ -24,14 +24,29 @@ function buildDir ()
 function buildProject ()
 {
     # delombok
-    echo "Delomboking project $2"
-    mkdir -p $2/delombok
-    java -jar lib/lombok/lombok.jar delombok -d $2/delombok $2/src &>/dev/null
+#    echo "Delomboking project $3"
+#    mkdir -p $3/delombok
+#    java -jar lib/lombok/lombok.jar delombok -d $3/delombok $3/src &>/dev/null
     
     # build
-    echo "Building project $2"
-    mkdir -p $2/bin
-    buildDir "$1" $2/delombok $2/bin || exit 1
+    echo "Building project $3"
+    mkdir -p $3/bin
+#    buildDir "$1" $3/delombok $3/bin || exit 1
+    buildDir "$1" $3/src $3/bin || exit 1
+    
+    # jar erstellen
+    echo "Building JAR for $3"
+    echo "Manifest-Version: 1.0" > build/.$3.mf
+    echo "Created-By: buildNetworkZeugs.sh" >> build/.$3.mf
+    echo "Class-Path: $2" >> build/.$3.mf
+    if [ $3 == Backend ]
+    then
+        echo "Main-Class: org.pixelgaffer.turnierserver.backend.BackendMain" >> build/.$3.mf
+    elif [ $3 == Worker ]
+    then
+        echo "Main-Class: org.pixelgaffer.turnierserver.worker.WorkerMain" >> build/.$3.mf
+    fi
+    ( cd $3/bin && jar cfm ../../build/$3.jar ../../build/.$3.mf org/pixelgaffer )
 }
 
 #### MAIN #######################################################################################################################
@@ -42,14 +57,19 @@ then
     rm -rf build
 fi
 
+# neues build-verzeichnis anlegen
+mkdir -p build || exit 1
+
 # die projekte, die gebaut werden
 projects="Backend CompilerLib Game-Logic NetworkingLib Worker"
 
 # den classpath finden
+jarcp="."
 cp="."
 for project in $projects
 do
     cp="$cp:$project:$project/bin:$project/src"
+    jarcp="$jarcp $project.jar"
 done
 for dir in lib/*
 do
@@ -58,13 +78,16 @@ do
         for jar in $dir/*.jar
         do
             cp="$cp:$jar"
+            cp "$jar" build/
+            jarcp="$jarcp  `basename "$jar"`"
         done
     fi
 done
-echo $cp
+#echo $cp
+#echo $jarcp
 
 # jedes projekt davon einzeln bauen
 for project in $projects
 do
-    buildProject $cp $project || exit 1
+    buildProject "$cp" "$jarcp" $project || exit 1
 done
