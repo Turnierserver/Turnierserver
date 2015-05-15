@@ -4,6 +4,7 @@ ESU/errorLog.txt
 .settings/
 .metadata/
 bin/
+delombok/
 .classpath
 .project
 *.class
