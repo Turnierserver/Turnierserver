@@ -22,6 +22,10 @@ public class BackendFrontendCommand
 	@Getter
 	private int requestid;
 	
+	/** Diee id des Spiels. */
+	@Getter
+	private int gametype;
+	
 	// action=compile
 	
 	/** Falls der Befehl kompilieren ist, ist dies die id der KI. */
@@ -29,10 +33,6 @@ public class BackendFrontendCommand
 	private String id;
 	
 	// action=start
-	
-	/** Falls der Befehl Spiel starten ist, ist dies die id des Spiels. */
-	@Getter
-	private int gametype;
 	
 	/** Falls der Befehl Spiel starten ist, sind dies die beteiligten KIs. */
 	@Getter

@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.worker.backendclient;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.*;
 
 import java.io.IOException;
 
@@ -11,8 +12,10 @@ import naga.SocketObserver;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandSuccess;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
+import org.pixelgaffer.turnierserver.worker.compile.CompileQueue;
 
 /**
  * Diese Klasse ist der Client zum Backend.
@@ -31,6 +34,13 @@ public class BackendClient implements SocketObserver
 	{
 		client = NetworkService.getService().openSocket(ip, port);
 		client.listen(this);
+	}
+	
+	public void sendSuccess (WorkerCommandSuccess success) throws IOException
+	{
+		System.out.println("BackendClient:39: sending success: " + success);
+		client.write(Parsers.getWorker().parse(success));
+		client.write("\n".getBytes(UTF_8));
 	}
 	
 	@Override
@@ -66,7 +76,12 @@ public class BackendClient implements SocketObserver
 			try
 			{
 				WorkerCommand cmd = Parsers.getWorker().parse(line, WorkerCommand.class);
-				System.out.println("BackendClient:59: " + cmd);
+				if (cmd.getAction() == COMPILE)
+					CompileQueue.addJob(cmd);
+				else if (cmd.getAction() == STARTAI)
+					System.out.println("BackendClient:83: " + cmd);
+				else
+					WorkerMain.getLogger().severe("BackendClient: Unknown job " + cmd.getAction());
 			}
 			catch (Exception e)
 			{

@@ -30,7 +30,7 @@ public class BackendFrontendConnectionHandler extends ConnectionHandler
 				BackendFrontendCommand cmd = Parsers.getFrontend().parse(line, BackendFrontendCommand.class);
 				if (cmd.getAction().equals("compile"))
 				{
-					Workers.getAvailableWorker().compile(cmd.getId());
+					Workers.getAvailableWorker().compile(cmd.getId(), cmd.getGametype());
 				}
 				else if (cmd.getAction().equals("start"))
 				{

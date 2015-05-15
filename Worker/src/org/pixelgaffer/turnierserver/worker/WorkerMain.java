@@ -3,6 +3,7 @@ package org.pixelgaffer.turnierserver.worker;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import lombok.Getter;
 import naga.ConnectionAcceptor;
 
 import org.pixelgaffer.turnierserver.PropertiesLoader;
@@ -14,6 +15,9 @@ import org.pixelgaffer.turnierserver.worker.server.WorkerServer;
 public class WorkerMain
 {
 	public static final WorkerInfo workerInfo = new WorkerInfo();
+	
+	@Getter
+	private static BackendClient backendClient;
 	
 	/** Gibt den Standartlogger zurück. */
 	public static Logger getLogger ()
@@ -46,7 +50,7 @@ public class WorkerMain
 		getLogger().info("BackendServer started");
 		
 		// Connect to Backend
-		new BackendClient(System.getProperty("turnierserver.backend.host"),
+		backendClient = new BackendClient(System.getProperty("turnierserver.backend.host"),
 				Integer.valueOf(System.getProperty("turnierserver.backend.workerserver.port")));
 	}
 }

@@ -66,20 +66,20 @@ public class WorkerConnection
 	 * Schickt einen Kompilieren-Befehl an den Worker, ai enthält
 	 * ${ai-id}v${ai-version}.
 	 */
-	public void compile (String ai) throws IOException
+	public void compile (String ai, int game) throws IOException
 	{
 		String s[] = ai.split("v");
 		if (s.length != 2)
 			throw new IllegalArgumentException(ai);
-		compile(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
+		compile(Integer.parseInt(s[0]), Integer.parseInt(s[1]), game);
 	}
 	
 	/**
 	 * Schickt einen Kompilieren-Befehl an den Worker.
 	 */
-	public void compile (int aiId, int version) throws IOException
+	public void compile (int aiId, int version, int game) throws IOException
 	{
-		connection.sendCommand(new WorkerCommand(WorkerCommand.COMPILE, aiId, version, UUID.randomUUID()));
+		connection.sendCommand(new WorkerCommand(WorkerCommand.COMPILE, aiId, version, game, UUID.randomUUID()));
 	}
 	
 	public synchronized boolean addJob (AiWrapper ai)

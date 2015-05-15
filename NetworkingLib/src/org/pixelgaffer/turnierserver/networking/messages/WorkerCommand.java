@@ -29,7 +29,11 @@ public class WorkerCommand
 	@Getter
 	private int version;
 	
-	/** Die UUID die das Backend diesem Befehl zugewiesen hat. */
+	/** Das zugehörige Spiel. */
+	@Getter
+	private int game;
+	
+	/** Die UUID die das Backend diesem Job zugewiesen hat. */
 	@Getter
 	private UUID uuid;
 }

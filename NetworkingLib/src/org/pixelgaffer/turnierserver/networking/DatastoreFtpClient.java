@@ -9,8 +9,11 @@ import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
 import it.sauronsoftware.ftp4j.FTPListParseException;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Files;
 
 import lombok.AccessLevel;
@@ -50,14 +53,19 @@ public class DatastoreFtpClient
 		}
 	}
 	
+	private static String aiPath (int id)
+	{
+		return "AIs/" + id;
+	}
+	
 	private static String aiBinPath (int id)
 	{
-		return "AIs/" + id + "/bin";
+		return aiPath(id) + "/bin";
 	}
 	
 	private static String aiSourcePath (int id, int version)
 	{
-		return "AIs/" + id + "/v" + version;
+		return aiPath(id) + "/v" + version;
 	}
 	
 	/**
@@ -116,6 +124,26 @@ public class DatastoreFtpClient
 	}
 	
 	/**
+	 * Gibt die Sprache der KI zurück.
+	 */
+	public static String retrieveAiLanguage (int id)
+			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
+	{
+		File tmp = Files.createTempFile("lang", ".txt").toFile();
+		retrieveFile(aiPath(id) + "/language.txt", tmp);
+		
+		StringBuilder lang = new StringBuilder();
+		Reader in = new InputStreamReader(new FileInputStream(tmp));
+		char buf[] = new char[8192];
+		int read;
+		while ((read = in.read(buf)) > 0)
+			lang.append(new String(buf, 0, read));
+		in.close();
+		
+		return lang.toString().trim();
+	}
+	
+	/**
 	 * Speichert das jar-Archiv der Gamelogic im OutputStream local.
 	 */
 	public static void retrieveGameLogic (int game, File local)
@@ -164,5 +192,11 @@ public class DatastoreFtpClient
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
 		storeFile(aiBinPath(ai) + "/v" + version + ".tar.bz2", local);
+	}
+	
+	public static void storeAiCompileOutput (int aiId, int version, File local)
+			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
+	{
+		storeFile(aiBinPath(aiId) + "/v1-compile.out", new FileInputStream(local));
 	}
 }
