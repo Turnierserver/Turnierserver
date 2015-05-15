@@ -50,14 +50,14 @@ public class DatastoreFtpClient
 		}
 	}
 	
-	private static String aiPath (String user, String name)
+	private static String aiBinPath (int id)
 	{
-		return "Users/" + user + "/" + name + "/bin";
+		return "AIs/" + id + "/bin";
 	}
 	
-	private static String aiPath (String user, String name, int version)
+	private static String aiSourcePath (int id, int version)
 	{
-		return "Users/" + user + "/" + name + "/v" + version;
+		return "AIs/" + id + "/v" + version;
 	}
 	
 	/**
@@ -96,29 +96,29 @@ public class DatastoreFtpClient
 	 * Speichert das tar-bzip2-Archiv mit den compilierten Daten der KI im
 	 * OutputStream local.
 	 */
-	public static void retrieveAi (String user, String name, int version, File local)
+	public static void retrieveAi (int id, int version, File local)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
-		retrieveFile(aiPath(user, name) + "/v" + version + ".tar.bz2", local);
+		retrieveFile(aiBinPath(id) + "/v" + version + ".tar.bz2", local);
 	}
 	
 	/**
 	 * Speichert alle Dateien im Source-Folder der KI in einem temporären
 	 * Verzeichnis und gibt dieses zurück.
 	 */
-	public static File retrieveAiSource (String user, String name, int version)
+	public static File retrieveAiSource (int id, int version)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
 			FTPListParseException
 	{
 		File tmp = Files.createTempDirectory("ai").toFile();
-		retrieveDir(aiPath(user, name, version), tmp);
+		retrieveDir(aiSourcePath(id, version), tmp);
 		return tmp;
 	}
 	
 	/**
 	 * Speichert das jar-Archiv der Gamelogic im OutputStream local.
 	 */
-	public static void retrieveGameLogic (String game, File local)
+	public static void retrieveGameLogic (int game, File local)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
 		retrieveFile("Games/" + game + "/Logic.jar", local);
@@ -127,7 +127,7 @@ public class DatastoreFtpClient
 	/**
 	 * Speichert die AiLibrary der angegebenen Sprache im Verzeichnis local.
 	 */
-	public static void retrieveAiLibrary (String game, String language, File local)
+	public static void retrieveAiLibrary (int game, String language, File local)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
 			FTPListParseException
 	{
@@ -160,9 +160,9 @@ public class DatastoreFtpClient
 	 * Lädt den Inhalt des InputStreams local als Binary-tar-bz2-Archiv der KI
 	 * hoch.
 	 */
-	public static void storeAi (String user, String ai, int version, InputStream local)
+	public static void storeAi (int ai, int version, InputStream local)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
-		storeFile(aiPath(user, ai) + "/v" + version + ".tar.bz2", local);
+		storeFile(aiBinPath(ai) + "/v" + version + ".tar.bz2", local);
 	}
 }

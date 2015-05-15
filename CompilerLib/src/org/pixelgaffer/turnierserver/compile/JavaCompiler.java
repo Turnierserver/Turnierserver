@@ -18,9 +18,9 @@ import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 
 public class JavaCompiler extends Compiler
 {
-	public JavaCompiler (String user, String ai, int version, String game)
+	public JavaCompiler (int ai, int version, int game)
 	{
-		super(user, ai, version, game);
+		super(ai, version, game);
 	}
 	
 	@Override

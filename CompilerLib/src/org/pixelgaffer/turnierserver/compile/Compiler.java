@@ -30,29 +30,29 @@ import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 @AllArgsConstructor
 public abstract class Compiler
 {
-	public static Compiler getCompiler (String user, String ai, int version, String language)
+	public static Compiler getCompiler (int ai, int version, int game, String language)
 			throws ReflectiveOperationException
 	{
 		Class<?> clazz = Class.forName("org.pixelgaffer.turnierserver.compile." + language + "Compiler");
 		Compiler c = (Compiler)clazz
-				.getConstructor(String.class, String.class, Integer.TYPE)
-				.newInstance(user, ai, version);
+				.getConstructor(Integer.TYPE, Integer.TYPE, Integer.TYPE)
+				.newInstance(ai, version, game);
 		return c;
 	}
 	
 	@Getter
-	private String user, ai;
+	private int ai;
 	@Getter
 	private int version;
 	@Getter
-	private String game;
+	private int game;
 	
 	public CompileResult compileAndUpload ()
 			throws IOException, InterruptedException, FTPIllegalReplyException, FTPException, FTPDataTransferException,
 			FTPAbortedException, FTPListParseException
 	{
 		// source runterladen
-		File srcdir = DatastoreFtpClient.retrieveAiSource(getUser(), getAi(), getVersion());
+		File srcdir = DatastoreFtpClient.retrieveAiSource(getAi(), getVersion());
 		
 		// zeugs anlegen
 		File bindir = Files.createTempDirectory("aibin").toFile();
@@ -82,7 +82,7 @@ public abstract class Compiler
 			System.out.println(execute(bindir, pw, cmd));
 			
 			// hochladen
-			DatastoreFtpClient.storeAi(getUser(), getAi(), getVersion(), new FileInputStream(archive));
+			DatastoreFtpClient.storeAi(getAi(), getVersion(), new FileInputStream(archive));
 			
 			// aufräumen
 			archive.delete();
@@ -158,7 +158,7 @@ public abstract class Compiler
 	{
 		PropertiesLoader.loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
 		
-		Compiler comp = new JavaCompiler("Nico", "MinesweeperAi", 1, "Minesweeper");
+		Compiler comp = new JavaCompiler(6, 1, 6);
 		CompileResult r = comp.compileAndUpload();
 		System.out.println("---------------------------------------------------------------------------------------");
 		FileInputStream fis = new FileInputStream(r.getOutput());
