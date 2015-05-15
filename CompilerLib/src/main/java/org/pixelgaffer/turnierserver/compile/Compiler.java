@@ -152,7 +152,7 @@ public abstract class Compiler
 		return returncode;
 	}
 	
-	public static void main (String args[])
+	/*public static void main (String args[])
 			throws IOException, InterruptedException, FTPIllegalReplyException, FTPException, FTPDataTransferException,
 			FTPAbortedException, FTPListParseException
 	{
@@ -168,5 +168,5 @@ public abstract class Compiler
 			System.out.write(buf, 0, read);
 		fis.close();
 		System.out.println(r.isSuccessfull());
-	}
+	}*/
 }
