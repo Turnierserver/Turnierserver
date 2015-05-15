@@ -49,4 +49,4 @@ cache.init_app(app)
 Activity("Serverstart abgeschlossen...", extratext="Hier gehts los.\nAlle vorherigen Events sollten nicht wichtig sein.")
 
 
-app.run(host="0.0.0.0", port=80, debug=True)
+app.run(host="0.0.0.0", port=env.web_port, debug=True)

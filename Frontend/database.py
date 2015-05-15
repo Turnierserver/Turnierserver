@@ -78,7 +78,9 @@ class AI_Game_Assoc(db.Model):
 	ai = db.relationship("AI", backref="game_assocs")
 	role_id = db.Column(db.Integer, db.ForeignKey('t_gametyperoles.id', primary_key=True))
 	role = db.relationship("GameTypeRole", backref="assocs")
-	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id', primary_key=True))
+
+	def delete(self):
+		db.session.delete(self)
 
 
 class AI(db.Model):
@@ -100,6 +102,35 @@ class AI(db.Model):
 
 	def icon(self):
 		return ftp.send_file(("AIs/"+str(self.id)+"/icon.png"))
+
+	def delete(self):
+		for assoc in self.game_assocs:
+			assoc.game.delete()
+		db.session.delete(self)
+
+	def ftp_sync(self):
+		print("FTP-Sync von " + self.name)
+		bd = "AIs/"+str(self.id)
+		if not ftp.ftp_host.path.isdir(bd):
+			print(bd, "doesnt exist!")
+			ftp.ftp_host.mkdir(bd)
+
+		with ftp.ftp_host.open(bd+"/settings.prop", "w") as f:
+			def write_prop(f, d):
+				for key in d:
+					f.write(key + "=" + str(d[key]) + "\n")
+			f.write("#Vom Frontend durch Integrity-Checks generiert\n")
+			write_prop(f, {
+				"language": self.lang.name,
+				"language_id": self.lang.id,
+				"name": self.name,
+				"id": self.id,
+				"author": self.user.name,
+			})
+
+
+		with ftp.ftp_host.open(bd+"/language.txt", "w") as f:
+			f.write(self.lang.name)
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}>".format(self.id, self.name, self.user_id, self.lang.name)
@@ -140,6 +171,11 @@ class Game(db.Model):
 	def info(self):
 		return {"id": self.id, "ais": [assoc.ai.info() for assoc in self.ai_assocs], "type": self.type.info()}
 
+	def delete(self):
+		for assoc in self.ai_assocs:
+			assoc.delete()
+		db.session.delete(self)
+
 	def __repr__(self):
 		return "<Game(id={}, type={})>".format(self.id, self.type.name)
 
@@ -152,7 +188,6 @@ class GameType(db.Model):
 	viz = db.Column(db.Text, nullable=False)
 	games = db.relationship("Game", order_by="Game.id", backref="GameType")
 	roles = db.relationship("GameTypeRole", backref="GameType")
-	assocs = db.relationship("AI_Game_Assoc", backref="GameType")
 
 	def __init__(self, *args, **kwargs):
 		super(GameType, self).__init__(*args, **kwargs)
@@ -182,7 +217,7 @@ def populate(count=20):
 	langs = [py, java, brainfuck]
 
 	minesweeper = GameType(id=1, name="Minesweeper", viz="vizs/minesweeper.html", roles=[
-		GameTypeRole(id=0, name="builder"), GameTypeRole(id=1, name="solver")
+		GameTypeRole(id=1, name="builder"), GameTypeRole(id=2, name="solver")
 	])
 	gametypes = [minesweeper]
 
@@ -198,6 +233,9 @@ def populate(count=20):
 
 	db.session.add_all(users + ais + games + assocs + langs + gametypes)
 	db.session.commit()
+
+	for ai in ais:
+		ai.ftp_sync()
 
 
 if __name__ == '__main__':
