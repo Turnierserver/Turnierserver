@@ -41,7 +41,7 @@ public class BackendMain
 		
 		// Server starten
 		getLogger().info("BackendServer starting");
-		int port = getIntProp("turnierserver.backend.server.port", BackendWorkerServer.DEFAULT_PORT);
+		int port = getIntProp("turnierserver.backend.workerserver.port", BackendWorkerServer.DEFAULT_PORT);
 		int maxClients = getIntProp("turnierserver.backend.workerserver.maxClients", -1);
 		BackendWorkerServer server0 = new BackendWorkerServer(port, maxClients);
 		port = getIntProp("turnierserver.backend.frontendserver.port", BackendFrontendServer.DEFAULT_PORT);

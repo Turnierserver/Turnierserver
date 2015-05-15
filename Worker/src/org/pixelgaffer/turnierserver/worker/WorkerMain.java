@@ -8,6 +8,7 @@ import naga.ConnectionAcceptor;
 import org.pixelgaffer.turnierserver.PropertiesLoader;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
+import org.pixelgaffer.turnierserver.worker.backendclient.BackendClient;
 import org.pixelgaffer.turnierserver.worker.server.WorkerServer;
 
 public class WorkerMain
@@ -37,10 +38,15 @@ public class WorkerMain
 		// Server starten
 		getLogger().info("BackendServer starting");
 		int port = getIntProp("turnierserver.worker.server.port", WorkerServer.DEFAULT_PORT);
+		workerInfo.setPort(port);
 		int maxClients = getIntProp("turnierserver.worker.server.maxClients", -1);
 		WorkerServer server = new WorkerServer(port, maxClients);
 		server.setConnectionAcceptor(ConnectionAcceptor.ALLOW);
 		new Thread( () -> NetworkService.mainLoop(), "NetworkService").start();
 		getLogger().info("BackendServer started");
+		
+		// Connect to Backend
+		new BackendClient(System.getProperty("turnierserver.backend.host"),
+				Integer.valueOf(System.getProperty("turnierserver.backend.workerserver.port")));
 	}
 }

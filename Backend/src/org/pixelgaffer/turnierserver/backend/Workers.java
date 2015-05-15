@@ -15,6 +15,7 @@ public class Workers
 {
 	public static boolean addWorker (@NonNull WorkerConnection worker)
 	{
+		BackendMain.getLogger().info("Workers: addWorker(" + worker + ") called");
 		return workerConnections.add(worker);
 	}
 	

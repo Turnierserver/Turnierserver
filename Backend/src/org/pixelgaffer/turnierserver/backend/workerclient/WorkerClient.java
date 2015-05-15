@@ -8,6 +8,7 @@ import lombok.Getter;
 import naga.NIOSocket;
 import naga.SocketObserver;
 
+import org.pixelgaffer.turnierserver.backend.BackendMain;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 
@@ -24,6 +25,7 @@ public class WorkerClient implements SocketObserver
 	public WorkerClient (String addr, WorkerInfo info) throws IOException
 	{
 		client = NetworkService.getService().openSocket(addr, info.getPort());
+		client.listen(this);
 	}
 	
 	/** Schließt die Verbindung. */
@@ -36,6 +38,7 @@ public class WorkerClient implements SocketObserver
 	@Override
 	public void connectionOpened (NIOSocket socket)
 	{
+		BackendMain.getLogger().info("WorkerClient: Established connection to " + socket.getIp());
 		connected = true;
 		socket.write("B\n".getBytes(UTF_8));
 	}
@@ -44,7 +47,8 @@ public class WorkerClient implements SocketObserver
 	public void connectionBroken (NIOSocket socket, Exception exception)
 	{
 		connected = false;
-		exception.printStackTrace();
+		BackendMain.getLogger()
+				.warning("WorkerClient: Connection closed" + (exception == null ? "" : ": " + exception));
 	}
 	
 	@Override

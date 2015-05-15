@@ -1,5 +1,7 @@
 package org.pixelgaffer.turnierserver.worker.backendclient;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 
 import lombok.Getter;
@@ -36,6 +38,15 @@ public class BackendClient implements SocketObserver
 	{
 		WorkerMain.getLogger().info("BackendClient: Established Connection to " + socket.getIp());
 		connected = true;
+		try
+		{
+			socket.write(Parsers.getWorker().parse(WorkerMain.workerInfo));
+			socket.write("\n".getBytes(UTF_8));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

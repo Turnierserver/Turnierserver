@@ -42,8 +42,11 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 	@Override
 	protected void disconnected ()
 	{
-		Workers.removeWorker(workerConnection);
-		workerConnection.disconnectClient();
+		if (workerConnection != null)
+		{
+			Workers.removeWorker(workerConnection);
+			workerConnection.disconnectClient();
+		}
 	}
 	
 	@Override
@@ -66,6 +69,8 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 					BackendMain.getLogger().severe("BackendConnectionHandler: while creating WorkerConnection: " + e);
 				}
 			}
+			else
+				System.out.println(line);
 		}
 	}
 }

@@ -39,17 +39,20 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	@Override
 	public void disconnected ()
 	{
-		switch (type.getType())
+		if (type != null)
 		{
-			case AI:
-				WorkerServer.aiConnections.remove(type.getUuid());
-				break;
-			case BACKEND:
-				WorkerServer.backendConnection = null;
-				break;
-			case SANDBOX:
-				Sandboxes.removeSandbox(sandbox);
-				break;
+			switch (type.getType())
+			{
+				case AI:
+					WorkerServer.aiConnections.remove(type.getUuid());
+					break;
+				case BACKEND:
+					WorkerServer.backendConnection = null;
+					break;
+				case SANDBOX:
+					Sandboxes.removeSandbox(sandbox);
+					break;
+			}
 		}
 	}
 	
@@ -63,7 +66,14 @@ public class WorkerConnectionHandler extends ConnectionHandler
 			// wenn type noch null ist, diesen lesen
 			if (type == null)
 			{
-				type = WorkerConnectionType.parse(new String(line, UTF_8));
+				String linestr = new String(line, UTF_8);
+				type = WorkerConnectionType.parse(linestr);
+				if (type == null)
+				{
+					WorkerMain.getLogger().severe("WorkerConnectionHandler: Can't parse WorkerConnectionType from " + linestr);
+					socket.close();
+					return;
+				}
 				switch (type.getType())
 				{
 					case AI:
@@ -77,6 +87,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 						Sandboxes.addSandbox(sandbox);
 						break;
 				}
+				WorkerMain.getLogger().info("WorkerConnectionHandler: Read type from " + socket.getIp() + ": " + type);
 				continue;
 			}
 			

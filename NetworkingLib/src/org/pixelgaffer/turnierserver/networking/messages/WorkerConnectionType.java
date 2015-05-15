@@ -29,7 +29,7 @@ public class WorkerConnectionType
 	@Override
 	public String toString ()
 	{
-		return type + uuid.toString();
+		return type + (uuid==null ? "" : uuid.toString());
 	}
 	
 	/**
@@ -39,7 +39,7 @@ public class WorkerConnectionType
 	 */
 	public static WorkerConnectionType parse (String data)
 	{
-		Pattern p = Pattern.compile("([ABS])(\\S+)\\s*");
+		Pattern p = Pattern.compile("([ABS])(\\S+)?\\s*");
 		Matcher m = p.matcher(data);
 		if (m.matches())
 		{

@@ -6,6 +6,7 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.ToString;
 
 import org.pixelgaffer.turnierserver.backend.server.BackendWorkerConnectionHandler;
 import org.pixelgaffer.turnierserver.backend.workerclient.WorkerClient;
@@ -15,6 +16,7 @@ import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 /**
  * Diese Klasse speichert Informationen über einen verbundenen Worker.
  */
+@ToString(of = { "sandboxes", "usedSandboxes" })
 public class WorkerConnection
 {
 	/**
@@ -55,7 +57,9 @@ public class WorkerConnection
 	 */
 	public boolean isAvailable ()
 	{
-		return (usedSandboxes < sandboxes);
+		//return (usedSandboxes < sandboxes);
+		System.out.println("todo:WorkerConnection:51: die istavailable-method ist iwi net auf die sandboxen und den worker angepasst");
+		return true;
 	}
 	
 	/**
