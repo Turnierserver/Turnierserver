@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.pixelgaffer.turnierserver.Parsers;
-import org.pixelgaffer.turnierserver.backend.AiWrapper;
-import org.pixelgaffer.turnierserver.backend.Game;
 
 public abstract class GameLogic<E extends AiObject, R> {
 	
@@ -50,20 +48,20 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @param response Die Antwort der AI
 	 * @param ai Die AI, welche diese Antwort gesendet hat
 	 */
-	protected abstract void receive(R response, AiWrapper ai);
+	protected abstract void receive(R response, Ai ai);
 	/**
 	 * Wird aufgerufen, wenn eine AI aufgegeben hat (oder aufgegeben wurde, z.B. aufgrund illegaler Aktionen oder wenn keine Rechenpunkte mehr übrig sind)
 	 * 
 	 * @param ai Die AI, welche aufgegeben hat
 	 */
-	protected abstract void lost(AiWrapper ai);
+	protected abstract void lost(Ai ai);
 	/**
 	 * Erstellt ein neues AIWrapper Objekt
 	 * 
 	 * @param ai Die AI, für die das Objekt erstellt werden soll
 	 * @return Das AI Objekt
 	 */
-	protected abstract E createUserObject(AiWrapper ai);
+	protected abstract E createUserObject(Ai ai);
 	
 	
 	/**
@@ -72,7 +70,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @throws IOException
 	 */
 	protected void sendGameState() throws IOException {
-		for(AiWrapper ai : game.getAis()) {
+		for(Ai ai : game.getAis()) {
 			getUserObject(ai).updateCalculationTimer();
 			if(!getUserObject(ai).lost)
 				sendToAi(changed, ai);
@@ -87,8 +85,8 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @return Das gecastete User Object
 	 */
 	@SuppressWarnings("unchecked")
-	protected E getUserObject(AiWrapper ai) {
-		return (E) ai.getUserObject();
+	protected E getUserObject(Ai ai) {
+		return (E) ai.getObject();
 	}
 	
 	/**
@@ -122,7 +120,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @param message Die Nachricht
 	 * @param ai Die AI, von welcher die Nachricht kommt
 	 */
-	public void receiveMessage(String message, AiWrapper ai) {
+	public void receiveMessage(String message, Ai ai) {
 		if(getUserObject(ai).lost) {
 			return;
 		}
@@ -168,8 +166,8 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @param ai Die AI, der das Objekt gesendet werden soll
 	 * @throws IOException
 	 */
-	public void sendToAi(Object object, AiWrapper ai) throws IOException {
-		ai.sendMessage(new String(Parsers.getWorker().parse(object), "UTF-8"));
+	public void sendToAi(Object object, Ai ai) throws IOException {
+		ai.sendMessage(Parsers.getWorker().parse(object));
 	}
 	
 	/**
@@ -177,15 +175,15 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 */
 	public void endGame() {
 		GameFinished message = new GameFinished();
-		message.leftoverMillis = new int[game.getAiCount()];
-		message.scores = new int[game.getAiCount()];
-		for(AiWrapper ai : game.getAis()) {
-			message.leftoverMillis[ai.getId()] = getUserObject(ai).millisLeft;
-			message.scores[ai.getId()] = getUserObject(ai).score;
-			message.won[ai.getId()] = !getUserObject(ai).lost;
+		message.leftoverMillis = new int[game.getAis().size()];
+		message.scores = new int[game.getAis().size()];
+		for(Ai ai : game.getAis()) {
+			message.leftoverMillis[ai.getIndex()] = getUserObject(ai).millisLeft;
+			message.scores[ai.getIndex()] = getUserObject(ai).score;
+			message.won[ai.getIndex()] = !getUserObject(ai).lost;
 		}
 		sendToFronted(message);
-		game.finish();
+		game.finishGame();
 	}
 	
 	/**
@@ -195,8 +193,8 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 */
 	public void startGame(Game game) {
 		this.game = game;
-		for(AiWrapper ai : game.getAis()) {
-			ai.setUserObject(createUserObject(ai));
+		for(Ai ai : game.getAis()) {
+			ai.setObject(createUserObject(ai));
 			getUserObject(ai).setLogic(this);
 			getUserObject(ai).setAi(ai);
 		}

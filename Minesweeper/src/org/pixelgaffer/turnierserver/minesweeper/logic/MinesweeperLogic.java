@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.pixelgaffer.turnierserver.backend.AiWrapper;
+import org.pixelgaffer.turnierserver.gamelogic.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 import org.pixelgaffer.turnierserver.minesweeper.Cell;
 import org.pixelgaffer.turnierserver.minesweeper.Grid;
@@ -25,16 +25,16 @@ public class MinesweeperLogic extends GameLogic<MinesweeperObject, MinesweeperRe
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void setup() {
-		generated = new Grid[game.getAiCount()];
-		steps = new int[game.getAiCount()];
-		renderData = new ArrayList[game.getAiCount()];
-		for(AiWrapper ai : game.getAis()) {
+		generated = new Grid[game.getAis().size()];
+		steps = new int[game.getAis().size()];
+		renderData = new ArrayList[game.getAis().size()];
+		for(Ai ai : game.getAis()) {
 			sendFieldRequest(ai);
 		}
 	}
 
 	@Override
-	protected void receive(MinesweeperResponse response, AiWrapper ai) {
+	protected void receive(MinesweeperResponse response, Ai ai) {
 		MinesweeperObject obj = getUserObject(ai);
 		
 		if(generated[ai.getId()] == null)  {
@@ -59,7 +59,7 @@ public class MinesweeperLogic extends GameLogic<MinesweeperObject, MinesweeperRe
 			}
 			
 			if(checkAllGenerated()) {
-				for(AiWrapper wrapper : game.getAis()) {
+				for(Ai wrapper : game.getAis()) {
 					sendGridToAi(wrapper, generated[getGrid(ai)]);
 				}
 			}
@@ -125,12 +125,12 @@ public class MinesweeperLogic extends GameLogic<MinesweeperObject, MinesweeperRe
 	}
 
 	@Override
-	protected void lost(AiWrapper ai) {
+	protected void lost(Ai ai) {
 		getUserObject(ai).score = (int) (-Math.pow(Cell.FIELD_SIZE, 2) + steps[ai.getId()]);
 	}
 
 	@Override
-	protected MinesweeperObject createUserObject(AiWrapper ai) {
+	protected MinesweeperObject createUserObject(Ai ai) {
 		MinesweeperObject o = new MinesweeperObject();
 		o.millisLeft = 10000;
 		return o;
@@ -146,7 +146,7 @@ public class MinesweeperLogic extends GameLogic<MinesweeperObject, MinesweeperRe
 	}
 	
 	private boolean checkAllSolved() {
-		for(AiWrapper ai : game.getAis()) {
+		for(Ai ai : game.getAis()) {
 			if(!generated[getGrid(ai)].won() && !getUserObject(ai).lost) {
 				return false;
 			}
@@ -154,11 +154,11 @@ public class MinesweeperLogic extends GameLogic<MinesweeperObject, MinesweeperRe
 		return true;
 	}
 	
-	private int getGrid(AiWrapper ai) {
-		return (ai.getId() - 1) % game.getAiCount();
+	private int getGrid(Ai ai) {
+		return (ai.getId() - 1) % game.getAis().size();
 	}
 	
-	private void sendGridToAi(AiWrapper ai, Grid grid) {
+	private void sendGridToAi(Ai ai, Grid grid) {
 		Map<String, String> request = new HashMap<>();
 		request.put("creating", "false");
 		request.putAll(grid.toMap());
@@ -170,7 +170,7 @@ public class MinesweeperLogic extends GameLogic<MinesweeperObject, MinesweeperRe
 		}
 	}
 	
-	private void sendFieldRequest(AiWrapper ai) {
+	private void sendFieldRequest(Ai ai) {
 		Map<String, String> request = new HashMap<>();
 		request.put("creating", "true");
 		try {

@@ -2,8 +2,6 @@ package org.pixelgaffer.turnierserver.gamelogic;
 
 import lombok.Setter;
 
-import org.pixelgaffer.turnierserver.backend.AiWrapper;
-
 public class AiObject {
 	
 	/**
@@ -24,7 +22,7 @@ public class AiObject {
 	@Setter
 	private GameLogic<?, ?> logic;
 	@Setter
-	private AiWrapper ai;
+	private Ai ai;
 	
 	/**
 	 * Gibt an, ob geupdated werden soll
@@ -104,7 +102,7 @@ public class AiObject {
 		if(lost) {
 			return;
 		}
-		logic.game.finish(ai.getId());
+		ai.disconnect();
 		logic.lost(ai);
 		lost = true;
 	}

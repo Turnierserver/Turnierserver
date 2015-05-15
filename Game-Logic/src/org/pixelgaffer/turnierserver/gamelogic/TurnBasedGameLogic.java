@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.pixelgaffer.turnierserver.backend.AiWrapper;
-import org.pixelgaffer.turnierserver.backend.Game;
 
 public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogic<E, R> {
 	
 	/**
 	 * Die AIs, deren Antworten erhalten wurden
 	 */
-	private Set<AiWrapper> received;
+	private Set<Ai> received;
 	
 	public TurnBasedGameLogic(Class<R> responseType) {
 		super(responseType);
@@ -32,10 +30,10 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogi
 	 * @param message Die Antwort einer AI
 	 * @param ai Die AI, welche die Antwort gesendet hat
 	 */
-	protected abstract void processResponse(R message, AiWrapper ai);
+	protected abstract void processResponse(R message, Ai ai);
 		
 	@Override
-	protected void receive(R response, AiWrapper ai) {
+	protected void receive(R response, Ai ai) {
 		if(received.contains(ai)) {
 			getUserObject(ai).loose();
 			return;
@@ -47,7 +45,7 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogi
 		received.add(ai);
 		processResponse(response, ai);
 		
-		if(received.size() == game.getAiCount()) {
+		if(received.size() == game.getAis().size()) {
 			Object update = update();
 			if(update != null) {
 				sendRenderData(update);
@@ -55,7 +53,7 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogi
 			
 			try {
 				sendGameState();
-				for(AiWrapper wrapper : game.getAis()) {
+				for(Ai wrapper : game.getAis()) {
 					if(!getUserObject(wrapper).lost) {
 						getUserObject(wrapper).startCalculationTimer(10);
 					}
@@ -65,7 +63,7 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogi
 			}
 			
 			received.clear();
-			for(AiWrapper wrapper : game.getAis()) {
+			for(Ai wrapper : game.getAis()) {
 				if(getUserObject(wrapper).lost) {
 					received.add(wrapper);
 				}
