@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pixelgaffer.turnierserver.esu.view.ControllerKiManagement">
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pixelgaffer.turnierserver.esu.view.ControllerAiManagement">
    <children>
       <SplitPane dividerPositions="0.29797979797979796" prefHeight="700.0" prefWidth="1100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
@@ -40,11 +40,7 @@
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: white;">
                            <children>
-                              <ImageView fx:id="image" fitHeight="250.0" fitWidth="250.0" layoutX="503.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
-                                 <image>
-                                    <Image url="@../../../../../../../../../../../Downloads/Symbole/BWINF-Logo.gif" />
-                                 </image>
-                              </ImageView>
+                              <ImageView fx:id="image" fitHeight="250.0" fitWidth="250.0" layoutX="503.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
                               <Button layoutX="657.0" layoutY="264.0" mnemonicParsing="false" onAction="#clickChangeImage" text="Bild ändern" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="269.0" />
                               <TextArea fx:id="tbOutput" layoutX="422.0" layoutY="410.0" prefHeight="0.0" prefWidth="0.0" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="324.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="370.0" />
                               <Label layoutX="324.0" layoutY="344.0" text="Ausgabe:" AnchorPane.leftAnchor="324.0" AnchorPane.topAnchor="344.0" />

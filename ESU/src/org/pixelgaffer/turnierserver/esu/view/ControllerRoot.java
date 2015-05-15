@@ -5,7 +5,8 @@ import java.util.ResourceBundle;
 import java.io.IOException;
 import java.net.URL;
 
-import org.pixelgaffer.turnierserver.esu.MainApp;
+import org.pixelgaffer.turnierserver.esu.*;
+import org.pixelgaffer.turnierserver.esu.view.*;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -43,10 +44,10 @@ public class ControllerRoot{
 			((ControllerStartPage) loader.getController()).setMainApp(mainApp);
 
 			loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("KiManagement.fxml"));
+			loader.setLocation(getClass().getResource("AiManagement.fxml"));
 			anchorKiManagement = (AnchorPane) loader.load();
 			tabKiManagement.setContent(anchorKiManagement);
-			((ControllerKiManagement) loader.getController()).setMainApp(mainApp);
+			((ControllerAiManagement) loader.getController()).setMainApp(mainApp);
 
 			loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("GameManagement.fxml"));

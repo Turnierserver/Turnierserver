@@ -10,41 +10,41 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 
-public class ControllerKiManagement{
+public class ControllerAiManagement{
 	
 
 	MainApp mainApp;
-	@FXML Button btAbort;
-	@FXML Button btEdit;
-	@FXML Button btNewVersion;
-	@FXML Button btCompile;
-	@FXML Button btQualify;
-	@FXML Button btFreeze;
-	@FXML Button btUpload;
-	@FXML Label lbName;
-	@FXML Label lbLanguage;
-	@FXML Label lbCompiled;
-	@FXML Label lbQualified;
-	@FXML Label lbFrozen;
-	@FXML Label lbUploaded;
-	@FXML RadioButton rbSimple;
-	@FXML RadioButton rbContinue;
-	@FXML RadioButton rbFromFile;
-	@FXML TextField tbFile;
-	@FXML TextField tbName;
-	@FXML TextArea tbOutput;
-	@FXML TextArea tbDescription;
-	@FXML ChoiceBox<String> cbVersion;
-	@FXML ChoiceBox<String> cbLanguage;
-	@FXML ListView<String> lvKis;
-	@FXML ImageView image;
-	@FXML TabPane tpCode;
+	@FXML public Button btAbort;
+	@FXML public Button btEdit;
+	@FXML public Button btNewVersion;
+	@FXML public Button btCompile;
+	@FXML public Button btQualify;
+	@FXML public Button btFreeze;
+	@FXML public Button btUpload;
+	@FXML public Label lbName;
+	@FXML public Label lbLanguage;
+	@FXML public Label lbCompiled;
+	@FXML public Label lbQualified;
+	@FXML public Label lbFrozen;
+	@FXML public Label lbUploaded;
+	@FXML public RadioButton rbSimple;
+	@FXML public RadioButton rbContinue;
+	@FXML public RadioButton rbFromFile;
+	@FXML public TextField tbFile;
+	@FXML public TextField tbName;
+	@FXML public TextArea tbOutput;
+	@FXML public TextArea tbDescription;
+	@FXML public ChoiceBox<String> cbVersion;
+	@FXML public ChoiceBox<String> cbLanguage;
+	@FXML public ListView<String> lvKis;
+	@FXML public ImageView image;
+	@FXML public TabPane tpCode;
 	
 
 
 	public void setMainApp(MainApp app){
 		mainApp = app;
-		mainApp.cKi = this;
+		mainApp.cAi = this;
 	}
 	
 	

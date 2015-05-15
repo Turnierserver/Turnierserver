@@ -1,7 +1,7 @@
 package org.pixelgaffer.turnierserver.esu;
  
 import org.pixelgaffer.turnierserver.esu.view.ControllerGameManagement;
-import org.pixelgaffer.turnierserver.esu.view.ControllerKiManagement;
+import org.pixelgaffer.turnierserver.esu.view.ControllerAiManagement;
 import org.pixelgaffer.turnierserver.esu.view.ControllerRanking;
 import org.pixelgaffer.turnierserver.esu.view.ControllerRoot;
 import org.pixelgaffer.turnierserver.esu.view.ControllerStartPage;
@@ -17,7 +17,7 @@ public class MainApp extends Application{
 	
 	public ControllerRoot cRoot;
 	public ControllerStartPage cStart;
-	public ControllerKiManagement cKi;
+	public ControllerAiManagement cAi;
 	public ControllerGameManagement cGame;
 	public ControllerRanking cRanking;
 	public ControllerSubmission cSubmission;
@@ -26,24 +26,32 @@ public class MainApp extends Application{
 		Java, Phyton
 	}
 	
-	
+	/**
+	 * Main-Methode
+	 * 
+	 * @param args Argumente
+	 */
 	public static void main(String[] args){
-		ErrorLog.clear();
-		ErrorLog.write("", true);
-		new Player("test3");
 		launch(args);
 	}
-	 
+	
+	/**
+	 * start-Methode (wegen: extends Application)
+	 */
 	public void start(Stage stage) throws Exception {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("view/RootLayout.fxml"));
 		BorderPane root = (BorderPane) loader.load();
 		((ControllerRoot) loader.getController()).setMainApp(this);
 		
+		ErrorLog.clear();
+		ErrorLog.write("", true);
+		Player pp = new Player("test3");
+		//pp.setPicture(pp.getPicture());
+		cAi.image.setImage(pp.getPicture());
+		
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
-		stage.setHeight(700);
-		stage.setWidth(1100);
 		stage.show();
 	}
 	
