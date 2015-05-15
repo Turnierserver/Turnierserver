@@ -1,0 +1,19 @@
+# Backend
+turnierserver.backend.host
+turnierserver.backend.workerserver.port
+turnierserver.backend.frontendserver.port
+
+# Worker
+turnierserver.worker.host
+turnierserver.worker.server.port
+
+# FTP-Server des Datastore
+turnierserver.datastore.host
+turnierserver.datastore.port
+turnierserver.datastore.username
+turnierserver.datastore.password
+
+# GZIP für JSON benutzen, wenn es problemlos geht
+turnierserver.serializer.compress.worker
+turnierserver.serializer.compress.sandbox
+
