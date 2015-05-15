@@ -12,6 +12,7 @@ function buildDir ()
             buildDir "$1" "$file" "$3"
         elif [ -r "$file" ]
         then
+            
             echo "Compiling $file"
             javac -d "$3" -cp "$1" "$file" || exit 1
         fi
@@ -22,8 +23,15 @@ function buildDir ()
 
 function buildProject ()
 {
+    # delombok
+    echo "Delomboking project $2"
+    mkdir -p $2/delombok
+    java -jar lib/lombok/lombok.jar delombok -d $2/delombok $2/src &>/dev/null
+    
+    # build
+    echo "Building project $2"
     mkdir -p $2/bin
-    buildDir "$1" $2/src $2/bin || exit 1
+    buildDir "$1" $2/delombok $2/bin || exit 1
 }
 
 #### MAIN #######################################################################################################################
