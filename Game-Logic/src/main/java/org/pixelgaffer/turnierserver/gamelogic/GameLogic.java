@@ -16,7 +16,7 @@ import org.pixelgaffer.turnierserver.gamelogic.messages.GameFinished;
 import org.pixelgaffer.turnierserver.gamelogic.messages.RenderData;
 
 import com.google.common.collect.Ordering;
-import com.google.common.reflect.TypeToken;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * @param <E> Das AiObject
