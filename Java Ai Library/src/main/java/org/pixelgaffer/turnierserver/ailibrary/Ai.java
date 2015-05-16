@@ -15,6 +15,10 @@ import org.pixelgaffer.turnierserver.gamelogic.interfaces.GameState;
 
 import com.google.gson.reflect.TypeToken;
 
+/**
+ * @param <E> Der GameState
+ * @param <R> Die Antwort der Spiellogik
+ */
 public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 	
 	/**
@@ -65,7 +69,7 @@ public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 	 * @param state Der Gamestate
 	 * @return Die Antwort an den Server, null wenn keine gesendet werden soll (der Server wartet bei rundenbasierten Spielen trotzdem auf eine Antwort)
 	 */
-	protected abstract R update(E state);
+	protected abstract Object update(E state);
 	/**
 	 * Gibt den momentanen Spielzustand zurück
 	 * 

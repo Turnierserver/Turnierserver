@@ -1,5 +1,7 @@
 package org.pixelgaffer.turnierserver.gamelogic.interfaces;
 
+import org.pixelgaffer.turnierserver.gamelogic.messages.BuilderSolverResponse;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +11,7 @@ import lombok.Setter;
  * @param <B> Die BuildResponse
  * @param <B> Die SolveResponse
  */
-public abstract class BuilderSolverGameState<C, B, S> implements GameState<C, Object> {
+public abstract class BuilderSolverGameState<C, B, S> implements GameState<C, BuilderSolverResponse<B, S>> {
 	
 	@Getter @Setter
 	private Ai ai;
@@ -58,9 +60,8 @@ public abstract class BuilderSolverGameState<C, B, S> implements GameState<C, Ob
 	 */
 	public abstract C getState();
 	
-	
 	@Override
-	public final void applyChanges(Object response, Ai ai) {
+	public final void applyChanges(BuilderSolverResponse<B, S> response, Ai ai) {
 		throw new IllegalStateException();
 	}
 	

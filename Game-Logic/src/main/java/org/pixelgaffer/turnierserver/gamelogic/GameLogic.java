@@ -48,8 +48,11 @@ public abstract class GameLogic<E extends AiObject, R> {
 	  */
 	private AiOrdering ordering = new AiOrdering();
 	
-	private TypeToken<R> token = new TypeToken<R>() {private static final long serialVersionUID = 9085500040627125217L;};
-	
+	private TypeToken<R> token;
+
+	public GameLogic(TypeToken<R> token) {
+		this.token = token;
+	}
 	
 	/**
 	 * Erstellt das Spiel, inseriert alle Keys in den Gamestate (falls dieser verwendet wird)
