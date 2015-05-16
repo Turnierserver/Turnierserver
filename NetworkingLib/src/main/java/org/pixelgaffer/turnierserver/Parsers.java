@@ -14,7 +14,7 @@ public class Parsers {
 	private static Parser defaultParser;
 	private static Parser compressingParser;
 	
-	private static GsonBuilder gson;
+	private static GsonBuilder gson = new GsonBuilder();
 	
 	private static boolean compressByDefault;
 	private static boolean compressWorkerByDefault;
