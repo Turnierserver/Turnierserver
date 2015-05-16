@@ -3,6 +3,7 @@ ESU/errorLog.txt
 
 .settings/
 .metadata/
+.recommenders/
 bin/
 build/
 target/

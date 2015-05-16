@@ -1,43 +1,54 @@
 package org.pixelgaffer.turnierserver.gamelogic;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Map;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import org.pixelgaffer.turnierserver.Parsers;
+import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
+import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
+import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
+import org.pixelgaffer.turnierserver.gamelogic.messages.GameFinished;
+import org.pixelgaffer.turnierserver.gamelogic.messages.RenderData;
 
+import com.google.common.collect.Ordering;
+import com.google.common.reflect.TypeToken;
+
+/**
+ * @param <E> Das AiObject
+ * @param <R> Die Antwort der Ai
+ */
+@NoArgsConstructor
 public abstract class GameLogic<E extends AiObject, R> {
+	
+	/**
+	 * Gibt an, wie viele Runden gespielt werden. -1 bei unbegrenzt vielen Runden.
+	 */
+	@Getter @Setter
+	private int maxTurns = -1;
+	
+	/**
+	 * Gibt an, wie viele Runden schon gespielt wurden
+	 */
+	@Getter
+	private int playedRounds;
 	
 	/**
 	 * Das Spiel, welches von dieser GameLogic geleitet wird
 	 */
+	@Getter
 	protected Game game;
 	
-	/**
-	 * Die Art der Antwort
-	 */
-	private Class<R> responseType;
-	/**
-	 * Der Gamstate
-	 */
-	private Map<String, String> gamestate;
-	/**
-	 * Die Sachen, welche sich im Gamestate verändert haben
-	 */
-	private Map<String, String> changed;
+	 /**
+	  * Sortiert Ais absteigend nach Score
+	  */
+	private AiOrdering ordering = new AiOrdering();
 	
-	/**
-	 * Der Konstruktor, MUSS verwendet werden
-	 * 
-	 * @param responseType Die Klasse der Response, die Empfangen werden soll
-	 */
-	public GameLogic(Class<R> responseType) {
-		this.responseType = responseType;
-		gamestate = new HashMap<>();
-		changed = new HashMap<>();
-	}
+	private TypeToken<R> token = new TypeToken<R>() {private static final long serialVersionUID = 9085500040627125217L;};
 	
 	
 	/**
@@ -56,7 +67,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * 
 	 * @param ai Die AI, welche aufgegeben hat
 	 */
-	protected abstract void lost(Ai ai);
+	public abstract void lost(Ai ai);
 	/**
 	 * Erstellt ein neues AIWrapper Objekt
 	 * 
@@ -64,21 +75,10 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @return Das AI Objekt
 	 */
 	protected abstract E createUserObject(Ai ai);
-	
-	
 	/**
-	 * Schickt die Änderungen des GameStates an alle AIs
-	 * 
-	 * @throws IOException
+	 * Wird aufgerufen, wenn endGame() aufgerufen wird. Hier kann Score zeugs implementiert werden.
 	 */
-	protected void sendGameState() throws IOException {
-		for(Ai ai : game.getAis()) {
-			getUserObject(ai).updateCalculationTimer();
-			if(!getUserObject(ai).lost)
-				sendToAi(changed, ai);
-		}
-		changed.clear();
-	}
+	protected abstract void gameFinished();
 	
 	/**
 	 * Castet das User Object der AI (Util-Methode)
@@ -92,31 +92,6 @@ public abstract class GameLogic<E extends AiObject, R> {
 	}
 	
 	/**
-	 * Setzt einen Schlüssel im Gamestate
-	 * 
-	 * @param key Der Schlüssel
-	 * @param value Der Wert
-	 */
-	protected void set(String key, String value) {
-		gamestate.put(key, value);
-		changed.put(key, value);
-	}
-	
-	/**
-	 * Holt sich den Wert eines Schlüssels im Gamestate
-	 * 
-	 * @param key Der Schlüssel
-	 * @return Der Wert
-	 */
-	protected String get(String key) {
-		if(!gamestate.containsKey(key)) {
-			set(key, "");
-			return "";
-		}
-		return gamestate.get(gamestate);
-	}
-	
-	/**
 	 * Wird aufgerufen, wenn eine Nachricht empfangen wurde
 	 * 
 	 * @param message Die Nachricht
@@ -126,12 +101,12 @@ public abstract class GameLogic<E extends AiObject, R> {
 		if(getUserObject(ai).lost) {
 			return;
 		}
-		if(new String(message, UTF_8).equals("SURRENDER")) {
+		if(new String(message, StandardCharsets.UTF_8).equals("SURRENDER")) {
 			getUserObject(ai).loose();
 			return;
 		}
 		try {
-			receive(Parsers.getWorker().parse(message, responseType), ai);
+			receive(Parsers.getWorker().parse(message, token.getType()), ai);
 		} catch (IOException e) {
 			getUserObject(ai).loose();
 		}
@@ -143,10 +118,17 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @param object Das Objekt, das gesendet werden soll
 	 */
 	public void sendToFronted(Object object) {
-		throw new UnsupportedOperationException();
+		try {
+			game.getFrontend().sendMessage(Parsers.getFrontend().parse(object));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	private int update = 1; 
+	/**
+	 * Das Renderupdate
+	 */
+	protected int update = 1; 
 	
 	/**
 	 * Sendet die Daten zum rendern an das Frontend
@@ -177,13 +159,19 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 */
 	public void endGame() {
 		GameFinished message = new GameFinished();
-		message.leftoverMillis = new int[game.getAis().size()];
-		message.scores = new int[game.getAis().size()];
-		for(Ai ai : game.getAis()) {
-			message.leftoverMillis[ai.getIndex()] = getUserObject(ai).millisLeft;
-			message.scores[ai.getIndex()] = getUserObject(ai).score;
-			message.won[ai.getIndex()] = !getUserObject(ai).lost;
+		message.leftoverMillis = new HashMap<>();
+		message.scores = new HashMap<>();
+		message.position = new HashMap<>();
+		
+		int pos = 1;
+		
+		for(Ai ai : ordering.sortedCopy(game.getAis())) {
+			message.leftoverMillis.put(ai.getId(), getUserObject(ai).millisLeft);
+			message.scores.put(ai.getId(), getUserObject(ai).score);
+			message.position.put(ai.getId(), pos);
+			pos++;
 		}
+		
 		sendToFronted(message);
 		game.finishGame();
 	}
@@ -202,4 +190,26 @@ public abstract class GameLogic<E extends AiObject, R> {
 		}
 		setup();
 	}
+
+	
+	/**
+	 * Erhöht playedRounds um 1
+	 */
+	public void round() {
+		playedRounds++;
+	}
+	
+	/**
+	 * Sortiert Ais aufsteigend nach Score 
+	 * 
+	 */
+	public static class AiOrdering extends Ordering<Ai> {
+		@Override
+		public int compare(Ai ai1, Ai ai2) {
+			AiObject o1 = ai1.getObject();
+			AiObject o2 = ai2.getObject();
+			return Integer.compare(o1.score, o2.score);
+		}
+	}
+	
 }
