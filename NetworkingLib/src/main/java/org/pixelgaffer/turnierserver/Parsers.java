@@ -1,5 +1,9 @@
 package org.pixelgaffer.turnierserver;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.Since;
@@ -100,6 +104,46 @@ public class Parsers {
 	 */
 	public static <E> void addTypeAdapter(TypeToken<E> type, TypeAdapter<E> typeAdapter) {
 		gson.registerTypeAdapter(type.getType(), typeAdapter);
+	}
+	
+	public static void escape(byte[] bytes, OutputStream out) {
+		try {
+			for(byte b : bytes) {
+				if(b == (byte) '\\') {
+					out.write('\\');
+					out.write('\\');
+					continue;
+				}
+				if(b == (byte) '\n') {
+					out.write('\\');
+					out.write('n');
+					continue;
+				}
+				out.write(b);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static byte[] escape(byte[] in) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		for(int i = 0; i < in.length; i++) {
+			if(in[i] == '\\') {
+				if(in[i + 1] == 'n') {
+					out.write('\n');
+					i++;
+					continue;
+				}
+				if(in[i + 1] == '\\') {
+					out.write('\\');
+					i++;
+					continue;
+				}
+			}
+			out.write(in[i]);
+		}
+		return out.toByteArray();
 	}
 	
 }

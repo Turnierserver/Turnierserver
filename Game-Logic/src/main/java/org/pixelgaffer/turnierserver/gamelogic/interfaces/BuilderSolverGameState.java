@@ -7,9 +7,9 @@ import org.pixelgaffer.turnierserver.gamelogic.messages.BuilderSolverChange;
  * @param <B> Die BuildResponse
  * @param <B> Die SolveResponse
  */
-public interface BuilderSolverGameState<C, B, S> {
+public abstract class BuilderSolverGameState<C, B, S> implements GameState<C, Object> {
 	
-	public class Response<C> {
+	public static class Response<C> {
 		/**
 		 * True wenn die Antwort der Ai valide war
 		 */
@@ -35,7 +35,7 @@ public interface BuilderSolverGameState<C, B, S> {
 	 * @param ai Die Ai, welche geantwortet hat
 	 * @return Die BuildResponse
 	 */
-	public Response<C> build(B response);
+	public abstract Response<C> build(B response);
 	
 	/**
 	 * Solved den GameState nach der Antwort der Ai, wird nur auf der GameLogic aufgerufen
@@ -44,20 +44,29 @@ public interface BuilderSolverGameState<C, B, S> {
 	 * @param ai Die Ai, welche geantwortet hat
 	 * @return Die SolveResponse
 	 */
-	public Response<C> solve(S response);
+	public abstract Response<C> solve(S response);
 	
 	/**
 	 * Gibt ein Objekt zurück, welches an die Ai geschickt werden kann, damit diese diesen Zustand erhält bevor sie anfängt zulösen
 	 * 
 	 * @return Diesen Zustand als Änderungsobjekt
 	 */
-	public C getState();
+	public abstract C getState();
 	
-	/**
-	 * Wendet eine Änderung am GameState an, wie von der Ai angefordert
-	 * 
-	 * @param change Die Änderung, welche angefordert wurde
-	 */
-	public void applyChange(C change);
+	
+	@Override
+	public final void applyChanges(Object response, Ai ai) {
+		throw new IllegalStateException();
+	}
+	
+	@Override
+	public C getChanges(Ai ai) {
+		throw new IllegalStateException();
+	}
+	
+	@Override
+	public void clearChanges(Ai ai) {
+		throw new IllegalStateException();
+	}
 		
 }
