@@ -1,4 +1,4 @@
-package org.pixelgaffer.turnierserver.gamelogic;
+package org.pixelgaffer.turnierserver.gamelogic.messages;
 
 public class RenderData {
 	
@@ -10,6 +10,10 @@ public class RenderData {
 	 * Die Nummer des updates
 	 */
 	public int update;
+	/**
+	 * Die Fsortschrittsanzeige des Spieles
+	 */
+	public String display;
 	/**
 	 * Die Daten, die an den renderer gesendet werden sollen
 	 */

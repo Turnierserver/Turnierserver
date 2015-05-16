@@ -1,32 +1,31 @@
 package org.pixelgaffer.turnierserver;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.GsonBuilder;
 
 class GsonParser implements Parser {
 	
-	private Gson gson;
+	private GsonBuilder builder;
 	
-	public GsonParser() {
-		gson = new Gson();
+	public GsonParser(GsonBuilder builder) {
+		this.builder = builder;
 	}
 
 	@Override
 	public <E> E parse(byte[] data, Class<E> type) throws IOException {
-		return gson.fromJson(new String(data, "UTF-8"), type);
+		return builder.create().fromJson(new String(data, "UTF-8"), type);
 	}
 
 	@Override
-	public <E> E parse(byte[] data, TypeToken<E> token) throws IOException {
-		return gson.fromJson(new String(data, "UTF-8"), token.getType());
+	public <E> E parse(byte[] data, Type type) throws IOException {
+		return builder.create().fromJson(new String(data, "UTF-8"), type);
 	}
 
 	@Override
 	public byte[] parse(Object obj) throws IOException {
-		return gson.toJson(obj).getBytes("UTF-8");
+		return builder.create().toJson(obj).getBytes("UTF-8");
 	}
-	
 	
 }

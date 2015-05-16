@@ -1,4 +1,4 @@
-package org.pixelgaffer.turnierserver.gamelogic;
+package org.pixelgaffer.turnierserver.gamelogic.interfaces;
 
 import java.util.List;
 

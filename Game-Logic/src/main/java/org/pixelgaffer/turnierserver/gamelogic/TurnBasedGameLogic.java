@@ -1,21 +1,23 @@
 package org.pixelgaffer.turnierserver.gamelogic;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
+import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
+import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 
-public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogic<E, R> {
+/**
+ * @param <E> Das AiObject
+ * @param <R> Die Antwort der Ai
+ */
+public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameStateLogic<E, R> {
 	
 	/**
 	 * Die AIs, deren Antworten erhalten wurden
 	 */
-	private Set<Ai> received;
-	
-	public TurnBasedGameLogic(Class<R> responseType) {
-		super(responseType);
-		received = new HashSet<>();
-	}
+	private List<Ai> received = new ArrayList<>();
 	
 	/**
 	 * Wird aufgerufen, wenn alle AIs geantwortet haben, und der Gamestate geupdated werden muss
@@ -23,17 +25,9 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogi
 	 * @return Das Objekt für den renderer, wenn null wird nichts gesendet
 	 */
 	protected abstract Object update();
-	
-	/**
-	 * Verarbeitet eine Antwort einer AI
-	 * 
-	 * @param message Die Antwort einer AI
-	 * @param ai Die AI, welche die Antwort gesendet hat
-	 */
-	protected abstract void processResponse(R message, Ai ai);
 		
 	@Override
-	protected void receive(R response, Ai ai) {
+	protected final void receive(R response, Ai ai) {
 		if(received.contains(ai)) {
 			getUserObject(ai).loose();
 			return;
@@ -43,13 +37,45 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogi
 			return;
 		}
 		received.add(ai);
-		processResponse(response, ai);
+		gamestate.applyChanges(response, ai);
 		
+		check();
+	}
+	
+	@Override
+	public void startGame(Game game) {
+		super.startGame(game);
+		try {
+			sendGameState();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * super.lost(Ai ai) MUSS AUFGERUFEN WERDEN!!
+	 */
+	@Override
+	public void lost(Ai ai) {
+		if(!received.contains(ai)) {
+			received.add(ai);
+			check();
+		}
+	}
+	
+	private void check() {
 		if(received.size() == game.getAis().size()) {
 			Object update = update();
 			if(update != null) {
 				sendRenderData(update);
 			}
+			
+			if(getMaxTurns() == getPlayedRounds()) {
+				endGame();
+				return;
+			}
+			
+			round();
 			
 			try {
 				sendGameState();
@@ -70,15 +96,5 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameLogi
 			}
 		}
 	}
-	
-	@Override
-	public void startGame(Game game) {
-		super.startGame(game);
-		try {
-			sendGameState();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
+		
 }

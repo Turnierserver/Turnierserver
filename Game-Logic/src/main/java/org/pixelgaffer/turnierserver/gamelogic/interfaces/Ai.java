@@ -1,4 +1,6 @@
-package org.pixelgaffer.turnierserver.gamelogic;
+package org.pixelgaffer.turnierserver.gamelogic.interfaces;
+
+import java.io.IOException;
 
 import java.io.IOException;
 

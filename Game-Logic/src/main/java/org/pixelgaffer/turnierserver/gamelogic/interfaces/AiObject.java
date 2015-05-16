@@ -1,4 +1,6 @@
-package org.pixelgaffer.turnierserver.gamelogic;
+package org.pixelgaffer.turnierserver.gamelogic.interfaces;
+
+import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 
 import lombok.Setter;
 
@@ -105,6 +107,16 @@ public class AiObject {
 		ai.disconnect();
 		logic.lost(ai);
 		lost = true;
+		boolean finishGame = true;
+		for(Ai ai : logic.getGame().getAis()) {
+			if(!ai.getObject().lost) {
+				finishGame = false;
+				break;
+			}
+		}
+		if(finishGame) {
+			logic.endGame();
+		}
 	}
 	
 }

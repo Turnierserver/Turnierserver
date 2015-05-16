@@ -3,12 +3,17 @@ package org.pixelgaffer.turnierserver;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.GsonBuilder;
 
 public class GsonGzipParser extends GsonParser {
+
+	public GsonGzipParser(GsonBuilder builder) {
+		super(builder);
+	}
 
 	@Override
 	public <E> E parse(byte[] data, Class<E> type) throws IOException {
@@ -16,8 +21,8 @@ public class GsonGzipParser extends GsonParser {
 	}
 
 	@Override
-	public <E> E parse(byte[] data, TypeToken<E> token) throws IOException {
-		return super.parse(uncompress(data), token);
+	public <E> E parse(byte[] data, Type type) throws IOException {
+		return super.parse(uncompress(data), type);
 		
 	}
 

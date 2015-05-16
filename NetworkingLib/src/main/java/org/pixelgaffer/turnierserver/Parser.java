@@ -1,8 +1,7 @@
 package org.pixelgaffer.turnierserver;
 
 import java.io.IOException;
-
-import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 
 public interface Parser {
 	
@@ -23,7 +22,7 @@ public interface Parser {
 	 * @return Das geparste Objekt
 	 * @throws IOException
 	 */
-	public <E> E parse(byte[] data, TypeToken<E> token) throws IOException;
+	public <E> E parse(byte[] data, Type type) throws IOException;
 	
 	/**
 	 * Parsed ein Objekt in ein Byte-Array
