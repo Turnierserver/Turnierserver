@@ -17,17 +17,15 @@ public class ErrorLog {
 	}
 	
 	/**
-	 * Speichert einen neuen Eintrag in "errorLog.txt"
+	 * Speichert einen neuen Eintrag in "errorLog.txt" mit anschlieﬂender newLine
 	 * 
 	 * @param log Inhalt der Fehlermeldung
 	 * @param withClock bestimmt, ob die Uhrzeit mit gespeichert werden soll
 	 */
 	public static void write(String log, boolean withClock){
 		if (withClock){
-			Date now = new Date();
-			writeWithoutBlanck(new java.text.SimpleDateFormat("HH:mm,ss").format(now));
-			writeWithoutBlanck(": " + log);
-			writeWithoutBlanck(System.getProperty("line.separator"));
+			writeWithoutBlanck(new java.text.SimpleDateFormat("HH:mm,ss").format(new Date()) + ": ");
+			write(log);
 		}
 		else{
 			write(log);
@@ -35,7 +33,7 @@ public class ErrorLog {
 	}
 	
 	/**
-	 * ‹berladene Methode ohne withClock-Auswahl
+	 * ‹berladene Methode ohne withClock-Auswahl (siehe oben)
 	 * 
 	 * @param log Inhalt der Fehlermeldung
 	 */

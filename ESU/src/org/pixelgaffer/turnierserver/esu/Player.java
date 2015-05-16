@@ -18,6 +18,10 @@ public class Player {
 	private String description = "(keine Beschreibung)";
 	List<Version> versions = new ArrayList<Version>();
 	
+	public static enum NewVersionType{
+		fromFile, simplePlayer, lastVersion
+	}
+	
 	/**
 	 * Lädt einen Player mit dem übergebenen Titel in das Objekt.
 	 * 
@@ -40,11 +44,52 @@ public class Player {
 	}
 	
 	/**
+	 * Fügt eine neue Version der Versionsliste hinzu.
+	 * 
+	 * @param type die Art, in der die Version hinzugefügt werden soll
+	 * @return die Version, die hinzugefügt wurde
+	 */
+	public Version newVersion(NewVersionType type){
+		if (type == NewVersionType.fromFile){
+			return null;
+		}
+		return newVersion(type, "");
+	}
+	/**
+	 * Fügt eine neue Version der Versionsliste hinzu.
+	 * 
+	 * @param type die Art, in der die Version hinzugefügt werden soll
+	 * @param path der Pfad, von dem die Version kopiert werden soll, falls type==fromFile
+	 * @return die Version, die hinzugefügt wurde
+	 */
+	public Version newVersion(NewVersionType type, String path){
+		Version version = null;
+		switch (type){
+		case fromFile:
+			version = new Version(this, versions.size(), path);
+			break;
+		case lastVersion:
+			if(versions.size() == 0){
+				return null;
+			}
+			version = new Version(this, versions.size(), "Players\\" + title + "\\v" + (versions.size()-1));
+			break;
+		case simplePlayer:
+			version = new Version(this, versions.size());
+			break;
+		}
+		versions.add(version);
+		return version;
+	}
+	
+	
+	
+	/**
 	 * Lädt aus dem Dateiverzeichnis die Eigenschaften des Players.
 	 */
 	public void loadProps(){
 		try {
-			Reader reader = new FileReader(title + "\\properties.txt");
+			Reader reader = new FileReader("Players\\" + title + "\\properties.txt");
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
@@ -65,10 +110,10 @@ public class Player {
 	 * Speichert die Eigenschaften des Players in das Dateiverzeichnis.
 	 */
 	public void storeProps(){
-		File dir = new File(title);
+		File dir = new File("Players\\" + title);
 		
-		if(!dir.mkdir()){
-			ErrorLog.write("Dieser Ordner existiert bereits.");
+		if(!dir.mkdirs()){
+			ErrorLog.write("Dieser Player existiert bereits.");  //todo: unterscheiden zwischen neu anzulegen und abspeichern
 		}
 		
 		Properties prop = new Properties();
@@ -84,13 +129,13 @@ public class Player {
 		}
 		
 		try {
-			Writer writer = new FileWriter(title + "\\properties.txt");
+			Writer writer = new FileWriter("Players\\" + title + "\\properties.txt");
 			prop.store(writer, "Datei" );
 			writer.close();
 		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden.");}
 		ErrorLog.write("Ein neuer Ordner wurde angelegt.");
 	}
-
+		
 	/**
 	 * Gibt die Player-Beschreibung zurück.
 	 * 
