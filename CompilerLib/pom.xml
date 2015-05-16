@@ -55,4 +55,20 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
+  <organization>
+  	<name>Pixelgaffer</name>
+  </organization>
+  
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>pixelgaffer</id>
+      <name>Pixelgaffer Repository</name>
+      <url>http://cherryworm.duckdns.org:8081/nexus/content/repositories/releases/</url>
+    </repository>
+  </repositories>
+  
 </project>
