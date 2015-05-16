@@ -12,6 +12,7 @@ import org.pixelgaffer.turnierserver.backend.BackendMain;
 import org.pixelgaffer.turnierserver.backend.WorkerConnection;
 import org.pixelgaffer.turnierserver.backend.Workers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
+import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
@@ -37,6 +38,11 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 	{
 		getClient().write(Parsers.getWorker().parse(cmd));
 		getClient().write("\n".getBytes(UTF_8));
+	}
+	
+	public void sendMessage (MessageForward mf) throws IOException
+	{
+		workerConnection.sendMessage(mf);
 	}
 	
 	@Override

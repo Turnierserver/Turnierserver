@@ -10,6 +10,7 @@ import lombok.ToString;
 
 import org.pixelgaffer.turnierserver.backend.server.BackendWorkerConnectionHandler;
 import org.pixelgaffer.turnierserver.backend.workerclient.WorkerClient;
+import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 
@@ -57,8 +58,9 @@ public class WorkerConnection
 	 */
 	public boolean isAvailable ()
 	{
-		//return (usedSandboxes < sandboxes);
-		System.out.println("todo:WorkerConnection:51: die istavailable-method ist iwi net auf die sandboxen und den worker angepasst");
+		// return (usedSandboxes < sandboxes);
+		System.out
+				.println("todo:WorkerConnection:51: die istavailable-method ist iwi net auf die sandboxen und den worker angepasst");
 		return true;
 	}
 	
@@ -82,10 +84,24 @@ public class WorkerConnection
 		connection.sendCommand(new WorkerCommand(WorkerCommand.COMPILE, aiId, version, game, UUID.randomUUID()));
 	}
 	
-	public synchronized boolean addJob (AiWrapper ai)
+	/**
+	 * Schickt einen StarteKI-Befehl an den Worker insofern dieser nicht
+	 * komplett beschäftigt ist.
+	 */
+	public boolean addJob (AiWrapper ai, int game) throws IOException
 	{
 		if (!isAvailable())
 			return false;
+		connection.sendCommand(new WorkerCommand(WorkerCommand.STARTAI,
+				ai.getId(), ai.getVersion(), game, ai.getUuid()));
 		return true;
+	}
+	
+	/**
+	 * Schickt den MessageForward an den Worker
+	 */
+	public void sendMessage (MessageForward mf)
+	{
+		
 	}
 }

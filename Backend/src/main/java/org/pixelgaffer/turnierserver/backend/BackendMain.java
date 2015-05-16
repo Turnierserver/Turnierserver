@@ -45,7 +45,7 @@ public class BackendMain
 		int maxClients = getIntProp("turnierserver.backend.workerserver.maxClients", -1);
 		BackendWorkerServer server0 = new BackendWorkerServer(port, maxClients);
 		port = getIntProp("turnierserver.backend.frontendserver.port", BackendFrontendServer.DEFAULT_PORT);
-		BackendFrontendServer server1 = new BackendFrontendServer(port, 1);
+		BackendFrontendServer server1 = new BackendFrontendServer(port);
 		server0.setConnectionAcceptor(ConnectionAcceptor.ALLOW);
 		server1.setConnectionAcceptor(ConnectionAcceptor.ALLOW);
 		new Thread( () -> NetworkService.mainLoop(), "NetworkService").start();

@@ -24,15 +24,6 @@ public class BackendFrontendServer extends Server<BackendFrontendConnectionPool>
 		BackendMain.getLogger().info("BackendServer opened successfully on port " + port);
 	}
 	
-	/**
-	 * Öffnet den Server auf dem angegebenen Port mit der maximalen Anzahl an
-	 * Clients.
-	 */
-	public BackendFrontendServer (int port, int maxClients) throws IOException
-	{
-		super(port, new BackendFrontendConnectionPool(), maxClients);
-	}
-	
 	@Override
 	public void acceptFailed (IOException exception)
 	{
