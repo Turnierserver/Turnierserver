@@ -10,6 +10,7 @@ projects="NetworkingLib CompilerLib Worker Game-Logic Backend"
 for project in $projects
 do
     cd $project
+    mvn clean
     mvn package
     mvn install
     cp target/*.jar ../build/
