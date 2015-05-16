@@ -6,9 +6,16 @@ import java.util.List;
 
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.BuilderSolverAiObject;
+import org.pixelgaffer.turnierserver.gamelogic.interfaces.BuilderSolverGameState;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 
-public abstract class OneBuilderAllSolverLogic<E extends BuilderSolverAiObject<B,S>, B, S> extends BuilderSolverLogic<E, B, S> {
+/**
+ * @param <E> Das AiObject
+ * @param <G> Der GameState
+ * @param <B> Die BuilderResponse
+ * @param <S> Die SolverResponse
+ */
+public abstract class OneBuilderAllSolverLogic<E extends BuilderSolverAiObject<G>, G extends BuilderSolverGameState<?, B, S>, B, S> extends BuilderSolverLogic<E, G, B, S> {
 	
 	@Override
 	public List<Ai> getBuilder() {

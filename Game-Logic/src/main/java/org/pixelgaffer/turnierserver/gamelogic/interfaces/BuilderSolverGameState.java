@@ -1,6 +1,8 @@
 package org.pixelgaffer.turnierserver.gamelogic.interfaces;
 
-import org.pixelgaffer.turnierserver.gamelogic.messages.BuilderSolverChange;
+import lombok.Getter;
+import lombok.Setter;
+
 
 /**
  * @param <C> Das Veränderungsobjekt, welches an die Ai gesendet werden soll
@@ -8,6 +10,9 @@ import org.pixelgaffer.turnierserver.gamelogic.messages.BuilderSolverChange;
  * @param <B> Die SolveResponse
  */
 public abstract class BuilderSolverGameState<C, B, S> implements GameState<C, Object> {
+	
+	@Getter @Setter
+	private Ai ai;
 	
 	public static class Response<C> {
 		/**
@@ -21,7 +26,7 @@ public abstract class BuilderSolverGameState<C, B, S> implements GameState<C, Ob
 		/**
 		 * Die Änderungen, die während diesem Schritt vorgenommen wurden. Null, wenn nichts gesendet werden soll.
 		 */
-		public BuilderSolverChange<C> changes;
+		public C changes;
 		/**
 		 * Die Renderdaten. Null wenn nichts gesendet werden soll
 		 */
@@ -47,7 +52,7 @@ public abstract class BuilderSolverGameState<C, B, S> implements GameState<C, Ob
 	public abstract Response<C> solve(S response);
 	
 	/**
-	 * Gibt ein Objekt zurück, welches an die Ai geschickt werden kann, damit diese diesen Zustand erhält bevor sie anfängt zulösen
+	 * Gibt ein Objekt zurück, welches an die Ai geschickt werden kann, damit diese diesen Zustand erhält bevor sie anfängt zu lösen
 	 * 
 	 * @return Diesen Zustand als Änderungsobjekt
 	 */

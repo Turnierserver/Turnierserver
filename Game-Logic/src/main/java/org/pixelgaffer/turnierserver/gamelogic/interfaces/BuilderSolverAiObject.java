@@ -1,9 +1,9 @@
 package org.pixelgaffer.turnierserver.gamelogic.interfaces;
 
-public class BuilderSolverAiObject<B, S> extends AiObject {
+public class BuilderSolverAiObject<E extends BuilderSolverGameState<?, ?, ?>> extends AiObject {
 	
-	public BuilderSolverGameState<?, B, S> building;
-	public BuilderSolverGameState<?, B, S> solving;
+	public E building;
+	public E solving;
 	public boolean succesful = false;
 	
 }

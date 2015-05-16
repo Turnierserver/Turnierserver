@@ -14,10 +14,11 @@ import org.pixelgaffer.turnierserver.gamelogic.messages.BuilderSolverResponse;
 
 /**
  * @param <E> Das AiObject
+ * @param <G> Der GameState
  * @param <B> Die BuilderResponse
  * @param <S> Die SolverResponse
  */
-public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<B, S>, B, S> extends GameLogic<E, BuilderSolverResponse<B, S>> {
+public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G extends BuilderSolverGameState<?, B, S>, B, S> extends GameLogic<E, BuilderSolverResponse<B, S>> {
 	
 	/**
 	 * True wenn building, sonst solving
@@ -44,11 +45,12 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<B, S>, 
 	public abstract List<Ai> getSolver();
 	
 	/**
-	 * Erstellt einen neuen GameState
+	 * Erstellt einen neuen GameState, damit die ai diesen aufbauen kann
 	 * 
+	 * @param ai Die Ai, die diesen aufbauen wird
 	 * @return Den neuen GameState
 	 */
-	public abstract BuilderSolverGameState<?, B, S> createGameState();
+	public abstract G createGameState(Ai ai);
 	
 	/**
 	 * Wird aufgerufen, wenn eine Ai beim ausführen ihrer Aufgabe gescheitert ist
@@ -182,12 +184,13 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<B, S>, 
 				return;
 			}
 			Ai builder = getBuilder(ai);
-			if(!getUserObject(builder).succesful) {
+			if(!getUserObject(builder).succesful || getUserObject(ai).lost) {
 				succeeded(false, ai);
 				finished.add(ai);
 				return;
 			}
 			getUserObject(ai).solving = getUserObject(builder).building;
+			getUserObject(ai).solving.setAi(ai);
 			change.change = getUserObject(builder).building.getState();
 			getUserObject(ai).succesful = false;
 			try {
@@ -208,7 +211,7 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<B, S>, 
 				finished.add(ai);
 				continue;
 			}
-			getUserObject(ai).building = createGameState();
+			getUserObject(ai).building = createGameState(ai);
 			getUserObject(ai).succesful = false;
 			try {
 				sendToAi(change, ai);
