@@ -115,18 +115,19 @@ class AI(db.Model):
 			print(bd, "doesnt exist!")
 			ftp.ftp_host.mkdir(bd)
 
-		with ftp.ftp_host.open(bd+"/settings.prop", "w") as f:
-			def write_prop(f, d):
-				for key in d:
-					f.write(key + "=" + str(d[key]) + "\n")
-			f.write("#Vom Frontend durch Integrity-Checks generiert\n")
-			write_prop(f, {
-				"language": self.lang.name,
-				"language_id": self.lang.id,
-				"name": self.name,
-				"id": self.id,
-				"author": self.user.name,
-			})
+		for version in [1]:
+			with ftp.ftp_host.open(bd+"/v"+str(version)+"/settings.prop", "w") as f:
+				def write_prop(f, d):
+					for key in d:
+						f.write(key + "=" + str(d[key]) + "\n")
+				f.write("#Vom Frontend durch Integrity-Checks generiert\n")
+				write_prop(f, dict(
+					language = self.lang.name,
+					language_id = self.lang.id,
+					name = self.name,
+					id = self.id,
+					author = self.user.name,
+				))
 
 
 		with ftp.ftp_host.open(bd+"/language.txt", "w") as f:
