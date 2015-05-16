@@ -7,16 +7,15 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.PropertiesLoader;
+import org.pixelgaffer.turnierserver.gamelogic.interfaces.GameState;
 
 import com.google.gson.reflect.TypeToken;
 
-public abstract class Ai<E, R> implements Runnable {
+public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 	
 	/**
 	 * Die Connection zum Worker
@@ -39,6 +38,8 @@ public abstract class Ai<E, R> implements Runnable {
 	 * Der momentane Gamestate des Servers
 	 */
 	protected Map<String, String> gamestate;
+	
+	private TypeToken<R> token = new TypeToken<R>() {};
 	
 	public Ai() {
 		try {
@@ -70,7 +71,7 @@ public abstract class Ai<E, R> implements Runnable {
 	 * 
 	 * @return Der momentane Spielzustand
 	 */
-	protected abstract E getState();
+	protected abstract E getState(R change);
 	
 	@Override
 	public final void run() {
@@ -81,13 +82,10 @@ public abstract class Ai<E, R> implements Runnable {
 					System.exit(0);
 				}
 				String line = in.readLine();
-				Map<String, String> updates = Parsers.getWorker().parse(line.getBytes("UTF-8"), new TypeToken<HashMap<String, String>>() {});
-				for(Entry<String, String> update : updates.entrySet()) {
-					gamestate.put(update.getKey(), update.getValue());
-				}
-				R response = update(getState());
+				R updates = Parsers.getWorker().parse(line.getBytes("UTF-8"), token.getType());
+				Object response = update(getState(updates));
 				if(response != null) {
-					out.println(new String(Parsers.getParser(true).parse(response), "UTF-8"));
+					send(response);
 				}
 			}
 		}
@@ -102,7 +100,7 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	protected final void send(Object o) {
 		try {
-			out.println(new String(Parsers.getWorker().parse(o), "UTF-8"));
+			Parsers.escape(Parsers.getWorker().parse(o), con.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -113,6 +111,7 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	public final void surrender() {
 		out.println("SURRENDER");
+		System.exit(0);
 	}
 	
 	/**
