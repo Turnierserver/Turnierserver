@@ -13,3 +13,6 @@ Und hier die einzelnen Spezifikationen, der Module (aus [#1](https://github.com/
 - [Spiel-Logik] (https://github.com/LuckyLukert/Turnierserver/blob/master/Game-Logic/README.md)
 - [Libs] (https://github.com/LuckyLukert/Turnierserver/blob/master/Libs/README.md)
 - [Sandbox-Server] (https://github.com/LuckyLukert/Turnierserver/blob/master/Sandbox-Server/README.md)
+
+Beispiels-Implementation eines Spieles:
+https://github.com/nicosio2/Minesweeper
