@@ -1,5 +1,7 @@
 package org.pixelgaffer.turnierserver.gamelogic;
 
+import java.io.IOException;
+
 public interface Ai {
 	
 	/**
@@ -19,7 +21,7 @@ public interface Ai {
 	 * 
 	 * @param message Die Nachricht
 	 */
-	public void sendMessage(byte[] message);
+	public void sendMessage(byte[] message) throws IOException;
 	/**
 	 * Schließt die Verbindung zur AI. Falls die Verbindung schon geschlossen wurde, wird nichts gemacht. Ist da, um Worker-Kapazitäten freizugeben.
 	 */

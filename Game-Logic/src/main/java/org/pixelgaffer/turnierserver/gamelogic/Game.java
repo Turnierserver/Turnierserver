@@ -9,7 +9,7 @@ public interface Game {
 	 * 
 	 * @return Die diesem Spiel zugehörigen Ais
 	 */
-	public List<Ai> getAis();
+	public List<? extends Ai> getAis();
 	/**
 	 * Gibt das Frontend zurück
 	 * 

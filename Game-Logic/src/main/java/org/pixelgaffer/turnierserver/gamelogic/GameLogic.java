@@ -1,5 +1,7 @@
 package org.pixelgaffer.turnierserver.gamelogic;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -120,16 +122,16 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @param message Die Nachricht
 	 * @param ai Die AI, von welcher die Nachricht kommt
 	 */
-	public void receiveMessage(String message, Ai ai) {
+	public void receiveMessage(byte[] message, Ai ai) {
 		if(getUserObject(ai).lost) {
 			return;
 		}
-		if(message.equals("SURRENDER")) {
+		if(new String(message, UTF_8).equals("SURRENDER")) {
 			getUserObject(ai).loose();
 			return;
 		}
 		try {
-			receive(Parsers.getWorker().parse(message.getBytes("UTF-8"), responseType), ai);
+			receive(Parsers.getWorker().parse(message, responseType), ai);
 		} catch (IOException e) {
 			getUserObject(ai).loose();
 		}
@@ -200,9 +202,4 @@ public abstract class GameLogic<E extends AiObject, R> {
 		}
 		setup();
 	}
-	
-	public static void main(String[] args) {
-		
-	}
-	
 }
