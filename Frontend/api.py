@@ -221,6 +221,10 @@ def api_ai_update(id):
 		if l:
 			ai.lang = l
 
+	if 'extras' in request.form:
+		extras = request.form.get("extras")
+		ai.lastest_version().extras(json.loads(extras))
+
 	# es muss zur Datenbank geschrieben werden, um die aktuellen Infos zu bekommen
 	db.session.commit()
 

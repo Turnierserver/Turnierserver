@@ -7,6 +7,7 @@ from functools import wraps
 import ftputil
 import socket
 import arrow
+import json
 
 db = SQLAlchemy()
 
@@ -116,6 +117,7 @@ class AI(db.Model):
 	lang = db.relationship("Lang", backref=db.backref('t_ais', order_by=id))
 	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
 	type = db.relationship("GameType", backref=db.backref('t_ais', order_by=id))
+	version_list = db.relationship("AI_Version", order_by="AI_Version.id", backref="AI")
 
 	def __init__(self, *args, **kwargs):
 		super(AI, self).__init__(*args, **kwargs)
@@ -126,6 +128,11 @@ class AI(db.Model):
 
 	def icon(self):
 		return ftp.send_file(("AIs/"+str(self.id)+"/icon.png"))
+
+	def lastest_version(self):
+		if len(self.version_list) == 0:
+			self.version_list.append(AI_Version(id=1))
+		return self.version_list[-1]
 
 	def delete(self):
 		for assoc in self.game_assocs:
@@ -141,10 +148,10 @@ class AI(db.Model):
 		if not ftp.ftp_host.path.isdir(bd+"/bin"):
 			ftp.ftp_host.mkdir(bd+"/bin")
 
-		for version in [1]:
-			if not ftp.ftp_host.path.isdir(bd+"/v"+str(version)):
-				ftp.ftp_host.mkdir(bd+"/v"+str(version))
-			with ftp.ftp_host.open(bd+"/v"+str(version)+"/settings.prop", "w") as f:
+		for version in self.version_list:
+			if not ftp.ftp_host.path.isdir(bd+"/v"+str(version.id)):
+				ftp.ftp_host.mkdir(bd+"/v"+str(version.id))
+			with ftp.ftp_host.open(bd+"/v"+str(version.id)+"/settings.prop", "w") as f:
 				def write_prop(f, d):
 					for key in d:
 						f.write(key + "=" + str(d[key]) + "\n")
@@ -165,6 +172,35 @@ class AI(db.Model):
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}>".format(self.id, self.name, self.user_id, self.lang.name, self.type.name)
+
+class AI_Version(db.Model):
+	__tablename__ = 't_ai_versions'
+	id = db.Column(db.Integer, primary_key=True)
+	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'))
+	ai = db.relationship("AI", backref=db.backref('t_ai_versions', order_by=id))
+	extras_str = db.Column(db.Text, default="[]")
+	# dafuer komm ich in die DB-Hoelle
+
+	def __init__(self, *args, **kwargs):
+		super(AI_Version, self).__init__(*args, **kwargs)
+		if not self.extras_str:
+			# eigentlich wird der standart Wert schon oben gesetzt
+			self.extras_str = "[]"
+		db_obj_init_msg(self)
+
+	def info(self):
+		return {"id": self.id, "extras": self.extras()}
+
+	def extras(self, e=False):
+		if e:
+			self.extras_str = json.dumps(e)
+		return json.loads(self.extras_str)
+
+	def delete(self):
+		db.session.delete(self)
+
+	def __repr__(self):
+		return "<AI_Version(id={}>".format(self.id)
 
 class Lang(db.Model):
 	__tablename__ = "t_langs"

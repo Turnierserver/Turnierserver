@@ -30,12 +30,20 @@
 			<label>Extras</label>
 			<select name="extras" multiple="" class="ui fluid dropdown" id="extras">
 				<option value="">Extras:</option>
-				<option value="pypy">Pypy</option>
+				<option value="pypy" class="active selected">Pypy</option>
 				<option value="lombok">Lombok</option>
 				<option value="dmlib">DeineMudda</option>
 				<option value="swag">Swag</option>
 				<option value="yolo">Y∂l∂</option>
 			</select>
+			<script>
+				// ## Das ist verdammt haesslig und sollte nicht verdammt haesslig sein.
+				$("#extras").dropdown("set selected", [
+					{% for selected in ai.lastest_version().extras() %}
+						"{{selected}}",
+					{% endfor %}
+				]);
+			</script>
 		</div>
 	</div>
 	<div class="field">
@@ -65,7 +73,7 @@ var f = function() {
 		name: name,
 		lang: lang,
 		description: desc,
-		extras: extras
+		extras: JSON.stringify(extras)
 	}
 	console.log(name, lang, desc, extras)
 

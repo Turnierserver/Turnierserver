@@ -35,7 +35,7 @@ def authenticated_web(f):
 					db.session.rollback()
 					db.session.close()
 					raise
-		abort(401) ##TODO: ne 401 error page
+		abort(401) ## ne 401 error page
 	return wrapper
 
 
