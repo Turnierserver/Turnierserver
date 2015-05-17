@@ -112,10 +112,13 @@ class AI(db.Model):
 		print("FTP-Sync von " + self.name)
 		bd = "AIs/"+str(self.id)
 		if not ftp.ftp_host.path.isdir(bd):
-			print(bd, "doesnt exist!")
 			ftp.ftp_host.mkdir(bd)
+		if not ftp.ftp_host.path.isdir(bd+"/bin"):
+			ftp.ftp_host.mkdir(bd+"/bin")
 
 		for version in [1]:
+			if not ftp.ftp_host.path.isdir(bd+"/v"+str(version)):
+				ftp.ftp_host.mkdir(bd+"/v"+str(version))
 			with ftp.ftp_host.open(bd+"/v"+str(version)+"/settings.prop", "w") as f:
 				def write_prop(f, d):
 					for key in d:
