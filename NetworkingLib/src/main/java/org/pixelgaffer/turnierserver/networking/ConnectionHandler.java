@@ -38,6 +38,7 @@ public abstract class ConnectionHandler implements SocketObserver
 	public void connectionOpened (NIOSocket socket)
 	{
 		connected = true;
+		connected();
 	}
 	
 	/**

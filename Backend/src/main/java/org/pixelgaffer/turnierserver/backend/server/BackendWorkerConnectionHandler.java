@@ -76,7 +76,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 				}
 			}
 			else
-				System.out.println(line);
+				System.out.println(new String(line, UTF_8));
 		}
 	}
 }

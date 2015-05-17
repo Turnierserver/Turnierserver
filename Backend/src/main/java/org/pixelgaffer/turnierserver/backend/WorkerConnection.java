@@ -59,8 +59,8 @@ public class WorkerConnection
 	public boolean isAvailable ()
 	{
 		// return (usedSandboxes < sandboxes);
-		System.out
-				.println("todo:WorkerConnection:51: die istavailable-method ist iwi net auf die sandboxen und den worker angepasst");
+		System.out.println(
+				"todo:WorkerConnection:51: die istavailable-method ist iwi net auf die sandboxen und den worker angepasst");
 		return true;
 	}
 	
@@ -98,10 +98,10 @@ public class WorkerConnection
 	}
 	
 	/**
-	 * Schickt den MessageForward an den Worker
+	 * Schickt den MessageForward an den Worker weiter.
 	 */
-	public void sendMessage (MessageForward mf)
+	public void sendMessage (MessageForward mf) throws IOException
 	{
-		
+		client.sendMessage(mf);
 	}
 }

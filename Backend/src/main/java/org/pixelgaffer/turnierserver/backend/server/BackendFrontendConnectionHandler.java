@@ -26,6 +26,7 @@ public class BackendFrontendConnectionHandler extends ConnectionHandler
 	@Override
 	protected void connected ()
 	{
+		BackendMain.getLogger().info("BackendFrontendConnectionHandler: Frontend (" + getClient().getIp() + ") connected.");
 		frontend = this;
 	}
 	
