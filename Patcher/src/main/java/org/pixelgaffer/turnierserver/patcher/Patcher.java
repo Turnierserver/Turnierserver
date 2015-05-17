@@ -1,4 +1,4 @@
-package pixelgaffer.turnierserver.patcher;
+package org.pixelgaffer.turnierserver.patcher;
 
 import java.io.File;
 import java.io.FileInputStream;
