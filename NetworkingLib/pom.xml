@@ -57,6 +57,14 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
+      <id>github</id>
+      <name>Pixelgaffer Repository</name>
+      <url>https://raw.githubusercontent.com/msrd0/MavenRespository/master/repository/</url>
+    </repository>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
       <id>pixelgaffer</id>
       <name>Pixelgaffer Repository</name>
       <url>http://cherryworm.duckdns.org:8081/nexus/content/repositories/releases/</url>
