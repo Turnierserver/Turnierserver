@@ -1,5 +1,7 @@
 .directory
 ESU/errorLog.txt
+__pycache__
+*.log
 
 .settings/
 .metadata/
