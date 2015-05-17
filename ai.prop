@@ -1,5 +1,0 @@
-turnierserver.worker.host=localhost
-turnierserver.worker.server.port=1337
-turnierserver.worker.server.aichar=A
-turnierserver.serializer.compress.worker=false
-turnierserver.ai.uuid
