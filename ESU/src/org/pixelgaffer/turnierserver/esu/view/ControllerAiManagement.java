@@ -19,13 +19,13 @@ public class ControllerAiManagement{
 	@FXML public Button btNewVersion;
 	@FXML public Button btCompile;
 	@FXML public Button btQualify;
-	@FXML public Button btFreeze;
+	@FXML public Button btFinish;
 	@FXML public Button btUpload;
 	@FXML public Label lbName;
 	@FXML public Label lbLanguage;
 	@FXML public Label lbCompiled;
 	@FXML public Label lbQualified;
-	@FXML public Label lbFrozen;
+	@FXML public Label lbFinished;
 	@FXML public Label lbUploaded;
 	@FXML public RadioButton rbSimple;
 	@FXML public RadioButton rbContinue;
@@ -96,7 +96,7 @@ public class ControllerAiManagement{
 		tbFile.setText("Info12 geklickt");
 	}
 	
-	@FXML void clickFreeze(){
+	@FXML void clickFinish(){
 		tbFile.setText("Info13 geklickt");
 	}
 	

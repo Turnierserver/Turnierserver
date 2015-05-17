@@ -79,6 +79,7 @@ public class Player {
 			break;
 		}
 		versions.add(version);
+		storeProps();
 		return version;
 	}
 	
@@ -104,21 +105,18 @@ public class Player {
 			default:
 				language = Language.Java;
 			}
-		} catch (IOException e) {ErrorLog.write("Dieser Spieler existiert nicht.");}
+		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt");}
 	}
 	/**
 	 * Speichert die Eigenschaften des Players in das Dateiverzeichnis.
 	 */
 	public void storeProps(){
 		File dir = new File("Players\\" + title);
-		
-		if(!dir.mkdirs()){
-			ErrorLog.write("Dieser Player existiert bereits.");  //todo: unterscheiden zwischen neu anzulegen und abspeichern
-		}
+		dir.mkdirs();
 		
 		Properties prop = new Properties();
-		prop.setProperty("title", title);
 		prop.setProperty("description", description);
+		prop.setProperty("versionAmount", "" + versions.size());
 		switch (language){
 		case Java:
 			prop.setProperty("language", "Java");
@@ -130,12 +128,26 @@ public class Player {
 		
 		try {
 			Writer writer = new FileWriter("Players\\" + title + "\\properties.txt");
-			prop.store(writer, "Datei" );
+			prop.store(writer, title );
 			writer.close();
-		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden.");}
-		ErrorLog.write("Ein neuer Ordner wurde angelegt.");
+		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Player)");}
 	}
-		
+	
+	public void loadVersions(){
+		versions.clear();
+		int versionAmount = 0;
+		try {
+			Reader reader = new FileReader("Players\\" + title + "\\properties.txt");
+			Properties prop = new Properties();
+			prop.load(reader);
+			reader.close();
+			versionAmount = Integer.parseInt(prop.getProperty("versionAmount"));
+		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt (loadVerions)");}
+		for (int i = 0; i < versionAmount; i++){
+			versions.add(new Version(this, i));
+		}
+	}
+	
 	/**
 	 * Gibt die Player-Beschreibung zurück.
 	 * 

@@ -1,5 +1,5 @@
-#Datei
-#Sat May 16 17:09:05 CEST 2015
+#testAI
+#Sun May 17 22:07:22 CEST 2015
+versionAmount=1
 description=Das ist eine Beschreibung
-title=testAI
 language=Java
