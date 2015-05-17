@@ -14,3 +14,11 @@ class LocalEnvironment:
 	web_port = 5000
 
 env = LocalEnvironment
+
+def showopts():
+	for key in dir(env):
+		if not key.startswith("__"):
+			print("{} = {}".format(key, getattr(env, key)))
+
+if __name__ == "__main__":
+	showopts()
