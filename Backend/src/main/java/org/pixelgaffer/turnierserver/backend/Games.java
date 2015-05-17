@@ -25,7 +25,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-import org.pixelgaffer.turnierserver.PropertiesLoader;
+import org.pixelgaffer.turnierserver.PropertyUtils;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
@@ -187,7 +187,7 @@ public class Games
 	
 	public static void main (String args[]) throws Throwable
 	{
-		PropertiesLoader.loadProperties("/etc/turnierserver/turnierserver.prop");
+		PropertyUtils.loadProperties("/etc/turnierserver/turnierserver.prop");
 		System.out.println(startGame(1, "6v1", "6v1"));
 	}
 }

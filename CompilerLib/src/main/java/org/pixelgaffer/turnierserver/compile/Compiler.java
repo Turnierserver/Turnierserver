@@ -20,7 +20,6 @@ import java.util.Properties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import org.pixelgaffer.turnierserver.PropertiesLoader;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 
 /**
@@ -156,7 +155,7 @@ public abstract class Compiler
 			throws IOException, InterruptedException, FTPIllegalReplyException, FTPException, FTPDataTransferException,
 			FTPAbortedException, FTPListParseException
 	{
-		PropertiesLoader.loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
+		PropertyUtils.loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
 		
 		Compiler comp = new JavaCompiler(6, 1, 6);
 		CompileResult r = comp.compileAndUpload();

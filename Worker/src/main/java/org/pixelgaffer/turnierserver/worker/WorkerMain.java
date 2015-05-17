@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import lombok.Getter;
 import naga.ConnectionAcceptor;
 
-import org.pixelgaffer.turnierserver.PropertiesLoader;
+import org.pixelgaffer.turnierserver.PropertyUtils;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 import org.pixelgaffer.turnierserver.worker.backendclient.BackendClient;
@@ -37,7 +37,7 @@ public class WorkerMain
 	public static void main (String args[]) throws IOException
 	{
 		// Properties laden
-		PropertiesLoader.loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
+		PropertyUtils.loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
 		
 		// Server starten
 		getLogger().info("BackendServer starting");
