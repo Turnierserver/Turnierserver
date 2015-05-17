@@ -1,12 +1,12 @@
 package org.pixelgaffer.turnierserver.backend.server;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import lombok.Getter;
 import naga.NIOSocket;
 
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.BackendMain;
-import org.pixelgaffer.turnierserver.backend.Games;
-import org.pixelgaffer.turnierserver.backend.Workers;
+import org.pixelgaffer.turnierserver.backend.Jobs;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 
@@ -26,7 +26,8 @@ public class BackendFrontendConnectionHandler extends ConnectionHandler
 	@Override
 	protected void connected ()
 	{
-		BackendMain.getLogger().info("BackendFrontendConnectionHandler: Frontend (" + getClient().getIp() + ") connected.");
+		BackendMain.getLogger().info(
+				"BackendFrontendConnectionHandler: Frontend (" + getClient().getIp() + ") connected.");
 		frontend = this;
 	}
 	
@@ -40,17 +41,7 @@ public class BackendFrontendConnectionHandler extends ConnectionHandler
 			try
 			{
 				BackendFrontendCommand cmd = Parsers.getFrontend().parse(line, BackendFrontendCommand.class);
-				if (cmd.getAction().equals("compile"))
-				{
-					Workers.getAvailableWorker().compile(cmd.getId(), cmd.getGametype());
-				}
-				else if (cmd.getAction().equals("start"))
-				{
-					Games.startGame(cmd.getGametype(), cmd.getAis());
-				}
-				else
-					BackendMain.getLogger().severe(
-							"Unknown action from Frontend (" + socket.getIp() + "): " + cmd.getAction());
+				Jobs.processJob(cmd);
 			}
 			catch (Exception e)
 			{
@@ -61,6 +52,7 @@ public class BackendFrontendConnectionHandler extends ConnectionHandler
 	
 	public void sendMessage (byte message[])
 	{
-		throw new UnsupportedOperationException();
+		getClient().write(message);
+		getClient().write("\n".getBytes(UTF_8));
 	}
 }

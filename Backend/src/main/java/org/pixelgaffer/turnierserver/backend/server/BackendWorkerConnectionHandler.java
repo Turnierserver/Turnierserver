@@ -9,11 +9,13 @@ import naga.NIOSocket;
 
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.BackendMain;
+import org.pixelgaffer.turnierserver.backend.Jobs;
 import org.pixelgaffer.turnierserver.backend.WorkerConnection;
 import org.pixelgaffer.turnierserver.backend.Workers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandSuccess;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 
@@ -76,7 +78,17 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 				}
 			}
 			else
-				System.out.println(new String(line, UTF_8));
+			{
+				try
+				{
+					WorkerCommandSuccess success = Parsers.getWorker().parse(line, WorkerCommandSuccess.class);
+					Jobs.jobFinished(success);
+				}
+				catch (Exception e)
+				{
+					BackendMain.getLogger().severe("BackendWorkerConnectionHandler: Failed to parse answer from Worker: " + e);
+				}
+			}
 		}
 	}
 }

@@ -67,21 +67,25 @@ public class WorkerConnection
 	/**
 	 * Schickt einen Kompilieren-Befehl an den Worker, ai enthält
 	 * ${ai-id}v${ai-version}.
+	 * @return 
 	 */
-	public void compile (String ai, int game) throws IOException
+	public WorkerCommand compile (String ai, int game) throws IOException
 	{
 		String s[] = ai.split("v");
 		if (s.length != 2)
 			throw new IllegalArgumentException(ai);
-		compile(Integer.parseInt(s[0]), Integer.parseInt(s[1]), game);
+		return compile(Integer.parseInt(s[0]), Integer.parseInt(s[1]), game);
 	}
 	
 	/**
 	 * Schickt einen Kompilieren-Befehl an den Worker.
+	 * @return 
 	 */
-	public void compile (int aiId, int version, int game) throws IOException
+	public WorkerCommand compile (int aiId, int version, int game) throws IOException
 	{
-		connection.sendCommand(new WorkerCommand(WorkerCommand.COMPILE, aiId, version, game, UUID.randomUUID()));
+		WorkerCommand cmd = new WorkerCommand(WorkerCommand.COMPILE, aiId, version, game, UUID.randomUUID());
+		connection.sendCommand(cmd);
+		return cmd;
 	}
 	
 	/**
