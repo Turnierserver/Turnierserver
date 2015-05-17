@@ -264,7 +264,8 @@ public class Patcher implements Runnable {
 	}
 	
 	private void pull(File repoFolder, GHRepository repo) throws IOException {
-		git(repoFolder, "pull", "origin", "master");
+		git(repoFolder, "checkout", "head");
+		git(repoFolder, "pull");
 		if(release) {
 			git(repoFolder, "checkout", repo.listReleases().asList().get(0).getName());
 		}
