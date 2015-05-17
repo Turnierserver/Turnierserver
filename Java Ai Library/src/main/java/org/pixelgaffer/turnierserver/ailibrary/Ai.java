@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.pixelgaffer.turnierserver.Parsers;
-import org.pixelgaffer.turnierserver.PropertiesLoader;
+import org.pixelgaffer.turnierserver.PropertyUtils;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.GameState;
 
 import com.google.gson.reflect.TypeToken;
@@ -47,7 +47,7 @@ public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 	
 	public Ai() {
 		try {
-			PropertiesLoader.loadProperties("ai.prop");
+			PropertyUtils.loadProperties("ai.prop");
 			con = new Socket("localhost", Integer.parseInt(System.getProperty("ai.con.port")));
 			out = new PrintWriter(con.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
