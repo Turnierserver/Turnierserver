@@ -16,3 +16,6 @@ Und hier die einzelnen Spezifikationen, der Module (aus [#1](https://github.com/
 
 Beispiels-Implementation eines Spieles:
 https://github.com/nicosio2/Minesweeper
+
+Privates Config-Repo:
+https://github.com/nicosio2/Turnierserver-Config
