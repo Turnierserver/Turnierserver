@@ -12,6 +12,7 @@ import java.util.Map;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.PropertyUtils;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.GameState;
+import org.pixelgaffer.turnierserver.gamelogic.messages.BuilderSolverChange;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -43,15 +44,16 @@ public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 	 */
 	protected Map<String, String> gamestate;
 	
-	private TypeToken<R> token = new TypeToken<R>() {};
+	private TypeToken<BuilderSolverChange<R>> token;
 	
-	public Ai() {
+	public Ai(TypeToken<BuilderSolverChange<R>> token) {
+		this.token = token;
 		try {
 			PropertyUtils.loadProperties("ai.prop");
-			con = new Socket("localhost", Integer.parseInt(System.getProperty("ai.con.port")));
+			con = new Socket(PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST), PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
 			out = new PrintWriter(con.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			out.println("A" + System.getProperty("ai.con.id"));
+			out.println(PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR) + PropertyUtils.AI_UUID);
 			System.setOut(new PrintStream(new OutputStream() {
 				public void write(int b) throws IOException {
 					output.append((char) b);
@@ -75,7 +77,7 @@ public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 	 * 
 	 * @return Der momentane Spielzustand
 	 */
-	protected abstract E getState(R change);
+	protected abstract E getState(BuilderSolverChange<R> change);
 	
 	@Override
 	public final void run() {
@@ -86,7 +88,7 @@ public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 					System.exit(0);
 				}
 				String line = in.readLine();
-				R updates = Parsers.getWorker().parse(line.getBytes("UTF-8"), token.getType());
+				BuilderSolverChange<R> updates = Parsers.getWorker().parse(Parsers.escape(line.getBytes("UTF-8")), token.getType());
 				Object response = update(getState(updates));
 				if(response != null) {
 					send(response);
