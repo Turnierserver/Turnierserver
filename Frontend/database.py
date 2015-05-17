@@ -3,7 +3,9 @@ from flask import send_file, abort
 from _cfg import env
 from activityfeed import Activity
 from io import BytesIO
+from functools import wraps
 import ftputil
+import socket
 import arrow
 
 db = SQLAlchemy()
@@ -17,18 +19,38 @@ class SyncedFTP:
 		Activity("Verbinde zum FTP @ " + env.ftp_url)
 		self.ftp_host = ftputil.FTPHost(env.ftp_url, env.ftp_uname, env.ftp_pw)
 
+
+	def failsafe(self, meth):
+		@wraps(meth)
+		def wrapper(*args, **kwargs):
+			try:
+				return meth(*args, **kwargs)
+			except socket.error as e:
+				Activity(e)
+				self.connect()
+				return meth(*args, **kwargs)
+			except ftputil.error.FTPError as e:
+				Activity(e)
+				self.connect()
+				return meth(*args, **kwargs)
+		return wrapper
+
 	def send_file(self, path):
-		print("Downloading from FTP: ", path)
-		if not self.ftp_host.path.exists(path):
-			Activity("Datei '" + path + "' existiert auf dem FTP nicht.")
-			abort(404)
-		with self.ftp_host.open(path, "rb") as remote_obj:
-			f = BytesIO(remote_obj.read())
-			f.seek(0)
-			return send_file(f)
+		@self.failsafe
+		def f(path):
+			print("Downloading from FTP: ", path)
+			if not self.ftp_host.path.exists(path):
+				Activity("Datei '" + path + "' existiert auf dem FTP nicht.")
+				abort(404)
+			with self.ftp_host.open(path, "rb") as remote_obj:
+				f = BytesIO(remote_obj.read())
+				f.seek(0)
+				return send_file(f)
+		return f(path)
 
 	def send_cached(self, path):
 		pass
+
 
 ftp = SyncedFTP()
 
@@ -92,13 +114,15 @@ class AI(db.Model):
 	user = db.relationship("User", backref=db.backref('t_ais', order_by=id))
 	lang_id = db.Column(db.Integer, db.ForeignKey('t_langs.id'))
 	lang = db.relationship("Lang", backref=db.backref('t_ais', order_by=id))
+	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
+	type = db.relationship("GameType", backref=db.backref('t_ais', order_by=id))
 
 	def __init__(self, *args, **kwargs):
 		super(AI, self).__init__(*args, **kwargs)
 		db_obj_init_msg(self)
 
 	def info(self):
-		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc, "lang": self.lang.info()}
+		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc, "lang": self.lang.info(), "gametype": self.type.info()}
 
 	def icon(self):
 		return ftp.send_file(("AIs/"+str(self.id)+"/icon.png"))
@@ -108,6 +132,7 @@ class AI(db.Model):
 			assoc.game.delete()
 		db.session.delete(self)
 
+	@ftp.failsafe
 	def ftp_sync(self):
 		print("FTP-Sync von " + self.name)
 		bd = "AIs/"+str(self.id)
@@ -130,6 +155,8 @@ class AI(db.Model):
 					name = self.name,
 					id = self.id,
 					author = self.user.name,
+					type = self.type.name,
+					type_id = self.type.id
 				))
 
 
@@ -137,7 +164,7 @@ class AI(db.Model):
 			f.write(self.lang.name)
 
 	def __repr__(self):
-		return "<AI(id={}, name={}, user_id={}, lang={}>".format(self.id, self.name, self.user_id, self.lang.name)
+		return "<AI(id={}, name={}, user_id={}, lang={}, type={}>".format(self.id, self.name, self.user_id, self.lang.name, self.type.name)
 
 class Lang(db.Model):
 	__tablename__ = "t_langs"
@@ -227,7 +254,7 @@ def populate(count=20):
 
 	users = [User(name="testuser"+str(i), id=i) for i in r]
 	random.shuffle(users)
-	ais = [AI(id=i, user=users[i-1], name="testai"+str(i), desc="Beschreibung", lang=py) for i in r]
+	ais = [AI(id=i, user=users[i-1], name="testai"+str(i), desc="Beschreibung", lang=py, type=minesweeper) for i in r]
 	games = [Game(id=i, type=minesweeper) for i in r]
 	assocs = []
 	for ri, role in enumerate(minesweeper.roles, 1):
