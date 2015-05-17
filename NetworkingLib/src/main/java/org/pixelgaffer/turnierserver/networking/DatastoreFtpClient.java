@@ -28,6 +28,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DatastoreFtpClient
 {
+	private static final Object lock = new DatastoreFtpClient();
+	
 	private static FTPClient client;
 	
 	/**
@@ -35,21 +37,24 @@ public class DatastoreFtpClient
 	 */
 	private static void connect () throws IOException, FTPIllegalReplyException, FTPException
 	{
-		if (client == null)
-			client = new FTPClient();
-		if (!client.isConnected())
+		synchronized (lock)
 		{
-			// zum Server verbinden
-			client.connect(System.getProperty("turnierserver.datastore.host"),
-					Integer.parseInt(System.getProperty("turnierserver.datastore.port")));
-			// beim Server anmelden
-			System.out.println("logging in …");
-			String username = System.getProperty("turnierserver.datastore.username");
-			String password = System.getProperty("turnierserver.datastore.password");
-			client.login(username, password);
-			System.out.println("logged in");
-			// passiven Modus benutzen (Firewall …)
-			client.setPassive(true);
+			if (client == null)
+				client = new FTPClient();
+			if (!client.isConnected())
+			{
+				// zum Server verbinden
+				client.connect(System.getProperty("turnierserver.datastore.host"),
+						Integer.parseInt(System.getProperty("turnierserver.datastore.port")));
+				// beim Server anmelden
+				System.out.println("logging in …");
+				String username = System.getProperty("turnierserver.datastore.username");
+				String password = System.getProperty("turnierserver.datastore.password");
+				client.login(username, password);
+				System.out.println("logged in");
+				// passiven Modus benutzen (Firewall …)
+				client.setPassive(true);
+			}
 		}
 	}
 	
@@ -75,7 +80,10 @@ public class DatastoreFtpClient
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
 		connect();
-		client.download(remote, local);
+		synchronized (lock)
+		{
+			client.download(remote, local);
+		}
 	}
 	
 	/**
@@ -86,18 +94,21 @@ public class DatastoreFtpClient
 			FTPListParseException
 	{
 		connect();
-		System.out.println("retrieveDir: " + remote);
-		String cwd = client.currentDirectory();
-		client.changeDirectory(remote);
-		local.mkdirs();
-		for (FTPFile f : client.list())
+		synchronized (lock)
 		{
-			if (f.getType() == FTPFile.TYPE_FILE)
-				retrieveFile(f.getName(), new File(local, f.getName()));
-			else if (f.getType() == FTPFile.TYPE_DIRECTORY)
-				retrieveDir(f.getName(), new File(local, f.getName()));
+			System.out.println("retrieveDir: " + remote);
+			String cwd = client.currentDirectory();
+			client.changeDirectory(remote);
+			local.mkdirs();
+			for (FTPFile f : client.list())
+			{
+				if (f.getType() == FTPFile.TYPE_FILE)
+					retrieveFile(f.getName(), new File(local, f.getName()));
+				else if (f.getType() == FTPFile.TYPE_DIRECTORY)
+					retrieveDir(f.getName(), new File(local, f.getName()));
+			}
+			client.changeDirectory(cwd);
 		}
-		client.changeDirectory(cwd);
 	}
 	
 	/**
@@ -179,8 +190,11 @@ public class DatastoreFtpClient
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
 		connect();
-		System.out.println("storeFile: " + client.currentDirectory() + " / " + remote);
-		client.upload(remote, local, 0, 0, null);
+		synchronized (lock)
+		{
+			System.out.println("storeFile: " + client.currentDirectory() + " / " + remote);
+			client.upload(remote, local, 0, 0, null);
+		}
 		local.close();
 	}
 	
