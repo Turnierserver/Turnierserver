@@ -16,16 +16,16 @@ import org.kohsuke.github.GitHub;
 public class Patcher implements Runnable {
 	
 	public static final File rootDir = new File("..");
-	public static final File configDir = new File(rootDir, "/Turnierserver-Config");
-	public static final File turnierserverDir = new File(rootDir, "/Turnierserver");
-	public static final File buildDir = new File(turnierserverDir, "/" + System.getProperty("turnierserver.patcher.build"));
-	public static final File frontendDir = new File(turnierserverDir, "/" + System.getProperty("turnierserver.patcher.frontend"));
-	public static final File compilerDir = new File(turnierserverDir, "/" + System.getProperty("turnierserver.patcher.compiler"));
-	public static final File patcherDir = new File(turnierserverDir, "/" + System.getProperty("turnierserver.patcher"));
-	public static final File networkingDir = new File(turnierserverDir, "/" + System.getProperty("turnierserver.patcher.networking"));
-	public static final File gamelogicDir = new File(turnierserverDir, "/" + System.getProperty("turnierserver.patcher.gamelogic"));
-	public static final File workerDir = new File(turnierserverDir, "/" + System.getProperty("turnierserver.patcher.worker"));
-	public static final File backendDir = new File(turnierserverDir, "/" + System.getProperty("turnierserver.patcher.backend"));
+	public static final File configDir = new File(rootDir, "Turnierserver-Config");
+	public static final File turnierserverDir = new File(rootDir, "Turnierserver");
+	public static final File buildDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.build"));
+	public static final File frontendDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.frontend"));
+	public static final File compilerDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.compiler"));
+	public static final File patcherDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher"));
+	public static final File networkingDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.networking"));
+	public static final File gamelogicDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.gamelogic"));
+	public static final File workerDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.worker"));
+	public static final File backendDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.backend"));
 	
 	public static Process exe(File dir, String...command) throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(command);
@@ -45,7 +45,7 @@ public class Patcher implements Runnable {
 	
 	public static void main(String[] args) throws IOException {
 		if(!configDir.exists()) {
-			git(rootDir, "clone", "https://github.com/nicosio2/Turnierserver-Config.git");
+			git(rootDir, "clone", "https://" + System.getProperty("turnierserver.patcher.github.username") + ":" + System.getProperty("turnierserver.patcher.github.password") + "github.com/nicosio2/Turnierserver-Config.git");
 		}
 				
 		Properties p = new Properties(System.getProperties());
@@ -123,7 +123,7 @@ public class Patcher implements Runnable {
 					if(!pulled) {
 						pull(configDir, config);
 					}
-					FileUtils.copyFileToDirectory(new File(configDir, "/Frontend/_cfg.py"), new File(turnierserverDir, "/Frontend"));
+					FileUtils.copyFileToDirectory(new File(configDir, "Frontend/_cfg.py"), new File(turnierserverDir, "Frontend"));
 					restartFrontend();
 				}
 				
@@ -153,7 +153,7 @@ public class Patcher implements Runnable {
 				}
 				
 				List<File> alreadyCompiled = new ArrayList<>();
-				List<File> dependencyChainBackend = new ArrayList<>(Arrays.asList(networkingDir, compilerDir, gamelogicDir, backendDir));
+				List<File> dependencyChainBackend = new ArrayList<>(Arrays.asList(networkingDir, gamelogicDir, backendDir));
 				List<File> dependencyChainWorker = new ArrayList<>(Arrays.asList(networkingDir, compilerDir, workerDir));
 				
 				if(worker != null && compileDependencyChain(dependencyChainWorker, alreadyCompiled, directoriesModified, pulled)) {
