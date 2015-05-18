@@ -1,6 +1,6 @@
-#testAI v0
+#testAI v1
 #Mon May 18 14:43:23 CEST 2015
 uploaded=false
 qualified=false
-compiled=true
+compiled=false
 finished=false

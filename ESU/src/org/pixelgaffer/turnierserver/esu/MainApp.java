@@ -16,6 +16,8 @@ import javafx.stage.Stage;
  
 public class MainApp extends Application{
 	
+	public PlayerManager manager = new PlayerManager();
+	
 	public ControllerRoot cRoot;
 	public ControllerStartPage cStart;
 	public ControllerAiManagement cAi;
@@ -51,11 +53,14 @@ public class MainApp extends Application{
 		
 		////////////Test//////////////////////////////////
 		
-		Player pp = new Player("testAI", Language.Java);
-		pp.setDescription("Das ist eine Beschreibung");
-		pp.newVersion(NewVersionType.simplePlayer);
-		//pp.setPicture(pp.getPicture());
-		cAi.image.setImage(pp.getPicture());
+		manager.loadPlayers();
+		
+//		Player pp = new Player("testAI");
+//		ErrorLog.write("Titel:" + pp.title);
+//		ErrorLog.write("Beschreibung: " + pp.description);
+//		ErrorLog.write("Version 0: " + pp.versions.get(0).compiled);
+//		//pp.setPicture(pp.getPicture());
+//		cAi.image.setImage(pp.getPicture());
 		
 		//////////////////////////////////////////////////
 		

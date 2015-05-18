@@ -15,7 +15,7 @@ public class Player {
 	
 	public final String title;
 	public Language language;
-	private String description = "(keine Beschreibung)";
+	public String description = "(keine Beschreibung)";
 	List<Version> versions = new ArrayList<Version>();
 	
 	public static enum NewVersionType{
@@ -30,6 +30,7 @@ public class Player {
 	public Player(String tit){
 		title = tit;
 		loadProps();
+		loadVersions();
 	}
 	/**
 	 * Speichert einen neuen Player mit dem übergebenen Titel und der Sprache ab.
@@ -40,7 +41,15 @@ public class Player {
 	public Player(String tit, Language lang){
 		title = tit;
 		language = lang;
-		storeProps();
+		
+		File dir = new File(Paths.player(this));
+		if (!dir.mkdirs()){
+			ErrorLog.write("Der Spieler existiert bereits.");
+			description = "invalid";
+		}
+		else{
+			storeProps();
+		}
 	}
 	
 	/**
@@ -72,7 +81,7 @@ public class Player {
 			if(versions.size() == 0){
 				return null;
 			}
-			version = new Version(this, versions.size(), "Players\\" + title + "\\v" + (versions.size()-1));
+			version = new Version(this, versions.size(), Paths.version(this, versions.size()-1));
 			break;
 		case simplePlayer:
 			version = new Version(this, versions.size());
@@ -90,54 +99,40 @@ public class Player {
 	 */
 	public void loadProps(){
 		try {
-			Reader reader = new FileReader("Players\\" + title + "\\properties.txt");
+			Reader reader = new FileReader(Paths.playerProperties(this));
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
 			description = prop.getProperty("description");
-			switch(prop.getProperty("language")){
-			case "Java":
-				language = Language.Java;
-				break;
-			case "Phython":
-				language = Language.Phyton;
-				break;
-			default:
-				language = Language.Java;
-			}
+			language = Language.valueOf(prop.getProperty("language"));
 		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt");}
 	}
 	/**
 	 * Speichert die Eigenschaften des Players in das Dateiverzeichnis.
 	 */
 	public void storeProps(){
-		File dir = new File("Players\\" + title);
-		dir.mkdirs();
 		
 		Properties prop = new Properties();
 		prop.setProperty("description", description);
 		prop.setProperty("versionAmount", "" + versions.size());
-		switch (language){
-		case Java:
-			prop.setProperty("language", "Java");
-			break;
-		case Phyton:
-			prop.setProperty("language", "Phyton");
-			break;
-		}
+		prop.setProperty("language", language.toString());
 		
 		try {
-			Writer writer = new FileWriter("Players\\" + title + "\\properties.txt");
-			prop.store(writer, title );
+			String hey = Paths.playerProperties(this);
+			Writer writer = new FileWriter(Paths.playerProperties(this));
+			prop.store(writer, title);
 			writer.close();
 		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Player)");}
 	}
 	
+	/**
+	 * Lädt die Versionen aus dem Dateisystem, mit Hilfe der versionAmount-Property
+	 */
 	public void loadVersions(){
 		versions.clear();
 		int versionAmount = 0;
 		try {
-			Reader reader = new FileReader("Players\\" + title + "\\properties.txt");
+			Reader reader = new FileReader(Paths.playerProperties(this));
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
@@ -148,15 +143,6 @@ public class Player {
 		}
 	}
 	
-	/**
-	 * Gibt die Player-Beschreibung zurück.
-	 * 
-	 * @return die Player-Beschreibung
-	 */
-	public String getDescription(){
-		loadProps();
-		return description;
-	}
 	/**
 	 * Setzt die Player-Beschreibung.
 	 * 
@@ -174,7 +160,7 @@ public class Player {
 	 */
 	public Image getPicture(){
 		try {
-			FileInputStream fin = new FileInputStream(title + "\\picture.png");
+			FileInputStream fin = new FileInputStream(Paths.playerPicture(this));
 			Image img = new Image(fin);
 			fin.close();
 			return img;
@@ -194,7 +180,7 @@ public class Player {
 	 */
 	public void setPicture(Image img){
 		try {
-			ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", new File(title + "\\picture.png"));
+			ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", new File(Paths.playerPicture(this)));
 		} catch (IOException e) {
 			ErrorLog.write("Bild konnte nicht gespeichert werden.");
 		}

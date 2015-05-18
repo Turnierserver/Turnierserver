@@ -22,17 +22,11 @@ public class Version {
 		number = n;
 		
 		if (!exists()){
-			String path = "Downloads\\SimplePlayer\\";
-			switch (player.language){
-			case Java:
-				path += "Java";
-				break;
-			case Phyton:
-				path += "Python";
-				break;
-			}
-			copyFromFile(path);
+			copyFromFile(Paths.simplePlayer(player.language));
 			storeProps();
+		}
+		else{
+			loadProps();
 		}
 	}
 	public Version(Player p, int n, String path){
@@ -44,14 +38,24 @@ public class Version {
 		
 	}
 	
+	/**
+	 * Prüft, ob die Version bereits im Dateisystem existiert.
+	 * 
+	 * @return true, wenn die Version bereits existiert
+	 */
 	public boolean exists(){
-		File dir = new File("Players\\" + player.title + "\\v" + number);
+		File dir = new File(Paths.version(this));
 		return !dir.mkdirs();
 	}
 	
+	/**
+	 * Kopiert alle Dateien von einem bestimmten Pfad in das Verzeichnis der Version.
+	 * 
+	 * @param path der Pfad, von dem kopiert werden soll
+	 */
 	public void copyFromFile(String path){
 		Path srcPath = new File(path).toPath();
-		Path destPath = new File("Players\\" + player.title + "\\v" + number).toPath();
+		Path destPath = new File(Paths.version(this)).toPath();
 		try {
 			Files.walkFileTree(srcPath, new CopyVisitor(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING));
 		} catch (IOException e) {
@@ -66,7 +70,7 @@ public class Version {
 	 */
 	public void loadProps(){
 		try {
-			Reader reader = new FileReader("Players\\" + player.title + "\\v" + number + "\\properties.txt");
+			Reader reader = new FileReader(Paths.versionProperties(this));
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
@@ -87,7 +91,7 @@ public class Version {
 		prop.setProperty("uploaded", "" + uploaded);
 		
 		try {
-			Writer writer = new FileWriter("Players\\" + player.title + "\\v" + number + "\\properties.txt");
+			Writer writer = new FileWriter(Paths.versionProperties(this));
 			prop.store(writer, player.title + " v" + number );
 			writer.close();
 		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Version)");}
@@ -97,7 +101,11 @@ public class Version {
 	
 	
 	
-	
+	/**
+	 * Ein FileVisitor, der eine Datei bei ihrem Besuch kopiert
+	 * 
+	 * http://codingjunkie.net/java-7-copy-move/
+	 */
 	public static class CopyVisitor extends SimpleFileVisitor<Path>
 	{
 	    private final Path fromPath;
