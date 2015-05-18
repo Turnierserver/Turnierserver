@@ -5,11 +5,17 @@ Sprache: Python 3 (mit [Flask](http://flask.pocoo.org))
 
 Libs:
 - [Flask](http://flask.pocoo.org)
-  * [Flask-Login](https://flask-login.readthedocs.org)
 - [SQLAlchemy](http://www.sqlalchemy.org)
-  * [Flask-SQLAlchemy](https://pythonhosted.org/Flask-SQLAlchemy/)
+- [mehr in der requirements.txt](https://github.com/LuckyLukert/Turnierserver/blob/master/Frontend/requirements.txt)
 
-Es werden höchstwahrscheinlich Teile vom alten Frontend übernommen und verbessert.
+
+Die Libs können mit
+
+    pip3 install -r requirements.txt
+
+installiert werden
+
+Es werden möglicherweise Teile vom alten Frontend übernommen und verbessert.
 
 
 ##API-Spezifikation (wird sich noch ändern)
