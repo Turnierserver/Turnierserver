@@ -45,7 +45,7 @@ public class BackendFrontendConnectionHandler extends ConnectionHandler
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				BackendMain.getLogger().severe("Failed to parse command from frontend: " + e);
 			}
 		}
 	}

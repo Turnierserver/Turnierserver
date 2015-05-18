@@ -1,10 +1,5 @@
 package org.pixelgaffer.turnierserver.backend;
 
-import it.sauronsoftware.ftp4j.FTPAbortedException;
-import it.sauronsoftware.ftp4j.FTPDataTransferException;
-import it.sauronsoftware.ftp4j.FTPException;
-import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,8 +13,8 @@ import lombok.NonNull;
 
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCommand;
+import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCompileResult;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
-import org.pixelgaffer.turnierserver.backend.server.BackendFrontentCompileResult;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandSuccess;
 
@@ -46,18 +41,48 @@ public class Jobs
 	}
 	
 	public static void processJob (@NonNull BackendFrontendCommand cmd)
-			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
-			FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
 		if (cmd.getAction().equals("compile"))
 		{
-			WorkerCommand wcmd = Workers.getAvailableWorker().compile(cmd.getId(), cmd.getGametype());
-			Job job = new Job(wcmd, cmd);
-			addJob(job);
+			try
+			{
+				WorkerCommand wcmd = Workers.getAvailableWorker().compile(cmd.getId(), cmd.getGametype());
+				Job job = new Job(wcmd, cmd);
+				addJob(job);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				BackendFrontendCompileResult result = new BackendFrontendCompileResult(cmd.getRequestid(), false, e);
+				try
+				{
+					BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result));
+				}
+				catch (IOException e1)
+				{
+					e1.printStackTrace();
+				}
+			}
 		}
 		else if (cmd.getAction().equals("start"))
 		{
-			Games.startGame(cmd.getGametype(), cmd.getAis());
+			try
+			{
+				Games.startGame(cmd.getGametype(), cmd.getAis());
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				BackendFrontendCompileResult result = new BackendFrontendCompileResult(cmd.getRequestid(), false, e);
+				try
+				{
+					BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result));
+				}
+				catch (IOException e1)
+				{
+					e1.printStackTrace();
+				}
+			}
 		}
 		else
 			BackendMain.getLogger().severe(
@@ -74,7 +99,7 @@ public class Jobs
 			return;
 		}
 		int requestId = job.getRequestId();
-		BackendFrontentCompileResult result = new BackendFrontentCompileResult(requestId, success.isSuccess());
+		BackendFrontendCompileResult result = new BackendFrontendCompileResult(requestId, success.isSuccess());
 		BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result));
 		jobs.remove(job);
 		jobUuids.remove(uuid);
