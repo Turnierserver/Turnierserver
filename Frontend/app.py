@@ -39,9 +39,11 @@ if env.airbrake:
 
 print("Connecting to", env.db_url)
 db.init_app(app)
-with app.app_context():
-	db.drop_all()
-	populate(5)
+
+if env.clean_db:
+	with app.app_context():
+		db.drop_all()
+		populate(5)
 
 cache.init_app(app)
 
@@ -49,4 +51,4 @@ cache.init_app(app)
 Activity("Serverstart abgeschlossen...", extratext="Hier gehts los.\nAlle vorherigen Events sollten nicht wichtig sein.")
 
 
-app.run(host="0.0.0.0", port=env.web_port, debug=True)
+app.run(host="::", port=env.web_port, debug=True)

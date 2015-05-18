@@ -14,16 +14,22 @@ db = SQLAlchemy()
 class SyncedFTP:
 	def __init__(self):
 		self.cached = set()
-		self.connect()
+		self.ftp_host = None
 
 	def connect(self):
 		Activity("Verbinde zum FTP @ " + env.ftp_url)
-		self.ftp_host = ftputil.FTPHost(env.ftp_url, env.ftp_uname, env.ftp_pw)
+		self.ftp_host = ftputil.FTPHost(env.ftp_url, env.ftp_uname, env.ftp_pw, timeout=1)
 
 
 	def failsafe(self, meth):
 		@wraps(meth)
 		def wrapper(*args, **kwargs):
+			if not self.ftp_host:
+				try:
+					self.connect()
+				except ftputil.error.FTPError as e:
+					Activity("Verbindung zum FTP hat gefailed", extratext=str(e))
+					abort(404)
 			try:
 				return meth(*args, **kwargs)
 			except socket.error as e:
@@ -301,8 +307,8 @@ def populate(count=20):
 	db.session.add_all(users + ais + games + assocs + langs + gametypes)
 	db.session.commit()
 
-	for ai in ais:
-		ai.ftp_sync()
+	#for ai in ais:
+	#	ai.ftp_sync()
 
 
 if __name__ == '__main__':

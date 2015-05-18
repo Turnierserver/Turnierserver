@@ -12,6 +12,7 @@ class LocalEnvironment:
 	backend_url = "127.0.0.1"
 	cache_max_age = 60
 	web_port = 5000
+	clean_db = True
 
 env = LocalEnvironment
 
