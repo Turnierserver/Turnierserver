@@ -70,7 +70,7 @@ class User(db.Model):
 	__tablename__ = 't_users'
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50), unique=True, nullable=False)
-	ai_list = db.relationship("AI", order_by="AI.id", backref="User")
+	ai_list = db.relationship("AI", order_by="AI.id", backref="User", cascade="all, delete, delete-orphan")
 	admin = db.Column(db.Boolean, default=False)
 
 	def __init__(self, *args, **kwargs):
@@ -85,6 +85,10 @@ class User(db.Model):
 
 	def can_access(self, ai):
 		return ai in self.ai_list or self.admin
+
+	def delete(self):
+		db.session.delete(self)
+		db.session.commit()
 
 	def __repr__(self):
 		return "<User(id={}, name={}, admin={})".format(self.id, self.name, self.admin)
@@ -101,15 +105,13 @@ class User(db.Model):
 
 
 class AI_Game_Assoc(db.Model):
-	__tablename__ = 't_ai_game_assoc'
+	__tablename__ = 't_ai_game_assocs'
 	game_id = db.Column(db.Integer, db.ForeignKey('t_games.id'), primary_key=True)
+	game = db.relationship("Game", cascade="all, delete, delete-orphan", single_parent=True)
 	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'), primary_key=True)
-	ai = db.relationship("AI", backref="game_assocs")
-	role_id = db.Column(db.Integer, db.ForeignKey('t_gametyperoles.id', primary_key=True))
+	ai = db.relationship("AI")
+	role_id = db.Column(db.Integer, db.ForeignKey('t_gametyperoles.id'), primary_key=True)
 	role = db.relationship("GameTypeRole", backref="assocs")
-
-	def delete(self):
-		db.session.delete(self)
 
 
 class AI(db.Model):
@@ -124,6 +126,7 @@ class AI(db.Model):
 	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
 	type = db.relationship("GameType", backref=db.backref('t_ais', order_by=id))
 	version_list = db.relationship("AI_Version", order_by="AI_Version.id", backref="AI")
+	game_assocs = db.relationship("AI_Game_Assoc", order_by="AI_Game_Assoc.game_id", cascade="all, delete, delete-orphan")
 
 	def __init__(self, *args, **kwargs):
 		super(AI, self).__init__(*args, **kwargs)
@@ -141,9 +144,8 @@ class AI(db.Model):
 		return self.version_list[-1]
 
 	def delete(self):
-		for assoc in self.game_assocs:
-			assoc.game.delete()
 		db.session.delete(self)
+		db.session.commit()
 
 	@ftp.failsafe
 	def ftp_sync(self):
@@ -202,9 +204,6 @@ class AI_Version(db.Model):
 			self.extras_str = json.dumps(e)
 		return json.loads(self.extras_str)
 
-	def delete(self):
-		db.session.delete(self)
-
 	def __repr__(self):
 		return "<AI_Version(id={}>".format(self.id)
 
@@ -228,7 +227,7 @@ class Lang(db.Model):
 class Game(db.Model):
 	__tablename__ = 't_games'
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-	ai_assocs = db.relationship("AI_Game_Assoc", backref="game")
+	ai_assocs = db.relationship("AI_Game_Assoc", cascade="all, delete, delete-orphan")
 	timestamp = db.Column(db.BigInteger)
 	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
 	type = db.relationship("GameType", backref=db.backref('t_games', order_by=id))
@@ -245,9 +244,8 @@ class Game(db.Model):
 		return {"id": self.id, "ais": [assoc.ai.info() for assoc in self.ai_assocs], "type": self.type.info()}
 
 	def delete(self):
-		for assoc in self.ai_assocs:
-			assoc.delete()
 		db.session.delete(self)
+		db.session.commit()
 
 	def __repr__(self):
 		return "<Game(id={}, type={})>".format(self.id, self.type.name)
@@ -259,8 +257,8 @@ class GameType(db.Model):
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	name = db.Column(db.Text, nullable=False)
 	viz = db.Column(db.Text, nullable=False)
-	games = db.relationship("Game", order_by="Game.id", backref="GameType")
-	roles = db.relationship("GameTypeRole", backref="GameType")
+	games = db.relationship("Game", order_by="Game.id", backref="GameType", cascade="all, delete, delete-orphan")
+	roles = db.relationship("GameTypeRole", backref="GameType", cascade="all, delete, delete-orphan")
 
 	def __init__(self, *args, **kwargs):
 		super(GameType, self).__init__(*args, **kwargs)
@@ -306,6 +304,8 @@ def populate(count=20):
 
 	db.session.add_all(users + ais + games + assocs + langs + gametypes)
 	db.session.commit()
+
+	#games[0].delete()
 
 	#for ai in ais:
 	#	ai.ftp_sync()

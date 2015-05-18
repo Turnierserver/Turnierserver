@@ -23,6 +23,7 @@ app = Flask("Turnierserver - Frontend")
 app.secret_key = env.secret_key
 login_manager.init_app(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = env.db_url
+app.config['SQLALCHEMY_ECHO'] = env.debug_sql
 app.register_blueprint(api)
 app.register_blueprint(anonymous)
 app.register_blueprint(profile)
@@ -51,4 +52,4 @@ cache.init_app(app)
 Activity("Serverstart abgeschlossen...", extratext="Hier gehts los.\nAlle vorherigen Events sollten nicht wichtig sein.")
 
 
-app.run(host="::", port=env.web_port, debug=True)
+app.run(host="::", port=env.web_port, debug=env.debug)

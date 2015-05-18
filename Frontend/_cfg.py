@@ -13,6 +13,8 @@ class LocalEnvironment:
 	cache_max_age = 60
 	web_port = 5000
 	clean_db = True
+	debug = True
+	debug_sql = True
 
 env = LocalEnvironment
 
