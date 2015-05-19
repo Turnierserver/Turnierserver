@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, abort
 from flask.ext.login import current_user
 from database import AI, User, Game
-from activityfeed import activity_feed, Activity
+from activityfeed import Activity
 import json
 
 anonymous = Blueprint("anonymous", __name__)

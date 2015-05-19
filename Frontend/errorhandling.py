@@ -1,22 +1,11 @@
 from flask import render_template
 
 errors = {
-	401: (
-		'unauthorized',
-		'Du hast nicht genug Rechte, um diese Aktion auszufueren.'
-	),
-	404: (
-		'not found',
-		'Hier ist nichts zu sehen.'
-	),
-	500: (
-		'internal server error',
-		'Es gab einen Serverfehler.'
-	),
-	501: (
-		'not implemented',
-		'Dieses Feature wurde noch nicht implementiert.'
-	)
+	401: ('unauthorized', 'Du hast nicht genug Rechte, um diese Aktion auszufueren.'),
+	403: ('forbidden', 'Zugang verboten.'),
+	404: ('not found', 'Hier ist nichts zu sehen.'),
+	500: ('internal server error', 'Es gab einen Serverfehler.'),
+	501: ('not implemented', 'Dieses Feature wurde noch nicht implementiert.')
 }
 
 

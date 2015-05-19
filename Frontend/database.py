@@ -9,6 +9,11 @@ import socket
 import arrow
 import json
 
+
+def timestamp():
+	return arrow.utcnow().timestamp
+
+
 db = SQLAlchemy()
 
 class SyncedFTP:
@@ -70,7 +75,7 @@ class User(db.Model):
 	__tablename__ = 't_users'
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50), unique=True, nullable=False)
-	ai_list = db.relationship("AI", order_by="AI.id", backref="User", cascade="all, delete, delete-orphan")
+	ai_list = db.relationship("AI", order_by="AI.id", backref="User", cascade="all, delete, delete-orphan", lazy="dynamic")
 	admin = db.Column(db.Boolean, default=False)
 
 	def __init__(self, *args, **kwargs):
@@ -80,8 +85,12 @@ class User(db.Model):
 	def info(self):
 		return {"id": self.id, "name": self.name, "ais": [ai.info() for ai in self.ai_list], "admin": self.admin}
 
+	@ftp.failsafe
 	def icon(self):
-		return ftp.send_file("Users/"+str(self.id)+"/icon.png")
+		if ftp.ftp_host.path.isfile("Users/"+str(self.id)+"/icon.png"):
+			return ftp.send_file("Users/"+str(self.id)+"/icon.png")
+		else:
+			return ftp.send_file("Users/default.png")
 
 	def can_access(self, ai):
 		return ai in self.ai_list or self.admin
@@ -119,6 +128,7 @@ class AI(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.Text, nullable=False)
 	desc = db.Column(db.Text)
+	last_modified = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 	user_id = db.Column(db.Integer, db.ForeignKey('t_users.id'))
 	user = db.relationship("User", backref=db.backref('t_ais', order_by=id))
 	lang_id = db.Column(db.Integer, db.ForeignKey('t_langs.id'))
@@ -130,17 +140,22 @@ class AI(db.Model):
 
 	def __init__(self, *args, **kwargs):
 		super(AI, self).__init__(*args, **kwargs)
+		self.lastest_version()
 		db_obj_init_msg(self)
 
 	def info(self):
 		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc, "lang": self.lang.info(), "gametype": self.type.info()}
 
+	@ftp.failsafe
 	def icon(self):
-		return ftp.send_file(("AIs/"+str(self.id)+"/icon.png"))
+		if ftp.ftp_host.path.isfile("AIs/"+str(self.id)+"/icon.png"):
+			return ftp.send_file("AIs/"+str(self.id)+"/icon.png")
+		else:
+			return ftp.send_file("AIs/default.png")
 
 	def lastest_version(self):
 		if len(self.version_list) == 0:
-			self.version_list.append(AI_Version(id=1))
+			self.version_list.append(AI_Version())
 		return self.version_list[-1]
 
 	def delete(self):
