@@ -14,7 +14,9 @@ def timestamp():
 	return arrow.utcnow().timestamp
 
 
-db = SQLAlchemy()
+db = SQLAlchemy(session_options={
+	'expire_on_commit': False
+})
 
 class SyncedFTP:
 	def __init__(self):
@@ -141,6 +143,7 @@ class AI(db.Model):
 	def __init__(self, *args, **kwargs):
 		super(AI, self).__init__(*args, **kwargs)
 		self.lastest_version()
+		self.updated(False)
 		db_obj_init_msg(self)
 
 	def info(self):
@@ -161,6 +164,10 @@ class AI(db.Model):
 	def delete(self):
 		db.session.delete(self)
 		db.session.commit()
+
+	def updated(self, ftpsync=True):
+		self.last_modified = timestamp()
+		if ftpsync: self.ftp_sync()
 
 	@ftp.failsafe
 	def ftp_sync(self):
@@ -194,7 +201,9 @@ class AI(db.Model):
 			f.write(self.lang.name)
 
 	def __repr__(self):
-		return "<AI(id={}, name={}, user_id={}, lang={}, type={}>".format(self.id, self.name, self.user_id, self.lang.name, self.type.name)
+		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(
+			self.id, self.name,self.user_id, self.lang.name, self.type.name, self.last_modified
+		)
 
 class AI_Version(db.Model):
 	__tablename__ = 't_ai_versions'

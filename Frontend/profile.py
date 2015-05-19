@@ -19,6 +19,7 @@ def create_ai():
 	ai = AI(user=current_user, name="Unbenannte KI",
 			desc="Unbeschriebene KI", lang=Lang.query.first(),
 			type=GameType.query.first())
+	## current gametype
 	db.session.commit()
 	return redirect(url_for("profile.edit_ai", id=ai.id))
 
@@ -36,15 +37,19 @@ def edit_ai(id):
 @profile.route("/ais/challenge")
 @authenticated_web
 def ais_challenge():
-	own = current_user.ai_list.order_by(AI.last_modified.desc())
-	ownfirst = own.first()
-	if not ownfirst:
+	gametype = GameType.query.first()
+	## current gametype
+
+	# own = current_user.ai_list.filter(AI.type==gametype).order_by(AI.last_modified.desc()).all()
+	# aus irgend nem komischen grund funkioniert order_by bei der ai_list von current_user nicht
+	own = AI.query.filter(AI.user == current_user).filter(AI.type == gametype).order_by(AI.last_modified.desc()).all()
+	if len(own) < 1:
 		return error(403, body="Du hast nicht genug eigene KIs.")
 	all = AI.query.order_by(AI.id).all()
-	allfirst = AI.query.order_by(AI.id).first()
-	if not allfirst:
+	if len(all) < 1:
 		return error(403, body="Es gibt noch nicht genug AIs!")
-	return render_template("challenge.html", own=own, all=all, ownfirst=ownfirst, allfirst=allfirst)
+	#roles = ["Rolle"+str(i) for i, r in enumerate(gametype.roles)]
+	return render_template("challenge.html", own=own, all=all, ownfirst=own[0], allfirst=all[0])
 
 
 @profile.route("/activityfeed")

@@ -230,7 +230,7 @@ def api_ai_update(id):
 
 	a.extratext += str(ai)
 
-	ai.ftp_sync()
+	ai.updated()
 
 	return ai.info()
 
