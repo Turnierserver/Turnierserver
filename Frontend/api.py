@@ -245,8 +245,9 @@ def api_ai_delete(id):
 	if not current_user.can_access(ai):
 		return CommonErrors.NO_ACCESS
 
-	Activity("AI " + ai.name + " von " + current_user.name + " gelöscht!")
+	Activity("AI " + ai.name + " von " + current_user.name + " geloescht!")
 	ai.delete()
+	return {"error": False}
 
 
 @api.route("/ai/<int:id>/submitCode")

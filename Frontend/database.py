@@ -125,7 +125,7 @@ class AI(db.Model):
 	lang = db.relationship("Lang", backref=db.backref('t_ais', order_by=id))
 	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
 	type = db.relationship("GameType", backref=db.backref('t_ais', order_by=id))
-	version_list = db.relationship("AI_Version", order_by="AI_Version.id", backref="AI")
+	version_list = db.relationship("AI_Version", order_by="AI_Version.id", backref="AI", cascade="all, delete, delete-orphan")
 	game_assocs = db.relationship("AI_Game_Assoc", order_by="AI_Game_Assoc.game_id", cascade="all, delete, delete-orphan")
 
 	def __init__(self, *args, **kwargs):

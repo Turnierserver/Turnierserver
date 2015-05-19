@@ -50,8 +50,40 @@
 		<label>Beschreibung</label>
 		<textarea id="desc">{{ ai.desc }}</textarea>
 	</div>
-	<div id="submit" class="ui huge teal submit button">Update</div>
+	<div id="submit" class="ui huge teal labeled icon submit button">
+		<i class="save outline icon"></i> Update
+	</div>
+	<div id="delete" class="ui huge red labeled icon button">
+		<i class="trash outline icon"></i> AI löschen
+	</div>
 </form>
+
+<div id="delete_modal" class="ui basic modal">
+	<i class="close icon"></i>
+	<div class="header">
+		KI löschen
+	</div>
+	<div class="content">
+		<div class="image">
+			<i class="trash outline icon"></i>
+		</div>
+		<div class="description">
+			<p>Das löschen einer KI kann nicht rückgängig gemacht werden! Willst du {{ai.name}} wirklich löschen?</p>
+		</div>
+	</div>
+	<div class="actions">
+		<div class="two fluid ui inverted buttons">
+			<div class="ui red basic inverted cancel button">
+				<i class="remove icon"></i>
+				Nein
+			</div>
+			<div class="ui green basic inverted ok button">
+				<i class="checkmark icon"></i>
+				Ja
+			</div>
+		</div>
+	</div>
+</div>
 
 
 
@@ -85,7 +117,22 @@ var f = function() {
 		alert(JSON.parse(xhr.responseText).error)
 	})
 }
+
 $("#submit").on("click", f)
+
+$("#delete").on("click", function() {
+	$('#delete_modal').modal({
+		onApprove: function() {
+			$.post("/api/ai/{{ai.id}}/delete").done(function(data) {
+				console.log("AI deleted.")
+				location.href = "/"
+			}).fail(function(xhr, textStatus, errorThrown) {
+				console.log(xhr.responseText.error)
+				alert(JSON.parse(xhr.responseText).error)
+			})
+		}
+	}).modal('show')
+});
 
 
 </script>
