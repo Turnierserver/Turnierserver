@@ -46,8 +46,3 @@ def game(id):
 
 	return render_template(game.type.viz, game=game)
 
-
-@anonymous.route("/activityfeed")
-def activityfeed():
-	return render_template("activityfeed.html", activities=activity_feed.feed[::-1])
-

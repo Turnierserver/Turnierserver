@@ -22,9 +22,18 @@ def edit_ai(id):
 	ai = AI.query.get(id)
 	if not ai:
 		abort(404)
-	if not current_user.is_authenticated():
-		abort(401)
 	if not current_user.can_access(ai):
 		abort(401)
 	return render_template("edit_ai.html", ai=ai, langs=Lang.query.all())
 
+@profile.route("/activityfeed")
+@authenticated_web
+def activityfeed():
+	if not current_user.admin: abort(401)
+	return render_template("activityfeed.html", activities=activity_feed.feed[::-1])
+
+@profile.route("/admin")
+@authenticated_web
+def admin():
+	if not current_user.admin: abort(401)
+	return render_template("admin.html")

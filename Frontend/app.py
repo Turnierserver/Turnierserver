@@ -14,6 +14,7 @@ from profile import profile
 from database import db, populate, AI
 from _cfg import env
 from activityfeed import activity_feed, Activity
+from errorhandling import handle_errors
 from time import time
 
 
@@ -27,6 +28,7 @@ app.config['SQLALCHEMY_ECHO'] = env.debug_sql
 app.register_blueprint(api)
 app.register_blueprint(anonymous)
 app.register_blueprint(profile)
+handle_errors(app)
 
 if env.airbrake:
 	#airbrake.io

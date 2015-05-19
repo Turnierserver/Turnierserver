@@ -1,5 +1,5 @@
 from database import db
-from flask import abort
+from flask import abort, render_template
 from flask.ext.login import current_user
 from flask.ext.cache import Cache
 from functools import wraps
@@ -35,8 +35,7 @@ def authenticated_web(f):
 					db.session.rollback()
 					db.session.close()
 					raise
-		abort(401) ## ne 401 error page
+		return abort(401)
 	return wrapper
-
 
 cache = Cache(config={'CACHE_TYPE': 'simple'})
