@@ -12,7 +12,6 @@ import java.util.Map;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.PropertyUtils;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.GameState;
-import org.pixelgaffer.turnierserver.gamelogic.messages.BuilderSolverChange;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -44,9 +43,9 @@ public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 	 */
 	protected Map<String, String> gamestate;
 	
-	private TypeToken<BuilderSolverChange<R>> token;
+	private TypeToken<R> token;
 	
-	public Ai(TypeToken<BuilderSolverChange<R>> token, String[] args) {
+	public Ai(TypeToken<R> token, String[] args) {
 		this.token = token;
 		try {
 			PropertyUtils.loadProperties(args.length > 0 ? args[0] : "ai.prop");
@@ -77,7 +76,7 @@ public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 	 * 
 	 * @return Der momentane Spielzustand
 	 */
-	protected abstract E getState(BuilderSolverChange<R> change);
+	protected abstract E getState(R change);
 	
 	@Override
 	public final void run() {
@@ -88,7 +87,7 @@ public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 					System.exit(0);
 				}
 				String line = in.readLine();
-				BuilderSolverChange<R> updates = Parsers.getWorker().parse(Parsers.escape(line.getBytes("UTF-8")), token.getType());
+				R updates = Parsers.getWorker().parse(Parsers.escape(line.getBytes("UTF-8")), token.getType());
 				Object response = update(getState(updates));
 				if(response != null) {
 					send(response);
