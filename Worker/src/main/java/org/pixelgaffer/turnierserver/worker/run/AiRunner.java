@@ -73,7 +73,8 @@ public class AiRunner
 	
 	public void buildProperties () throws IOException
 	{
-		propFile = new File(getSandboxDir(), "ai.prop");
+//		propFile = new File(getSandboxDir(), "ai.prop");
+		propFile = new File(getBinDir(), "ai.prop");
 		Properties p = new Properties();
 		p.put("turnierserver.worker.host", "::1"); // die systemeigenschaft ist
 													// für das backend, nicht

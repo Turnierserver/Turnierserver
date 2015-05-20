@@ -44,7 +44,7 @@ public class WorkerConnectionType
 		if (m.matches())
 		{
 			char type = m.group(1).charAt(0);
-			UUID uuid = (type == BACKEND ? null : UUID.fromString(m.group(2)));
+			UUID uuid = (type == AI ? UUID.fromString(m.group(2)) : null);
 			return new WorkerConnectionType(type, uuid);
 		}
 		return null;

@@ -14,8 +14,10 @@ import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandSuccess;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
+import org.pixelgaffer.turnierserver.worker.Sandboxes;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
 import org.pixelgaffer.turnierserver.worker.compile.CompileQueue;
+import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
 
 /**
  * Diese Klasse ist der Client zum Backend.
@@ -79,7 +81,11 @@ public class BackendClient implements SocketObserver
 				if (cmd.getAction() == COMPILE)
 					CompileQueue.addJob(cmd);
 				else if (cmd.getAction() == STARTAI)
-					System.out.println("BackendClient:83: " + cmd);
+				{
+					SandboxCommand scmd = new SandboxCommand(SandboxCommand.RUN_AI, cmd.getAiId(), cmd.getVersion(),
+							cmd.getUuid());
+					Sandboxes.send(scmd);
+				}
 				else
 					WorkerMain.getLogger().severe("BackendClient: Unknown job " + cmd.getAction());
 			}

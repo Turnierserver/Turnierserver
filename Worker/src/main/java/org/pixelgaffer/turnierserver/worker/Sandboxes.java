@@ -1,9 +1,10 @@
 package org.pixelgaffer.turnierserver.worker;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pixelgaffer.turnierserver.networking.messages.StartAi;
+import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -32,13 +33,18 @@ public class Sandboxes
 		return sandboxes.remove(sandbox);
 	}
 	
-	public static boolean submitJob (StartAi job)
+	/**
+	 * Schickt den Job an die KI.
+	 */
+	public static boolean send (SandboxCommand job) throws IOException
 	{
 		for (Sandbox s : sandboxes)
 		{
+			System.out.println(
+					"todo:Sandboxes:43: hier wärs schön wenn die supporteten sprachen geprüft werden würden");
 			if (!s.isBusy())
 			{
-				s.submitJob(job);
+				s.send(job);
 				return true;
 			}
 		}

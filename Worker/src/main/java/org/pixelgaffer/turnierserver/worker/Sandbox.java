@@ -1,10 +1,13 @@
 package org.pixelgaffer.turnierserver.worker;
 
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.SANDBOX;
+
+import java.io.IOException;
+
 import lombok.Getter;
 import lombok.Setter;
 
-import org.pixelgaffer.turnierserver.networking.messages.StartAi;
+import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
 import org.pixelgaffer.turnierserver.worker.server.WorkerConnectionHandler;
 
 /**
@@ -28,8 +31,8 @@ public class Sandbox
 		connection = connectionHandler;
 	}
 	
-	public void submitJob (StartAi job)
+	public void send (SandboxCommand job) throws IOException
 	{
-		throw new UnsupportedOperationException();
+		connection.send(job);
 	}
 }

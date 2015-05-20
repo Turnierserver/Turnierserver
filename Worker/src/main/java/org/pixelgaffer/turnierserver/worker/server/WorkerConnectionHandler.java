@@ -4,6 +4,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.AI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.BACKEND;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.SANDBOX;
+
+import java.io.IOException;
+
 import lombok.Getter;
 import naga.NIOSocket;
 
@@ -34,6 +37,18 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	public WorkerConnectionHandler (NIOSocket socket)
 	{
 		super(socket);
+	}
+	
+	/**
+	 * Schickt den Job an den Client, sollte eine Sandbox sein.
+	 */
+	public void send (SandboxCommand job) throws IOException
+	{
+		if (type.getType() != SANDBOX)
+			WorkerMain.getLogger().warning("WorkerConnectionHandler: Submitting StartAi Job to " + type.getType()
+					+ "( should be " + SANDBOX + ")");
+		getClient().write(Parsers.getSandbox().parse(job));
+		getClient().write("\n".getBytes(UTF_8));
 	}
 	
 	@Override
@@ -70,7 +85,8 @@ public class WorkerConnectionHandler extends ConnectionHandler
 				type = WorkerConnectionType.parse(linestr);
 				if (type == null)
 				{
-					WorkerMain.getLogger().severe("WorkerConnectionHandler: Can't parse WorkerConnectionType from " + linestr);
+					WorkerMain.getLogger().severe(
+							"WorkerConnectionHandler: Can't parse WorkerConnectionType from " + linestr);
 					socket.close();
 					return;
 				}
@@ -130,6 +146,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					break;
 				
 				case SANDBOX:
+					System.out.println("WorkerConnectionHandler:133: " + new String(line, UTF_8).trim());
 					// TODO die Sandbox meldet wenn eine KI fertig ist
 					break;
 			}
