@@ -2,13 +2,16 @@
 {% set active_page = "admin" %}
 {% block body %}
 <h4 class="ui dividing header">Admin-Panel</h4>
-<div class="ui labeled icon button">
+<a class="ui labeled icon button" href="{{url_for("api.admin_ftp_sync")}}">
 	<i class="save icon"></i> FTP-Synchronisieren
-</div>
-<div class="ui labeled icon button">
+</a>
+<a class="ui labeled icon button" href="{{url_for("api.admin_clear_db")}}">
 	<i class="trash outline icon"></i> Datenbank leeren
-</div>
+</a>
 <div class="ui labeled icon button">
 	<i class="server outline icon"></i> Server neustarten
 </div>
+<a class="ui labeled icon button" href="{{url_for("profile.activityfeed")}}">
+	<i class="server outline icon"></i> Aktivitätsprotokoll
+</a>
 {% endblock %}

@@ -17,7 +17,6 @@ def error(errorcode, body=None, title=None):
 	else:
 		title = title or str(errorcode)
 		body = body or "Dieser Statuscode wurde noch nicht dokumentiert."
-	print(title,  current_user)
 	return render_template("error.html", title=title, body=body), errorcode
 
 def handle_errors(app):

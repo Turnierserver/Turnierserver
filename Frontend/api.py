@@ -3,7 +3,7 @@ from flask.ext.login import current_user, login_user, logout_user, LoginManager,
 from functools import wraps
 import json
 
-from database import AI, User, Game, Lang, db
+from database import AI, User, Game, Lang, db, populate
 from commons import authenticated, cache
 from _cfg import env
 from activityfeed import Activity
@@ -30,6 +30,18 @@ def json_out(f):
 		return result
 
 	return wrapper
+
+
+def admin_required(f):
+	@wraps(f)
+	def wrapper(*args, **kwargs):
+		if current_user:
+			if current_user.is_authenticated():
+				if current_user.admin:
+					return f(*args, **kwargs)
+		return CommonErrors.NO_ACCESS
+	return wrapper
+
 
 
 login_manager = LoginManager()
@@ -255,6 +267,23 @@ def not_implemented(*args, **kwargs):
 	return CommonErrors.NOT_IMPLEMENTED
 
 
+@api.route("/admin/ftp_sync")
+@json_out
+@admin_required
+def admin_ftp_sync():
+	Activity(current_user.name + " hat FTP-Sync ausgelöst.")
+	for ai in AI.query.all():
+		ai.ftp_sync()
+	return {"error": False}
+
+@api.route("/admin/clear_db")
+@json_out
+@admin_required
+def admin_clear_db():
+	Activity(current_user.name + " hat Datenbanklöschung ausgelöst.")
+	db.drop_all()
+	populate(5)
+	return {"error": False}
 
 
 #github-bequemlichkeit

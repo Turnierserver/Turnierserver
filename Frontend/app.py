@@ -57,4 +57,4 @@ cache.init_app(app)
 Activity("Serverstart abgeschlossen...", extratext="Hier gehts los.\nAlle vorherigen Events sollten nicht wichtig sein.")
 
 
-app.run(host="::", port=env.web_port, debug=env.debug)
+app.run(host="::", port=env.web_port, debug=env.debug, threaded=True)
