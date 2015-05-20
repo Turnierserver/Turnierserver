@@ -20,8 +20,10 @@ INCLUDEPATH += include/
 SOURCES += \
     src/main.cpp \
     src/workerclient.cpp \
-    src/buffer.cpp
+    src/buffer.cpp \
+    src/mirrorclient.cpp
 
 HEADERS += \
     include/workerclient.h \
-    include/buffer.h
+    include/buffer.h \
+    include/mirrorclient.h

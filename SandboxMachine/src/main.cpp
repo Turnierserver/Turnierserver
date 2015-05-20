@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "mirrorclient.h"
 #include "workerclient.h"
 
 #include <QCommandLineOption>
@@ -26,14 +27,13 @@
 #include <QHostAddress>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QSettings>
 #include <QTcpSocket>
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DEFAULT_WORKER_PORT 1337
-
-void executable (const QString &execfile, const QString &language, QHash<QString, QString> *commands)
+void searchExecutable (const QString &execfile, const QString &language, QHash<QString, QString> *commands)
 {
 	QStringList pathes = QString(getenv("PATH")).split(':');
 	for (QString path : pathes)
@@ -50,16 +50,6 @@ void executable (const QString &execfile, const QString &language, QHash<QString
 	}
 }
 
-void searchJava (QHash<QString, QString> *commands)
-{
-	executable("java", "Java", commands);
-}
-
-void searchPython (QHash<QString, QString> *commands)
-{
-	executable("python", "Python", commands);
-}
-
 int main(int argc, char *argv[])
 {
 	QCoreApplication app(argc, argv);
@@ -67,22 +57,44 @@ int main(int argc, char *argv[])
 	
 	QCommandLineParser parser;
 	parser.addHelpOption();
-	QCommandLineOption portOption(QStringList() << "p" << "port", "Der Port des Servers auf dem Worker. Default: " + QString::number(DEFAULT_WORKER_PORT), "port", QString::number(DEFAULT_WORKER_PORT));
-	parser.addOption(portOption);
-	QCommandLineOption addressOption(QStringList() << "a" << "address", "Die Addresse des Backends.", "ip", "::1");
-	parser.addOption(addressOption);
+	parser.addPositionalArgument("config-file", "Die Konfigurationsdatei für die Sandbox.", "[<config-file>]");
 	parser.process(app);
+	QStringList args = parser.positionalArguments();
+	
+	// Die Konfigurationsdatei laden
+	QSettings *config;
+	if (args.size() > 0)
+		config = new QSettings(args[0], QSettings::IniFormat);
+	else
+		config = new QSettings(QSettings::IniFormat, QSettings::SystemScope, "Pixelgaffer", "SandboxMachine");
 	
 	// Den Rechner nach Programmiersprachen durchsuchen.
 	QHash<QString, QString> commands;
-	searchJava(&commands);
-	searchPython(&commands);
+	config->beginGroup("Languages");
+	QStringList langs = config->value("langs").toStringList();
+	for (QString lang : langs)
+	{
+		QString command = config->value(lang).toString();
+		if (command.isEmpty())
+		{
+			printf("Erlaube native Sprache %s\n", qPrintable(lang));
+			commands.insert(lang, QString());
+		}
+		else
+		{
+			printf("Suche Sprache %s (Befehl %s)\n", qPrintable(lang), qPrintable(command));
+			searchExecutable(command, lang, &commands);
+		}
+	}
+	config->endGroup();
 	
 	// Mit dem Worker verbinden
-	QString address = parser.value(addressOption);
-	quint16 port = parser.value(portOption).toUInt();
+	config->beginGroup("Worker");
+	QString host = config->value("Host").toString();
+	quint16 port = config->value("Port").toUInt();
+	config->endGroup();
 	QTcpSocket client;
-	client.connectToHost(address, port);
+	client.connectToHost(host, port);
 	if (!client.waitForConnected(1000))
 	{
 		fprintf(stderr, "Failed to connect to Worker: %s\n", qPrintable(client.errorString()));
@@ -99,6 +111,14 @@ int main(int argc, char *argv[])
 	QJsonDocument doc(array);
 	client.write(doc.toJson(QJsonDocument::Compact) + "\n");
 	client.waitForBytesWritten(1000);
+	
+	// Mit dem Mirror verbinden
+	config->beginGroup("Worker");
+	MirrorClient mirror(host, config->value("MirrorPort").toUInt());
+	config->endGroup();
+	
+	// zum testen mal was runterladen
+	mirror.retrieveAi(6, 1, "test.tar.bz2");
 	
 	WorkerClient *wclient = new WorkerClient(&client);
 	QObject::connect(&client, SIGNAL(connected()), wclient, SLOT(connected()));

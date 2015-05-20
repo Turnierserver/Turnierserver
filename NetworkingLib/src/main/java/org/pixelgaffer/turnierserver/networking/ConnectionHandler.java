@@ -1,5 +1,8 @@
 package org.pixelgaffer.turnierserver.networking;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,10 +10,10 @@ import naga.NIOSocket;
 import naga.SocketObserver;
 
 /**
- * Ein abstraḱter ConnectionHandler, der einige nützliche Funktionen
+ * Ein abstrakter ConnectionHandler, der einige nützliche Funktionen
  * implementiert.
  */
-public abstract class ConnectionHandler implements SocketObserver
+public abstract class ConnectionHandler extends OutputStream implements SocketObserver
 {
 	/** Gibt an, ob der Handler mit dem Socket connected ist. */
 	@Getter
@@ -79,5 +82,31 @@ public abstract class ConnectionHandler implements SocketObserver
 	@Override
 	public void packetSent (NIOSocket socket, Object tag)
 	{
+	}
+	
+	// wrap OutputStream
+	
+	@Override
+	public void write (int b) throws IOException
+	{
+		write(new byte[] { (byte)b });
+	}
+	
+	@Override
+	public void write (byte b[]) throws IOException
+	{
+		super.write(b);
+	}
+	
+	@Override
+	public void write (byte b[], int off, int len) throws IOException
+	{
+		super.write(b, off, len);
+	}
+	
+	@Override
+	public void flush () throws IOException
+	{
+		super.flush();
 	}
 }

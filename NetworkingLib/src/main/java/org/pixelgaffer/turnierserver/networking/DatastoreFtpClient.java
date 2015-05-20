@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.file.Files;
 
@@ -22,8 +23,6 @@ import lombok.NoArgsConstructor;
 /**
  * Diese Klasse verbindet sich zum FTP Server auf dem Datastore und enthält
  * Methoden zum Abrufen der Daten.
- * 
- * NICHT MULTITHREAD-SICHER
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DatastoreFtpClient
@@ -76,6 +75,21 @@ public class DatastoreFtpClient
 	/**
 	 * Speichert den Remote-File im OutputStream local.
 	 */
+	public static void retrieveFile (String remote, OutputStream local)
+			throws IOException, FTPIllegalReplyException, FTPException, IllegalStateException,
+			FTPDataTransferException, FTPAbortedException
+	{
+		connect();
+		synchronized (lock)
+		{
+			client.download(remote, local, 0, null);
+		}
+		local.close();
+	}
+	
+	/**
+	 * Speichert den Remote-File in local.
+	 */
 	public static void retrieveFile (String remote, File local)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
@@ -114,6 +128,17 @@ public class DatastoreFtpClient
 	/**
 	 * Speichert das tar-bzip2-Archiv mit den compilierten Daten der KI im
 	 * OutputStream local.
+	 */
+	public static void retrieveAi (int id, int version, OutputStream local)
+			throws IllegalStateException, IOException, FTPIllegalReplyException, FTPException,
+			FTPDataTransferException, FTPAbortedException
+	{
+		retrieveFile(aiBinPath(id) + "/v" + version + ".tar.bz2", local);
+	}
+	
+	/**
+	 * Speichert das tar-bzip2-Archiv mit den compilierten Daten der KI in
+	 * local.
 	 */
 	public static void retrieveAi (int id, int version, File local)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
@@ -208,9 +233,35 @@ public class DatastoreFtpClient
 		storeFile(aiBinPath(ai) + "/v" + version + ".tar.bz2", local);
 	}
 	
+	/**
+	 * Lädt die Ausgabe des Kompilierungsprozess der KI hoch.
+	 */
 	public static void storeAiCompileOutput (int aiId, int version, File local)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
 		storeFile(aiBinPath(aiId) + "/v1-compile.out", new FileInputStream(local));
+	}
+	
+	/**
+	 * Gibt die Größe der angegebenen Datei zurück.
+	 */
+	public static long fileSize (String remote)
+			throws IOException, FTPIllegalReplyException, FTPException
+	{
+		connect();
+		synchronized (lock)
+		{
+			return client.fileSize(remote);
+		}
+	}
+	
+	/**
+	 * Gibt die Größe des tar-bzip2-Archivs mit den compilierten Daten der KI
+	 * zurück.
+	 */
+	public static long aiSize (int id, int version)
+			throws IOException, FTPIllegalReplyException, FTPException
+	{
+		return fileSize(aiBinPath(id) + "/v" + version + ".tar.bz2");
 	}
 }

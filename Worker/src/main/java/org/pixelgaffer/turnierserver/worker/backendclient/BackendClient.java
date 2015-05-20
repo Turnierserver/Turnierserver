@@ -82,9 +82,22 @@ public class BackendClient implements SocketObserver
 					CompileQueue.addJob(cmd);
 				else if (cmd.getAction() == STARTAI)
 				{
-					SandboxCommand scmd = new SandboxCommand(SandboxCommand.RUN_AI, cmd.getAiId(), cmd.getVersion(),
-							cmd.getUuid());
-					Sandboxes.send(scmd);
+					// das Herunterladen & verschicken in einem neuen Thread
+					// machen, damit der Netzwerk-Thread nicht zu lange
+					// angehalten wird
+					new Thread( () -> {
+						try
+						{
+							SandboxCommand scmd = new SandboxCommand(SandboxCommand.RUN_AI,
+									cmd.getAiId(), cmd.getVersion(), cmd.getUuid());
+							Sandboxes.send(scmd);
+						}
+						catch (Exception e)
+						{
+							WorkerMain.getLogger().severe("BackendClient: Fehler beim Senden des StartKI-Befehls: " + e);
+							e.printStackTrace();
+						}
+					}).start();
 				}
 				else
 					WorkerMain.getLogger().severe("BackendClient: Unknown job " + cmd.getAction());
