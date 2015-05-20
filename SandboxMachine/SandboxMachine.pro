@@ -19,7 +19,9 @@ INCLUDEPATH += include/
 
 SOURCES += \
     src/main.cpp \
-    src/workerclient.cpp
+    src/workerclient.cpp \
+    src/buffer.cpp
 
 HEADERS += \
-    include/workerclient.h
+    include/workerclient.h \
+    include/buffer.h
