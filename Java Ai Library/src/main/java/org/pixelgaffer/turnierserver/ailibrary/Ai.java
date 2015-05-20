@@ -46,10 +46,10 @@ public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 	
 	private TypeToken<BuilderSolverChange<R>> token;
 	
-	public Ai(TypeToken<BuilderSolverChange<R>> token) {
+	public Ai(TypeToken<BuilderSolverChange<R>> token, String[] args) {
 		this.token = token;
 		try {
-			PropertyUtils.loadProperties("ai.prop");
+			PropertyUtils.loadProperties(args.length > 0 ? args[0] : "ai.prop");
 			con = new Socket(PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST), PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
 			out = new PrintWriter(con.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
