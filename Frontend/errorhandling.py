@@ -1,4 +1,5 @@
 from flask import render_template
+from flask.ext.login import current_user
 
 errors = {
 	401: ('unauthorized', 'Du hast nicht genug Rechte, um diese Aktion auszufueren.'),
@@ -16,9 +17,12 @@ def error(errorcode, body=None, title=None):
 	else:
 		title = title or str(errorcode)
 		body = body or "Dieser Statuscode wurde noch nicht dokumentiert."
-
+	print(title,  current_user)
 	return render_template("error.html", title=title, body=body), errorcode
 
 def handle_errors(app):
-	for code in errors:
-		app.errorhandler(code)(lambda e, c=code: error(c))
+	#for code in errors:
+	#	app.errorhandler(code)(lambda e, c=code: error(c))
+	@app.errorhandler(404)
+	def not_found(e):
+		return error(404)

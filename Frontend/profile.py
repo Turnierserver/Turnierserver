@@ -33,6 +33,17 @@ def edit_ai(id):
 		abort(401)
 	return render_template("edit_ai.html", ai=ai, langs=Lang.query.all())
 
+@profile.route("/ai/<int:id>/code")
+@authenticated_web
+def edit_code(id):
+	ai = AI.query.get(id)
+	if not ai:
+		abort(404)
+	if not current_user.can_access(ai):
+		abort(401)
+	return render_template("edit_code.html", ai=ai)
+
+
 
 @profile.route("/ais/challenge")
 @authenticated_web

@@ -14,9 +14,7 @@ def timestamp():
 	return arrow.utcnow().timestamp
 
 
-db = SQLAlchemy(session_options={
-	'expire_on_commit': False
-})
+db = SQLAlchemy()
 
 class SyncedFTP:
 	def __init__(self):
@@ -77,7 +75,7 @@ class User(db.Model):
 	__tablename__ = 't_users'
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50), unique=True, nullable=False)
-	ai_list = db.relationship("AI", order_by="AI.id", backref="User", cascade="all, delete, delete-orphan", lazy="dynamic")
+	ai_list = db.relationship("AI", order_by="AI.id", backref="User", cascade="all, delete, delete-orphan")
 	admin = db.Column(db.Boolean, default=False)
 
 	def __init__(self, *args, **kwargs):
@@ -112,7 +110,7 @@ class User(db.Model):
 	def is_anonymous(self):
 		return False
 	def get_id(self):
-		return self.name
+		return self.id
 
 
 class AI_Game_Assoc(db.Model):
@@ -200,6 +198,10 @@ class AI(db.Model):
 		with ftp.ftp_host.open(bd+"/language.txt", "w") as f:
 			f.write(self.lang.name)
 
+	def code(self):
+		with open("database.py", "r") as f:
+			return f.read()
+
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(
 			self.id, self.name,self.user_id, self.lang.name, self.type.name, self.last_modified
@@ -236,6 +238,7 @@ class Lang(db.Model):
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	name = db.Column(db.Text)
 	url = db.Column(db.Text)
+	ace_name = db.Column(db.Text)
 	ai_list = db.relationship("AI", order_by="AI.id", backref="Lang")
 
 	def __init__(self, *args, **kwargs):
@@ -306,9 +309,9 @@ def populate(count=20):
 	import random
 	db.create_all()
 
-	py = Lang(id=1, name="Python", url="https://www.python.org")
-	java = Lang(id=2, name="Java", url="https://www.java.com/?isthaesslig=1")
-	brainfuck = Lang(id=3, name="Brainfuck", url="https://esolangs.org/wiki/Brainfuck")
+	py = Lang(id=1, name="Python", ace_name="python", url="https://www.python.org")
+	java = Lang(id=2, name="Java", ace_name="java", url="https://www.java.com/?isthaesslig=1")
+	brainfuck = Lang(id=3, name="Brainfuck", ace_name="brainfuck", url="https://esolangs.org/wiki/Brainfuck")
 	langs = [py, java, brainfuck]
 
 	minesweeper = GameType(id=1, name="Minesweeper", viz="vizs/minesweeper.html", roles=[

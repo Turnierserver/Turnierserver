@@ -33,7 +33,6 @@ def authenticated_web(f):
 					return ret
 				except:
 					db.session.rollback()
-					db.session.close()
 					raise
 		return abort(401)
 	return wrapper

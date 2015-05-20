@@ -33,11 +33,10 @@ def json_out(f):
 
 
 login_manager = LoginManager()
-
-
+##
 @login_manager.user_loader
-def load_user(username):
-	return User.query.filter(User.name == username).first()
+def load_user(id):
+	return User.query.get(id)
 
 
 
