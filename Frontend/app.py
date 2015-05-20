@@ -25,6 +25,9 @@ app.secret_key = env.secret_key
 login_manager.init_app(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = env.db_url
 app.config['SQLALCHEMY_ECHO'] = env.debug_sql
+
+app.jinja_env.add_extension("jinja2.ext.do")
+
 app.register_blueprint(api)
 app.register_blueprint(anonymous)
 app.register_blueprint(profile)
