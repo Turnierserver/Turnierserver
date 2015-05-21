@@ -3,7 +3,7 @@
 {% block body %}
 Deine:
 <div class="ui fluid selection dropdown">
-	<input type="hidden" name="ai" vaule="{{ ownfirst.id }}">
+	<input type="hidden" id="ai1" value="{{ ownfirst.id }}">
 	<i class="dropdown icon"></i>
 	<div class="text">
 		<img class="ui mini avatar image" src="/api/ai/{{ ownfirst.id }}/icon">
@@ -22,7 +22,7 @@ Deine:
 Gegen:
 
 <div class="ui fluid selection dropdown">
-	<input type="hidden" name="ai" vaule="{{ allfirst.id }}">
+	<input type="hidden" id="ai2" value="{{ allfirst.id }}">
 	<i class="dropdown icon"></i>
 	<div class="text">
 		<img class="ui mini avatar image" src="/api/ai/{{ allfirst.id }}/icon">
@@ -38,13 +38,27 @@ Gegen:
 	</div>
 </div>
 
-<a class="ui labeled icon button" href="{{url_for("api.start_game")}}">
+<a id="challenge" class="ui labeled icon button">
 	<i class="save icon"></i> Herausfordern
 </a>
 
 
 <script>
 	$(".dropdown").dropdown();
+
+	$("#challenge").on("click", function() {
+
+		var ais = [$("#ai1").val(), $("#ai2").val()]
+
+
+		$.post("/api/games/start", {"ai": ais}).done(function(data) {
+			console.log("Challenge started.")
+			//location.reload();
+		}).fail(function(xhr, textStatus, errorThrown) {
+			console.log(xhr.responseText.error)
+			alert(JSON.parse(xhr.responseText).error)
+		})
+	})
 </script>
 
 {% endblock %}

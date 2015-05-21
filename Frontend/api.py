@@ -224,9 +224,9 @@ def api_ai_update(id):
 		if l:
 			ai.lang = l
 
-	if 'extras' in request.form:
-		extras = request.form.get("extras")
-		ai.lastest_version().extras(json.loads(extras))
+	if 'extra[]' in request.form:
+		extras = request.form.getlist("extra[]")
+		ai.lastest_version().extras(extras)
 
 	# es muss zur Datenbank geschrieben werden, um die aktuellen Infos zu bekommen
 	db.session.commit()
@@ -263,11 +263,13 @@ def not_implemented(*args, **kwargs):
 @json_out
 @authenticated
 def start_game():
-	if not 'ais' in request.form:
+	if not 'ai[]' in request.form:
 		return CommonErrors.INVALID_ID
 
-	ais = request.form.get("ai[]")
-	ais = [AI.get(ai) for ai in ais]
+	ais = request.form.getlist("ai[]")
+	print(ais)
+	ais = [AI.query.get(ai) for ai in ais]
+	print(ais)
 	if not all(ais):
 		return CommonErrors.INVALID_ID
 
@@ -275,7 +277,9 @@ def start_game():
 		return CommonErrors.NO_ACCESS
 
 	ai_versions = [(ai, ai.lastest_version()) for ai in ais]
-	backend.start_game(ai_versions)
+	backend.request_game(ai_versions)
+
+	return {"error": False}
 
 
 

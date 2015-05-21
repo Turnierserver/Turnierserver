@@ -12,9 +12,7 @@
 	{% do nav_menu.append((url_for("profile.current_profile"), "profile", current_user.name)) %}
 {% endif %}
 
-
 {% set active_page = active_page | default('index')%}
-
 
 <!DOCTYPE html>
 <html>

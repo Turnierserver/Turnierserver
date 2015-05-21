@@ -43,11 +43,14 @@ class SyncedFTP:
 						abort(404)
 				print("connected!")
 				try:
-					print("calling", meth, "w/", args, kwargs)
 					r = meth(*args, **kwargs)
 					#print("SYNC_FTP: Lock released succesfully")
 					return r
 				except ftputil.error.FTPError as e:
+					try:
+						self.connect()
+					except ftputil.error.FTPError:
+						pass
 					#print("SYNC_FTP: Lock released")
 					abort(404)
 		return wrapper

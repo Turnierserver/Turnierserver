@@ -54,7 +54,7 @@ class Backend(threading.Thread):
 		self.lastest_request_id += 1
 		d = {'action': 'start', 'ais': [], 'gametype': 1, 'requestid': reqid}
 		for ai, version in ais:
-			d['ais'].append(str(ai) + 'v' + str(version))
+			d['ais'].append(str(ai.id) + 'v' + str(version.version_id))
 		##gametype checkenreq
 		self.requests[reqid] = d
 		self.send_dict(d)
@@ -104,7 +104,7 @@ class Backend(threading.Thread):
 			if not self.connected:
 				self.connect()
 			if self.connected:
-				r = self.sock.recv(1024).decode("utf-8")
+				r = self.sock.recv(1024*10).decode("utf-8")
 				print('recvd', r)
 				if r == '':
 					##
