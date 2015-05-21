@@ -4,6 +4,7 @@ from _cfg import env
 from activityfeed import Activity
 from io import BytesIO
 from functools import wraps
+from threading import Lock
 import ftputil
 import socket
 import arrow
@@ -20,45 +21,52 @@ class SyncedFTP:
 	def __init__(self):
 		self.cached = set()
 		self.ftp_host = None
+		self.lock = Lock()
 
 	def connect(self):
 		Activity("Verbinde zum FTP @ " + env.ftp_url)
 		self.ftp_host = ftputil.FTPHost(env.ftp_url, env.ftp_uname, env.ftp_pw, timeout=1)
 
 
-	def failsafe(self, meth):
+	def failsafe_locked(self, meth):
 		@wraps(meth)
 		def wrapper(*args, **kwargs):
-			if not self.ftp_host:
+			#print("SYNC_FTP: Waiting for lock")
+			with self.lock:
+				#print("SYNC_FTP: Lock aquired")
+				if not self.ftp_host:
+					try:
+						self.connect()
+					except ftputil.error.FTPError as e:
+						Activity("Verbindung zum FTP hat gefailed", extratext=str(e))
+						#print("SYNC_FTP: Lock released")
+						abort(404)
+				print("connected!")
 				try:
-					self.connect()
+					print("calling", meth, "w/", args, kwargs)
+					r = meth(*args, **kwargs)
+					#print("SYNC_FTP: Lock released succesfully")
+					return r
 				except ftputil.error.FTPError as e:
-					Activity("Verbindung zum FTP hat gefailed", extratext=str(e))
+					#print("SYNC_FTP: Lock released")
 					abort(404)
-			try:
-				return meth(*args, **kwargs)
-			except socket.error as e:
-				Activity(e)
-				self.connect()
-				return meth(*args, **kwargs)
-			except ftputil.error.FTPError as e:
-				Activity(e)
-				self.connect()
-				return meth(*args, **kwargs)
 		return wrapper
 
-	def send_file(self, path):
-		@self.failsafe
+	def send_file_failsafe(self, path):
+		@self.failsafe_locked
 		def f(path):
-			print("Downloading from FTP: ", path)
-			if not self.ftp_host.path.exists(path):
-				Activity("Datei '" + path + "' existiert auf dem FTP nicht.")
-				abort(404)
-			with self.ftp_host.open(path, "rb") as remote_obj:
-				f = BytesIO(remote_obj.read())
-				f.seek(0)
-				return send_file(f)
+			return self.send_file(path)
 		return f(path)
+
+	def send_file(self, path):
+		print("Downloading from FTP: ", path)
+		if not self.ftp_host.path.exists(path):
+			Activity("Datei '" + path + "' existiert auf dem FTP nicht.")
+			abort(404)
+		with self.ftp_host.open(path, "rb") as remote_obj:
+			f = BytesIO(remote_obj.read())
+			f.seek(0)
+			return send_file(f)
 
 	def send_cached(self, path):
 		pass
@@ -85,7 +93,7 @@ class User(db.Model):
 	def info(self):
 		return {"id": self.id, "name": self.name, "ais": [ai.info() for ai in self.ai_list], "admin": self.admin}
 
-	@ftp.failsafe
+	@ftp.failsafe_locked
 	def icon(self):
 		if ftp.ftp_host.path.isfile("Users/"+str(self.id)+"/icon.png"):
 			return ftp.send_file("Users/"+str(self.id)+"/icon.png")
@@ -147,7 +155,7 @@ class AI(db.Model):
 	def info(self):
 		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc, "lang": self.lang.info(), "gametype": self.type.info()}
 
-	@ftp.failsafe
+	@ftp.failsafe_locked
 	def icon(self):
 		if ftp.ftp_host.path.isfile("AIs/"+str(self.id)+"/icon.png"):
 			return ftp.send_file("AIs/"+str(self.id)+"/icon.png")
@@ -156,7 +164,11 @@ class AI(db.Model):
 
 	def lastest_version(self):
 		if len(self.version_list) == 0:
-			self.version_list.append(AI_Version())
+			return self.new_version()
+		return self.version_list[-1]
+
+	def new_version(self):
+		self.version_list.append(AI_Version(version_id = len(self.version_list) + 1))
 		return self.version_list[-1]
 
 	def delete(self):
@@ -167,7 +179,7 @@ class AI(db.Model):
 		self.last_modified = timestamp()
 		if ftpsync: self.ftp_sync()
 
-	@ftp.failsafe
+	@ftp.failsafe_locked
 	def ftp_sync(self):
 		print("FTP-Sync von " + self.name)
 		bd = "AIs/"+str(self.id)
@@ -194,6 +206,9 @@ class AI(db.Model):
 					type_id = self.type.id
 				))
 
+			with ftp.ftp_host.open(bd+"/v"+str(version.id)+"/libraries.txt", "w") as f:
+				for lib in self.lastest_version().extras():
+					f.write(lib + "\n")
 
 		with ftp.ftp_host.open(bd+"/language.txt", "w") as f:
 			f.write(self.lang.name)
@@ -201,6 +216,13 @@ class AI(db.Model):
 	def code(self):
 		with open("database.py", "r") as f:
 			return f.read()
+
+	def set_name(self, name):
+		if not any([32 < ord(c) < 127 for c in name]):
+			return False
+		name = name.replace("\n", " ")
+		self.name = name
+		return True
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(
@@ -210,6 +232,7 @@ class AI(db.Model):
 class AI_Version(db.Model):
 	__tablename__ = 't_ai_versions'
 	id = db.Column(db.Integer, primary_key=True)
+	version_id = db.Column(db.Integer)
 	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'))
 	ai = db.relationship("AI", backref=db.backref('t_ai_versions', order_by=id))
 	extras_str = db.Column(db.Text, default="[]")
@@ -223,7 +246,7 @@ class AI_Version(db.Model):
 		db_obj_init_msg(self)
 
 	def info(self):
-		return {"id": self.id, "extras": self.extras()}
+		return {"id": self.id, "version_id": self.version_id, "extras": self.extras()}
 
 	def extras(self, e=False):
 		if e:
@@ -231,7 +254,7 @@ class AI_Version(db.Model):
 		return json.loads(self.extras_str)
 
 	def __repr__(self):
-		return "<AI_Version(id={}>".format(self.id)
+		return "<AI_Version(id={}, version_id={}, ai_id={}>".format(self.id, self.version_id, self.ai_id)
 
 class Lang(db.Model):
 	__tablename__ = "t_langs"

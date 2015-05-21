@@ -5,6 +5,13 @@ from flask.ext.cache import Cache
 from functools import wraps
 
 
+class CommonErrors:
+	INVALID_ID = ({'error': 'Invalid id.'}, 404)
+	NO_ACCESS = ({'error': 'Insufficient permissions.'}, 401)
+	IM_A_TEAPOT = ({'error': 'I\'m a teapot.'}, 418)
+	NOT_IMPLEMENTED = ({'error': 'Not implemented.'}, 501)
+
+
 def authenticated(f):
 	@wraps(f)
 	def wrapper(*args, **kwargs):

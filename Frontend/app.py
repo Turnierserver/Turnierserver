@@ -12,6 +12,7 @@ from api import api, login_manager
 from anonymous import anonymous
 from profile import profile
 from database import db, populate, AI
+from backend import backend
 from _cfg import env
 from activityfeed import activity_feed, Activity
 from errorhandling import handle_errors

@@ -4,7 +4,8 @@ from functools import wraps
 import json
 
 from database import AI, User, Game, Lang, db, populate
-from commons import authenticated, cache
+from backend import backend
+from commons import authenticated, cache, CommonErrors
 from _cfg import env
 from activityfeed import Activity
 
@@ -49,15 +50,6 @@ login_manager = LoginManager()
 @login_manager.user_loader
 def load_user(id):
 	return User.query.get(id)
-
-
-
-
-class CommonErrors:
-	INVALID_ID = ({'error': 'Invalid id.'}, 404)
-	NO_ACCESS = ({'error': 'Insufficient permissions.'}, 401)
-	IM_A_TEAPOT = ({'error': 'I\'m a teapot.'}, 418)
-	NOT_IMPLEMENTED = ({'error': 'Not implemented.'}, 501)
 
 
 api = Blueprint("api", __name__, url_prefix="/api")
@@ -225,7 +217,7 @@ def api_ai_update(id):
 	a = Activity("AI " + ai.name + " geaendert")
 	a.extratext = str(ai) + " -> "
 
-	ai.name = request.form.get('name', ai.name)
+	ai.set_name(request.form.get('name', ai.name))
 	ai.desc = request.form.get('description', ai.desc)
 	if 'lang' in request.form:
 		l = Lang.query.get(request.form.get('lang'))
@@ -265,6 +257,27 @@ def api_ai_delete(id):
 @json_out
 def not_implemented(*args, **kwargs):
 	return CommonErrors.NOT_IMPLEMENTED
+
+
+@api.route("/games/start", methods=["POST"])
+@json_out
+@authenticated
+def start_game():
+	if not 'ais' in request.form:
+		return CommonErrors.INVALID_ID
+
+	ais = request.form.get("ai[]")
+	ais = [AI.get(ai) for ai in ais]
+	if not all(ais):
+		return CommonErrors.INVALID_ID
+
+	if not any([current_user.can_access(ai) for ai in ais]):
+		return CommonErrors.NO_ACCESS
+
+	ai_versions = [(ai, ai.lastest_version()) for ai in ais]
+	backend.start_game(ai_versions)
+
+
 
 
 @api.route("/admin/ftp_sync")
