@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template, abort, redirect, url_for
 from flask.ext.login import current_user
-from database import AI, User, Game, Lang, GameType, db
+from database import AI, User, Game, Lang, GameType, db, ftp
 from commons import authenticated_web
 from activityfeed import activity_feed
 from errorhandling import error
+import ftputil
 
 profile = Blueprint("profile", __name__)
 @profile.route("/profile")
@@ -42,6 +43,61 @@ def edit_code(id):
 	if not current_user.can_access(ai):
 		abort(401)
 	return render_template("edit_code.html", ai=ai)
+
+
+@profile.route("/ai/<int:id>/files/<path:path>")
+@profile.route("/ai/<int:id>/files/")
+@profile.route("/ai/<int:id>/files")
+@authenticated_web
+def file_browser(id, path=""):
+
+	if '..' in path or path.startswith('/'):
+		abort(404)
+
+	ai = AI.query.get(id)
+	if not ai:
+		abort(404)
+	if not current_user.can_access(ai):
+		abort(401)
+
+	## cleanup?
+
+	curr_url = url_for("profile.file_browser", id=id, path=path)
+	if not curr_url.endswith("/"):
+		curr_url += "/"
+
+	ftp_url = "AIs/{}/v{}/code/{}".format(id, ai.lastest_version().version_id, path)
+
+
+	with ftp.lock:
+		try:
+			if not ftp.ftp_host:
+				ftp.connect()
+
+			objs = []
+			files = ftp.ftp_host.listdir(ftp_url)
+			print("FILES @", ftp_url)
+			print(files)
+			for f in files:
+				objs.append(dict(
+					name=f,
+					isfile=ftp.ftp_host.path.isfile(ftp_url+"/"+f),
+					url = curr_url + f
+				))
+
+		except ftputil.error.FTPError as e:
+			print(e)
+			return render_template("ai_file_browser.html", connected=False)
+
+
+	root_url = url_for("profile.file_browser", id=id, path="")
+	path_url = [("(root)", root_url)]
+	url = root_url[:-1]
+	for p in path.split("/"):
+		url += "/" + p
+		path_url.append((p, url))
+
+	return render_template("ai_file_browser.html", ai=ai, objs=objs, path=path_url, connected=True)
 
 
 

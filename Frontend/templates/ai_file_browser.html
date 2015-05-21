@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% set active_page = "ai_file_browser" %}
+{% block body %}
+{% if connected %}
+<table class="ui celled striped table">
+	<thead>
+		<tr>
+			<th colspan="4">
+				<div class="ui breadcrumb">
+					{% for name, url in path %}
+						{%if not loop.last %}
+							<a class="section" href="{{url}}">{{ name }}</a>
+							<div class="divider"> / </div>
+						{% else %}
+							<div class="active section">{{ name }}</div>
+						{% endif %}
+					{% endfor %}
+				</div>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for obj in objs %}
+		<tr>
+			<td class="collapsing">
+				<i class="{% if obj.isfile %}file outline{% else %}folder{% endif %} icon"></i>
+				<a href="{{obj.url}}">{{ obj.name }}</a>
+			</td>
+			<td>Dateien haben Beschreibungen? Hier schon!</td>
+			<td class="right aligned collapsing">vor {{loop.index}} Stunden</td>
+			<td class="right aligned collapsing">
+				<a class="ui red button">Löschen</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<a class="ui teal button">Neuer Ordner</a>
+<a class="ui teal button">Neue Datei</a>
+{% else %}
+<div class="ui page dimmer visible active">
+	<div class="content">
+		<div class="center">
+			<h2 class="ui inverted icon header">
+				<i class="terminal icon"></i>
+				Verbindungsprobleme
+			</h2>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+{% endblock %}

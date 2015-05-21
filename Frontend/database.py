@@ -41,7 +41,6 @@ class SyncedFTP:
 						Activity("Verbindung zum FTP hat gefailed", extratext=str(e))
 						#print("SYNC_FTP: Lock released")
 						abort(404)
-				print("connected!")
 				try:
 					r = meth(*args, **kwargs)
 					#print("SYNC_FTP: Lock released succesfully")
@@ -194,6 +193,8 @@ class AI(db.Model):
 		for version in self.version_list:
 			if not ftp.ftp_host.path.isdir(bd+"/v"+str(version.id)):
 				ftp.ftp_host.mkdir(bd+"/v"+str(version.id))
+			if not ftp.ftp_host.path.isdir(bd+"/v"+str(version.id)+"/code"):
+				ftp.ftp_host.mkdir(bd+"/v"+str(version.id)+"/code")
 			with ftp.ftp_host.open(bd+"/v"+str(version.id)+"/settings.prop", "w") as f:
 				def write_prop(f, d):
 					for key in d:
