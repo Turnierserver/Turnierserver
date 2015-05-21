@@ -1,8 +1,13 @@
 package org.pixelgaffer.turnierserver.esu;
 
+import java.io.File;
+import java.io.FileInputStream;
+
+import javafx.scene.image.Image;
+
 import org.pixelgaffer.turnierserver.esu.MainApp.Language;
 
-public class Paths {
+public class Resources {
 
 	public static String playerFolder(){
 		return "Players";
@@ -33,6 +38,33 @@ public class Paths {
 	
 	public static String simplePlayer(Language language){
 		return "Downloads\\SimplePlayer\\" + language.toString();
+	}
+	
+	public static Image defaultPicture(){
+		try {
+			return new Image(Resources.class.getResourceAsStream("default_ai.png"));
+		} catch (Exception ex) {
+			ErrorLog.write("Default-Bild konnte nicht geladen werden.");
+			return null;
+		}
+	}
+	
+	public static Image imageFromFile(File file){
+		try {
+			return imageFromFile(file.getPath());
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	public static Image imageFromFile(String path){
+		try {
+			FileInputStream fin = new FileInputStream(path);
+			Image img = new Image(fin);
+			fin.close();
+			return img;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
 	

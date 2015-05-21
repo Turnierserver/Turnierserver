@@ -16,13 +16,15 @@ public class Version {
 	public boolean qualified = false;
 	public boolean finished = false;
 	public boolean uploaded = false;
+	public String compileOutput = "";
+	public String qualifyOutput = "";
 	
 	public Version(Player p, int n){
 		player = p;
 		number = n;
 		
 		if (!exists()){
-			copyFromFile(Paths.simplePlayer(player.language));
+			copyFromFile(Resources.simplePlayer(player.language));
 			storeProps();
 		}
 		else{
@@ -44,7 +46,7 @@ public class Version {
 	 * @return true, wenn die Version bereits existiert
 	 */
 	public boolean exists(){
-		File dir = new File(Paths.version(this));
+		File dir = new File(Resources.version(this));
 		return !dir.mkdirs();
 	}
 	
@@ -55,7 +57,7 @@ public class Version {
 	 */
 	public void copyFromFile(String path){
 		Path srcPath = new File(path).toPath();
-		Path destPath = new File(Paths.version(this)).toPath();
+		Path destPath = new File(Resources.version(this)).toPath();
 		try {
 			Files.walkFileTree(srcPath, new CopyVisitor(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING));
 		} catch (IOException e) {
@@ -70,7 +72,7 @@ public class Version {
 	 */
 	public void loadProps(){
 		try {
-			Reader reader = new FileReader(Paths.versionProperties(this));
+			Reader reader = new FileReader(Resources.versionProperties(this));
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
@@ -78,6 +80,8 @@ public class Version {
 			qualified = Boolean.parseBoolean(prop.getProperty("qualified"));
 			finished = Boolean.parseBoolean(prop.getProperty("finished"));
 			uploaded = Boolean.parseBoolean(prop.getProperty("uploaded"));
+			compileOutput = prop.getProperty("compileOutput");
+			qualifyOutput = prop.getProperty("qualifyOutput");
 		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt (Version)");}
 	}
 	/**
@@ -89,17 +93,51 @@ public class Version {
 		prop.setProperty("qualified", "" + qualified);
 		prop.setProperty("finished", "" + finished);
 		prop.setProperty("uploaded", "" + uploaded);
+		prop.setProperty("compileOutput", compileOutput);
+		prop.setProperty("qualifyOutput", qualifyOutput);
 		
 		try {
-			Writer writer = new FileWriter(Paths.versionProperties(this));
+			Writer writer = new FileWriter(Resources.versionProperties(this));
 			prop.store(writer, player.title + " v" + number );
 			writer.close();
 		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Version)");}
 	}
 	
 	
+	/**
+	 * Kompiliert die Quellcodedateien
+	 * 
+	 * @return false, wenn die Kompilierung fehlgeschlagen ist
+	 */
+	public boolean compile(){
+		compiled = true;
+		compileOutput = "Kompilierung fertig!";
+		storeProps();
+		return true;
+	}
+	
+	/**
+	 * Qualifiziert die Ki
+	 * 
+	 * @return false, wenn die Qualifikation fehlgeschlagen ist
+	 */
+	public boolean qualify(){
+		qualified = true;
+		qualifyOutput = "Qualifikation fertig!";
+		storeProps();
+		return true;
+	}
 	
 	
+	
+	
+	
+	/**
+	 * damit in der ChoiceBox die Nummer angezeigt wird
+	 */
+	public String toString(){
+		return "" + number;
+	}
 	
 	/**
 	 * Ein FileVisitor, der eine Datei bei ihrem Besuch kopiert

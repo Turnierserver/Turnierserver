@@ -18,6 +18,7 @@ public class MainApp extends Application{
 	
 	public PlayerManager manager = new PlayerManager();
 	
+	public Stage stage;
 	public ControllerRoot cRoot;
 	public ControllerStartPage cStart;
 	public ControllerAiManagement cAi;
@@ -41,7 +42,8 @@ public class MainApp extends Application{
 	/**
 	 * start-Methode (wegen: extends Application)
 	 */
-	public void start(Stage stage) throws Exception {
+	public void start(Stage _stage) throws Exception {
+		stage = _stage;
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("view/RootLayout.fxml"));
 		BorderPane root = (BorderPane) loader.load();
@@ -54,7 +56,8 @@ public class MainApp extends Application{
 		////////////Test//////////////////////////////////
 		
 		manager.loadPlayers();
-		
+		cAi.showPlayers(manager);
+		cAi.showPlayer(manager.players.get(0), null);
 //		Player pp = new Player("testAI");
 //		ErrorLog.write("Titel:" + pp.title);
 //		ErrorLog.write("Beschreibung: " + pp.description);

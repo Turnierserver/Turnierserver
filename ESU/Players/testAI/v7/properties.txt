@@ -1,0 +1,8 @@
+#testAI v7
+#Wed May 20 17:00:10 CEST 2015
+uploaded=false
+compileOutput=
+qualifyOutput=
+qualified=false
+compiled=false
+finished=false

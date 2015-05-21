@@ -7,8 +7,11 @@ import javax.imageio.ImageIO;
 
 import org.pixelgaffer.turnierserver.esu.MainApp.Language;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import javafx.util.Callback;
 
 
 public class Player {
@@ -16,7 +19,7 @@ public class Player {
 	public final String title;
 	public Language language;
 	public String description = "(keine Beschreibung)";
-	List<Version> versions = new ArrayList<Version>();
+	public ObservableList<Version> versions = FXCollections.observableArrayList();
 	
 	public static enum NewVersionType{
 		fromFile, simplePlayer, lastVersion
@@ -42,7 +45,7 @@ public class Player {
 		title = tit;
 		language = lang;
 		
-		File dir = new File(Paths.player(this));
+		File dir = new File(Resources.player(this));
 		if (!dir.mkdirs()){
 			ErrorLog.write("Der Spieler existiert bereits.");
 			description = "invalid";
@@ -64,6 +67,21 @@ public class Player {
 		}
 		return newVersion(type, "");
 	}
+	
+	/**
+	 * gibt die neueste Version oder null zurück
+	 * 
+	 * @return gibt null zurück, wenn es keine Version gibt
+	 */
+	public Version lastVersion(){
+		if (versions.size() > 0){
+			return versions.get(versions.size()-1);
+		}
+		else{
+			return null;
+		}
+	}
+	
 	/**
 	 * Fügt eine neue Version der Versionsliste hinzu.
 	 * 
@@ -81,7 +99,7 @@ public class Player {
 			if(versions.size() == 0){
 				return null;
 			}
-			version = new Version(this, versions.size(), Paths.version(this, versions.size()-1));
+			version = new Version(this, versions.size(), Resources.version(this, versions.size()-1));
 			break;
 		case simplePlayer:
 			version = new Version(this, versions.size());
@@ -99,7 +117,7 @@ public class Player {
 	 */
 	public void loadProps(){
 		try {
-			Reader reader = new FileReader(Paths.playerProperties(this));
+			Reader reader = new FileReader(Resources.playerProperties(this));
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
@@ -118,8 +136,8 @@ public class Player {
 		prop.setProperty("language", language.toString());
 		
 		try {
-			String hey = Paths.playerProperties(this);
-			Writer writer = new FileWriter(Paths.playerProperties(this));
+			String hey = Resources.playerProperties(this);
+			Writer writer = new FileWriter(Resources.playerProperties(this));
 			prop.store(writer, title);
 			writer.close();
 		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Player)");}
@@ -132,7 +150,7 @@ public class Player {
 		versions.clear();
 		int versionAmount = 0;
 		try {
-			Reader reader = new FileReader(Paths.playerProperties(this));
+			Reader reader = new FileReader(Resources.playerProperties(this));
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
@@ -159,19 +177,11 @@ public class Player {
 	 * @return das gespeicherte Bild
 	 */
 	public Image getPicture(){
-		try {
-			FileInputStream fin = new FileInputStream(Paths.playerPicture(this));
-			Image img = new Image(fin);
-			fin.close();
-			return img;
-		} catch (Exception e) {
-			try {
-				return new Image(getClass().getResourceAsStream("default_ai.png"));
-			} catch (Exception ex) {
-				ErrorLog.write("Default-Bild konnte nicht geladen werden.");
-				return null;
-			}
+		Image img = Resources.imageFromFile(Resources.playerPicture(this));
+		if (img == null){
+			img = Resources.defaultPicture();
 		}
+		return img;
 	}
 	/**
 	 * Speichert das Bild des Spielers in der Datei picture.png.
@@ -180,10 +190,23 @@ public class Player {
 	 */
 	public void setPicture(Image img){
 		try {
-			ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", new File(Paths.playerPicture(this)));
+			if (img == null){
+				File file = new File(Resources.playerPicture(this));
+				file.delete();
+			}
+			else{
+				ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", new File(Resources.playerPicture(this)));
+			}
 		} catch (IOException e) {
 			ErrorLog.write("Bild konnte nicht gespeichert werden.");
 		}
+	}
+	
+	/**
+	 * damit die Player-Liste richtig angezeigt wird
+	 */
+	public String toString(){
+		return title;
 	}
 		
 }

@@ -19,7 +19,7 @@
                      <top>
                         <AnchorPane prefHeight="41.0" prefWidth="323.0" BorderPane.alignment="CENTER">
                            <children>
-                              <Button layoutX="258.0" mnemonicParsing="false" onAction="#clickNewKi" text="Neu" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <Button layoutX="258.0" mnemonicParsing="false" onAction="#clickNewAi" text="Neu" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                               <ChoiceBox fx:id="cbLanguage" layoutX="125.0" prefHeight="31.0" prefWidth="99.0" AnchorPane.rightAnchor="53.0" AnchorPane.topAnchor="0.0" />
                               <TextField fx:id="tbName" layoutX="21.0" prefHeight="31.0" prefWidth="150.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="157.0" AnchorPane.topAnchor="0.0" />
                            </children>
@@ -29,7 +29,7 @@
                         </AnchorPane>
                      </top>
                      <center>
-                        <ListView fx:id="lvKis" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                        <ListView fx:id="lvAis" onKeyTyped="#clickChangeAi" onMouseClicked="#clickChangeAi" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
                      </center>
                   </BorderPane>
                </children>
@@ -41,7 +41,7 @@
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: white;">
                            <children>
                               <ImageView fx:id="image" fitHeight="250.0" fitWidth="250.0" layoutX="503.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
-                              <Button layoutX="657.0" layoutY="264.0" mnemonicParsing="false" onAction="#clickChangeImage" text="Bild ändern" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="269.0" />
+                              <Button fx:id="btDeleteImage" layoutX="552.0" layoutY="269.0" mnemonicParsing="false" onAction="#clickDeleteImage" text="Bild löschen" AnchorPane.rightAnchor="115.0" AnchorPane.topAnchor="269.0" />
                               <TextArea fx:id="tbOutput" layoutX="422.0" layoutY="410.0" prefHeight="0.0" prefWidth="0.0" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="324.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="370.0" />
                               <Label layoutX="324.0" layoutY="344.0" text="Ausgabe:" AnchorPane.leftAnchor="324.0" AnchorPane.topAnchor="344.0" />
                               <AnchorPane prefHeight="652.0" prefWidth="317.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -61,8 +61,8 @@
                                           <Button fx:id="btEdit" mnemonicParsing="false" onAction="#clickEdit" text="Bearbeiten" />
                                        </children>
                                     </HBox>
-                                    <Button layoutX="163.0" layoutY="264.0" mnemonicParsing="false" onAction="#clickToActual" text="zu aktueller Version" AnchorPane.leftAnchor="163.0" AnchorPane.topAnchor="264.0" />
-                                    <ChoiceBox fx:id="cbVersion" layoutX="78.0" layoutY="264.0" onKeyReleased="#clickVersionChange" onMouseClicked="#clickVersionChange" onScrollFinished="#clickVersionChange" prefHeight="31.0" prefWidth="80.0" AnchorPane.leftAnchor="78.0" AnchorPane.topAnchor="264.0" />
+                                    <Button fx:id="btToActual" layoutX="163.0" layoutY="264.0" mnemonicParsing="false" onAction="#clickToActual" text="zu aktueller Version" AnchorPane.leftAnchor="163.0" AnchorPane.topAnchor="264.0" />
+                                    <ChoiceBox fx:id="cbVersion" layoutX="78.0" layoutY="264.0" onKeyTyped="#clickVersionChange" onMouseClicked="#clickVersionChange" onScrollFinished="#clickVersionChange" prefHeight="31.0" prefWidth="80.0" AnchorPane.leftAnchor="78.0" AnchorPane.topAnchor="264.0" />
                                     <VBox layoutX="14.0" layoutY="300.0" prefWidth="299.0" spacing="15.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="300.0">
                                        <children>
                                           <TitledPane animated="false" text="Neue Version">
@@ -88,13 +88,14 @@
                                                 <Button fx:id="btFinish" layoutX="1.0" layoutY="72.0" mnemonicParsing="false" onAction="#clickFinish" prefHeight="31.0" prefWidth="103.0" text="Fertigstellen" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="72.0" />
                                                 <Button fx:id="btUpload" layoutX="1.0" layoutY="108.0" mnemonicParsing="false" onAction="#clickUpload" prefHeight="31.0" prefWidth="103.0" text="Hochladen" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="108.0" />
                                                 <Label fx:id="lbUploaded" layoutX="110.0" layoutY="113.0" text="bereits hochgeladen" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="113.0" />
-                                                <Label fx:id="lbFinish" layoutX="110.0" layoutY="77.0" text="bereits fertiggestellt" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="77.0" />
+                                                <Label fx:id="lbFinished" layoutX="110.0" layoutY="77.0" text="bereits fertiggestellt" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="77.0" />
                                              </children>
                                           </AnchorPane>
                                        </children>
                                     </VBox>
                                  </children>
                               </AnchorPane>
+                              <Button fx:id="btChangeImage" layoutX="657.0" layoutY="269.0" mnemonicParsing="false" onAction="#clickChangeImage" text="Bild ändern" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="269.0" />
                            </children>
                         </AnchorPane>
                   </content>

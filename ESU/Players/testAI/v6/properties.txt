@@ -1,0 +1,8 @@
+#testAI v6
+#Thu May 21 11:54:29 CEST 2015
+uploaded=false
+compileOutput=Kompilierung fertig\!
+qualifyOutput=Qualifikation fertig\!
+qualified=true
+compiled=true
+finished=false
