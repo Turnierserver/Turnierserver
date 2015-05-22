@@ -6,6 +6,7 @@ from functools import wraps
 
 
 class CommonErrors:
+	BAD_REQUEST = ({'error': 'Bad request.'}, 400)
 	INVALID_ID = ({'error': 'Invalid id.'}, 404)
 	NO_ACCESS = ({'error': 'Insufficient permissions.'}, 401)
 	IM_A_TEAPOT = ({'error': 'I\'m a teapot.'}, 418)

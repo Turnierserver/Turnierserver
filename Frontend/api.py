@@ -3,12 +3,13 @@ from flask.ext.login import current_user, login_user, logout_user, LoginManager,
 from functools import wraps
 import json
 
-from database import AI, User, Game, Lang, db, populate
+from database import AI, User, Game, Lang, db, populate, ftp
 from backend import backend
 from commons import authenticated, cache, CommonErrors
 from _cfg import env
 from activityfeed import Activity
 
+from werkzeug.utils import secure_filename
 
 
 
@@ -253,10 +254,45 @@ def api_ai_delete(id):
 	return {"error": False}
 
 
-@api.route("/ai/<int:id>/submitCode")
+@api.route("/ai/<int:id>/upload", methods=["POST"])
 @json_out
-def not_implemented(*args, **kwargs):
-	return CommonErrors.NOT_IMPLEMENTED
+@authenticated
+def ai_upload(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+
+	if not ('path' in request.form and 'filename' in request.form and 'data' in request.form):
+		return CommonErrors.BAD_REQUEST
+
+	path = request.form['path']
+	if path.startswith("/") or ".." in path:
+		return CommonErrors.BAD_REQUEST
+	if not path.endswith("/"):
+		path += "/"
+	path = "AIs/{}/v{}/code/{}".format(id, ai.lastest_version().version_id, path)
+	filename = secure_filename(request.form['filename'])
+	data = request.form["data"]
+
+	with ftp.lock:
+		try:
+			if not ftp.ftp_host:
+				ftp.connect()
+
+			if not ftp.ftp_host.path.isdir(path):
+				return ({'error': 'Invalid path.'}, 400)
+
+			with open("tmp", "w") as f:
+				f.write(data)
+
+			ftp.ftp_host.upload("tmp", path + filename)
+		except ftputil.error.FTPError as e:
+			print(e)
+			abort(500)
+
+	return ({"error": False}, 200)
 
 
 @api.route("/games/start", methods=["POST"])

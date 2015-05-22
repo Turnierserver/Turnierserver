@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% set active_page = "ai_file_editor" %}
+
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.17/require.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.9/ace.js" type="text/javascript" charset="utf-8"></script>
+<style type="text/css" media="screen">
+	#editor {
+		height: 95%;
+	}
+
+	#code-seg {
+		height: 90%;
+	}
+</style>
+{% endblock %}
+
+
+
+{% block rawbody %}
+<div class="ui segment" id="code-seg">
+	<div class="ui breadcrumb">
+		{% for name, url in path %}
+			{%if not loop.last %}
+				<a class="section" href="{{url}}">{{ name }}</a>
+				<div class="divider"> / </div>
+			{% else %}
+				<div class="active section">{{ name }}</div>
+			{% endif %}
+		{% endfor %}
+	</div>
+	<div id="editor">{{ code }}</div>
+	<script>
+	window.onload = function() {
+		var editor = ace.edit("editor");
+		editor.setTheme("ace/theme/monokai");
+		editor.getSession().setMode("ace/mode/{{ai.lang.ace_name}}");
+
+		editor.commands.addCommand({
+			name: 'save_and_upload',
+			bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+			exec: function(editor) {
+				console.log("Saveing and Uploading...")
+				$("#code-seg").addClass("loading")
+
+				d = {
+					path: "{{submit_path}}",
+					filename: "{{submit_name}}",
+					data: editor.getSession().getValue()
+				}
+
+				$.post("/api/ai/{{ai.id}}/upload", d).done(function(data) {
+					console.log("File uploaded.", data)
+					location.reload();
+				}).fail(function(xhr, textStatus, errorThrown) {
+					console.log(xhr.responseText.error)
+					alert(JSON.parse(xhr.responseText).error)
+				})
+			},
+			readOnly: false
+		});
+
+
+		console.log("editorized, mode: ace/mode/{{ai.lang.ace_name}}")
+	}
+	</script>
+</div>
+
+{% endblock %}

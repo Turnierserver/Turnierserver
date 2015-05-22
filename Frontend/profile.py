@@ -68,34 +68,42 @@ def file_browser(id, path=""):
 
 	ftp_url = "AIs/{}/v{}/code/{}".format(id, ai.lastest_version().version_id, path)
 
-
-	with ftp.lock:
-		try:
-			if not ftp.ftp_host:
-				ftp.connect()
-
-			objs = []
-			files = ftp.ftp_host.listdir(ftp_url)
-			print("FILES @", ftp_url)
-			print(files)
-			for f in files:
-				objs.append(dict(
-					name=f,
-					isfile=ftp.ftp_host.path.isfile(ftp_url+"/"+f),
-					url = curr_url + f
-				))
-
-		except ftputil.error.FTPError as e:
-			print(e)
-			return render_template("ai_file_browser.html", connected=False)
-
-
 	root_url = url_for("profile.file_browser", id=id, path="")
 	path_url = [("(root)", root_url)]
 	url = root_url[:-1]
 	for p in path.split("/"):
 		url += "/" + p
 		path_url.append((p, url))
+
+
+	with ftp.lock:
+		try:
+			if not ftp.ftp_host:
+				ftp.connect()
+
+			if ftp.ftp_host.path.isfile(ftp_url):
+				submit_path = "/".join(path.split("/")[:-1])
+				submit_name = path.split("/")[-1]
+				with ftp.ftp_host.open(ftp_url, "r") as remote_obj:
+					return render_template("ai_file_editor.html", path=path_url,
+											code=remote_obj.read(), ai=ai,
+											submit_name=submit_name, submit_path=submit_path)
+
+			objs = []
+			files = ftp.ftp_host.listdir(ftp_url)
+			for f in files:
+				tmps = int(ftp.ftp_host.path.getmtime(ftp_url + "/" + f)) + 60*60*2
+				## -2 -> utc, timezones beim ftp?
+				objs.append(dict(
+					name=f,
+					isfile=ftp.ftp_host.path.isfile(ftp_url+"/"+f),
+					url = curr_url + f,
+					timestamp = tmps
+				))
+
+		except ftputil.error.FTPError as e:
+			print(e)
+			return render_template("ai_file_browser.html", connected=False)
 
 	return render_template("ai_file_browser.html", ai=ai, objs=objs, path=path_url, connected=True)
 
