@@ -17,11 +17,15 @@ def timestamp():
 
 db = SQLAlchemy()
 
+class SyncedFTPError(Exception):
+	pass
+
 class SyncedFTP:
 	def __init__(self):
 		self.cached = set()
 		self.ftp_host = None
 		self.lock = Lock()
+		self.err = SyncedFTPError
 
 	def connect(self):
 		Activity("Verbinde zum FTP @ " + env.ftp_url)
@@ -31,28 +35,35 @@ class SyncedFTP:
 	def failsafe_locked(self, meth):
 		@wraps(meth)
 		def wrapper(*args, **kwargs):
-			#print("SYNC_FTP: Waiting for lock")
-			with self.lock:
-				#print("SYNC_FTP: Lock aquired")
-				if not self.ftp_host:
-					try:
-						self.connect()
-					except ftputil.error.FTPError as e:
-						Activity("Verbindung zum FTP hat gefailed", extratext=str(e))
-						#print("SYNC_FTP: Lock released")
-						abort(404)
-				try:
-					r = meth(*args, **kwargs)
-					#print("SYNC_FTP: Lock released succesfully")
-					return r
-				except ftputil.error.FTPError as e:
-					try:
-						self.connect()
-					except ftputil.error.FTPError:
-						pass
-					#print("SYNC_FTP: Lock released")
-					abort(404)
+			@self.safe
+			def f():
+				return meth(*args, **kwargs)
+			try:
+				return f()
+			except self.err:
+				abort(404)
 		return wrapper
+
+	def safe(self, meth):
+		@wraps(meth)
+		def wrapper(*args, **kwargs):
+			with self.lock:
+				try:
+					try:
+						if not self.ftp_host:
+							self.connect()
+						return meth(*args, **kwargs)
+					except (ftputil.error.FTPError, socket.error) as e:
+						print(e)
+						self.connect()
+						raise e
+				except (ftputil.error.FTPError, socket.error) as e:
+					print(e)
+					Activity("SL_FTP_E "+str(e))
+					raise self.err()
+		return wrapper
+
+
 
 	def send_file_failsafe(self, path):
 		@self.failsafe_locked

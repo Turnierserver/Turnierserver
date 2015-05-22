@@ -276,23 +276,94 @@ def ai_upload(id):
 	filename = secure_filename(request.form['filename'])
 	data = request.form["data"]
 
-	with ftp.lock:
-		try:
-			if not ftp.ftp_host:
-				ftp.connect()
+	@ftp.safe
+	def f():
+		if not ftp.ftp_host.path.isdir(path):
+			return ({'error': 'Invalid path.'}, 400)
 
-			if not ftp.ftp_host.path.isdir(path):
-				return ({'error': 'Invalid path.'}, 400)
+		with open("tmp", "w") as f:
+			f.write(data)
 
-			with open("tmp", "w") as f:
-				f.write(data)
+		ftp.ftp_host.upload("tmp", path + filename)
+		return ({"error": False}, 200)
 
-			ftp.ftp_host.upload("tmp", path + filename)
-		except ftputil.error.FTPError as e:
-			print(e)
-			abort(500)
+	try:
+		return f()
+	except ftp.err:
+		abort(500)
 
-	return ({"error": False}, 200)
+
+
+@api.route("/ai/<int:id>/delete_file", methods=["POST"])
+@json_out
+@authenticated
+def ai_delete_file(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+
+	if not ('path' in request.form and 'filename' in request.form):
+		return CommonErrors.BAD_REQUEST
+
+	path = request.form['path']
+	if path.startswith("/") or ".." in path:
+		return CommonErrors.BAD_REQUEST
+	if not path.endswith("/"):
+		path += "/"
+	path = "AIs/{}/v{}/code/{}".format(id, ai.lastest_version().version_id, path)
+	filename = secure_filename(request.form['filename'])
+
+	@ftp.safe
+	def f():
+		if not ftp.ftp_host.path.isdir(path):
+			return ({'error': 'Invalid path.'}, 400)
+
+		if ftp.ftp_host.path.isfile(path+filename):
+			ftp.ftp_host.remove(path + filename)
+		else:
+			ftp.ftp_host.rmtree(path+filename)
+		return ({"error": False}, 200)
+
+	try:
+		return f()
+	except ftp.err:
+		abort(500)
+
+@api.route("/ai/<int:id>/create_folder", methods=["POST"])
+@json_out
+@authenticated
+def ai_create_folder(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+
+	if not ('path' in request.form and 'name' in request.form):
+		return CommonErrors.BAD_REQUEST
+
+	path = request.form['path']
+	if path.startswith("/") or ".." in path:
+		return CommonErrors.BAD_REQUEST
+	if not path.endswith("/"):
+		path += "/"
+	path = "AIs/{}/v{}/code/{}".format(id, ai.lastest_version().version_id, path)
+	name = secure_filename(request.form['name'])
+
+	@ftp.safe
+	def f():
+		if not ftp.ftp_host.path.isdir(path):
+			return ({'error': 'Invalid path.'}, 400)
+
+		ftp.ftp_host.mkdir(path + name)
+		return ({"error": False}, 200)
+
+	try:
+		return f()
+	except ftp.err:
+		abort(500)
 
 
 @api.route("/games/start", methods=["POST"])

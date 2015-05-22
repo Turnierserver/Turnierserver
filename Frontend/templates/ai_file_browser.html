@@ -36,23 +36,38 @@
 				<i class="{% if obj.isfile %}file outline{% else %}folder{% endif %} icon"></i>
 				<a href="{{obj.url}}">{{ obj.name }}</a>
 			</td>
-			<td>Dateien haben Beschreibungen? Hier schon!</td>
+			<td>Objekte haben Beschreibungen? Hier schon!</td>
 			<td class="right aligned collapsing" data-livestamp="{{ obj.timestamp }}"></td>
 			<td class="right aligned collapsing">
-				<a class="ui red button">Löschen</a>
+				<a class="delete_button ui basic red button" name="{{obj.name}}">Loeschen</a>
 			</td>
 		</tr>
 		{% endfor %}
 		{% else %}
 		<tr>
 			<td calss="collapsing">
-				Dieser Ordner enthält noch keine Dateien.
+				Dieser Ordner enthält noch keine Objekte.
 			</td>
+		</tr>
 		{% endif %}
+		<tr>
+			<td class="ui input">
+				<input type="text" id="newfile_name" placeholder="foo.txt">
+			</td>
+			<td>Diese Datei gibt es nicht, oder etwa doch?</td>
+			<td></td>
+			<td><button class="ui basic teal button" id="newfile">Erzeugen</button></td>
+		</tr>
+		<tr>
+			<td class="ui input">
+				<input type="text" id="newdir_name" placeholder="foobar">
+			</td>
+			<td>Diesen Ordner gibt es nicht, oder etwa doch?</td>
+			<td></td>
+			<td><button class="ui basic teal button" id="newdir">Erzeugen</button></td>
+		</tr>
 	</tbody>
 </table>
-<a class="ui teal button">Neuer Ordner</a>
-<a class="ui teal button">Neue Datei</a>
 {% else %}
 <div class="ui page dimmer visible active">
 	<div class="content">
@@ -65,5 +80,57 @@
 	</div>
 </div>
 {% endif %}
+
+<script>
+
+$("#newfile").on('click', function () {
+	$("#code-seg").addClass("loading")
+
+	d = {
+		path: "{{submit_path}}",
+		filename: $("#newfile_name").val(),
+		data: ""
+	}
+
+	$.post("/api/ai/{{ai.id}}/upload", d).done(function(data) {
+		console.log("File uploaded.", data)
+		location.reload();
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error)
+		alert(JSON.parse(xhr.responseText).error)
+	})
+})
+
+$("#newdir").on('click', function () {
+	$("#code-seg").addClass("loading")
+
+	d = {
+		path: "{{submit_path}}",
+		name: $("#newdir_name").val(),
+	}
+
+	$.post("/api/ai/{{ai.id}}/create_folder", d).done(function(data) {
+		console.log("Folder created.", data)
+		location.reload();
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error)
+		alert(JSON.parse(xhr.responseText).error)
+	})
+})
+
+$(".delete_button").on('click', function() {
+	console.log("Del:", $(this).attr("name"))
+
+	$.post("/api/ai/{{ai.id}}/delete_file", {path: "{{submit_path}}", filename: $(this).attr("name")}).done(function(data) {
+		console.log("File deleted.", data)
+		location.reload();
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error)
+		alert(JSON.parse(xhr.responseText).error)
+	})
+})
+
+
+</script>
 
 {% endblock %}
