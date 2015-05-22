@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% set active_page = "ai_file_browser" %}
+
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment-with-locales.min.js"></script>
+<script>moment.locale("de")</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/livestamp/1.1.2/livestamp.js"></script>
+{% endblock %}
 {% block body %}
+
+
+
 {% if connected %}
 <table class="ui celled striped table">
 	<thead>
@@ -20,6 +29,7 @@
 		</tr>
 	</thead>
 	<tbody>
+		{% if objs %}
 		{% for obj in objs %}
 		<tr>
 			<td class="collapsing">
@@ -27,12 +37,18 @@
 				<a href="{{obj.url}}">{{ obj.name }}</a>
 			</td>
 			<td>Dateien haben Beschreibungen? Hier schon!</td>
-			<td class="right aligned collapsing">vor {{loop.index}} Stunden</td>
+			<td class="right aligned collapsing" data-livestamp="{{ obj.timestamp }}"></td>
 			<td class="right aligned collapsing">
 				<a class="ui red button">Löschen</a>
 			</td>
 		</tr>
 		{% endfor %}
+		{% else %}
+		<tr>
+			<td calss="collapsing">
+				Dieser Ordner enthält noch keine Dateien.
+			</td>
+		{% endif %}
 	</tbody>
 </table>
 <a class="ui teal button">Neuer Ordner</a>
@@ -42,7 +58,7 @@
 	<div class="content">
 		<div class="center">
 			<h2 class="ui inverted icon header">
-				<i class="terminal icon"></i>
+				<i class="heartbeat icon"></i>
 				Verbindungsprobleme
 			</h2>
 		</div>
