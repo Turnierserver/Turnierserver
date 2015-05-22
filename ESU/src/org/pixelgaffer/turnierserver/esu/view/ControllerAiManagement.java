@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.pixelgaffer.turnierserver.esu.*;
+import org.pixelgaffer.turnierserver.esu.Dialog;
 import org.pixelgaffer.turnierserver.esu.Player.NewVersionType;
 
 import javafx.beans.value.ChangeListener;
@@ -80,7 +81,7 @@ public class ControllerAiManagement{
 	public void showPlayer(Player p, Version v){
 		player = p;
 		version = v;
-		cbVersion.setValue(version);
+		showPlayer();
 	}
 	public void showPlayer(){
 		if (player != null){
@@ -130,6 +131,8 @@ public class ControllerAiManagement{
 		
 		
 		if (version != null && player != null){
+			cbVersion.setValue(version);
+			tbOutput.setText("");
 			if (version.compiled){
 				tbOutput.setText(version.compileOutput);
 			}
@@ -180,7 +183,7 @@ public class ControllerAiManagement{
 	@FXML void clickChangeAi(){
 		player = lvAis.getSelectionModel().getSelectedItem();
 		version = player.lastVersion();
-		cbVersion.setValue(version);
+		showPlayer();
 	}
 	
 	@FXML void clickAbort(){
@@ -206,12 +209,14 @@ public class ControllerAiManagement{
 	
 	@FXML void clickToActual(){
 		version = player.lastVersion();
-		cbVersion.setValue(version);
+		showPlayer();
 	}
 	
 	@FXML void clickVersionChange(){
-		version = cbVersion.getValue();
-		showPlayer();
+		if (version != cbVersion.getValue()){
+			version = cbVersion.getValue();
+			showPlayer();
+		}
 	}
 	
 	@FXML void clickRbSimple(){
@@ -233,7 +238,7 @@ public class ControllerAiManagement{
 	}
 	
 	@FXML void clickSelectFile(){
-		tbFile.setText("Info9 geklickt");
+		tbFile.setText(Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner auswählen").getPath());
 	}
 	
 	@FXML void clickNewVersion(){
@@ -259,7 +264,10 @@ public class ControllerAiManagement{
 	}
 	
 	@FXML void clickFinish(){
-		tbFile.setText("Info13 geklickt");
+		if (Dialog.okAbort("Wenn eine Version fertiggestellt wird, kann sie nicht mehr bearbeitet werden.\n\nFortfahren?", "Version einfrieren")){
+			version.finish();
+		}
+		showPlayer();
 	}
 	
 	@FXML void clickUpload(){
@@ -267,9 +275,7 @@ public class ControllerAiManagement{
 	}
 	
 	@FXML void clickChangeImage(){
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Bild auswählen");
-		File result = fileChooser.showOpenDialog(mainApp.stage);
+		File result = Dialog.fileChooser(mainApp.stage, "Bild auswählen");
 		Image img = Resources.imageFromFile(result);
 		if (img != null){
 			player.setPicture(Resources.imageFromFile(result));

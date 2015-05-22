@@ -128,6 +128,13 @@ public class Version {
 		return true;
 	}
 	
+	/**
+	 * Stellt die Ki fertig, was bedeutet, dass sie nicht mehr bearbeitet werden kann.
+	 */
+	public void finish(){
+		finished = true;
+		storeProps();
+	}
 	
 	
 	
