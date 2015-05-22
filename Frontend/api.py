@@ -238,6 +238,22 @@ def api_ai_update(id):
 
 	return ai.info()
 
+@api.route("/ai/<int:id>/copy_example_code", methods=["GET", "POST"])
+@json_out
+@authenticated
+def api_ai_copy_example_code(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+
+	ai.ftp_sync()
+	ai.copy_example_code()
+
+	return ({"error": False}, 200)
+
+
 @api.route("/ai/<int:id>/delete", methods=["GET", "POST"])
 @json_out
 @authenticated

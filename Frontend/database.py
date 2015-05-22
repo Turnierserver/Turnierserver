@@ -190,7 +190,8 @@ class AI(db.Model):
 
 	def updated(self, ftpsync=True):
 		self.last_modified = timestamp()
-		if ftpsync: self.ftp_sync()
+		if ftpsync:
+			self.ftp_sync()
 
 	@ftp.failsafe_locked
 	def ftp_sync(self):
@@ -202,12 +203,10 @@ class AI(db.Model):
 			ftp.ftp_host.mkdir(bd+"/bin")
 
 		for version in self.version_list:
-			if not ftp.ftp_host.path.isdir(bd+"/v"+str(version.id)):
-				ftp.ftp_host.mkdir(bd+"/v"+str(version.id))
-			if not ftp.ftp_host.path.isdir(bd+"/v"+str(version.id)+"/code"):
-				ftp.ftp_host.mkdir(bd+"/v"+str(version.id)+"/code")
+			if not ftp.ftp_host.path.isdir(bd+"/v"+str(version.version_id)):
+				ftp.ftp_host.mkdir(bd+"/v"+str(version.version_id))
 
-			# with ftp.ftp_host.open(bd+"/v"+str(version.id)+"/settings.prop", "w") as f:
+			# with ftp.ftp_host.open(bd+"/v"+str(version.version_id)+"/settings.prop", "w") as f:
 			# 	def write_prop(f, d):
 			# 		for key in d:
 			# 			f.write(key + "=" + str(d[key]) + "\n")
@@ -222,23 +221,48 @@ class AI(db.Model):
 			# 		type_id = self.type.id
 			# 	))
 
-			with ftp.ftp_host.open(bd+"/v"+str(version.id)+"/libraries.txt", "w") as f:
+			with ftp.ftp_host.open(bd+"/v"+str(version.version_id)+"/libraries.txt", "w") as f:
 				for lib in self.lastest_version().extras():
 					f.write(lib + "\n")
 
 		with ftp.ftp_host.open(bd+"/language.txt", "w") as f:
 			f.write(self.lang.name)
 
-	def code(self):
-		with open("database.py", "r") as f:
-			return f.read()
-
 	def set_name(self, name):
+		# nur Namen mit min einem 'normalen' Buchstaben
 		if not any([32 < ord(c) < 127 for c in name]):
 			return False
 		name = name.replace("\n", " ")
 		self.name = name
 		return True
+
+	def copy_example_code(self):
+		source_dir_base = "Games/{}/{}/example_ai".format(GameType.query.first().id, self.lang.name)
+		target_dir_base = "AIs/{}/v{}".format(self.id, self.lastest_version().version_id)
+		@ftp.safe
+		def f():
+			print("DEL:", target_dir_base)
+			ftp.ftp_host.rmtree(target_dir_base)
+			print("MKDIR:", target_dir_base)
+			ftp.ftp_host.mkdir(target_dir_base)
+
+			for root, dirs, files in ftp.ftp_host.walk(source_dir_base, topdown=True, followlinks=False):
+				t_dir = target_dir_base + root[len(source_dir_base):] + "/"
+				s_dir = root + "/"
+				for d in dirs:
+					print("ORD:", t_dir + d)
+					ftp.ftp_host.mkdir(t_dir+d)
+				for f in files:
+					print(s_dir+f, "->", t_dir+f)
+					with ftp.ftp_host.open(s_dir+f, "r", encoding="utf-8") as source:
+						with ftp.ftp_host.open(t_dir+f, "w", encoding="utf-8") as target:
+							target.write(source.read())
+			return True
+
+		try:
+			return f()
+		except ftp.err:
+			print("Example code copy failed!")
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(

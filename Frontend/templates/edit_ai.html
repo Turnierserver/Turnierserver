@@ -56,6 +56,9 @@
 	<a class="ui huge labeled icon submit button" href="{{url_for("profile.file_browser", id=ai.id, path="")}}">
 		<i class="disk outline icon"></i> Dateibrowser
 	</a>
+	<div id="copy_code" class="ui huge labeled icon button">
+		<i class="copy outline icon"></i> Beispiel-code kopieren
+	</div>
 	<div id="delete" class="ui huge red labeled icon button">
 		<i class="trash outline icon"></i> KI löschen
 	</div>
@@ -122,6 +125,18 @@ var f = function() {
 }
 
 $("#submit").on("click", f)
+
+$("#copy_code").on("click", function() {
+	$('#form').addClass('loading')
+	$.post("/api/ai/{{ai.id}}/copy_example_code", {}).done(function(data) {
+		console.log("Code copied.")
+		location.reload();
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error)
+		alert(JSON.parse(xhr.responseText).error)
+	})
+});
+
 
 $("#delete").on("click", function() {
 	$('#delete_modal').modal({
