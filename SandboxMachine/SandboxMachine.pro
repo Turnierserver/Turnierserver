@@ -21,9 +21,11 @@ SOURCES += \
     src/main.cpp \
     src/workerclient.cpp \
     src/buffer.cpp \
-    src/mirrorclient.cpp
+    src/mirrorclient.cpp \
+    src/global.cpp
 
 HEADERS += \
     include/workerclient.h \
     include/buffer.h \
-    include/mirrorclient.h
+    include/mirrorclient.h \
+    include/global.h

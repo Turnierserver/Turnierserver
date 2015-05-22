@@ -1,5 +1,5 @@
 /*
- * buffer.cpp
+ * global.h
  * 
  * Copyright (C) 2015 Dominic S. Meiser <meiserdo@web.de>
  * 
@@ -17,39 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "buffer.h"
+#ifndef GLOBAL_H
+#define GLOBAL_H
 
-Buffer::Buffer ()
-{
-}
+#include <QMutex>
+#include <QSettings>
 
-Buffer::Buffer (const QByteArray &buffer)
-	: buf(buffer)
-{
-}
+extern QSettings *config;
+extern QMutex *configMutex;
 
-void Buffer::append (const QByteArray &data)
-{
-	buf.append(data);
-}
+extern int timeout ();
 
-QByteArray Buffer::read (int maxlen)
-{
-	if (maxlen < 0) // wichtig für readLine()
-		return QByteArray();
-	if (maxlen == 0 || (maxlen >= buf.size()))
-	{
-		QByteArray buffer = buf;
-		buf = QByteArray();
-		return buffer;
-	}
-	
-	QByteArray buffer = buf.mid(0, maxlen);
-	buf = buf.mid(maxlen);
-	return buffer;
-}
+#endif // GLOBAL_H
 
-QByteArray Buffer::readLine ()
-{
-	return read(buf.indexOf('\n') + 1);
-}

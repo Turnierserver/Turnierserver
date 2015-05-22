@@ -87,26 +87,14 @@ public abstract class ConnectionHandler extends OutputStream implements SocketOb
 	// wrap OutputStream
 	
 	@Override
-	public void write (int b) throws IOException
+	public void write (int b)
 	{
 		write(new byte[] { (byte)b });
 	}
 	
 	@Override
-	public void write (byte b[]) throws IOException
+	public void write (byte b[])
 	{
-		super.write(b);
-	}
-	
-	@Override
-	public void write (byte b[], int off, int len) throws IOException
-	{
-		super.write(b, off, len);
-	}
-	
-	@Override
-	public void flush () throws IOException
-	{
-		super.flush();
+		client.write(b);
 	}
 }

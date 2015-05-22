@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "global.h"
+
 #include "mirrorclient.h"
 #include "workerclient.h"
 
@@ -27,7 +29,6 @@
 #include <QHostAddress>
 #include <QJsonArray>
 #include <QJsonDocument>
-#include <QSettings>
 #include <QTcpSocket>
 
 #include <stdio.h>
@@ -62,7 +63,6 @@ int main(int argc, char *argv[])
 	QStringList args = parser.positionalArguments();
 	
 	// Die Konfigurationsdatei laden
-	QSettings *config;
 	if (args.size() > 0)
 		config = new QSettings(args[0], QSettings::IniFormat);
 	else
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 	config->endGroup();
 	QTcpSocket client;
 	client.connectToHost(host, port);
-	if (!client.waitForConnected(1000))
+	if (!client.waitForConnected(timeout()))
 	{
 		fprintf(stderr, "Failed to connect to Worker: %s\n", qPrintable(client.errorString()));
 		return 1;
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 		array.append(lang);
 	QJsonDocument doc(array);
 	client.write(doc.toJson(QJsonDocument::Compact) + "\n");
-	client.waitForBytesWritten(1000);
+	client.waitForBytesWritten(timeout());
 	
 	// Mit dem Mirror verbinden
 	config->beginGroup("Worker");

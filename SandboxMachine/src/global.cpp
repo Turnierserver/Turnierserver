@@ -1,5 +1,5 @@
 /*
- * buffer.cpp
+ * global.cpp
  * 
  * Copyright (C) 2015 Dominic S. Meiser <meiserdo@web.de>
  * 
@@ -17,39 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "buffer.h"
+#include <QMutex>
+#include <QSettings>
 
-Buffer::Buffer ()
-{
-}
+QSettings *config;
+QMutex *configMutex = new QMutex;
 
-Buffer::Buffer (const QByteArray &buffer)
-	: buf(buffer)
+int timeout ()
 {
-}
-
-void Buffer::append (const QByteArray &data)
-{
-	buf.append(data);
-}
-
-QByteArray Buffer::read (int maxlen)
-{
-	if (maxlen < 0) // wichtig für readLine()
-		return QByteArray();
-	if (maxlen == 0 || (maxlen >= buf.size()))
-	{
-		QByteArray buffer = buf;
-		buf = QByteArray();
-		return buffer;
-	}
-	
-	QByteArray buffer = buf.mid(0, maxlen);
-	buf = buf.mid(maxlen);
-	return buffer;
-}
-
-QByteArray Buffer::readLine ()
-{
-	return read(buf.indexOf('\n') + 1);
+	configMutex->lock();
+	int timeout = config->value("Timeout").toInt();
+	configMutex->unlock();
+	return timeout;
 }

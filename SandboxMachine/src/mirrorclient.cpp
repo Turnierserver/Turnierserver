@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "global.h"
+
 #include "buffer.h"
 #include "mirrorclient.h"
 
@@ -37,7 +39,7 @@ MirrorClient::MirrorClient(const QString &host, quint16 port, QObject *parent)
 void MirrorClient::retrieveAi (int id, int version, const QString &filename)
 {
 	if (!socket.isOpen())
-		if (!socket.waitForConnected(1000))
+		if (!socket.waitForConnected(timeout()))
 			if (!reconnect())
 				return;
 	
@@ -46,8 +48,8 @@ void MirrorClient::retrieveAi (int id, int version, const QString &filename)
 	json.insert("version", version);
 	QJsonDocument jsondoc(json);
 	
-	socket.write(jsondoc.toJson(QJsonDocument::Compact));
-	if (!socket.waitForBytesWritten(1000))
+	socket.write(jsondoc.toJson(QJsonDocument::Compact) + "\n");
+	if (!socket.waitForBytesWritten(timeout()))
 	{
 		printf("failed to write bytes to mirror\n");
 		return;
@@ -57,7 +59,7 @@ void MirrorClient::retrieveAi (int id, int version, const QString &filename)
 	QByteArray line;
 	while ((line = buf.readLine()).isEmpty())
 	{
-		if (!socket.waitForReadyRead(1000))
+		if (!socket.waitForReadyRead(timeout()))
 		{
 			fprintf(stderr, "MirrorClient::retrieveAi(): Failed to wait for file length.\n");
 			return;
@@ -66,6 +68,7 @@ void MirrorClient::retrieveAi (int id, int version, const QString &filename)
 	}
 	line = line.trimmed();
 	qint64 size = line.toLongLong();
+	printf("size: %d\n", size);
 	
 	QFile out(filename);
 	if (!out.open(QIODevice::WriteOnly))
@@ -73,16 +76,20 @@ void MirrorClient::retrieveAi (int id, int version, const QString &filename)
 		fprintf(stderr, "MirrorClient::retrieveAi(): Failed to open output file %s: %s\n", qPrintable(filename), qPrintable(out.errorString()));
 		return;
 	}
-	int written = buf.size();
+	qint64 written = buf.size();
+	printf("left buffer size: %d\n", written);
 	out.write(buf.read());
 	while (written < size)
 	{
-		if (!socket.waitForReadyRead(1000))
+		printf("written: %d / %d\n", written, size);
+		if (!socket.waitForReadyRead(timeout()))
 		{
 			fprintf(stderr, "MirrorClient::retrieveAi(): Failed to wait for data.\n");
 			return;
 		}
-		out.write(socket.readAll());
+		QByteArray read = socket.read(size - written);
+		written += read.size();
+		out.write(read);
 	}
 	out.close();
 }
