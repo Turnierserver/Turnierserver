@@ -7,11 +7,16 @@
 QT       += core network
 QT       -= gui
 
-TARGET = SandboxMachine
+TARGET = sandboxd
 CONFIG   += console
 CONFIG   -= app_bundle
 
 QMAKE_CXXFLAGS += -std=c++11
+
+OBJECTS_DIR = obj/
+MOC_DIR = gen/moc
+RCC_DIR = gen/rc
+UI_DIR  = gen/ui
 
 TEMPLATE = app
 
@@ -22,10 +27,14 @@ SOURCES += \
     src/workerclient.cpp \
     src/buffer.cpp \
     src/mirrorclient.cpp \
-    src/global.cpp
+    src/global.cpp \
+    src/aiexecutor.cpp \
+    src/jobcontrol.cpp
 
 HEADERS += \
     include/workerclient.h \
     include/buffer.h \
     include/mirrorclient.h \
-    include/global.h
+    include/global.h \
+    include/aiexecutor.h \
+    include/jobcontrol.h

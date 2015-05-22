@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "aiexecutor.h"
 #include "buffer.h"
 #include "workerclient.h"
 
@@ -75,7 +76,9 @@ void WorkerClient::readyRead ()
 				int id = json.value("id").toInt();
 				int version = json.value("version").toInt();
 				QUuid uuid = json.value("uuid").toVariant().toUuid();
-				printf("Run AI %dv%d %s\n", id, version, qPrintable(uuid.toString()));
+				printf("Auftrag erhalten: Run AI %dv%d %s\n", id, version, qPrintable(uuid.toString()));
+				
+				jobControl.addJob(id, version, uuid);
 			}
 		}
 	}

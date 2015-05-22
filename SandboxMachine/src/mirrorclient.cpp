@@ -22,6 +22,7 @@
 #include "buffer.h"
 #include "mirrorclient.h"
 
+#include <inttypes.h>
 #include <stdio.h>
 
 #include <QFile>
@@ -36,12 +37,12 @@ MirrorClient::MirrorClient(const QString &host, quint16 port, QObject *parent)
 	socket.connectToHost(host, port);
 }
 
-void MirrorClient::retrieveAi (int id, int version, const QString &filename)
+bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 {
 	if (!socket.isOpen())
 		if (!socket.waitForConnected(timeout()))
 			if (!reconnect())
-				return;
+				return false;
 	
 	QJsonObject json;
 	json.insert("id", id);
@@ -52,7 +53,7 @@ void MirrorClient::retrieveAi (int id, int version, const QString &filename)
 	if (!socket.waitForBytesWritten(timeout()))
 	{
 		printf("failed to write bytes to mirror\n");
-		return;
+		return false;
 	}
 	
 	Buffer buf;
@@ -62,36 +63,35 @@ void MirrorClient::retrieveAi (int id, int version, const QString &filename)
 		if (!socket.waitForReadyRead(timeout()))
 		{
 			fprintf(stderr, "MirrorClient::retrieveAi(): Failed to wait for file length.\n");
-			return;
+			return false;
 		}
 		buf.append(socket.read(30)); // ich erwarte einen long (max 22 zeichen)
 	}
 	line = line.trimmed();
 	qint64 size = line.toLongLong();
-	printf("size: %d\n", size);
+	printf("Empfange Datei: %lli\n", size);
 	
 	QFile out(filename);
 	if (!out.open(QIODevice::WriteOnly))
 	{
 		fprintf(stderr, "MirrorClient::retrieveAi(): Failed to open output file %s: %s\n", qPrintable(filename), qPrintable(out.errorString()));
-		return;
+		return false;
 	}
 	qint64 written = buf.size();
-	printf("left buffer size: %d\n", written);
 	out.write(buf.read());
 	while (written < size)
 	{
-		printf("written: %d / %d\n", written, size);
 		if (!socket.waitForReadyRead(timeout()))
 		{
 			fprintf(stderr, "MirrorClient::retrieveAi(): Failed to wait for data.\n");
-			return;
+			return false;
 		}
 		QByteArray read = socket.read(size - written);
 		written += read.size();
 		out.write(read);
 	}
 	out.close();
+	return true;
 }
 
 void MirrorClient::connected ()

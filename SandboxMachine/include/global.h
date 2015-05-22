@@ -20,12 +20,23 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+#include "mirrorclient.h"
+#include "workerclient.h"
+
 #include <QMutex>
 #include <QSettings>
 
+/// Eine Verbindung zum Worker
+extern WorkerClient *worker;
+/// Eine Verbindung zum Mirror des Workers
+extern MirrorClient *mirror;
+
+/// Die Konfigurationsdatei
 extern QSettings *config;
+/// Eine Mutex für die Konfigurationsdatei
 extern QMutex *configMutex;
 
+/// gibt den Wert für Timeouts der Konfigurationsdatei zurück
 extern int timeout ();
 
 #endif // GLOBAL_H

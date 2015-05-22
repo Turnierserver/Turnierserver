@@ -20,6 +20,8 @@
 #ifndef WORKERCLIENT_H
 #define WORKERCLIENT_H
 
+#include "jobcontrol.h"
+
 #include <QObject>
 #include <QTcpSocket>
 
@@ -37,6 +39,7 @@ public slots:
 	
 private:
 	QTcpSocket *socket;
+	JobControl jobControl;
 	
 };
 

@@ -1,5 +1,5 @@
 /*
- * mirrorclient.h
+ * aiexecutor.h
  * 
  * Copyright (C) 2015 Dominic S. Meiser <meiserdo@web.de>
  * 
@@ -17,34 +17,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MIRRORCLIENT_H
-#define MIRRORCLIENT_H
+#ifndef AIEXECUTOR_H
+#define AIEXECUTOR_H
 
+#include "global.h"
+
+#include <QDir>
 #include <QObject>
-#include <QTcpSocket>
+#include <QUuid>
 
-class MirrorClient : public QObject
+class AiExecutor : public QObject
 {
 	Q_OBJECT
 	
 public:
-	explicit MirrorClient (const QString &host, quint16 port, QObject *parent = 0);
+	explicit AiExecutor (int id, int version, const QUuid &uuid);
+	
+	int id () const { return _id; }
+	int version () const { return _version; }
+	
+	QUuid uuid () const { return _uuid; }
 	
 public slots:
-	/// Lädt die KI über den Mirror des Workers herunter und speichert diese in der angegebenen Datei
-	bool retrieveAi(int id, int version, const QString &filename);
+	void run ();
+	void terminate ();
+	void kill ();
 	
-private slots:
-	void connected ();
-	void disconnected ();
+signals:
+	void finished (const QUuid &uuid);
+	
+protected:
+	bool download();
+	bool generateProps();
+	bool execute ();
+	
+	int uid, gid;
+	
+	QDir dir, binDir;
+	QString binArchive;
+	QString aiProp;
 	
 private:
-	bool reconnect ();
+	int _id, _version;
+	QUuid _uuid;
 	
-	QString _host;
-	quint16 _port;
-	QTcpSocket socket;
-	
+	// wenn im Konstruktor Fehler aufgetreten sind
+	bool abort = false;
+
 };
 
-#endif // MIRRORCLIENT_H
+#endif // AIEXECUTOR_H

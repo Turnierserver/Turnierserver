@@ -19,9 +19,6 @@
 
 #include "global.h"
 
-#include "mirrorclient.h"
-#include "workerclient.h"
-
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #include <QCoreApplication>
@@ -114,16 +111,13 @@ int main(int argc, char *argv[])
 	
 	// Mit dem Mirror verbinden
 	config->beginGroup("Worker");
-	MirrorClient mirror(host, config->value("MirrorPort").toUInt());
+	mirror = new MirrorClient(host, config->value("MirrorPort").toUInt());
 	config->endGroup();
 	
-	// zum testen mal was runterladen
-	mirror.retrieveAi(6, 1, "test.tar.bz2");
-	
-	WorkerClient *wclient = new WorkerClient(&client);
-	QObject::connect(&client, SIGNAL(connected()), wclient, SLOT(connected()));
-	QObject::connect(&client, SIGNAL(disconnected()), wclient, SLOT(disconnected()));
-	QObject::connect(&client, SIGNAL(readyRead()), wclient, SLOT(readyRead()));
+	worker = new WorkerClient(&client);
+	QObject::connect(&client, SIGNAL(connected()), worker, SLOT(connected()));
+	QObject::connect(&client, SIGNAL(disconnected()), worker, SLOT(disconnected()));
+	QObject::connect(&client, SIGNAL(readyRead()), worker, SLOT(readyRead()));
 	
 	return app.exec();
 }
