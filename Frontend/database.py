@@ -206,20 +206,21 @@ class AI(db.Model):
 				ftp.ftp_host.mkdir(bd+"/v"+str(version.id))
 			if not ftp.ftp_host.path.isdir(bd+"/v"+str(version.id)+"/code"):
 				ftp.ftp_host.mkdir(bd+"/v"+str(version.id)+"/code")
-			with ftp.ftp_host.open(bd+"/v"+str(version.id)+"/settings.prop", "w") as f:
-				def write_prop(f, d):
-					for key in d:
-						f.write(key + "=" + str(d[key]) + "\n")
-				f.write("#Vom Frontend durch Integrity-Checks generiert\n")
-				write_prop(f, dict(
-					language = self.lang.name,
-					language_id = self.lang.id,
-					name = self.name,
-					id = self.id,
-					author = self.user.name,
-					type = self.type.name,
-					type_id = self.type.id
-				))
+
+			# with ftp.ftp_host.open(bd+"/v"+str(version.id)+"/settings.prop", "w") as f:
+			# 	def write_prop(f, d):
+			# 		for key in d:
+			# 			f.write(key + "=" + str(d[key]) + "\n")
+			# 	f.write("#Vom Frontend durch FTP-Sync generiert\n")
+			# 	write_prop(f, dict(
+			# 		language = self.lang.name,
+			# 		language_id = self.lang.id,
+			# 		name = self.name,
+			# 		id = self.id,
+			# 		author = self.user.name,
+			# 		type = self.type.name,
+			# 		type_id = self.type.id
+			# 	))
 
 			with ftp.ftp_host.open(bd+"/v"+str(version.id)+"/libraries.txt", "w") as f:
 				for lib in self.lastest_version().extras():

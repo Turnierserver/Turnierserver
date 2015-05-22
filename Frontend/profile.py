@@ -66,7 +66,7 @@ def file_browser(id, path=""):
 	if not curr_url.endswith("/"):
 		curr_url += "/"
 
-	ftp_url = "AIs/{}/v{}/code/{}".format(id, ai.lastest_version().version_id, path)
+	ftp_url = "AIs/{}/v{}/{}".format(id, ai.lastest_version().version_id, path)
 
 	root_url = url_for("profile.file_browser", id=id, path="")
 	path_url = [(ai.name, root_url)]
@@ -89,8 +89,7 @@ def file_browser(id, path=""):
 		objs = []
 		files = ftp.ftp_host.listdir(ftp_url)
 		for f in files:
-			tmps = int(ftp.ftp_host.path.getmtime(ftp_url + "/" + f)) + 60*60*2
-			## -2 -> utc, timezones beim ftp?
+			tmps = int(ftp.ftp_host.path.getmtime(ftp_url + "/" + f))
 			objs.append(dict(
 				name=f,
 				isfile=ftp.ftp_host.path.isfile(ftp_url+"/"+f),

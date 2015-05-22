@@ -272,7 +272,7 @@ def ai_upload(id):
 		return CommonErrors.BAD_REQUEST
 	if not path.endswith("/"):
 		path += "/"
-	path = "AIs/{}/v{}/code/{}".format(id, ai.lastest_version().version_id, path)
+	path = "AIs/{}/v{}/{}".format(id, ai.lastest_version().version_id, path)
 	filename = secure_filename(request.form['filename'])
 	data = request.form["data"]
 
@@ -312,7 +312,7 @@ def ai_delete_file(id):
 		return CommonErrors.BAD_REQUEST
 	if not path.endswith("/"):
 		path += "/"
-	path = "AIs/{}/v{}/code/{}".format(id, ai.lastest_version().version_id, path)
+	path = "AIs/{}/v{}/{}".format(id, ai.lastest_version().version_id, path)
 	filename = secure_filename(request.form['filename'])
 
 	@ftp.safe
@@ -349,7 +349,7 @@ def ai_create_folder(id):
 		return CommonErrors.BAD_REQUEST
 	if not path.endswith("/"):
 		path += "/"
-	path = "AIs/{}/v{}/code/{}".format(id, ai.lastest_version().version_id, path)
+	path = "AIs/{}/v{}/{}".format(id, ai.lastest_version().version_id, path)
 	name = secure_filename(request.form['name'])
 
 	@ftp.safe
