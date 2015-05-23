@@ -12,23 +12,19 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Properties;
 
-
-
 public class PythonCompiler extends Compiler
-{
-
+{	
 	public PythonCompiler (int ai, int version, int game)
 	{
 		super(ai, version, game);
 	}
-
+	
 	@Override
-	public boolean compile (File srcdir, File bindir, Properties p, PrintWriter output) throws IOException,
-			InterruptedException
+	public boolean compile (File srcdir, File bindir, Properties p, PrintWriter output) throws IOException
 	{
 		// den wrapper laden
-		File game_wrapper = new File(bindir.getPath() + "/game_wrapper.py");
-		File wrapper = new File(bindir.getPath() + "/wrapper.py");
+		File game_wrapper = new File(bindir.getPath(), "game_wrapper.py");
+		File wrapper = new File(bindir.getPath(), "wrapper.py");
 		try
 		{
 			output.println("> downloading game_wrapper.py");
@@ -43,8 +39,7 @@ public class PythonCompiler extends Compiler
 			output.println(ioe.getMessage());
 			return false;
 		}
-
-
+		
 		// das script zum starten erzeugen
 		output.println("> creating startup script ... ");
 		File scriptFile = new File(bindir, "start.sh");
@@ -58,11 +53,11 @@ public class PythonCompiler extends Compiler
 		PrintWriter script = new PrintWriter(new FileOutputStream(scriptFile));
 		script.println("#!/bin/sh");
 		// ## wenn libs pypy: pypy, p2k: python2
-		script.println("python3 wrapper.py \""+p.getProperty("filename")+"\" ${@}");
+		script.println("python3 wrapper.py \"" + p.getProperty("filename") + "\" ${@}");
 		script.close();
 		output.println("done");
-
+		
 		return true;
 	}
-
+	
 }
