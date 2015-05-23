@@ -8,6 +8,7 @@ from backend import backend
 from commons import authenticated, cache, CommonErrors
 from _cfg import env
 from activityfeed import Activity
+from sse import sse_stream
 
 from werkzeug.utils import secure_filename
 
@@ -270,6 +271,27 @@ def api_ai_delete(id):
 	return {"error": False}
 
 
+@api.route("/ai/<int:id>/compile", methods=["GET"])
+@authenticated
+@sse_stream
+def api_ai_compile(id):
+	ai = AI.query.get(id)
+	if not ai:
+		yield ("Invalid ID.", "error")
+		return# (CommonErrors.INVALID_ID[0]["error"], "error")
+	if not current_user.can_access(ai):
+		yield ("Insufficient permissions.", "error")
+		return# (CommonErrors.NO_ACCESS[0]["error"], "error")
+	ai.compile()
+	yield ("compiling", "status")
+	yield ("starttext\n", "set_text")
+	yield ("swag", "log")
+	from time import sleep
+	for i in range(30):
+		yield (str(i) + "\n", "log")
+		sleep(0.25)
+
+
 @api.route("/ai/<int:id>/upload", methods=["POST"])
 @json_out
 @authenticated
@@ -290,6 +312,8 @@ def ai_upload(id):
 		path += "/"
 	path = "AIs/{}/v{}/{}".format(id, ai.lastest_version().version_id, path)
 	filename = secure_filename(request.form['filename'])
+	if not len(filename):
+		return ({"error": "Missing filename."}, 400)
 	data = request.form["data"]
 
 	@ftp.safe
@@ -367,6 +391,8 @@ def ai_create_folder(id):
 		path += "/"
 	path = "AIs/{}/v{}/{}".format(id, ai.lastest_version().version_id, path)
 	name = secure_filename(request.form['name'])
+	if not len(name):
+		return ({"error": "Missing name."}, 400)
 
 	@ftp.safe
 	def f():

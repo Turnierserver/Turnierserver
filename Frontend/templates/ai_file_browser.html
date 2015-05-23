@@ -67,6 +67,9 @@
 			<td><button class="ui basic teal button" id="newdir">Erzeugen</button></td>
 		</tr>
 	</tbody>
+	<div class="ui dimmer">
+		<div class="ui loader"></div>
+	</div>
 </table>
 {% else %}
 <div class="ui page dimmer visible active">
@@ -84,7 +87,7 @@
 <script>
 
 $("#newfile").on('click', function () {
-	$("#code-seg").addClass("loading")
+	$(".dimmer").addClass("active")
 
 	d = {
 		path: "{{submit_path}}",
@@ -102,7 +105,7 @@ $("#newfile").on('click', function () {
 })
 
 $("#newdir").on('click', function () {
-	$("#code-seg").addClass("loading")
+	$(".dimmer").addClass("active")
 
 	d = {
 		path: "{{submit_path}}",
@@ -120,6 +123,7 @@ $("#newdir").on('click', function () {
 
 $(".delete_button").on('click', function() {
 	console.log("Del:", $(this).attr("name"))
+	$(".dimmer").addClass("active")
 
 	$.post("/api/ai/{{ai.id}}/delete_file", {path: "{{submit_path}}", filename: $(this).attr("name")}).done(function(data) {
 		console.log("File deleted.", data)

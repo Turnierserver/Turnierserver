@@ -20,8 +20,8 @@ def error(errorcode, body=None, title=None):
 	return render_template("error.html", title=title, body=body), errorcode
 
 def handle_errors(app):
-	#for code in errors:
-	#	app.errorhandler(code)(lambda e, c=code: error(c))
-	@app.errorhandler(404)
-	def not_found(e):
-		return error(404)
+	for code in errors:
+		app.errorhandler(code)(lambda e, c=code: error(c))
+	#@app.errorhandler(404)
+	#def not_found(e):
+	#	return error(404)

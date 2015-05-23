@@ -44,6 +44,15 @@ def edit_code(id):
 		abort(401)
 	return render_template("edit_code.html", ai=ai)
 
+@profile.route("/ai/<int:id>/compile")
+@authenticated_web
+def copmile_ai(id):
+	ai = AI.query.get(id)
+	if not ai:
+		abort(404)
+	if not current_user.can_access(ai):
+		abort(401)
+	return render_template("compile_ai.html", ai=ai)
 
 @profile.route("/ai/<int:id>/files/<path:path>")
 @profile.route("/ai/<int:id>/files/")

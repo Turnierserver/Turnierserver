@@ -264,6 +264,9 @@ class AI(db.Model):
 		except ftp.err:
 			print("Example code copy failed!")
 
+	def compile(self):
+		return False
+
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(
 			self.id, self.name,self.user_id, self.lang.name, self.type.name, self.last_modified
@@ -274,6 +277,7 @@ class AI_Version(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	version_id = db.Column(db.Integer)
 	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'))
+	qualified = db.Column(db.Boolean, default=False)
 	ai = db.relationship("AI", backref=db.backref('t_ai_versions', order_by=id))
 	extras_str = db.Column(db.Text, default="[]")
 	# dafuer komm ich in die DB-Hoelle

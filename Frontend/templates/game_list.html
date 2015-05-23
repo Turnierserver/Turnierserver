@@ -2,6 +2,53 @@
 {% set active_page = "game_list" %}
 {% block body %}
 
+{% set in_progress_games = [{
+	"ai_assocs": [{"ai":{"name":"topkek", "id":0}}, {"ai":{"name":"topkek", "id":0}}],
+	"progress": "1/1337",
+	"id":0
+}] %}
+
+<table class="ui very basic table">
+	<thead>
+		<tr>
+		<th class="left aligned three wide">KI</th>
+		<th class="left aligned two wide">Punkte</th>
+		<th class="center aligned six wide">Status</th>
+		<th class="right aligned two wide">Punkte</th>
+		<th class="right aligned three wide">KI</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for game in in_progress_games %}
+		<tr>
+			<td class="left aligned">
+				<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[0].ai.id)}}">
+					<img class="ui right spaced image" src="/api/ai/{{ game.ai_assocs[0].ai.id }}/icon">
+					{{ game.ai_assocs[0].ai.name }}
+				</a>
+			</td>
+			<td class="left aligned">
+				1337
+			</td>
+			<td class="center aligned">
+				<a class="content" href="{{url_for("anonymous.game", id=game.id)}}">
+					<div class="header">{{ game.progress }}</div>
+				</a>
+			</td>
+			<td class="right aligned">
+				1337
+			</td>
+			<td class="right aligned">
+				<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[1].ai.id)}}">
+					{{ game.ai_assocs[1].ai.name }}
+					<img class="ui left spaced image" src="/api/ai/{{ game.ai_assocs[1].ai.id }}/icon">
+				</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
 
 <table class="ui very basic table">
 	<thead>

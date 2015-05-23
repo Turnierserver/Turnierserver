@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% set active_page = "compile_ai" %}
+
+{% block head %}
+<style type="text/css" media="screen">
+	#editor {
+		height: 20em;
+	}
+
+	#code-seg {
+		height: 90%;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="ui segment" id="code-seg">
+	<div class="ui basic segment">
+		<center>
+			<button class="ui basic huge green button">Kompilierung Anfragen</button>
+		</center>
+		<div id="button-dimmer" class="ui dimmer">
+			<div class="ui indeterminate text loader">Kompilierung aktiv.</div>
+		</div>
+	</div>
+
+	<div class="ui horizontal divider">Kompilierungsausgabe</div>
+
+	<div class="ui basic segment">
+		<script src="https://cdn.jsdelivr.net/ace/1.1.9/noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+		<div id="editor"></div>
+		<div id="log-dimmer" class="ui inverted dimmer"></div>
+	</div>
+</div>
+
+
+
+<script>
+var editor = ace.edit("editor");
+editor.getSession().setMode("ace/mode/text");
+editor.setReadOnly(true);
+document.getElementById('editor').style.fontSize='16px';
+editor.$blockScrolling = Infinity
+
+{% if compiling %}
+$("#button-dimmer").dimmer("show")
+{% else %}
+$("#log-dimmer").dimmer("show")
+{% endif %}
+
+
+$("button").on("click", function() {
+	$("#button-dimmer").dimmer("show")
+	$("#log-dimmer").dimmer("hide")
+	compile()
+})
+
+function compile() {
+	var evtSrc = new EventSource("/api/ai/{{ai.id}}/compile", {withCredentials: true});
+
+	evtSrc.onmessage = function(e) {
+		console.log(e.data);
+	};
+
+	evtSrc.addEventListener("error", function(e) {
+		console.log("error:", e.data)
+		alert(e.data)
+	})
+
+	evtSrc.addEventListener("log", function(e) {
+		console.log("log:", e.data)
+		editor.setValue(editor.getValue() + e.data, 1)
+		editor.gotoPageDown()
+	})
+
+	evtSrc.addEventListener("set_text", function(e) {
+		console.log("set_text:", e.data)
+		editor.setValue(e.data, 1)
+		editor.gotoPageDown()
+	})
+
+
+	evtSrc.addEventListener("stream_stopped", function (e) {
+		console.log(e);
+		console.log("stream_stopped")
+		evtSrc.close()
+		$("#button-dimmer").dimmer("hide")
+	})
+}
+
+</script>
+{% endblock %}
