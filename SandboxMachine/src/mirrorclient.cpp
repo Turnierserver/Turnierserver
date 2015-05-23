@@ -37,7 +37,7 @@ MirrorClient::MirrorClient(const QString &host, quint16 port, QObject *parent)
 	socket.connectToHost(host, port);
 }
 
-bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
+bool MirrorClient::retrAi (int id, int version, const QString &filename)
 {
 	if (!socket.isOpen())
 		if (!socket.waitForConnected(timeout()))
@@ -86,12 +86,22 @@ bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 			fprintf(stderr, "MirrorClient::retrieveAi(): Failed to wait for data.\n");
 			return false;
 		}
-		QByteArray read = socket.read(size - written);
-		written += read.size();
-		out.write(read);
+		qint64 toRead = size - written;
+		while (toRead > 0)
+		{
+			QByteArray read = socket.read(qMin(toRead, (qint64)8192));
+			written += read.size();
+			toRead  -= read.size();
+			out.write(read);
+		}
 	}
 	out.close();
 	return true;
+}
+
+void MirrorClient::retrieveAi (int id, int version, const QString &filename)
+{
+	emit aiRetrieved(id, version, filename, retrAi(id, version, filename));
 }
 
 void MirrorClient::connected ()

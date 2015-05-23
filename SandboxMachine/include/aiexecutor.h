@@ -44,13 +44,29 @@ public slots:
 	void kill ();
 	
 signals:
+	/// wird emittiert wenn die KI terminiert wurde ist
 	void finished (const QUuid &uuid);
 	
-protected:
-	bool download();
-	bool generateProps();
-	bool execute ();
+	// die folgenden Signale sind nur für interne Nutzung
 	
+	/// wird emittiert wenn die KI gestartet werden soll
+	void startAi ();
+	/// wird emittiert wenn die KI heruntergeladen wurde
+	void downloaded ();
+	/// wird emittiert wenn die KI Properties erstellt wurden
+	void propsGenerated ();
+	
+protected slots:
+	/// fängt an die KI asynchron herunterzuladen
+	void download();
+	/// verfolständigt den Herunterladungsprozess
+	void finishDownload (int id, int version, const QString &filename, bool success);
+	/// generiert die KI Properties
+	void generateProps();
+	/// führt die KI aus
+	void execute ();
+	
+protected:
 	int uid, gid;
 	
 	QDir dir, binDir;
@@ -61,7 +77,7 @@ private:
 	int _id, _version;
 	QUuid _uuid;
 	
-	// wenn im Konstruktor Fehler aufgetreten sind
+	// wenn Fehler aufgetreten sind
 	bool abort = false;
 
 };

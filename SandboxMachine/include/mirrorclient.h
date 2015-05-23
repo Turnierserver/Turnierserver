@@ -30,9 +30,15 @@ class MirrorClient : public QObject
 public:
 	explicit MirrorClient (const QString &host, quint16 port, QObject *parent = 0);
 	
+private:
+	bool retrAi (int id, int version, const QString &filename);
+	
 public slots:
 	/// Lädt die KI über den Mirror des Workers herunter und speichert diese in der angegebenen Datei
-	bool retrieveAi(int id, int version, const QString &filename);
+	void retrieveAi(int id, int version, const QString &filename);
+	
+signals:
+	void aiRetrieved (int id, int version, const QString &filename, bool success);
 	
 private slots:
 	void connected ();
