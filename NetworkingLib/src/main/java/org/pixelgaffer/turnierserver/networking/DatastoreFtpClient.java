@@ -38,6 +38,29 @@ public class DatastoreFtpClient
 	{
 		synchronized (lock)
 		{
+			if (client != null)
+			{
+				try
+				{
+					client.noop();
+				}
+				catch (FTPException e)
+				{
+					try
+					{
+						client.disconnect(true);
+					}
+					catch (Exception ex)
+					{
+					}
+					client = null;
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			
 			if (client == null)
 				client = new FTPClient();
 			if (!client.isConnected())
@@ -54,6 +77,7 @@ public class DatastoreFtpClient
 				// passiven Modus benutzen (Firewall …)
 				client.setPassive(true);
 			}
+			
 		}
 	}
 	
