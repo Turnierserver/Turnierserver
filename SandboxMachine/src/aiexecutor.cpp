@@ -106,6 +106,14 @@ void AiExecutor::download ()
 	mirror->retrieveAi(id(), version(), binArchive);	
 	
 	// die Privilegien der Archiv-Datei anpassen
+	if (chown(qPrintable(binArchive), 0, gid) != 0)
+	{
+		perror("Fehler: Kann den Benutzer von der binArchiv-Datei nicht ändern");
+		fprintf(stderr, "        Datei: %s\n", qPrintable(binArchive));
+		abort = true;
+		emit downloaded();
+		return;
+	}
 	if (chmod(qPrintable(binArchive), S_IRUSR | S_IWUSR | S_IRGRP) != 0)
 	{
 		perror("Fehler: Kann die Dateiprivilegien nicht auf drw-r----- setzen");
@@ -118,6 +126,13 @@ void AiExecutor::download ()
 	// das bin-Verzeichnis anlegen, zuerst mit Schreibprivilegien für den tar-Befehl
 	dir.mkdir("bin");
 	binDir = dir.absoluteFilePath("bin");
+	if (chown(qPrintable(binDir.absolutePath()), 0, gid) != 0)
+	{
+		perror("Fehler: Kann den Benutzer vom KI Verzeichnis nicht ändern");
+		fprintf(stderr, "        Verzeichnis: %s\n", qPrintable(binDir.absolutePath()));
+		abort = true;
+		return;
+	}
 	if (chmod(qPrintable(binDir.absolutePath()), S_IRWXU | S_IRWXG) != 0)
 	{
 		perror("Fehler: Kann die Verzeichnisprivilegien nicht auf drwxrwx--- setzen");
@@ -128,7 +143,9 @@ void AiExecutor::download ()
 	}
 	
 	// tar ausführen
-	QString cmd = "sandboxd_helper -u " + QString::number(uid) + " -g " + QString::number(gid) + " -d \"" + dir.absolutePath() + "\" -c \"bsdtar xfj bin.tar.bz2 -C bin/\"";
+	// wenn ich das nicht als root ausführe kriegt das automatisch die richtigen owner
+	QString cmd = "sandboxd_helper -u " + QString::number(uid) + " -g " + QString::number(gid) + " -d \"" + dir.absolutePath()
+			+ "\" -c \"bsdtar xfj bin.tar.bz2 --uid 0 --gid " + QString::number(gid) + " -C bin/\"";
 	printf("$ %s\n", qPrintable(cmd));
 	if (system(qPrintable(cmd)) != 0)
 	{
@@ -174,12 +191,34 @@ void AiExecutor::generateProps ()
 	configMutex->unlock();
 	
 	file.close();
+	
+	// die Privilegien anpassen
+	if (chown(qPrintable(aiProp), 0, gid) != 0)
+	{
+		perror("Fehler: Kann den Benutzer von der KI Properties-Datei nicht ändern");
+		fprintf(stderr, "        Datei: %s\n", qPrintable(aiProp));
+		abort = true;
+		emit downloaded();
+		return;
+	}
+	if (chmod(qPrintable(aiProp), S_IRUSR | S_IWUSR | S_IRGRP) != 0)
+	{
+		perror("Fehler: Kann die Dateiprivilegien nicht auf drw-r----- setzen");
+		fprintf(stderr, "        Datei: %s\n", qPrintable(aiProp));
+		abort = true;
+		emit downloaded();
+		return;
+	}
+	
 	emit propsGenerated();
 }
 
 void AiExecutor::execute()
 {
-	printf("exec ai :)\n");
+	QString cmd = "sandboxd_helper -u " + QString::number(uid) + " -g " + QString::number(gid) + " -d \"" + binDir.absolutePath()
+			+ "\" -c \"./start.sh " + aiProp + "\"";
+	printf("$ %s\n", qPrintable(cmd));
+	system(qPrintable(cmd));
 	emit finished(uuid());
 }
 
