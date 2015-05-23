@@ -39,7 +39,7 @@ class Backend(threading.Thread):
 		reqid = self.lastest_request_id
 		self.lastest_request_id += 1
 		d = {
-			'action': 'compile', 'id':str(ai.id)+'v'+str(ai.lastest_version().id),
+			'action': 'compile', 'id':str(ai.id)+'v'+str(ai.lastest_version().version_id),
 			'requestid': reqid, 'gametype': 1
 		}
 		self.requests[reqid] = d

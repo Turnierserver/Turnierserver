@@ -264,9 +264,6 @@ class AI(db.Model):
 		except ftp.err:
 			print("Example code copy failed!")
 
-	def compile(self):
-		return False
-
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(
 			self.id, self.name,self.user_id, self.lang.name, self.type.name, self.last_modified

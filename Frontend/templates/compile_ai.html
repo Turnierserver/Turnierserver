@@ -61,10 +61,16 @@ function compile() {
 	evtSrc.onmessage = function(e) {
 		console.log(e.data);
 	};
+	evtSrc.onerror = function () {
+		console.log("SSE Err")
+		evtSrc.close()
+	};
 
 	evtSrc.addEventListener("error", function(e) {
-		console.log("error:", e.data)
-		alert(e.data)
+		if (e.data != undefined) {
+			console.log("error:", e.data)
+			alert(e.data)
+		}
 	})
 
 	evtSrc.addEventListener("log", function(e) {

@@ -277,19 +277,29 @@ def api_ai_delete(id):
 def api_ai_compile(id):
 	ai = AI.query.get(id)
 	if not ai:
-		yield ("Invalid ID.", "error")
-		return# (CommonErrors.INVALID_ID[0]["error"], "error")
+		return (CommonErrors.INVALID_ID[0]["error"], "error")
 	if not current_user.can_access(ai):
-		yield ("Insufficient permissions.", "error")
-		return# (CommonErrors.NO_ACCESS[0]["error"], "error")
-	ai.compile()
+		return (CommonErrors.NO_ACCESS[0]["error"], "error")
+	reqid = backend.request_compile(ai)
 	yield ("compiling", "status")
-	yield ("starttext\n", "set_text")
-	yield ("swag", "log")
-	from time import sleep
-	for i in range(30):
-		yield (str(i) + "\n", "log")
-		sleep(0.25)
+	yield ("F: compiling started w/ id: " + str(reqid) + "\n", "set_text")
+	resp = backend.lock_for_req(reqid, timeout=60)
+	if not resp:
+		yield ("F: backend timeout", "log")
+		return
+	else:
+		yield ("B: " + str(resp) + "\n", "log")
+
+	@ftp.safe
+	def f():
+		yield ("F: checking ftp\n", "log")
+		path = "AIs/{}/bin/v{}-compile.out".format(ai.id, ai.lastest_version().version_id)
+		with ftp.ftp_host.open(path, "r", encoding="utf-8") as f:
+			yield (path, "log")
+			yield (f.read(), "log")
+
+
+	yield from f()
 
 
 @api.route("/ai/<int:id>/upload", methods=["POST"])
