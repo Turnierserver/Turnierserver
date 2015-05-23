@@ -22,7 +22,6 @@
 #include "buffer.h"
 #include "mirrorclient.h"
 
-#include <inttypes.h>
 #include <stdio.h>
 
 #include <QFile>
@@ -34,15 +33,15 @@ MirrorClient::MirrorClient(const QString &host, quint16 port, QObject *parent)
 	, _host(host)
 	, _port(port)
 {
+	connect(&socket, SIGNAL(connected()), this, SLOT(connected()));
+	connect(&socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
 	socket.connectToHost(host, port);
 }
 
-bool MirrorClient::retrAi (int id, int version, const QString &filename)
+bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 {
-	if (!socket.isOpen())
-		if (!socket.waitForConnected(timeout()))
-			if (!reconnect())
-				return false;
+	if (!isConnected())
+		return false;
 	
 	QJsonObject json;
 	json.insert("id", id);
@@ -90,34 +89,33 @@ bool MirrorClient::retrAi (int id, int version, const QString &filename)
 		while (toRead > 0)
 		{
 			QByteArray read = socket.read(qMin(toRead, (qint64)8192));
+			if (read.isEmpty())
+				break;
 			written += read.size();
 			toRead  -= read.size();
 			out.write(read);
+//			printf("read %d bytes\twritten: %lli/%lli\n", read.size(), written, size);
 		}
 	}
 	out.close();
+	
 	return true;
-}
-
-void MirrorClient::retrieveAi (int id, int version, const QString &filename)
-{
-	emit aiRetrieved(id, version, filename, retrAi(id, version, filename));
 }
 
 void MirrorClient::connected ()
 {
 	printf("connected to mirror :)\n");
+	_connected = true;
 }
 
 void MirrorClient::disconnected ()
 {
 	printf("disconnected from mirror :(\n");
-	if (!reconnect())
-		printf("failed to reconnect to mirror\n");
+	_connected = false;
+	reconnect();
 }
 
-bool MirrorClient::reconnect()
+void MirrorClient::reconnect()
 {
-	printf("keine ahnung \n");
-	return false;
+	socket.connectToHost(host(), port());
 }

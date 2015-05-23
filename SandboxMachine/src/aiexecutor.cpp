@@ -18,6 +18,7 @@
  */
 
 #include "aiexecutor.h"
+#include "mirrorclient.h"
 
 #include <errno.h>
 #include <pwd.h>
@@ -100,23 +101,9 @@ void AiExecutor::run ()
 
 void AiExecutor::download ()
 {
-	// den Listener registrieren
-	connect(mirror, SIGNAL(aiRetrieved(int,int,QString,bool)), this, SLOT(finishDownload(int,int,QString,bool)));
-	
 	// das Archiv über den Mirror des Workers herunterladen
 	binArchive = dir.absoluteFilePath("bin.tar.bz2");
 	mirror->retrieveAi(id(), version(), binArchive);	
-}
-
-void AiExecutor::finishDownload(int id, int version, const QString &filename, bool success)
-{
-	// überprüfen dass dies der richtige AiExecutor ist
-	if ((id != this->id()) || (version != this->version()) || (filename != this->binArchive) || !success)
-	{
-		abort = true;
-		emit downloaded();
-		return;
-	}
 	
 	// die Privilegien der Archiv-Datei anpassen
 	if (chmod(qPrintable(binArchive), S_IRUSR | S_IWUSR | S_IRGRP) != 0)

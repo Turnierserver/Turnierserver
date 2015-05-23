@@ -19,6 +19,12 @@
 
 #include "global.h"
 
+#include "mirrorclient.h"
+#include "workerclient.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #include <QCoreApplication>
@@ -27,9 +33,6 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QTcpSocket>
-
-#include <stdio.h>
-#include <stdlib.h>
 
 void searchExecutable (const QString &execfile, const QString &language, QHash<QString, QString> *commands)
 {
@@ -110,12 +113,12 @@ int main(int argc, char *argv[])
 	client.waitForBytesWritten(timeout());
 	
 	// Mit dem Mirror verbinden
-	QThread *mirrorThread = new QThread;
+//	QThread *mirrorThread = new QThread;
 	config->beginGroup("Worker");
 	mirror = new MirrorClient(host, config->value("MirrorPort").toUInt());
-	mirror->moveToThread(mirrorThread);
+//	mirror->moveToThread(mirrorThread);
 	config->endGroup();
-	mirrorThread->start();
+//	mirrorThread->start();
 	
 	worker = new WorkerClient(&client);
 	QObject::connect(&client, SIGNAL(connected()), worker, SLOT(connected()));

@@ -20,11 +20,11 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#include "mirrorclient.h"
-#include "workerclient.h"
-
 #include <QMutex>
 #include <QSettings>
+
+class MirrorClient;
+class WorkerClient;
 
 /// Eine Verbindung zum Worker
 extern WorkerClient *worker;

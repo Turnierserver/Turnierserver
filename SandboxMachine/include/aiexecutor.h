@@ -57,10 +57,8 @@ signals:
 	void propsGenerated ();
 	
 protected slots:
-	/// fängt an die KI asynchron herunterzuladen
+	/// lädt die KI herunter
 	void download();
-	/// verfolständigt den Herunterladungsprozess
-	void finishDownload (int id, int version, const QString &filename, bool success);
 	/// generiert die KI Properties
 	void generateProps();
 	/// führt die KI aus

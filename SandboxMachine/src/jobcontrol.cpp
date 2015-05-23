@@ -42,9 +42,9 @@ void JobControl::doJob (const Job &job)
 {
 	current = new AiExecutor(job.id, job.version, job.uuid);
 	connect(current, SIGNAL(finished(QUuid)), this, SLOT(jobFinished(QUuid)));
-	current->moveToThread(&aiThread);
+//	current->moveToThread(&aiThread);
 	connect(this, SIGNAL(startAi()), current, SLOT(run()));
-	aiThread.start();
+//	aiThread.start();
 	emit startAi();
 }
 

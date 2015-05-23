@@ -20,8 +20,17 @@
 #ifndef MIRRORCLIENT_H
 #define MIRRORCLIENT_H
 
+#include <QFile>
+#include <QMutex>
 #include <QObject>
+#include <QQueue>
 #include <QTcpSocket>
+
+struct MirrorRequest
+{
+	int id, version;
+	QString filename;
+};
 
 class MirrorClient : public QObject
 {
@@ -30,26 +39,25 @@ class MirrorClient : public QObject
 public:
 	explicit MirrorClient (const QString &host, quint16 port, QObject *parent = 0);
 	
-private:
-	bool retrAi (int id, int version, const QString &filename);
+	QString host () const { return _host; }
+	quint16 port () const { return _port; }
 	
-public slots:
+	bool isConnected () const { return _connected; }
+	
 	/// Lädt die KI über den Mirror des Workers herunter und speichert diese in der angegebenen Datei
-	void retrieveAi(int id, int version, const QString &filename);
-	
-signals:
-	void aiRetrieved (int id, int version, const QString &filename, bool success);
+	bool retrieveAi (int id, int version, const QString &filename);
 	
 private slots:
 	void connected ();
 	void disconnected ();
 	
 private:
-	bool reconnect ();
+	void reconnect();
 	
 	QString _host;
 	quint16 _port;
 	QTcpSocket socket;
+	bool _connected = false;
 	
 };
 
