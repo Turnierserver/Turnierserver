@@ -295,7 +295,7 @@ def api_ai_compile(id):
 		yield ("F: checking ftp\n", "log")
 		path = "AIs/{}/bin/v{}-compile.out".format(ai.id, ai.lastest_version().version_id)
 		with ftp.ftp_host.open(path, "r", encoding="utf-8") as f:
-			yield (path, "log")
+			yield (path+"\n", "log")
 			yield (f.read(), "log")
 
 
