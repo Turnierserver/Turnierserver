@@ -88,6 +88,9 @@ class Backend(threading.Thread):
 		self.requests[reqid].update(d)
 		self.requests[reqid]["queue"].put(d)
 
+	def request(self, reqid):
+		return self.requests[reqid]
+
 	def lock_for_req(self, reqid, timeout=30):
 		try:
 			return self.requests[reqid]["queue"].get(timeout=timeout)

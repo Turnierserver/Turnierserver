@@ -36,7 +36,7 @@ def edit_ai(id):
 
 @profile.route("/ai/<int:id>/compile")
 @authenticated_web
-def copmile_ai(id):
+def compile_ai(id):
 	ai = AI.query.get(id)
 	if not ai:
 		abort(404)

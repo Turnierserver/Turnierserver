@@ -17,7 +17,7 @@
 <div class="ui segment" id="code-seg">
 	<div class="ui basic segment">
 		<center>
-			<button class="ui basic huge green button">Kompilierung Anfragen</button>
+			<button id="button" class="ui basic huge green button">Kompilierung anfragen</button>
 		</center>
 		<div id="button-dimmer" class="ui dimmer">
 			<div class="ui indeterminate text loader">Kompilierung aktiv.</div>
@@ -49,9 +49,10 @@ $("#log-dimmer").dimmer("show")
 {% endif %}
 
 
-$("button").on("click", function() {
+$("#button").on("click", function() {
 	$("#button-dimmer").dimmer("show")
 	$("#log-dimmer").dimmer("hide")
+	$("#button").addClass("disabled")
 	compile()
 })
 
@@ -91,6 +92,7 @@ function compile() {
 		console.log("stream_stopped")
 		evtSrc.close()
 		$("#button-dimmer").dimmer("hide")
+		$("#button").removeClass("disabled")
 	})
 }
 
