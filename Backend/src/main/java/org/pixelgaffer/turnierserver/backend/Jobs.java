@@ -13,6 +13,7 @@ import lombok.NonNull;
 
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCommand;
+import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCommandProcessed;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCompileResult;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
@@ -49,6 +50,7 @@ public class Jobs
 				WorkerCommand wcmd = Workers.getAvailableWorker().compile(cmd.getId(), cmd.getGametype());
 				Job job = new Job(wcmd, cmd);
 				addJob(job);
+				BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(cmd.getRequestid())));
 			}
 			catch (Exception e)
 			{
@@ -69,6 +71,7 @@ public class Jobs
 			try
 			{
 				Games.startGame(cmd.getGametype(), cmd.getAis());
+				BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(cmd.getRequestid())));
 			}
 			catch (Exception e)
 			{

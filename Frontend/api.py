@@ -283,23 +283,53 @@ def api_ai_compile(id):
 	reqid = backend.request_compile(ai)
 	yield ("compiling", "status")
 	yield ("F: compiling started w/ id: " + str(reqid) + "\n", "set_text")
-	resp = backend.lock_for_req(reqid, timeout=60)
-	if not resp:
-		yield ("F: backend timeout", "log")
-		return
-	else:
-		yield ("B: " + str(resp) + "\n", "log")
+
+
 
 	@ftp.safe
 	def f():
 		yield ("F: checking ftp\n", "log")
 		path = "AIs/{}/bin/v{}-compile.out".format(ai.id, ai.lastest_version().version_id)
-		with ftp.ftp_host.open(path, "r", encoding="utf-8") as f:
-			yield (path+"\n", "log")
-			yield (f.read(), "log")
+		if ftp.ftp_host.path.isfile(path):
+			with ftp.ftp_host.open(path, "r", encoding="utf-8") as f:
+				yield (path+"\n"+f.read(), "log")
+		else:
+			yield (path + " existiert noch nicht.\n", "log")
 
 
-	yield from f()
+	timed_out = 0
+	while True:
+		resp = backend.lock_for_req(reqid, timeout=5)
+		b_req = backend.request(reqid)
+		if not resp:
+			#yield ("F: backend timeout\n", "log")
+			yield (".", "log")
+			timed_out += 1
+			if timed_out > 20:
+				yield ("\nDas Backend sendet nichts.", "log")
+				yield ("\nVersuch es nochmal.", "log")
+				return
+		else:
+			if timed_out > 0:
+				yield ("\n", "log")
+			timed_out = 0
+			yield ("B: " + str(resp) + "\n", "log")
+			if "success" in b_req:
+				if b_req["success"]:
+					yield ("Anfrage erfolgreich beendet\n", "log")
+				else:
+					yield ("Anfrage beendet\n", "log")
+					if "exception" in b_req:
+						yield (b_req["exception"], "log")
+				try:
+					yield from f()
+				except ftp.err:
+					yield ("FTP-Error\n", "log")
+				return
+			elif "action" in resp:
+				if resp["action"] == "processed":
+					yield ("Anfrage angefangen\n", "log")
+
 
 
 @api.route("/ai/<int:id>/upload", methods=["POST"])
