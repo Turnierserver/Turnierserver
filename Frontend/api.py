@@ -125,8 +125,17 @@ def api_user_icon(id):
 @api.route("/login", methods=['POST'])
 @json_out
 def api_login():
-	username = request.form['username']
-	password = request.form['password']
+	print(request.headers)
+	if request.headers["Content-Type"] == "application/json":
+		if not request.json:
+			return {"error": "Not valid JSON."}, 400
+		username = request.json.get("username", None)
+		password = request.json.get("password", None)
+	elif request.headers["Content-Type"] == "application/x-www-form-urlencoded":
+		username = request.form['username']
+		password = request.form['password']
+	else:
+		return {'error', "Wrong Content-Type, must be application/json or application/x-www-form-urlencoded"}, 400
 	if not username or not password:
 		return { 'error': 'Missing username or password' }, 400
 
