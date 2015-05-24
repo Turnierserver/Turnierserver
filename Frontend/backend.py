@@ -8,6 +8,7 @@ from queue import Queue, Empty
 
 class Backend(threading.Thread):
 	daemon=True
+	game_update_queue_list = []
 	def __init__(self):
 		threading.Thread.__init__(self)
 		self.sock = None
@@ -88,6 +89,10 @@ class Backend(threading.Thread):
 		self.requests[reqid].update(d)
 		self.requests[reqid]["queue"].put(d)
 
+		if self.requests[reqid]["action"] == "start":
+			for q in self.game_update_queue_list:
+				q.put(d)
+
 	def request(self, reqid):
 		return self.requests[reqid]
 
@@ -97,6 +102,31 @@ class Backend(threading.Thread):
 		except Empty:
 			print("TIMEOUT FOR", reqid)
 			return False
+
+	def subscribe_game_update(self):
+		q = Queue()
+		self.game_update_queue_list.append(q)
+		return q
+
+	def unsubscribe(self, queue):
+		if queue in self.game_update_queue_list:
+			self.game_update_queue_list.remove(queue)
+
+	def inprogress_games(self):
+		games = []
+		for reqid in self.requests:
+			r = self.requests[reqid]
+			if r["action"] == "start":
+				if "status" in r:
+					if r["status"] == "processed":
+						games.append(dict(
+							id=r["requestid"],
+							ai0=AIs.query.first(),
+							ai1=AIs.query.first(),
+							status="1/8392"
+						))
+		return games
+
 
 	def run(self):
 		Activity("Backend Thread running!")

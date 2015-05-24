@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, abort
 from flask.ext.login import current_user
 from database import AI, User, Game
 from activityfeed import Activity
+from backend import backend
 import json
 
 anonymous = Blueprint("anonymous", __name__)
@@ -36,7 +37,7 @@ def user(id):
 
 @anonymous.route("/game_list")
 def game_list():
-	return render_template("game_list.html", game_list=Game.query.all())
+	return render_template("game_list.html", game_list=Game.query.all(), in_progress_games=backend.inprogress_games())
 
 @anonymous.route("/game/<int:id>")
 def game(id):

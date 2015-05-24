@@ -50,20 +50,22 @@
 		<label>Beschreibung</label>
 		<textarea id="desc">{{ ai.desc }}</textarea>
 	</div>
-	<div id="submit" class="ui teal labeled icon submit button">
-		<i class="save outline icon"></i> Update
-	</div>
-	<a class="ui labeled icon submit button" href="{{url_for("profile.compile_ai", id=ai.id)}}">
-		<i class="file code outline icon"></i> Kompilieren
-	</a>
-	<a class="ui labeled icon submit button" href="{{url_for("profile.file_browser", id=ai.id, path="")}}">
-		<i class="disk outline icon"></i> Dateibrowser
-	</a>
-	<div id="copy_code" class="ui labeled icon button">
-		<i class="copy outline icon"></i> Beispiel-code kopieren
-	</div>
-	<div id="delete" class="ui red labeled icon button">
-		<i class="trash outline icon"></i> KI löschen
+	<div class="ui centered grid" style="margin-top: 1em;">
+		<div id="submit" class="ui teal labeled icon submit button">
+			<i class="save outline icon"></i> Update
+		</div>
+		<a class="ui labeled icon submit button" href="{{url_for("profile.compile_ai", id=ai.id)}}">
+			<i class="file code outline icon"></i> Kompilieren
+		</a>
+		<a class="ui labeled icon submit button" href="{{url_for("profile.file_browser", id=ai.id, path="")}}">
+			<i class="disk outline icon"></i> Dateibrowser
+		</a>
+		<div id="copy_code" class="ui labeled icon button">
+			<i class="copy outline icon"></i> Beispiel-code kopieren
+		</div>
+		<div id="delete" class="ui red labeled icon button">
+			<i class="trash outline icon"></i> KI löschen
+		</div>
 	</div>
 </form>
 

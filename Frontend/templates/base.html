@@ -80,10 +80,13 @@
 			<div class="ui grid">
 					<div class="row">
 							<div class="column">
-									<div class="ui huge message page grid center aligned">
-											<h1 class="ui huge header">#Yolo Swag Yolonese</h1>
-											<p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-											<a class="ui green button">Ein grüner Knopf</a>
+									<div id="msg" class="ui basic message page grid center aligned">
+											<h1 class="ui basic header">#Yolo Swag Yolonese</h1>
+											<p>Weit hinten, hinter den Wortbergen, fern der Länder Vokalien und Konsonantien leben die Blindtexte. Abgeschieden wohnen sie in Buchstabhausen an der Küste des Semantik, eines großen Sprachozeans. Ein kleines Bächlein namens Duden fließt durch ihren Ort und versorgt sie mit den nötigen Regelialien. Es ist ein paradiesmatisches Land, in dem einem gebratene Satzteile in den Mund fliegen.</p>
+											<a id="msgbutton" class="ui basic green button">Verstanden</a>
+											<script>$("#msgbutton").on("click", function() {
+												$("#msg").remove()
+											})</script>
 									</div>
 							</div>
 					</div>
@@ -95,20 +98,6 @@
 						{% block body %}
 						{% endblock %}
 					</div>
-			</div>
-
-			<div class="ui divider" style="margin-top: 5em;"></div>
-			<div class="ui container">
-				<div class="ui stackable relaxed grid">
-					<div class="column">
-						<h2 class="ui header">Das hier ist ein Füßer</h3>
-						{% for size in [3, 4, 5, 6] %}
-							<h{{size}} class="ui {{ loop.cycle('left', 'right')}} floated header">{{'Fuß ' * size}}</h{{size}}>
-							<div class="ui hidden clearing divider"></div>
-						{% endfor %}
-						<a href="https://github.com/LuckyLukert/Turnierserver" class="ui teal button">Die (private) Github-Repo</a>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>

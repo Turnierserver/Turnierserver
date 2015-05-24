@@ -57,7 +57,7 @@ $("#button").on("click", function() {
 })
 
 function compile() {
-	var evtSrc = new EventSource("/api/ai/{{ai.id}}/compile", {withCredentials: true});
+	var evtSrc = new EventSource("/api/ai/{{ai.id}}/compile");
 
 	evtSrc.onmessage = function(e) {
 		console.log(e.data);

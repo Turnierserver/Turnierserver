@@ -1,6 +1,7 @@
 from flask import Blueprint, Response, request, abort
 from flask.ext.login import current_user, login_user, logout_user, LoginManager, UserMixin
 from functools import wraps
+from queue import Empty
 import json
 
 from database import AI, User, Game, Lang, db, populate, ftp
@@ -326,8 +327,8 @@ def api_ai_compile(id):
 				except ftp.err:
 					yield ("FTP-Error\n", "log")
 				return
-			elif "action" in resp:
-				if resp["action"] == "processed":
+			elif "status" in resp:
+				if resp["status"] == "processed":
 					yield ("Anfrage angefangen\n", "log")
 
 
@@ -504,5 +505,17 @@ def gh_webhook(*args, **kwargs):
 	func()
 	return {"error": False}, 200
 
-
-
+@api.route("/game_list_sse", methods=["GET"])
+@sse_stream
+def game_list_sse():
+	q = backend.subscribe_game_update()
+	while True:
+		try:
+			update = q.get(timeout=5)
+			if "status" in update:
+				if update["status"] == "processed":
+					yield ("", "new_game")
+		except Empty:
+			pass
+	yield ("", "new_game")
+	yield ("""{"id": 1, "status": "1/42"}""", "update")

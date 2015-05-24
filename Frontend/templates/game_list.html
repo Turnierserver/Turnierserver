@@ -2,12 +2,12 @@
 {% set active_page = "game_list" %}
 {% block body %}
 
-{% set in_progress_games = [{
-	"ai_assocs": [{"ai":{"name":"topkek", "id":0}}, {"ai":{"name":"topkek", "id":0}}],
-	"progress": "1/1337",
-	"id":0
-}] %}
 
+<div id="new_game_msg" class="ui hidden floating message">
+	<p>Ein neues Spiel hat angefangen, lad die Seite neu, um es zu sehen.</p>
+</div>
+
+{% if in_progress_games %}
 <table class="ui very basic table">
 	<thead>
 		<tr>
@@ -20,11 +20,11 @@
 	</thead>
 	<tbody>
 		{% for game in in_progress_games %}
-		<tr>
+		<tr id="inprogress_{{game.id}}">
 			<td class="left aligned">
-				<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[0].ai.id)}}">
-					<img class="ui right spaced image" src="/api/ai/{{ game.ai_assocs[0].ai.id }}/icon">
-					{{ game.ai_assocs[0].ai.name }}
+				<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai0.id)}}">
+					<img class="ui right spaced image" src="/api/ai/{{ game.ai0.id }}/icon">
+					{{ game.ai0.name }}
 				</a>
 			</td>
 			<td class="left aligned">
@@ -32,22 +32,48 @@
 			</td>
 			<td class="center aligned">
 				<a class="content" href="{{url_for("anonymous.game", id=game.id)}}">
-					<div class="header">{{ game.progress }}</div>
+					<div class="header" id="progress">{{ game.progress }}</div>
 				</a>
 			</td>
 			<td class="right aligned">
 				1337
 			</td>
 			<td class="right aligned">
-				<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[1].ai.id)}}">
-					{{ game.ai_assocs[1].ai.name }}
-					<img class="ui left spaced image" src="/api/ai/{{ game.ai_assocs[1].ai.id }}/icon">
+				<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai1.id)}}">
+					{{ game.ai1.name }}
+					<img class="ui left spaced image" src="/api/ai/{{ game.ai1.id }}/icon">
 				</a>
 			</td>
 		</tr>
 		{% endfor %}
 	</tbody>
 </table>
+{% endif %}
+
+<script>
+var evtSrc = new EventSource("/api/game_list_sse");
+
+evtSrc.onerror = function () {
+	console.log("SSE Err")
+	evtSrc.close()
+};
+
+evtSrc.addEventListener("update", function(e) {
+	console.log(e.data)
+	d = JSON.parse(e.data)
+	console.log(d)
+	$("#inprogress_"+d.id).find("#progress").text(d.status)
+})
+
+evtSrc.addEventListener("new_game", function(e) {$("#new_game_msg").removeClass("hidden")})
+
+
+evtSrc.addEventListener("stream_stopped", function (e) {
+	console.log(e);
+	console.log("stream_stopped")
+	evtSrc.close()
+})
+</script>
 
 
 <table class="ui very basic table">

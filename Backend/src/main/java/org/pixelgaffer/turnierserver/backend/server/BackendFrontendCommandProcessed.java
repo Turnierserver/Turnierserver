@@ -15,7 +15,7 @@ public class BackendFrontendCommandProcessed {
 	 * Die 'Aktion' des Paketes (hier "processed")
 	 */
 	@Getter
-	public String action = "processed";
+	public String status = "processed";
 
 	public BackendFrontendCommandProcessed(int requestid) {
 		this.requestid = requestid;
