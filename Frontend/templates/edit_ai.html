@@ -3,53 +3,54 @@
 {% block body %}
 
 
-		<div class="field">
-			<div class="ui medium image dimmable" style="width: 200px; height: 200px;">
-				<div style="display: none;" class="ui dimmer transition hidden">
-					<div class="content">
-						<div class="center">
-							<div id="upload_file" class="ui primary button">Hochladen</div>
-							<form id="icon_form" action="/api/ai/{{ai.id}}/upload_icon" method="post" enctype="multipart/form-data">
-								<input id="file_input" type="file" name="icon" style="display: none;" />
-							</form>
-							<div class="ui button">Zurücksetzen</div>
-						</div>
-					</div>
+<div class="field">
+	<div class="ui medium image dimmable" style="width: 200px; height: 200px;">
+		<div style="display: none;" class="ui dimmer transition hidden">
+			<div class="content">
+				<div class="center">
+					<div id="upload_file" class="ui primary button">Hochladen</div>
+					<form id="icon_form" action="/api/ai/{{ai.id}}/upload_icon" method="post" enctype="multipart/form-data">
+						<input id="file_input" type="file" name="icon" style="display: none;" />
+					</form>
+					<div id="reset_icon" class="ui button">Zurücksetzen</div>
 				</div>
-				<img class="ui image dimmable" src="/api/ai/{{ ai.id }}/icon">
 			</div>
-			<script>
-				$('.dimmable').dimmer({on: 'hover'});
-				$('#upload_file').on('click', function() {
-					$('#file_input').trigger('click');
-				});
-				$("#file_input").change(function(){
-					var fd = new FormData();
-					fd.append('file', $("#file_input")[0].files[0]);
-					$.ajax({
-						url: "/api/ai/{{ai.id}}/upload_icon",
-						type: $("#icon_form").attr("method"),
-						dataType: "JSON",
-						data: fd,
-						processData: false,
-						contentType: false,
-						success: function (data, status)
-						{
-							location.reload()
-						},
-						error: function (xhr, desc, err)
-						{
-							alert(err)
-						}
-					});
-					/*$.post('/api/ai/{{ai.id}}/upload_icon', $('#icon_form').serialize(), function(data) {
-							//location.reload()
-						},
-						'json' // I expect a JSON response
-					);*/
-				});
-			</script>
 		</div>
+		<img class="ui image dimmable" src="/api/ai/{{ ai.id }}/icon" style="width: 200px; height: 200px;">
+	</div>
+	<script>
+		$('.dimmable').dimmer({on: 'hover'});
+		$('#upload_file').on('click', function() {
+			$('#file_input').trigger('click');
+		});
+		$("#file_input").change(function(){
+			var fd = new FormData();
+			fd.append('file', $("#file_input")[0].files[0]);
+			$.ajax({
+				url: "/api/ai/{{ai.id}}/upload_icon",
+				type: $("#icon_form").attr("method"),
+				dataType: "JSON",
+				data: fd,
+				processData: false,
+				contentType: false,
+				success: function (data, status)
+				{
+					location.reload()
+				},
+				error: function (xhr, desc, err)
+				{
+					alert(err)
+				}
+			});
+		});
+		$("#reset_icon").on("click", function() {
+			console.log("resetting icon")
+			$.post("/api/ai/{{ai.id}}/reset_icon", {}, function() {
+				location.reload()
+			})
+		})
+	</script>
+</div>
 
 
 <form class="ui form" id="form">

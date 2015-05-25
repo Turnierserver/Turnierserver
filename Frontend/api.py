@@ -222,7 +222,29 @@ def api_ai_upload_icon(id):
 		cache.delete_memoized(api_ai_icon, id)
 		return upload_single_file(request, "AIs/"+str(id)+"/icon.png")
 	else:
-		abort(404)
+		return CommonErrors.INVALID_ID
+
+@api.route("/ai/<int:id>/reset_icon", methods=["POST"])
+@json_out
+@authenticated
+def api_ai_reset_icon(id):
+	ai = AI.query.get(id)
+	if ai:
+		cache.delete_memoized(api_ai_icon, id)
+		@ftp.safe
+		def f():
+			path = "AIs/"+str(id)+"/icon.png"
+			if not ftp.ftp_host.path.isfile(path):
+				return {"error": "No custom Icon"}, 400
+			ftp.ftp_host.remove(path)
+			return {"error": False}, 200
+
+		try:
+			return f()
+		except ftp.err:
+			return {"error": "FTP-Err"}, 500
+	else:
+		return CommonErrors.INVALID_ID
 
 @api.route("/user/<int:id>/upload_icon", methods=["POST"])
 @json_out
@@ -233,7 +255,7 @@ def api_user_upload_icon(id):
 		cache.delete_memoized(api_user_icon, id)
 		return upload_single_file(request, "Users/"+str(id)+"/icon.png")
 	else:
-		abort(404)
+		return CommonErrors.INVALID_ID
 
 @api.route("/ai/<int:id>/code")
 @json_out
