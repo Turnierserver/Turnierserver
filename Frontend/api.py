@@ -581,6 +581,7 @@ def gh_webhook(*args, **kwargs):
 @api.route("/game_list_sse", methods=["GET"])
 @sse_stream
 def game_list_sse():
+	yield ("connected", "connected")
 	q = backend.subscribe_game_update()
 	while True:
 		try:
@@ -589,7 +590,8 @@ def game_list_sse():
 				if update["status"] == "processed":
 					yield ("", "new_game")
 		except Empty:
-			pass
+			# falls es keine Verbindung mehr gibt wird der Generator hier beendet.
+			yield None
 	yield ("", "new_game")
 	yield ("""{"id": 1, "status": "1/42"}""", "update")
 

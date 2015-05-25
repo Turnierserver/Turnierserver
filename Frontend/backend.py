@@ -5,10 +5,11 @@ import time
 from activityfeed import Activity
 import threading
 from queue import Queue, Empty
+from weakref import WeakSet
 
 class Backend(threading.Thread):
 	daemon=True
-	game_update_queue_list = []
+	game_update_queues = WeakSet()
 	def __init__(self):
 		threading.Thread.__init__(self)
 		self.sock = None
@@ -90,7 +91,7 @@ class Backend(threading.Thread):
 		self.requests[reqid]["queue"].put(d)
 
 		if self.requests[reqid]["action"] == "start":
-			for q in self.game_update_queue_list:
+			for q in self.game_update_queues:
 				q.put(d)
 
 	def request(self, reqid):
@@ -104,13 +105,12 @@ class Backend(threading.Thread):
 			return False
 
 	def subscribe_game_update(self):
+		print("New SSe")
+		print(len(self.game_update_queues))
 		q = Queue()
-		self.game_update_queue_list.append(q)
+		self.game_update_queues.add(q)
 		return q
 
-	def unsubscribe(self, queue):
-		if queue in self.game_update_queue_list:
-			self.game_update_queue_list.remove(queue)
 
 	def inprogress_games(self):
 		games = []
