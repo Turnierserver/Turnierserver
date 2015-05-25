@@ -1,0 +1,41 @@
+#-------------------------------------------------
+#
+# Project created by QtCreator 2015-05-24T21:55:21
+#
+#-------------------------------------------------
+
+QT       += core network
+QT       -= gui
+
+TARGET = buildgame
+CONFIG   += console
+CONFIG   -= app_bundle
+
+QMAKE_CXXFLAGS += -std=c++11
+
+OBJECTS_DIR = obj/
+MOC_DIR = gen/moc
+RCC_DIR = gen/rc
+UI_DIR  = gen/ui
+
+TEMPLATE = app
+
+INCLUDEPATH += include/
+
+SOURCES += \
+    src/main.cpp \
+    src/buildinstructions.cpp \
+    src/langspec.cpp
+
+DISTFILES += \
+    langs/java.txt \
+    langs/default.txt \
+    examples/game.txt
+
+RESOURCES += \
+    langs/langs.qrc \
+    examples/examples.qrc
+
+HEADERS += \
+    include/buildinstructions.h \
+    include/langspec.h

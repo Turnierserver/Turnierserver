@@ -1,0 +1,15 @@
+NAME = Beisiel
+VERSION = 1.0
+
+# den Code mit Debug-Optionen bauen
+DEBUG = true
+
+# die Spiellogik bauen
+logic {
+	FILES += com/example/mypackage/*.java
+}
+
+# die Java Bibliothek bauen
+java {
+	FILES += com/example/mypackage/*.java
+}

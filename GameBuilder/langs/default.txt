@@ -1,0 +1,13 @@
+extends nothing
+
+# die Standart-Kodierung ist UTF-8
+ENCODING ?= utf8
+
+# wenn kein sourcepath angegeben wurde, src/main/${LANG} benutzen
+SOURCES ?= src/main/${LANG}
+
+# wenn das bin-Verzeichnis nicht festgelegt wurde auf bin/ setzen
+BINDIR ?= bin/
+
+# das bin-Verzeichnis anlegen
+build: mkdir "${BINDIR}"

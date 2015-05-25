@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/examples">
+        <file>game.txt</file>
+    </qresource>
+</RCC>

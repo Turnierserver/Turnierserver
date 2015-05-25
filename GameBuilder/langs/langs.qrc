@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/langs">
+		<file alias="default">default.txt</file>
+        <file alias="java">java.txt</file>
+    </qresource>
+</RCC>
