@@ -21,6 +21,7 @@
 #define EVALUATOR_H
 
 #include <QList>
+#include <QNetworkAccessManager>
 #include <QString>
 
 class BuildInstructions;
@@ -39,11 +40,19 @@ public:
 	bool createLangSpecs(bool verbose = false);
 	int target(const QString &target);
 	
+	void setHost (const QString &val) { host = val; }
+	
 private:
 	int target(const QString &target, LangSpec *spec);
 	
 	BuildInstructions _instructions;
 	QList<LangSpec*> langSpecs;
+	
+	// zeugs für upload
+	QString host;
+	QString user;
+	QString pass;
+	QNetworkAccessManager *mgr = 0;
 	
 };
 

@@ -1,44 +1,5 @@
-extends default
-
-# der Befehl des Compilers
-COMPILER = javac
-
-# die verschiedenen Verzeichnisse anlegen
-build: mkdir ${BINDIR}/generated
-build: mkdir ${BINDIR}/classes
-
-# die bibliotheken mit : trennen
-for LIBS as LIB LIBRARIES *= :${LIB}
-
-# die Argumente des Compilers
-FLAGS = ${DEBUG ? "-g" : "-g:none"} -encoding ${ENCODING}
-# das bin-Verzeichnis
-FLAGS += -d "${BINDIR}/classes"
-# der classpath
-FLAGS += -classpath "${BINDIR}/classes:${LIBRARIES}"
-# der sourcepath
-FLAGS += -sourcepath "${SOURCES}"
-# das Verzeichnis für generiertes Zeugs
-FLAGS += -s "${BINDIR}/generated"
-# die Java-Version (Standart 1.8}
-JAVAVERSION ?= 1.8
-FLAGS += -target ${JAVAVERSION} -source ${JAVAVERSION}
-
-# den Kompilierungsvorgang aufrufen
-build: compile
-
-# das Jar-Archiv packen
-# zuerst das Manifest anlegen
-MANIFEST ?= ${BINDIR}/Manifest.mf
-absolute MANIFEST
-manifest: echo "Manifest-Version: 1.0"     >"${MANIFEST}"
-manifest: echo "Created-By: Game Builder" >>"${MANIFEST}"
-build: manifest
-# jetzt das Jar-Archiv bauen
-JAR = ${BINDIR}/${NAME}-Java-${VERSION}.jar
-absolute JAR
-build: exec in "${BINDIR}/classes" jar cfm "${JAR}" "${MANIFEST}" *
+extends javadef
 
 # beim Hochladen das Jar-Archiv und die Bibliotheken hochladen
-deploy: upload ${JAR}
-for LIBS as LIB deploy: upload ${LIB}
+deploy: upload "${JAR}" to "/api/upload_game_libs/${GAMEID}/Java"
+for LIBS as LIB deploy: upload "${LIB}" to "/api/upload_game_libs/${GAMEID}/Java"

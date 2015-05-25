@@ -1,6 +1,9 @@
 NAME = Beisiel
 VERSION = 1.0
 
+# die id des Spiels auf dem Server
+GAMEID = 2
+
 # den Code mit Debug-Optionen bauen
 DEBUG = true
 

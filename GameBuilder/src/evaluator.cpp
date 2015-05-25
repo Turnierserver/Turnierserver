@@ -23,7 +23,24 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QEventLoop>
+#include <QHttpMultiPart>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QRegularExpression>
+
+// zeugs zum passwort lesen
+#include <iostream>
+#include <string>
+#if defined __unix
+#  include <termios.h>
+#  include <unistd.h>
+#elif defined __WIN32 || defined __WIN64
+#  include <windows.h>
+#endif
+using namespace std;
 
 Evaluator::Evaluator(const BuildInstructions &instructions)
 	: _instructions(instructions)
@@ -33,6 +50,8 @@ Evaluator::Evaluator(const BuildInstructions &instructions)
 Evaluator::~Evaluator()
 {
 	qDeleteAll(langSpecs);
+	if (mgr)
+		delete mgr;
 }
 
 bool Evaluator::createLangSpecs(bool verbose)
@@ -150,6 +169,117 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 			fprintf(file, "%s\n", qPrintable(text));
 			if (!destination.isEmpty())
 				fclose(file);
+		}
+		else if (command.startsWith("upload "))
+		{
+			QRegularExpression regex("^upload \"(?P<file>[^\"]+)\" to \"(?P<destination>[^\"]+)\"\\s*$");
+			QRegularExpressionMatch match = regex.match(command);
+			if (!match.hasMatch())
+			{
+				fprintf(stderr, "Syntaxfehler im upload-Befehö\n%s\n       ^\n", qPrintable(command));
+				return 1;
+			}
+			
+			QString file = match.captured("file");
+			QFileInfo fileInfo(file);
+			if (!fileInfo.exists() || !fileInfo.isFile())
+			{
+				fprintf(stderr, "%s ist keine Datei\n", qPrintable(file));
+				return 1;
+			}
+			QString destination = match.captured("destination");
+			
+			// wenn der NetworkManager 0 ist diesen erstellen
+			if (!mgr)
+			{
+				QTextStream in(stdin);
+				mgr = new QNetworkAccessManager;
+				
+				// host fragen
+				if (host.isEmpty())
+				{
+					printf("Host: ");
+					in >> host;
+				}
+				// benutzer fragen
+				if (user.isEmpty())
+				{
+					printf("Benutzername: ");
+					in >> user;
+				}
+				// passwort fragen
+				if (pass.isEmpty())
+				{
+					printf("Passwort: ");
+#if defined __unix
+					termios oldt;
+					tcgetattr(STDIN_FILENO, &oldt);
+					termios newt = oldt;
+					newt.c_lflag &= ~ECHO;
+					tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+					
+					string s;
+					getline(cin, s);
+					pass = s.data();
+					printf("\n");
+					
+					tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+#elif define __WIN32 || defined __WIN64
+					HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE); 
+					DWORD mode = 0;
+					GetConsoleMode(hStdin, &mode);
+					SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
+					
+					string s;
+					getline(cin, s);
+					pass = s;
+					
+					SetConsoleMode(hStdin, mode);
+#else
+					in >> pass;
+#endif
+				}
+				
+				// anmelden
+				QNetworkRequest loginRequest("http://" + host + "/api/login"); // sollte https werden
+				loginRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+				loginRequest.setHeader(QNetworkRequest::UserAgentHeader, "GameBuilder (QtNetwork " QT_VERSION_STR ")");
+				QJsonObject json;
+				json.insert("username", user);
+				json.insert("password", pass);
+				QJsonDocument doc(json);
+				QEventLoop loop;
+				QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+				QNetworkReply *reply = mgr->post(loginRequest, doc.toJson(QJsonDocument::Compact));
+				loop.exec();
+				if (reply->error() != QNetworkReply::NoError)
+				{
+					fprintf(stderr, "Fehler beim Anmelden: %s\n", qPrintable(reply->errorString()));
+					return 1;
+				}
+			}
+			
+			// die Datei hochladen
+			QFile in(file);
+			if (!in.open(QIODevice::ReadOnly))
+			{
+				fprintf(stderr, "Kann Datei %s nicht öffnen", qPrintable(file));
+				return 1;
+			}
+			QNetworkRequest request("http://" + host + destination); // sollte https werden
+			printf("Uploading %s -> %s\n", qPrintable(file), qPrintable(request.url().toString()));
+			request.setHeader(QNetworkRequest::ContentTypeHeader, "application/octet-stream");
+			request.setHeader(QNetworkRequest::UserAgentHeader, "GameBuilder (QtNetwork " QT_VERSION_STR ")");
+			request.setRawHeader("X-FileName", fileInfo.fileName().toUtf8());
+			QEventLoop loop;
+			QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+			QNetworkReply *reply = mgr->post(request, &in);
+			loop.exec();
+			if (reply->error() != QNetworkReply::NoError)
+			{
+				fprintf(stderr, "Fehler beim Hochladen von %s: %s\n", qPrintable(file), qPrintable(reply->errorString()));
+				return 1;
+			}
 		}
 		else
 		{

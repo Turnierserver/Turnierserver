@@ -1,4 +1,4 @@
-extends java
+extends javadef
 
 # zusätzliches Manifest-Attribut
 manifest: echo "Logic-Class: ${LOGICCLASS}" >>"${MANIFEST}"
@@ -6,3 +6,6 @@ manifest: echo "Logic-Class: ${LOGICCLASS}" >>"${MANIFEST}"
 # die jar umbenennen
 JAR = ${BINDIR}/${NAME}-Logic-${VERSION}.jar
 absolute JAR
+
+# beim Hochladen nur das Jar-Archiv hochladen
+deploy: upload "${JAR}" to "/api/upload_game_logic/${GAMEID}"

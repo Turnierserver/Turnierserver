@@ -29,10 +29,11 @@ SOURCES += \
     src/evaluator.cpp
 
 DISTFILES += \
-    langs/java.txt \
     langs/default.txt \
     examples/game.txt \
-    langs/logic.txt
+    langs/logic.txt \
+	langs/java.txt \
+    langs/javadef.txt
 
 RESOURCES += \
     langs/langs.qrc \

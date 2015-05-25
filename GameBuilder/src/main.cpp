@@ -84,6 +84,8 @@ int main(int argc, char *argv[])
 	
 	// die Bauanweisungen ausführen
 	Evaluator evaluator(instructions);
+	if (parser.isSet(addressOption))
+		evaluator.setHost(parser.value(addressOption));
 	if (verbose)
 		qDebug() << "Erstelle LangSpecs";
 	if (!evaluator.createLangSpecs(verbose))
@@ -101,6 +103,6 @@ int main(int argc, char *argv[])
 			return ret;
 	}
 	
-	printf("Erfolgreich. Verbrauchte Zeit: %.2f ms\n", time.elapsed() / 1000.0);
+	printf("Erfolgreich. Verbrauchte Zeit: %.2f s\n", time.elapsed() / 1000.0);
 	return 0;
 }
