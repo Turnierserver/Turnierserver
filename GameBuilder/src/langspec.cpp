@@ -107,7 +107,7 @@ bool LangSpec::evalLine(QString line, uint linenum, const QString &childLang)
 		QString value = match.captured("value").trimmed();
 		QString op = match.captured("operator");
 		
-		value = fillVars(value, linenum);
+		value = fillVars(value, childLang, linenum);
 		
 		if (op == "=")
 			variables.insert(name, value);
@@ -184,6 +184,7 @@ bool LangSpec::evalLine(QString line, uint linenum, const QString &childLang)
 QString LangSpec::string(const QString &name, const QString &language) const
 {
 	QString key = name;
+	//qDebug() << "Searching for" << key << "in lang" << language << "(own language:" << lang() << ")";
 	
 	// ternary operator parsen
 	QRegularExpression ternary("^(?P<name>[a-zA-Z_]+)\\s*\\?\\s*\"(?P<then>[^\"]*)\"\\s*:\\s*\"(?P<else>[^\"]*)\"\\s*$");
@@ -196,7 +197,7 @@ QString LangSpec::string(const QString &name, const QString &language) const
 	if (value.isEmpty())
 	{
 		if (_parent)
-			value = _parent->string(name, language);
+			value = _parent->string(name, language.isEmpty() ? lang() : language);
 		if (value.isEmpty())
 		{
 			if (language.isEmpty())
@@ -216,7 +217,7 @@ QString LangSpec::string(const QString &name, const QString &language) const
 	return value;
 }
 
-QString LangSpec::fillVars(const QString &str, uint linenum) const
+QString LangSpec::fillVars(const QString &str, const QString &childLang, uint linenum) const
 {
 	QString value = str; // klonen
 	
@@ -231,7 +232,7 @@ QString LangSpec::fillVars(const QString &str, uint linenum) const
 			continue;
 		}
 		substr = substr.mid(0, end);
-		value.replace(index, end + 3, string(substr));
+		value.replace(index, end + 3, string(substr, childLang));
 	}
 	return value;
 }
