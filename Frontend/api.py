@@ -192,29 +192,46 @@ def api_ai_icon(id):
 	else:
 		abort(404)
 
+def upload_single_file(request, path):
+	print(request.mimetype)
+	print(request.files)
+	print(request.data)
+	if request.mimetype == "multipart/form-data":
+		if len(request.files) != 1:
+			return {"error": "Invalid number of files attached."}, 400
+		content = list(request.files.values())[0].read()
+	else:
+		content = request.data
+
+	@ftp.safe
+	def f():
+		with ftp.ftp_host.open(path, "wb") as f:
+			f.write(content)
+		return {"error": False}, 200
+	try:
+		return f()
+	except ftp.err:
+		return {"error": "FTP-Error"}, 500
+
 @api.route("/ai/<int:id>/upload_icon", methods=["POST"])
 @json_out
 @authenticated
 def api_ai_upload_icon(id):
 	ai = AI.query.get(id)
 	if ai:
-		if request.mimetype == "multipart/form-data":
-			if len(request.files) != 1:
-				return {"error": "Invalid number of files attached."}, 400
-			content = request.files[request.files.keys()[0]]
-		else:
-			content = request.data
+		cache.delete_memoized(api_ai_icon, id)
+		return upload_single_file(request, "AIs/"+str(id)+"/icon.png")
+	else:
+		abort(404)
 
-		@ftp.safe
-		def f():
-			path = "AIs/{}/icon.png".format(id)
-			with ftp.ftp_host.open(path, "wb") as f:
-				f.write(content)
-			return {"error": False}, 200
-		try:
-			return f()
-		except ftp.err:
-			return {"error": "FTP-Error"}, 500
+@api.route("/user/<int:id>/upload_icon", methods=["POST"])
+@json_out
+@authenticated
+def api_user_upload_icon(id):
+	user = User.query.get(id)
+	if user:
+		cache.delete_memoized(api_user_icon, id)
+		return upload_single_file(request, "Users/"+str(id)+"/icon.png")
 	else:
 		abort(404)
 
