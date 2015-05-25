@@ -7,6 +7,7 @@ DEBUG = true
 # die Spiellogik bauen
 logic {
 	FILES += com/example/mypackage/Logic.java
+	LOGICCLASS = com.example.mypackage.Logic
 }
 
 # die Java Bibliothek bauen

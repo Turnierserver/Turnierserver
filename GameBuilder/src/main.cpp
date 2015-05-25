@@ -27,6 +27,7 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QFile>
 #include <QTime>
 
 int main(int argc, char *argv[])
@@ -46,6 +47,23 @@ int main(int argc, char *argv[])
 	parser.addPositionalArgument("commands", "Die Befehle die ausgeführt werden sollen.", "<command> [<command> ...]");
 	parser.process(app);
 	QStringList args = parser.positionalArguments();
+	
+	// wenn args = "example" das Beispiel nach stdout schreiben und beenden
+	if ((args.size() == 1) && (args[0] == "example"))
+	{
+		QFile in(":/examples/game.txt");
+		if (!in.open(QIODevice::ReadOnly))
+		{
+			fprintf(stderr, "Fehler: Kann Beispiel nicht lesen\n");
+			return 1;
+		}
+		
+		QByteArray read;
+		while (!(read = in.read(8192)).isEmpty())
+			printf(read.data());
+		in.close();
+		return 0;
+	}
 	
 	bool verbose = parser.isSet(verboseOption);
 	
