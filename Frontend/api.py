@@ -125,17 +125,16 @@ def api_user_icon(id):
 @api.route("/login", methods=['POST'])
 @json_out
 def api_login():
-	print(request.headers)
-	if request.headers["Content-Type"] == "application/json":
+	if request.mimetype == "application/json":
 		if not request.json:
 			return {"error": "Not valid JSON."}, 400
 		username = request.json.get("username", None)
 		password = request.json.get("password", None)
-	elif request.headers["Content-Type"] == "application/x-www-form-urlencoded":
+	elif request.mimetype == "application/x-www-form-urlencoded":
 		username = request.form['username']
 		password = request.form['password']
 	else:
-		return {'error', "Wrong Content-Type, must be application/json or application/x-www-form-urlencoded"}, 400
+		return {"error": "Wrong Content-Type, must be application/json or application/x-www-form-urlencoded"}, 400
 	if not username or not password:
 		return { 'error': 'Missing username or password' }, 400
 
@@ -190,6 +189,32 @@ def api_ai_icon(id):
 	ai = AI.query.get(id)
 	if ai:
 		return ai.icon()
+	else:
+		abort(404)
+
+@api.route("/ai/<int:id>/upload_icon", methods=["POST"])
+@json_out
+@authenticated
+def api_ai_upload_icon(id):
+	ai = AI.query.get(id)
+	if ai:
+		if request.mimetype == "multipart/form-data":
+			if len(request.files) != 1:
+				return {"error": "Invalid number of files attached."}, 400
+			content = request.files[request.files.keys()[0]]
+		else:
+			content = request.data
+
+		@ftp.safe
+		def f():
+			path = "AIs/{}/icon.png".format(id)
+			with ftp.ftp_host.open(path, "wb") as f:
+				f.write(content)
+			return {"error": False}, 200
+		try:
+			return f()
+		except ftp.err:
+			return {"error": "FTP-Error"}, 500
 	else:
 		abort(404)
 
