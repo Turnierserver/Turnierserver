@@ -113,6 +113,8 @@ bool LangSpec::evalLine(QString line, uint linenum, const QString &childLang)
 			variables.insert(name, value);
 		else if (op == "+=")
 			variables.insert(name, string(name, childLang) + " " + value);
+		else if (op == "*=")
+			variables.insert(name, string(name, childLang) + value);
 		else if (op == "?=")
 		{
 			if (string(name, childLang).isEmpty())

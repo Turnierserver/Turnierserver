@@ -1,1 +1,8 @@
 extends java
+
+# zusätzliches Manifest-Attribut
+manifest: echo "Logic-Class: ${LOGICCLASS}" >>"${MANIFEST}"
+
+# die jar umbenennen
+JAR = ${BINDIR}/${NAME}-Logic-${VERSION}.jar
+absolute JAR

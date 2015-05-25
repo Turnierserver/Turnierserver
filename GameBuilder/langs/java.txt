@@ -7,12 +7,15 @@ COMPILER = javac
 build: mkdir ${BINDIR}/generated
 build: mkdir ${BINDIR}/classes
 
+# die bibliotheken mit : trennen
+for LIBS as LIB LIBRARIES *= :${LIB}
+
 # die Argumente des Compilers
 FLAGS = ${DEBUG ? "-g" : "-g:none"} -encoding ${ENCODING}
 # das bin-Verzeichnis
-FLAGS += -d "${BINDIR}"
+FLAGS += -d "${BINDIR}/classes"
 # der classpath
-FLAGS += -classpath "${BINDIR}:${LIBS}"
+FLAGS += -classpath "${BINDIR}/classes:${LIBRARIES}"
 # der sourcepath
 FLAGS += -sourcepath "${SOURCES}"
 # das Verzeichnis für generiertes Zeugs
@@ -32,9 +35,10 @@ manifest: echo "Manifest-Version: 1.0"     >"${MANIFEST}"
 manifest: echo "Created-By: Game Builder" >>"${MANIFEST}"
 build: manifest
 # jetzt das Jar-Archiv bauen
-JAR ?= ${BINDIR}/${NAME}-Java-${VERSION}.jar
+JAR = ${BINDIR}/${NAME}-Java-${VERSION}.jar
 absolute JAR
 build: exec in "${BINDIR}/classes" jar cfm "${JAR}" "${MANIFEST}" *
 
-# beim Hochladen nur das Jar-Archiv hochladen
-deploy: upload "${JAR}"
+# beim Hochladen das Jar-Archiv und die Bibliotheken hochladen
+deploy: upload ${JAR}
+for LIBS as LIB deploy: upload ${LIB}

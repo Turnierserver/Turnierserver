@@ -93,7 +93,7 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 		}
 		else if (command.startsWith("exec"))
 		{
-			QRegularExpression regex("^exec( in \"(?P<wd>[^\"]+)\")? (?P<cmd>[^\r\n]+)\\s*$");
+			QRegularExpression regex("^exec(\\s+in\\s+\"(?P<wd>[^\"]+)\")?\\s+(?P<cmd>[^\r\n]+)\\s*$");
 			QRegularExpressionMatch match = regex.match(command);
 			if (!match.hasMatch())
 			{
@@ -127,6 +127,29 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 					return 1;
 				}
 			}
+		}
+		else if (command.startsWith("echo "))
+		{
+			QRegularExpression regex("^echo\\s+\"(?P<text>[^\"]+)\"(\\s+(?P<operator>\\>|\\>\\>)\\s*\"(?P<destination>[^\"]+)\")?\\s*");
+			QRegularExpressionMatch match = regex.match(command);
+			if (!match.hasMatch())
+			{
+				fprintf(stderr, "Syntaxfehler im echo-Befehl\n%s\n     ^\n", qPrintable(command));
+				return 1;
+			}
+			
+			QString text = match.captured("text");
+			QString op = match.captured("operator");
+			QString destination = match.captured("destination");
+			FILE *file = destination.isEmpty() ? stdout : fopen(qPrintable(destination), op == ">" ? "w" : "a");
+			if (!file)
+			{
+				fprintf(stderr, "Kann Datei %s nicht öffnen\n", qPrintable(destination));
+				return 1;
+			}
+			fprintf(file, "%s\n", qPrintable(text));
+			if (!destination.isEmpty())
+				fclose(file);
 		}
 		else
 		{
