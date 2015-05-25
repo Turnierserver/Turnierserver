@@ -10,6 +10,7 @@ class CommonErrors:
 	INVALID_ID = ({'error': 'Invalid id.'}, 404)
 	NO_ACCESS = ({'error': 'Insufficient permissions.'}, 401)
 	IM_A_TEAPOT = ({'error': 'I\'m a teapot.'}, 418)
+	FTP_ERROR = ({'error': 'FTP-Error'}, 500)
 	NOT_IMPLEMENTED = ({'error': 'Not implemented.'}, 501)
 
 

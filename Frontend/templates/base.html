@@ -15,12 +15,12 @@
 {% set active_page = active_page | default('index')%}
 
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
 		<meta charset="utf-8">
 		<title>{% block title %}Turnierserver{% endblock %}</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-		<link rel="stylesheet" href="http://beta.semantic-ui.com/dist/semantic.min.css"></link>
+		<link rel="stylesheet" href="http://beta.semantic-ui.com/dist/semantic.min.css">
 		<script src="http://beta.semantic-ui.com/dist/semantic.min.js"></script>
 		{% block head %}
 		{% endblock %}
@@ -42,7 +42,7 @@
 			{% else %}
 				<div class="item">
 					<div class="ui input">
-						<input id="username" type="input" placeholder="Nutzername">
+						<input id="username" type="text" placeholder="Nutzername">
 					</div>
 				</div>
 				<div class="item">
@@ -77,27 +77,27 @@
 	</nav>
 	{% block rawbody %}
 	<div class="ui page grid">
-			<div class="ui grid">
-					<div class="row">
-							<div class="column">
-									<div id="msg" class="ui basic message page grid center aligned">
-											<h1 class="ui basic header">#Yolo Swag Yolonese</h1>
-											<p>Weit hinten, hinter den Wortbergen, fern der Länder Vokalien und Konsonantien leben die Blindtexte. Abgeschieden wohnen sie in Buchstabhausen an der Küste des Semantik, eines großen Sprachozeans. Ein kleines Bächlein namens Duden fließt durch ihren Ort und versorgt sie mit den nötigen Regelialien. Es ist ein paradiesmatisches Land, in dem einem gebratene Satzteile in den Mund fliegen.</p>
-											<a id="msgbutton" class="ui basic green button">Verstanden</a>
-											<script>$("#msgbutton").on("click", function() {
-												$("#msg").fadeOut();
-											})</script>
-									</div>
-							</div>
+		<div class="ui grid">
+			<div class="row">
+				<div class="column">
+					<div id="msg" class="ui basic message page grid center aligned">
+						<h1 class="ui basic header">#Yolo Swag Yolonese</h1>
+						<p>Weit hinten, hinter den Wortbergen, fern der Länder Vokalien und Konsonantien leben die Blindtexte. Abgeschieden wohnen sie in Buchstabhausen an der Küste des Semantik, eines großen Sprachozeans. Ein kleines Bächlein namens Duden fließt durch ihren Ort und versorgt sie mit den nötigen Regelialien. Es ist ein paradiesmatisches Land, in dem einem gebratene Satzteile in den Mund fliegen.</p>
+						<a id="msgbutton" class="ui basic green button">Verstanden</a>
+						<script>
+						$("#msgbutton").on("click", function() {
+							$("#msg").fadeOut();
+						})
+						</script>
 					</div>
+				</div>
 			</div>
 			<div class="ui hidden divider"></div>
-
 			<div class="one column row">
-					<div class="column">
-						{% block body %}
-						{% endblock %}
-					</div>
+				<div class="column">
+					{% block body %}
+					{% endblock %}
+				</div>
 			</div>
 		</div>
 	</div>

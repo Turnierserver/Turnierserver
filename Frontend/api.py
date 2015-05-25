@@ -211,7 +211,7 @@ def upload_single_file(request, path):
 	try:
 		return f()
 	except ftp.err:
-		return {"error": "FTP-Error"}, 500
+		return CommonErrors.FTP_ERROR
 
 @api.route("/ai/<int:id>/upload_icon", methods=["POST"])
 @json_out
@@ -242,7 +242,7 @@ def api_ai_reset_icon(id):
 		try:
 			return f()
 		except ftp.err:
-			return {"error": "FTP-Err"}, 500
+			return CommonErrors.FTP_ERROR
 	else:
 		return CommonErrors.INVALID_ID
 
@@ -444,7 +444,7 @@ def ai_upload(id):
 	try:
 		return f()
 	except ftp.err:
-		abort(500)
+		return CommonErrors.FTP_ERROR
 
 
 
@@ -483,7 +483,7 @@ def ai_delete_file(id):
 	try:
 		return f()
 	except ftp.err:
-		abort(500)
+		return CommonErrors.FTP_ERROR
 
 @api.route("/ai/<int:id>/create_folder", methods=["POST"])
 @json_out
@@ -519,7 +519,7 @@ def ai_create_folder(id):
 	try:
 		return f()
 	except ftp.err:
-		abort(500)
+		return CommonErrors.FTP_ERROR
 
 
 @api.route("/games/start", methods=["POST"])
@@ -596,6 +596,7 @@ def game_list_sse():
 
 @api.route("/upload_game_libs/<int:id>/<string:lang>", methods=["POST"])
 @json_out
+@admin_required
 def upload_game_libs(id, lang):
 	## id und lang gegen eigene Datenbank prüfen?
 
@@ -613,10 +614,11 @@ def upload_game_libs(id, lang):
 	try:
 		return f()
 	except ftp.err:
-		return CommonErrors.IM_A_TEAPOT
+		return CommonErrors.FTP_ERROR
 
 @api.route("/upload_game_logic/<int:id>", methods=["POST"])
 @json_out
+@admin_required
 def upload_game_logic(id):
 	return upload_single_file(request, "Games/1/Logic.jar")
 
