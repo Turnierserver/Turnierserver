@@ -10,4 +10,10 @@ SOURCES ?= src/main/${LANG}
 BINDIR ?= bin/
 
 # das bin-Verzeichnis anlegen
-build: mkdir "${BINDIR}"
+build: mkdir ${BINDIR}
+
+# bei clean das bin-Verzeichnis löschen
+clean: rm ${BINDIR}
+
+# ein macro zum aufrufen des compilers
+for FILES as FILE compile: exec ${COMPILER} ${FLAGS} ${SOURCES}/${FILE}

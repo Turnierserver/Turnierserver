@@ -25,12 +25,14 @@ INCLUDEPATH += include/
 SOURCES += \
     src/main.cpp \
     src/buildinstructions.cpp \
-    src/langspec.cpp
+    src/langspec.cpp \
+    src/evaluator.cpp
 
 DISTFILES += \
     langs/java.txt \
     langs/default.txt \
-    examples/game.txt
+    examples/game.txt \
+    langs/logic.txt
 
 RESOURCES += \
     langs/langs.qrc \
@@ -38,4 +40,5 @@ RESOURCES += \
 
 HEADERS += \
     include/buildinstructions.h \
-    include/langspec.h
+    include/langspec.h \
+    include/evaluator.h

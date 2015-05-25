@@ -39,7 +39,7 @@ LangSpec::~LangSpec()
 		delete _parent;
 }
 
-bool LangSpec::read(bool verbose)
+bool LangSpec::read(bool verbose, const QString &childLang)
 {
 	QFile in(":/langs/" + lang());
 	if (!in.open(QIODevice::ReadOnly))
@@ -49,6 +49,8 @@ bool LangSpec::read(bool verbose)
 			qDebug() << "Fehler beim Öffnen von" << in.fileName() << ":" << in.errorString();
 		return false;
 	}
+	
+	variables.insert("LANG", childLang.isEmpty() ? lang() : childLang);
 	
 	// die erste Zeile enthält den extends-Befehl
 	QByteArray line = in.readLine().trimmed();
@@ -68,97 +70,116 @@ bool LangSpec::read(bool verbose)
 		if (verbose)
 			qDebug() << "Lese Super-LangSpec " << extends;
 		_parent = new LangSpec(instructions(), extends);
-		if (!_parent->read(verbose))
+		if (!_parent->read(verbose, childLang.isEmpty() ? lang() : childLang))
 			return false;
 		if (verbose)
 			qDebug() << "Super-LangSpec gelesen";
 	}
 	
 	// die weiteren Zeilen lesen
-	QRegularExpression varAssignment("^\\s*(?P<name>[a-zA-Z_]+)\\s*(?P<operator>.?=)(?P<value>[^\n\r]*)\\s*$");
-	QRegularExpression absolutePath ("^\\s*absolute (?P<name>[a-zA-Z_]+)\\s*$");
-	QRegularExpression buildCommand ("^\\s*(?P<name>[a-zA-Z]+):(?P<command>[^\n\r]*)\\s*$");
+	
 	for (uint linenum = 2; !(line = in.readLine()).isEmpty(); linenum++)
 	{
-		line = line.trimmed();
-		if (line.isEmpty() || line.startsWith("#"))
-			continue;
-		
-		// Variablenzuweisung
-		QRegularExpressionMatch match = varAssignment.match(line);
-		if (match.hasMatch())
-		{
-			QString name = match.captured("name");
-			QString value = match.captured("value").trimmed();
-			QString op = match.captured("operator");
-			
-			while (value.contains('$'))
-			{
-				int index = value.indexOf('$');
-				QString substr = value.mid(index + 2);
-				int end = substr.indexOf('}');
-				if ((value[index+1] != '{') || (end == -1))
-				{
-					fprintf(stderr, "%s:%u: Missformed variable\n", qPrintable(lang()), linenum);
-					return false;
-				}
-				substr = substr.mid(0, end);
-				value.replace(index, end + 3, string(substr));
-			}
-			
-			if (op == "=")
-				variables.insert(name, value);
-			else if (op == "+=")
-				variables.insert(name, string(name) + " " + value);
-			else if (op == "?=")
-			{
-				if (string(name).isEmpty())
-					variables.insert(name, value);
-			}
-			else
-			{
-				fprintf(stderr, "%s:%u: Unbekannter Operator %s\n", qPrintable(lang()), linenum, qPrintable(op));
-				return false;
-			}
-			
-			continue;
-		}
-		
-		// einen Pfad absolut machen
-		match = absolutePath.match(line);
-		if (match.hasMatch())
-		{
-			QString var = match.captured("name");
-			QString path = string(var);
-			if (path.isEmpty())
-			{
-				fprintf(stderr, "%s:%u: Fehler: Variable %s ist leer\n", qPrintable(lang()), linenum, qPrintable(var));
-				return false;
-			}
-			QFileInfo fileInfo(path);
-			if (verbose)
-				qDebug() << var << ":" << path << "->" << fileInfo.absoluteFilePath();
-			variables.insert(var, fileInfo.absoluteFilePath());
-			continue;
-		}
-		
-		// einen Befehl hinzufügen
-		match = buildCommand.match(line);
-		if (match.hasMatch())
-		{
-			continue;
-		}
-		
-		// ansonsten Syntax-Fehler
-		fprintf(stderr, "%s:%d: Syntaxfehler\n", qPrintable(lang()), linenum);
-		return false;
+		if (!evalLine(line, linenum, childLang))
+			return false;
 	}
 	
 	in.close();
 	return true;
 }
 
-QString LangSpec::string(const QString &name) const
+bool LangSpec::evalLine(QString line, uint linenum, const QString &childLang)
+{
+	static QRegularExpression varAssignment("^\\s*(?P<name>[a-zA-Z_]+)\\s*(?P<operator>.?=)(?P<value>[^\n\r]*)\\s*$");
+	static QRegularExpression absolutePath ("^\\s*absolute\\s+(?P<name>[a-zA-Z_]+)\\s*$");
+	static QRegularExpression buildCommand ("^\\s*(?P<name>[a-zA-Z]+):(?P<command>[^\n\r]*)\\s*$");
+	static QRegularExpression forLoop      ("^\\s*for\\s+(?P<var>[a-zA-Z_]+)\\s+as\\s+(?P<as>[a-zA-Z_]+)\\s+(?P<code>[^\n\r]+)\\s*$");
+	
+	line = line.trimmed();
+	if (line.isEmpty() || line.startsWith("#"))
+		return true;
+	
+	// Variablenzuweisung
+	QRegularExpressionMatch match = varAssignment.match(line);
+	if (match.hasMatch())
+	{
+		QString name = match.captured("name");
+		QString value = match.captured("value").trimmed();
+		QString op = match.captured("operator");
+		
+		value = fillVars(value, linenum);
+		
+		if (op == "=")
+			variables.insert(name, value);
+		else if (op == "+=")
+			variables.insert(name, string(name, childLang) + " " + value);
+		else if (op == "?=")
+		{
+			if (string(name, childLang).isEmpty())
+				variables.insert(name, value);
+		}
+		else
+		{
+			fprintf(stderr, "%s:%u: Unbekannter Operator %s\n", qPrintable(lang()), linenum, qPrintable(op));
+			return false;
+		}
+		
+		return true;
+	}
+	
+	// einen Pfad absolut machen
+	match = absolutePath.match(line);
+	if (match.hasMatch())
+	{
+		QString var = match.captured("name");
+		QString path = string(var, childLang);
+		if (path.isEmpty())
+		{
+			fprintf(stderr, "%s:%u: Fehler: Variable %s ist leer\n", qPrintable(lang()), linenum, qPrintable(var));
+			return false;
+		}
+		QFileInfo fileInfo(path);
+		//if (verbose)
+		//	qDebug() << var << ":" << path << "->" << fileInfo.absoluteFilePath();
+		variables.insert(var, fileInfo.absoluteFilePath());
+		return true;
+	}
+	
+	// einen Befehl hinzufügen
+	match = buildCommand.match(line);
+	if (match.hasMatch())
+	{
+		QString name = match.captured("name");
+		QString command = match.captured("command").trimmed();
+		commands.insert(name, QStringList(commands.value(name)) << command);
+		
+		return true;
+	}
+	
+	// for-Schleife
+	match = forLoop.match(line);
+	if (match.hasMatch())
+	{
+		QString var = match.captured("var");
+		QString as = match.captured("as");
+		QString code = match.captured("code");
+		
+		if (!string(as, childLang).isEmpty())
+			fprintf(stderr, "Warnung: Die Variable %s wird durch eine for-Schleife überschrieben.\n", qPrintable(as));
+		for (QString val : string(var, childLang).split(' ', QString::SkipEmptyParts)) // todo: "" beachten
+		{
+			evalLine(QString(code).replace("${" + as + "}", val), linenum);
+		}
+		
+		return true;
+	}
+	
+	// ansonsten Syntax-Fehler
+	fprintf(stderr, "%s:%d: Syntaxfehler\n", qPrintable(lang()), linenum);
+	return false;
+}
+
+QString LangSpec::string(const QString &name, const QString &language) const
 {
 	QString key = name;
 	
@@ -173,10 +194,13 @@ QString LangSpec::string(const QString &name) const
 	if (value.isEmpty())
 	{
 		if (_parent)
-			value = _parent->string(name);
-		else
+			value = _parent->string(name, language);
+		if (value.isEmpty())
 		{
-			value = instructions().values(lang()).value(key);
+			if (language.isEmpty())
+				value = instructions().values(lang()).value(key);
+			else
+				value = instructions().values(language).value(key);
 			if (value.isEmpty())
 			{
 				value = instructions().values().value(key);
@@ -188,4 +212,33 @@ QString LangSpec::string(const QString &name) const
 	if (match.hasMatch())
 		return (value == "true" ? match.captured("then") : match.captured("else"));
 	return value;
+}
+
+QString LangSpec::fillVars(const QString &str, uint linenum) const
+{
+	QString value = str; // klonen
+	
+	while (value.contains('$'))
+	{
+		int index = value.indexOf('$');
+		QString substr = value.mid(index + 2);
+		int end = substr.indexOf('}');
+		if ((value[index+1] != '{') || (end == -1))
+		{
+			fprintf(stderr, "%s:%u: Missformed variable\n", qPrintable(lang()), linenum);
+			continue;
+		}
+		substr = substr.mid(0, end);
+		value.replace(index, end + 3, string(substr));
+	}
+	return value;
+}
+
+QStringList LangSpec::targetCommands(const QString &target)
+{
+	QStringList cmds;
+	if (_parent)
+		cmds << _parent->targetCommands(target);
+	cmds << commands.value(target);
+	return cmds;
 }

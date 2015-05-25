@@ -22,6 +22,7 @@
 
 #include <QHash>
 #include <QString>
+#include <QStringList>
 
 class BuildInstructions
 {
@@ -33,6 +34,8 @@ public:
 	
 	QHash<QString, QString> values () const { return _values; }
 	QHash<QString, QString> values (const QString &lang) const { return _subvalues.value(lang); }
+	
+	QStringList langs () const { return _subvalues.keys(); }
 	
 private:
 	QHash<QString, QString> _values;

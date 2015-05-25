@@ -1,5 +1,5 @@
 /*
- * langspec.h
+ * evaluator.h
  * 
  * Copyright (C) 2015 Dominic S. Meiser <meiserdo@web.de>
  * 
@@ -17,44 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LANGSPEC_H
-#define LANGSPEC_H
+#ifndef EVALUATOR_H
+#define EVALUATOR_H
 
-#include <QHash>
+#include <QList>
 #include <QString>
-#include <QStringList>
 
 class BuildInstructions;
+class LangSpec;
 
-class LangSpec
+class Evaluator
 {
-	Q_DISABLE_COPY(LangSpec) // _parent darf nicht kopiert werden (wegen destruktor)
+	Q_DISABLE_COPY(Evaluator)
 	
 public:
-	LangSpec(const BuildInstructions &instructions, const QString &lang);
-	~LangSpec();
+	Evaluator(const BuildInstructions &instructions);
+	~Evaluator();
 	
-	bool read (bool verbose = false, const QString &childLang = QString());
-private:
-	bool evalLine (QString line, uint linenum, const QString &childLang = QString());
-	
-public:
-	QString string (const QString &name, const QString &language = QString()) const;
-	QString fillVars (const QString &str, uint linenum = 0) const;
-	
-	QStringList targetCommands (const QString &target);
-	
-	QString lang () const { return _lang; }
 	BuildInstructions instructions () const { return _instructions; }
 	
-private:
+	bool createLangSpecs(bool verbose = false);
+	int target(const QString &target);
 	
-	QString _lang;
+private:
+	int target(const QString &target, LangSpec *spec);
+	
 	BuildInstructions _instructions;
-	LangSpec *_parent = 0;
-	QHash<QString, QStringList> commands;
-	QHash<QString, QString> variables;
+	QList<LangSpec*> langSpecs;
 	
 };
 
-#endif // LANGSPEC_H
+#endif // EVALUATOR_H

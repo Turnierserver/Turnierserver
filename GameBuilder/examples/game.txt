@@ -6,10 +6,10 @@ DEBUG = true
 
 # die Spiellogik bauen
 logic {
-	FILES += com/example/mypackage/*.java
+	FILES += com/example/mypackage/Logic.java
 }
 
 # die Java Bibliothek bauen
 java {
-	FILES += com/example/mypackage/*.java
+	FILES += com/example/mypackage/Lib.java
 }

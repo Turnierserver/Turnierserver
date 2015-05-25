@@ -18,6 +18,7 @@
  */
 
 #include "buildinstructions.h"
+#include "evaluator.h"
 #include "langspec.h"
 
 #include <stdio.h>
@@ -26,6 +27,7 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QTime>
 
 int main(int argc, char *argv[])
 {
@@ -47,6 +49,8 @@ int main(int argc, char *argv[])
 	
 	bool verbose = parser.isSet(verboseOption);
 	
+	QTime time = QTime::currentTime();
+	
 	// die Bauanweisungen lesen
 	QString file = parser.value(fileOption);
 	if (verbose)
@@ -60,13 +64,25 @@ int main(int argc, char *argv[])
 	if (verbose)
 		qDebug() << "Bauanweisungen gelesen";
 	
-	// die LangSpec für Java erstellen (zum Testen)
-	LangSpec spec(instructions, "java");
-	if (!spec.read(verbose))
+	// die Bauanweisungen ausführen
+	Evaluator evaluator(instructions);
+	if (verbose)
+		qDebug() << "Erstelle LangSpecs";
+	if (!evaluator.createLangSpecs(verbose))
 	{
 		fprintf(stderr, "Breche aufgrund vorheriger Fehler ab.\n");
 		return 1;
 	}
+	if (verbose)
+		qDebug() << "LangSpecs erstellt";
+	for (QString target : args)
+	{
+		printf("Baue Ziel %s\n", qPrintable(target));
+		int ret = evaluator.target(target);
+		if (ret != 0)
+			return ret;
+	}
 	
+	printf("Erfolgreich. Verbrauchte Zeit: %.2f ms\n", time.elapsed() / 1000.0);
 	return 0;
 }
