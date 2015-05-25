@@ -40,7 +40,7 @@ private:
 	
 public:
 	QString string (const QString &name, const QString &language = QString()) const;
-	QString fillVars (const QString &str, uint linenum = 0) const;
+	QString fillVars (const QString &str, const QString &childLang = QString(), uint linenum = 0) const;
 	
 	QStringList targetCommands (const QString &target);
 	
