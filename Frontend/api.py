@@ -592,3 +592,31 @@ def game_list_sse():
 			pass
 	yield ("", "new_game")
 	yield ("""{"id": 1, "status": "1/42"}""", "update")
+
+
+@api.route("/upload_game_libs/<int:id>/<string:lang>", methods=["POST"])
+@json_out
+def upload_game_libs(id, lang):
+	## id und lang gegen eigene Datenbank prüfen?
+
+	@ftp.safe
+	def f():
+		if not ftp.ftp_host.path.isdir("Games/{}/{}".format(id, lang)):
+			return {"error": "Invalid GameID or Lang"}, 400
+		if not "X-FileName" in request.headers:
+			return {"error": "Missing filename"}, 400
+		filename = request.headers.get("X-FileName")
+		with ftp.ftp_host.open("Games/{}/{}/{}".format(id, lang, filename), "wb") as f:
+			f.write(request.data)
+		return {"error": False}, 200
+
+	try:
+		return f()
+	except ftp.err:
+		return CommonErrors.IM_A_TEAPOT
+
+@api.route("/upload_game_logic/<int:id>", methods=["POST"])
+@json_out
+def upload_game_logic(id):
+	return upload_single_file(request, "Games/1/Logic.jar")
+
