@@ -1,11 +1,10 @@
 package org.pixelgaffer.turnierserver.esu.view;
 
 import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 import org.pixelgaffer.turnierserver.esu.*;
 import org.pixelgaffer.turnierserver.esu.Dialog;
+import org.pixelgaffer.turnierserver.esu.Player.Language;
 import org.pixelgaffer.turnierserver.esu.Player.NewVersionType;
 
 import javafx.beans.value.ChangeListener;
@@ -16,12 +15,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.FileChooser;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.web.WebView;
 
 public class ControllerAiManagement{
 	
 
-	MainApp mainApp;
 	@FXML public Button btAbort;
 	@FXML public Button btEdit;
 	@FXML public Button btNewVersion;
@@ -46,15 +45,21 @@ public class ControllerAiManagement{
 	@FXML public TextArea tbOutput;
 	@FXML public TextArea tbDescription;
 	@FXML public ChoiceBox<Version> cbVersion;
-	@FXML public ChoiceBox<String> cbLanguage;
+	@FXML public ChoiceBox<Language> cbLanguage;
 	@FXML public ListView<Player> lvAis;
 	@FXML public ImageView image;
 	@FXML public TabPane tpCode;
 	
+	public MainApp mainApp;
+	public PlayerManager manager = new PlayerManager();
 	public Player player;
 	public Version version;
 
-
+	/**
+	 * Initialisiert den Controller
+	 * 
+	 * @param app eine Referenz auf die MainApp
+	 */
 	public void setMainApp(MainApp app){
 		mainApp = app;
 		mainApp.cAi = this;
@@ -70,24 +75,47 @@ public class ControllerAiManagement{
 		        clickChangeAi();
 		    }
 		});
+		cbLanguage.itemsProperty().get().add(Language.Java);
+		cbLanguage.itemsProperty().get().add(Language.Python);
+		cbLanguage.getSelectionModel().selectFirst();
+		
+		manager.loadPlayers();
+		showPlayers();
 	}
 	
 	
-	
-	public void showPlayers(PlayerManager manager){
+	/**
+	 * Lädt alle KIs in die KI-Liste
+	 */
+	public void showPlayers(){
 		lvAis.setItems(manager.players);
+		try {
+			lvAis.getSelectionModel().selectFirst();
+		} catch (Exception e) {}
 	}
 	
+	/**
+	 * Zeigt eine KI und eine ihrer Versionen an
+	 * 
+	 * @param p die KI
+	 * @param v die zugehörige Version
+	 */
 	public void showPlayer(Player p, Version v){
 		player = p;
 		version = v;
 		showPlayer();
 	}
+	/**
+	 * Setzt alle Eigenschaften der Benutzeroberfläche, wie z.B. das KI-Namensfeld, das KI-Bild, die KI-Beschreibung, ...
+	 */
 	public void showPlayer(){
+		
+		// Player-spezifisches
 		if (player != null){
 			lbName.setText(player.title);
 			lbLanguage.setText("Sprache: " + player.language.toString());
 			tbDescription.setText(player.description);
+			cbVersion.getSelectionModel().clearSelection();
 			cbVersion.setItems(player.versions);
 			image.setImage(player.getPicture());
 			
@@ -112,6 +140,7 @@ public class ControllerAiManagement{
 			lbName.setText("Name");
 			lbLanguage.setText("Sprache: ");
 			tbDescription.setText("Momentan ist kein Spieler ausgewählt");
+			cbVersion.getSelectionModel().clearSelection();
 			ObservableList<Version> emptyFill = FXCollections.observableArrayList();
 			cbVersion.setItems(emptyFill);
 			image.setImage(Resources.defaultPicture());
@@ -129,7 +158,7 @@ public class ControllerAiManagement{
 		btEdit.setText("Bearbeiten");
 		tbDescription.setEditable(false);
 		
-		
+		//Version-spezifisches
 		if (version != null && player != null){
 			cbVersion.setValue(version);
 			tbOutput.setText("");
@@ -143,8 +172,8 @@ public class ControllerAiManagement{
 			lbQualified.setVisible(version.qualified);
 			lbFinished.setVisible(version.finished);
 			lbUploaded.setVisible(version.uploaded);
-			btCompile.setDisable(version.compiled);
-			btQualify.setDisable(version.qualified);
+			btCompile.setDisable(version.compiled || version.finished);
+			btQualify.setDisable(version.qualified || !version.compiled || version.finished);
 			btFinish.setDisable(version.finished);
 			btUpload.setDisable(false);
 			rbContinue.setDisable(false);
@@ -152,6 +181,8 @@ public class ControllerAiManagement{
 			rbContinue.setSelected(true);
 			rbFromFile.setSelected(false);
 			rbSimple.setSelected(false);
+			
+			setVersionTabs();
 		}
 		else{
 			cbVersion.setValue(null);
@@ -172,20 +203,49 @@ public class ControllerAiManagement{
 		}
 	}
 	
+	/**
+	 * Lädt mithilfe der CodeEditoren der anzuzeigenden Version alle Dateien der Version in die Tab-Leiste
+	 */
+	private void setVersionTabs(){
+		while (tpCode.getTabs().size() > 1){
+			tpCode.getTabs().remove(tpCode.getTabs().size()-1);
+		}
+		for (int i = 0; i < version.files.size(); i++){
+			version.files.get(i).load();
+			tpCode.getTabs().add(version.files.get(i).getView());
+		}
+	}
 	
 	
 	
-	
+	/**
+	 * Button: Neue KI anlegen
+	 */
 	@FXML void clickNewAi(){
-		tbFile.setText("Info1 geklickt");
+		String title = tbName.getText();
+		for (int i = 0; i < lvAis.getItems().size(); i++){  //Testen, ob die KI schon existiert
+			if (title.equals(lvAis.getItems().get(i).title)){
+				Dialog.error("Es können keine zwei KIs mit dem gleichen Namen erstellt werden", "Doppelter Name");
+				return;
+			}
+		}
+		
+		manager.players.add(new Player(title, cbLanguage.getValue()));
+		lvAis.getSelectionModel().selectLast();
 	}
 
+	/**
+	 * Listenselektions-Änderung: zeigt andere KI an
+	 */
 	@FXML void clickChangeAi(){
 		player = lvAis.getSelectionModel().getSelectedItem();
 		version = player.lastVersion();
 		showPlayer();
 	}
 	
+	/**
+	 * Button: Abbruch der Bearbeitung der Beschreibung der KI
+	 */
 	@FXML void clickAbort(){
 		btAbort.setVisible(false);
 		btEdit.setText("Bearbeiten");
@@ -193,6 +253,9 @@ public class ControllerAiManagement{
 		tbDescription.setText(player.description);
 	}
 	
+	/**
+	 * Button: Bearbeitung der Beschreibung der KI
+	 */
 	@FXML void clickEdit(){
 		if (!btAbort.isVisible()){
 			btAbort.setVisible(true);
@@ -207,40 +270,61 @@ public class ControllerAiManagement{
 		}
 	}
 	
+	/**
+	 * Button: aktuelle Version der KI wird ausgewählt
+	 */
 	@FXML void clickToActual(){
 		version = player.lastVersion();
 		showPlayer();
 	}
 	
+	/**
+	 * Listenselektions-Änderung: zeigt andere Version an
+	 */
 	@FXML void clickVersionChange(){
-		if (version != cbVersion.getValue()){
+		if (version != cbVersion.getValue() && cbVersion.getValue() != null){
 			version = cbVersion.getValue();
 			showPlayer();
 		}
 	}
 	
+	/**
+	 * Radiobutton: "SimplePlayer" wurde ausgewählt
+	 */
 	@FXML void clickRbSimple(){
 		rbSimple.setSelected(true);
 		rbContinue.setSelected(false);
 		rbFromFile.setSelected(false);
 	}
 	
+	/**
+	 * Radiobutton: "Weiterschreiben" wurde ausgewählt
+	 */
 	@FXML void clickRbContinue(){
 		rbSimple.setSelected(false);
 		rbContinue.setSelected(true);
 		rbFromFile.setSelected(false);
 	}
 	
+	/**
+	 * Radiobutton: "Aus Datei" wurde ausgewählt
+	 */
 	@FXML void clickRbFromFile(){
 		rbSimple.setSelected(false);
 		rbContinue.setSelected(false);
 		rbFromFile.setSelected(true);
 	}
 	
+	/**
+	 * Button: Dateiauswahl wenn "Aus Datei" ausgewählt ist
+	 */
 	@FXML void clickSelectFile(){
 		tbFile.setText(Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner auswählen").getPath());
 	}
 	
+	/**
+	 * Button: neue Version erstellen
+	 */
 	@FXML void clickNewVersion(){
 		if (rbFromFile.isSelected()){
 			showPlayer(player, player.newVersion(NewVersionType.fromFile, tbFile.getText()));
@@ -253,16 +337,25 @@ public class ControllerAiManagement{
 		}
 	}
 	
+	/**
+	 * Button: Kompilieren
+	 */
 	@FXML void clickCompile(){
 		version.compile();
 		showPlayer();
 	}
 	
+	/**
+	 * Button: Qualifizieren
+	 */
 	@FXML void clickQualify(){
 		version.qualify();
 		showPlayer();
 	}
 	
+	/**
+	 * Button: Fertigstellen
+	 */
 	@FXML void clickFinish(){
 		if (Dialog.okAbort("Wenn eine Version fertiggestellt wird, kann sie nicht mehr bearbeitet werden.\n\nFortfahren?", "Version einfrieren")){
 			version.finish();
@@ -270,10 +363,16 @@ public class ControllerAiManagement{
 		showPlayer();
 	}
 	
+	/**
+	 * Button: Hochladen
+	 */
 	@FXML void clickUpload(){
 		tbFile.setText("Info14 geklickt");
 	}
 	
+	/**
+	 * Button: Bild ändern
+	 */
 	@FXML void clickChangeImage(){
 		File result = Dialog.fileChooser(mainApp.stage, "Bild auswählen");
 		Image img = Resources.imageFromFile(result);
@@ -283,6 +382,9 @@ public class ControllerAiManagement{
 		showPlayer();
 	}
 
+	/**
+	 * Button: Bild löschen
+	 */
 	@FXML void clickDeleteImage(){
 		player.setPicture(null);
 		showPlayer();

@@ -1,20 +1,14 @@
 package org.pixelgaffer.turnierserver.esu.view;
 
 
-import java.util.ResourceBundle;
 import java.io.IOException;
-import java.net.URL;
 
 import org.pixelgaffer.turnierserver.esu.*;
-import org.pixelgaffer.turnierserver.esu.view.*;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.web.WebView;
 
 public class ControllerRoot{
 	
@@ -31,7 +25,12 @@ public class ControllerRoot{
 	AnchorPane anchorSubmission;
 	
 	MainApp mainApp;
-	
+
+	/**
+	 * Initialisiert den Controller
+	 * 
+	 * @param app eine Referenz auf die MainApp
+	 */
 	public void setMainApp(MainApp app){
 		mainApp = app;
 		mainApp.cRoot = this;

@@ -1,8 +1,0 @@
-#testAI v7
-#Fri May 22 12:02:30 CEST 2015
-uploaded=false
-compileOutput=
-qualifyOutput=Qualifikation fertig\!
-qualified=true
-compiled=false
-finished=true

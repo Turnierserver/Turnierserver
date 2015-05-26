@@ -1,12 +1,8 @@
 package org.pixelgaffer.turnierserver.esu.view;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import org.pixelgaffer.turnierserver.esu.MainApp;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -28,7 +24,12 @@ public class ControllerStartPage{
 	WebEngine webEngine;
 	
 
-	
+
+	/**
+	 * Initialisiert den Controller
+	 * 
+	 * @param app eine Referenz auf die MainApp
+	 */
 	public void setMainApp(MainApp app){
 		mainApp = app;
 		mainApp.cStart = this;

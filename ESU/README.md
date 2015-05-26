@@ -1,4 +1,4 @@
-- lokales Programm, das auf dem Computer des Teilnehmers laeuft
+﻿- lokales Programm, das auf dem Computer des Teilnehmers laeuft
 - Sprache: Java
 - Unterscheidet zwischen ONLINE-Modus und OFFLINE-Modus
 
@@ -43,4 +43,11 @@ ONLINE-Modus:
 
 - Anzeige der Rangliste
 
+
+
+TODO:
+- Besserer Texteditor
+- Wann?: speichern der bearbeiteten Dateien
+- Kompilieren + Qualifizieren
+- White-/Black-List für zu ladende Quellcode-Dateien
 

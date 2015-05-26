@@ -1,0 +1,8 @@
+#test v5
+#Tue May 26 17:04:25 CEST 2015
+uploaded=false
+compileOutput=Kompilierung fertig\!
+qualifyOutput=
+qualified=false
+compiled=true
+finished=false

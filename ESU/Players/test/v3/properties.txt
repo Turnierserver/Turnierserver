@@ -1,0 +1,8 @@
+#test v3
+#Mon May 25 10:28:47 CEST 2015
+uploaded=false
+compileOutput=
+qualifyOutput=
+qualified=false
+compiled=false
+finished=false

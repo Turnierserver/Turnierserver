@@ -5,13 +5,10 @@ import java.util.*;
 
 import javax.imageio.ImageIO;
 
-import org.pixelgaffer.turnierserver.esu.MainApp.Language;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-import javafx.util.Callback;
 
 
 public class Player {
@@ -20,6 +17,10 @@ public class Player {
 	public Language language;
 	public String description = "(keine Beschreibung)";
 	public ObservableList<Version> versions = FXCollections.observableArrayList();
+
+	public static enum Language{
+		Java, Python
+	}
 	
 	public static enum NewVersionType{
 		fromFile, simplePlayer, lastVersion
@@ -136,7 +137,6 @@ public class Player {
 		prop.setProperty("language", language.toString());
 		
 		try {
-			String hey = Resources.playerProperties(this);
 			Writer writer = new FileWriter(Resources.playerProperties(this));
 			prop.store(writer, title);
 			writer.close();

@@ -1,5 +1,0 @@
-#testAI
-#Mon May 18 14:43:23 CEST 2015
-versionAmount=2
-description=Das ist eine Beschreibung
-language=Java

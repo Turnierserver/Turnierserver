@@ -1,6 +1,5 @@
 package org.pixelgaffer.turnierserver.esu;
- 
-import org.pixelgaffer.turnierserver.esu.Player.NewVersionType;
+
 import org.pixelgaffer.turnierserver.esu.view.ControllerGameManagement;
 import org.pixelgaffer.turnierserver.esu.view.ControllerAiManagement;
 import org.pixelgaffer.turnierserver.esu.view.ControllerRanking;
@@ -16,7 +15,6 @@ import javafx.stage.Stage;
  
 public class MainApp extends Application{
 	
-	public PlayerManager manager = new PlayerManager();
 	
 	public Stage stage;
 	public ControllerRoot cRoot;
@@ -26,9 +24,6 @@ public class MainApp extends Application{
 	public ControllerRanking cRanking;
 	public ControllerSubmission cSubmission;
 	
-	public static enum Language{
-		Java, Phyton
-	}
 	
 	/**
 	 * Main-Methode
@@ -55,9 +50,9 @@ public class MainApp extends Application{
 		
 		////////////Test//////////////////////////////////
 		
-		manager.loadPlayers();
-		cAi.showPlayers(manager);
-		cAi.showPlayer(manager.players.get(0), null);
+		//manager.loadPlayers();
+		//cAi.showPlayers(manager);
+		//cAi.showPlayer(manager.players.get(0), null);
 //		Player pp = new Player("testAI");
 //		ErrorLog.write("Titel:" + pp.title);
 //		ErrorLog.write("Beschreibung: " + pp.description);

@@ -13,7 +13,14 @@ import javafx.stage.Stage;
 
 public class Dialog {
 	
-	
+	/**
+	 * Ruft einen javafx.scene.control.Alert auf
+	 * 
+	 * @param text Text, der dargestellt werden soll
+	 * @param title Titel der Nachricht
+	 * @param type Typ des Dialogfensters
+	 * @return true, wenn auf ok geklickt wurde
+	 */
 	private static boolean generalDialog(String text, String title, AlertType type){
 		Alert alert = new Alert(type);
 		alert.setTitle(title);
@@ -28,13 +35,25 @@ public class Dialog {
 		}
 	}
 	
+	/**
+	 * Ruft einen Info-Dialog auf
+	 * 
+	 * @param text Text, der dargestellt werden soll
+	 * @return true, wenn auf ok geklickt wurde
+	 */
 	public static boolean info(String text){
 		return info(text, "Information");
 	}
 	public static boolean info(String text, String title){
 		return generalDialog(text, title, AlertType.INFORMATION);
 	}
-	
+
+	/**
+	 * Ruft einen Warnungs-Dialog auf
+	 * 
+	 * @param text Text, der dargestellt werden soll
+	 * @return true, wenn auf ok geklickt wurde
+	 */
 	public static boolean warning(String text){
 		return warning(text, "Warnung");
 	}
@@ -42,20 +61,38 @@ public class Dialog {
 		return generalDialog(text, title, AlertType.WARNING);
 	}
 
+	/**
+	 * Ruft einen Fehler-Dialog auf
+	 * 
+	 * @param text Text, der dargestellt werden soll
+	 * @return true, wenn auf ok geklickt wurde
+	 */
 	public static boolean error(String text){
 		return error(text, "Fehler");
 	}
 	public static boolean error(String text, String title){
 		return generalDialog(text, title, AlertType.ERROR);
 	}
-	
+
+	/**
+	 * Ruft einen Ok/Abbruch-Dialog auf
+	 * 
+	 * @param text Text, der dargestellt werden soll
+	 * @return true, wenn auf ok geklickt wurde
+	 */
 	public static boolean okAbort(String text){
 		return okAbort(text, "Bitte bestätigen");
 	}
 	public static boolean okAbort(String text, String title){
 		return generalDialog(text, title, AlertType.CONFIRMATION);
 	}
-	
+
+	/**
+	 * Ruft einen Text-Eingabe-Dialog auf
+	 * 
+	 * @param text Text, der dargestellt werden soll
+	 * @return den eingegebenen Text
+	 */
 	public static String textInput(String text){
 		return textInput(text, "Bitte Text eingeben");
 	}
@@ -70,7 +107,13 @@ public class Dialog {
 		}
 		return null;
 	}
-	
+
+	/**
+	 * Ruft einen Dateiauswahl-Dialog auf
+	 * 
+	 * @param text Text, der dargestellt werden soll
+	 * @return die ausgewählte Datei
+	 */
 	public static File fileChooser(Stage stage){
 		return fileChooser(stage, "Bitte eine Datei auswählen");
 	}
@@ -80,6 +123,12 @@ public class Dialog {
 		return fileChooser.showOpenDialog(stage);
 	}
 
+	/**
+	 * Ruft einen Ordnerauswahl-Dialog auf
+	 * 
+	 * @param text Text, der dargestellt werden soll
+	 * @return den ausgewählten Ordner
+	 */
 	public static File folderChooser(Stage stage){
 		return folderChooser(stage, "Bitte einen Ordner auswählen");
 	}

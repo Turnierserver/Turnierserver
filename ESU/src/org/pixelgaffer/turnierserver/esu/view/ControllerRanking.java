@@ -7,6 +7,11 @@ public class ControllerRanking {
 
 	MainApp mainApp;
 
+	/**
+	 * Initialisiert den Controller
+	 * 
+	 * @param app eine Referenz auf die MainApp
+	 */
 	public void setMainApp(MainApp app){
 		mainApp = app;
 		mainApp.cRanking = this;
