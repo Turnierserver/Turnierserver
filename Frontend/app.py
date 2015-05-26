@@ -42,7 +42,7 @@ if env.airbrake:
 	got_request_exception.connect(log_exception, app)
 
 
-print("Connecting to", env.db_url)
+print("Connecting to", env.SQLALCHEMY_DATABASE_URI)
 db.init_app(app)
 
 if env.clean_db:
@@ -55,5 +55,13 @@ cache.init_app(app)
 
 Activity("Serverstart abgeschlossen...", extratext="Hier gehts los.\nAlle vorherigen Events sollten nicht wichtig sein.")
 
+app_run_params = dict(host="::", port=env.web_port, threaded=True)
 
-app.run(host="::", port=env.web_port, debug=env.debug, threaded=True)
+
+if __name__ == '__main__':
+	if env.ssl:
+		import ssl
+		context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+		context.load_cert_chain('server.crt', 'server.key')
+		app_run_params["ssl_context"] = context
+	app.run(**app_run_params)

@@ -11,6 +11,7 @@ class LocalEnvironment:
 	cache_max_age = 60
 	web_port = 5000
 	clean_db = True
+	ssl = False
 
 	##Flask cfg-obj
 	DEBUG = True
