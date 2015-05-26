@@ -162,6 +162,7 @@ class AI(db.Model):
 	def __init__(self, *args, **kwargs):
 		super(AI, self).__init__(*args, **kwargs)
 		self.lastest_version()
+		## FTP-Sync beim erstellen!
 		self.updated(False)
 		db_obj_init_msg(self)
 

@@ -22,11 +22,8 @@ from time import time
 
 
 app = Flask("Turnierserver - Frontend")
-app.secret_key = env.secret_key
+app.config.from_object("_cfg.env")
 login_manager.init_app(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = env.db_url
-app.config['SQLALCHEMY_ECHO'] = env.debug_sql
-app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024
 
 app.jinja_env.add_extension("jinja2.ext.do")
 

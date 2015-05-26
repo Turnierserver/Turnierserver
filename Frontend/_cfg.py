@@ -1,7 +1,5 @@
 
 class LocalEnvironment:
-	db_url = "sqlite:///test.db"
-	secret_key = "foobar"
 	airbrake = False
 	airbrake_key = None
 	airbrake_id = None
@@ -13,10 +11,15 @@ class LocalEnvironment:
 	cache_max_age = 60
 	web_port = 5000
 	clean_db = True
-	debug = True
-	debug_sql = True
 
-env = LocalEnvironment
+	##Flask cfg-obj
+	DEBUG = True
+	PROPAGATE_EXCEPTIONS=True
+	SECRET_KEY = "foobar"
+	MAX_CONTENT_LENGTH=1024*1024
+	SQLALCHEMY_DATABASE_URI = "sqlite:///test.db"
+	SQLALCHEMY_ECHO = False
+
 
 def showopts():
 	for key in dir(env):
