@@ -33,10 +33,14 @@ Alle implementierten sind gehäkelt.
   * *gibt eine Liste von Spielen der KI zurück.*
 - [x] /api/ai/\<id\>/icon
   * *gibt das Icon der KI zurück.*
+- [x] /api/ai/\<id\>/compile
+  * *startet den Kompilierungs-Vorgang.*
 - [x] /api/users
   * *gibt eine Liste aller Nutzer zurück.*
 - [x] /api/user/\<id\>
   * *gibt alle KIs und andere Infos über den Nutzer zurück.*
+- [x] /api/user/\<id\>/icon
+  * *gibt das Icon des Users zurück.*
 - [x] /api/games
   * *gibt alle Spielids (und mehr infos) zurück.*
 - [x] /api/game/\<id\>
@@ -47,13 +51,20 @@ Alle implementierten sind gehäkelt.
 #####POSTs (mit Authentifizierung)
 --------------
 - [x] /api/ai/create
-- [ ] /api/ai/\<id\>/submitCode
-  * *multipart uploading?*
-- [ ] /api/ai/\<id\>/fight?id=\<id\>&id=\<id\>
-  * *alternativ Layouts:*
-  * */api/ais/fight/\<id\>/\<id\>/...*
-  * */api/ai/\<id\>/fight/\<id\>/*
-  * */api/ai/\<id\>/fight?ids=[\<id\>, \<id\>]*
+  * *erstellt eine neue KI, gibt deren Infos zurück.*
+  * *die KI-Infos werden später mit /api/ai/\<id\>/update geändert.*
+- [x] /api/ai/\<id\>/update
+  * *nimmt 'name', 'description', 'lang' und 'extra[]' an*
+- [x] /api/ai/\<id\>/upload
+  * *nimmt 'path', 'filename' und 'data' an.*
+- [x] /api/ai/\<id\>/deleteFile
+  * *nimmt 'path' und 'filename' an.*
+- [x] /api/ai/\<id\>/create_folder
+  * *nimmt 'path' und 'filename' an.*
+- [x] /api/ai/\<id\>/delete
+  * *löscht die KI*
+- [x ] /api/games/start
+  * *nimmt 'ai[]' an und startet ein Spiel*
 
 - [x] /api/ai/\<id\>/update
   * *updatet infos zur Ki.*
@@ -65,5 +76,6 @@ Alle implementierten sind gehäkelt.
 --------------
 Kekse:
   * [x] */api/login setzt Cookies und alle anderen Anfragen benutzen diese.*
+  * [x] */api/loggedin gibt den eingeloggten Nutzer zurück (wenn es einen gibt).*
   * [x] */api/logout loggt aus.*
   * *sollte einfach integrierbar sein.*
