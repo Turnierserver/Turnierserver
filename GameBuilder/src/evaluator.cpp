@@ -224,7 +224,7 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 					printf("\n");
 					
 					tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-#elif define __WIN32 || defined __WIN64
+#elif defined __WIN32 || defined __WIN64
 					HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE); 
 					DWORD mode = 0;
 					GetConsoleMode(hStdin, &mode);
