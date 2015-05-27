@@ -111,7 +111,7 @@ public class Dialog {
 	/**
 	 * Ruft einen Dateiauswahl-Dialog auf
 	 * 
-	 * @param text Text, der dargestellt werden soll
+	 * @param --> mainApp.stage; Stage, auf der der Dialog dargestellt werden soll
 	 * @return die ausgewählte Datei
 	 */
 	public static File fileChooser(Stage stage){
@@ -124,9 +124,25 @@ public class Dialog {
 	}
 
 	/**
+	 * Ruft einen Datei-Speicher-Dialog auf
+	 * 
+	 * @param --> mainApp.stage; Stage, auf der der Dialog dargestellt werden soll
+	 * @return die ausgewählte Datei
+	 */
+	public static File fileSaver(Stage stage){
+		return fileChooser(stage, "Bitte eine Datei auswählen");
+	}
+	public static File fileSaver(Stage stage, String title, String defaultPath){
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(title);
+		fileChooser.setInitialDirectory(new File(defaultPath));
+		return fileChooser.showSaveDialog(stage);
+	}
+
+	/**
 	 * Ruft einen Ordnerauswahl-Dialog auf
 	 * 
-	 * @param text Text, der dargestellt werden soll
+	 * @param --> mainApp.stage; Stage, auf der der Dialog dargestellt werden soll
 	 * @return den ausgewählten Ordner
 	 */
 	public static File folderChooser(Stage stage){

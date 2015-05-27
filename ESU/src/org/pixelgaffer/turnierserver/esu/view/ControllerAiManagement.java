@@ -49,6 +49,8 @@ public class ControllerAiManagement{
 	@FXML public ListView<Player> lvAis;
 	@FXML public ImageView image;
 	@FXML public TabPane tpCode;
+	public Tab infoTab;
+	public Tab newFileTab;
 	
 	public MainApp mainApp;
 	public PlayerManager manager = new PlayerManager();
@@ -75,10 +77,18 @@ public class ControllerAiManagement{
 		        clickChangeAi();
 		    }
 		});
+		tpCode.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
+		    	clickTabSelection(oldValue, newValue);
+		    }
+		});
 		cbLanguage.itemsProperty().get().add(Language.Java);
 		cbLanguage.itemsProperty().get().add(Language.Python);
 		cbLanguage.getSelectionModel().selectFirst();
 		
+		infoTab = tpCode.getTabs().get(0);
+		newFileTab = tpCode.getTabs().get(1);
 		manager.loadPlayers();
 		showPlayers();
 	}
@@ -207,17 +217,37 @@ public class ControllerAiManagement{
 	 * Lädt mithilfe der CodeEditoren der anzuzeigenden Version alle Dateien der Version in die Tab-Leiste
 	 */
 	private void setVersionTabs(){
-		while (tpCode.getTabs().size() > 1){
-			tpCode.getTabs().remove(tpCode.getTabs().size()-1);
-		}
+		tpCode.getTabs().clear();
+		tpCode.getTabs().add(infoTab);
 		for (int i = 0; i < version.files.size(); i++){
 			version.files.get(i).load();
 			tpCode.getTabs().add(version.files.get(i).getView());
 		}
+		tpCode.getTabs().add(newFileTab);
 	}
 	
-	
-	
+	/**
+	 * Speichert und überprüft, ob auf das "neue Datei"-Tab geklickt wurde
+	 * 
+	 * @param oldTab der zuvor ausgewählte Tab
+	 * @param newTab der neu ausgewählte Tab
+	 */
+	void clickTabSelection(Tab oldTab, Tab newTab){
+    	if (version != null)
+    		version.saveCode();
+    	if (newTab == newFileTab && newTab != oldTab){
+    		tpCode.getSelectionModel().select(oldTab);
+    		File result = Dialog.fileSaver(mainApp.stage, "Bitte einen Ort und Dateinamen auswählen", Resources.version(version));
+    		if (result != null){
+    			CodeEditor editor = new CodeEditor(result);
+    			editor.forceSave();
+    			version.files.add(editor);
+    			tpCode.getTabs().add(tpCode.getTabs().size()-1, editor.getView());
+    			tpCode.getSelectionModel().select(tpCode.getTabs().size()-2);
+    		}
+    	}
+	}
+		
 	/**
 	 * Button: Neue KI anlegen
 	 */

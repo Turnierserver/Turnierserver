@@ -3,6 +3,8 @@ package org.pixelgaffer.turnierserver.esu;
 import java.io.*;
 
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
@@ -10,6 +12,7 @@ import javafx.scene.web.WebView;
 public class CodeEditor {
 	
 	private StringProperty text = new SimpleStringProperty("");
+	private String savedText = "";
 	private File document;
 	public boolean loaded = false;
 	
@@ -20,6 +23,18 @@ public class CodeEditor {
 	 */
 	public CodeEditor(File doc){
 		document = doc;
+	}
+	
+	/**
+	 * Überprüft, ob der angezeigte Text mit seiner gespeicherten Datei übereinstimmt
+	 * 
+	 * @return true, wenn savedText != text
+	 */
+	public boolean hasChanged(){
+		if (loaded)
+			return !savedText.equals(text.get());
+		else
+			return false;
 	}
 	
 	/**
@@ -57,8 +72,9 @@ public class CodeEditor {
 				text.set(text.get() + "\n" + zeile);
 				zeile = reader.readLine();
 			}
-			
 			reader.close();
+			
+			savedText = text.get();
 			loaded = true;
 		}
 		catch (FileNotFoundException e) {
@@ -72,10 +88,21 @@ public class CodeEditor {
 	 * Speichert den Inhalt der StringProperty text in die Datei
 	 */
 	public void save(){
+		if (!hasChanged())
+			return;
+		forceSave();
+	}
+	
+	/**
+	 * Speichert den Inhalt der StringProperty text in eine Datei.
+	 * Dabei wird nicht überprüft, ob sich der Inhalt verändert hat.
+	 */
+	public void forceSave(){
 		try {
 			FileWriter writer = new FileWriter(document, false);
 			writer.write(text.get());
 			writer.close();
+			savedText = text.get();
 		} catch (IOException e) {
 			ErrorLog.write("Quellcode konnte nicht bearbeitet werden");
 		}

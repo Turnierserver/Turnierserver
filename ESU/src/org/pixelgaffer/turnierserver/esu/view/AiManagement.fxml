@@ -11,7 +11,7 @@
 
 <AnchorPane prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pixelgaffer.turnierserver.esu.view.ControllerAiManagement">
    <children>
-      <SplitPane dividerPositions="0.29797979797979796" prefHeight="700.0" prefWidth="1100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <SplitPane dividerPositions="0.23497267759562843" prefHeight="700.0" prefWidth="1100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
           <AnchorPane maxWidth="400.0" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
@@ -100,6 +100,15 @@
                         </AnchorPane>
                   </content>
                 </Tab>
+                  <Tab text=" + ">
+                     <content>
+                        <BorderPane prefHeight="698.0" prefWidth="323.0">
+                           <center>
+                              <TextArea prefHeight="0.0" prefWidth="0.0" promptText="Jetzt müsste eine neue Datei erstellt werden" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                     </content>
+                  </Tab>
               </tabs>
             </TabPane>
         </items>
