@@ -9,7 +9,7 @@ anonymous = Blueprint("anonymous", __name__)
 
 @anonymous.route("/")
 def index():
-	return render_template("base.html")
+	return render_template("index.html")
 
 @anonymous.route("/ai_list")
 def ai_list():

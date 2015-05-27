@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block body %}
+
+{% if logged_in %}
+<h2>Aktuelle Infos:</h2>
+<pre>infos.txt</pre>
+{% else %}
+<h2>Einloggen oder Account erstellen um Features zu benutzen</h2>
+
+<div id="caform" class="ui form error">
+	<div class="required field">
+		<label>Nutzername</label>
+		<input id="username" placeholder="penis_cola69" type="text" name="user">
+	</div>
+	<div class="two fields">
+		<div class="field">
+			<label>Vorname</label>
+			<input id="firstname" placeholder="Max" type="text">
+		</div>
+		<div class="field">
+			<label>Nachname</label>
+			<input id="lastname" placeholder="Mustermann" type="text">
+		</div>
+	</div>
+	<div class="required field">
+		<label>Email-Adresse</label>
+		<input id="email" placeholder="max@mustermann.de" type="email">
+	</div>
+	<div class="required field">
+		<label>Password</label>
+		<input id="password" type="password">
+	</div>
+	<div class="inline required field">
+		<div class="ui checkbox">
+			<input id="accept" type="checkbox" tabindex="0">
+			{% if env.DEBUG %}
+			<label>Ich verstehe, dass das hier ein Test-Server ist.</label>
+			{% else %}
+			<label>Ich akzeptiere die (nicht existierenden) TOCs.</label>
+			{% endif %}
+		</div>
+	</div>
+	<div id="create-account" class="ui submit button">Account erstellen</div>
+</div>
+
+<script>
+$(".ui.checkbox").checkbox()
+$("#create-account").on("click", function () {
+	console.log("Creating User...")
+	$('#form').addClass('loading')
+	if (!$("#accept").prop("checked")) {
+		alert("Die untere Checkbox fehlt")
+		return;
+	}
+
+	var d = {
+		username:  $("#caform #username").val(),
+		firstname: $("#caform #firstname").val(),
+		lastname:  $("#caform #lastname").val(),
+		password:  $("#caform #password").val(),
+		email:     $("#caform #email").val()
+	}
+	console.log(d)
+
+	$("#create-account-form").addClass("loading")
+	$.post("/api/user/create", d).done(function(data) {
+		console.log("User created")
+		location.reload();
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error)
+		alert(JSON.parse(xhr.responseText).error)
+		$("#create-account-form").removeClass("loading")
+	})
+})
+</script>
+
+{% endif %}
+
+
+{% endblock %}

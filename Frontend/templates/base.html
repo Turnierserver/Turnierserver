@@ -50,13 +50,22 @@
 						<input id="password" type="password" placeholder="Passwort">
 					</div>
 				</div>
-				<div class="item"><button id="login" class="ui green button">Einloggen</button></div>
+				<div class="item">
+					<button id="login" class="ui green button">Einloggen</button>
+					<div class="ui flowing special popup" style="min-width: 13em;">
+						<div class="ui slider checkbox checked">
+							<input id="remember-me" type="checkbox">
+							<label>Login merken</label>
+						</div>
+					</div>
+				</div>
 				<script>
 					var f = function() {
 						console.log("Logging in...")
 						var pw = $("#password").val()
 						var name = $("#username").val()
-						$.post("/api/login", {username: name, password: pw}).done(function(data) {
+						var remember = $("#remember-me").prop("checked")
+						$.post("/api/login", {username: name, password: pw, remember: remember}).done(function(data) {
 							console.log("Logged in.")
 							location.reload();
 						}).fail(function(xhr, textStatus, errorThrown) {
@@ -71,6 +80,13 @@
 								f()
 							}
 					});
+					$('#login').popup({
+						inline: true,
+						hoverable: true,
+						delay: { hide: 800},
+						position:"bottom center"
+					});
+					$('.ui.checkbox').checkbox();
 				</script>
 			{% endif %}
 		</div>

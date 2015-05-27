@@ -96,6 +96,10 @@ class User(db.Model):
 	__tablename__ = 't_users'
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50), unique=True, nullable=False)
+	firstname = db.Column(db.Text)
+	lastname = db.Column(db.Text)
+	email = db.Column(db.Text, unique=True, nullable=False)
+	pw_hash = db.Column(db.Text)
 	ai_list = db.relationship("AI", order_by="AI.id", backref="User", cascade="all, delete, delete-orphan")
 	admin = db.Column(db.Boolean, default=False)
 
@@ -115,6 +119,17 @@ class User(db.Model):
 
 	def can_access(self, ai):
 		return ai in self.ai_list or self.admin
+
+	def check_pw(self, password):
+		from commons import bcrypt
+		## Unschoener Import
+		if not self.pw_hash:
+			return False
+		return bcrypt.check_password_hash(self.pw_hash, password)
+
+	def set_pw(self, password):
+		from commons import bcrypt
+		self.pw_hash = bcrypt.generate_password_hash(password)
 
 	def delete(self):
 		db.session.delete(self)
@@ -384,7 +399,7 @@ def populate(count=20):
 	])
 	gametypes = [minesweeper]
 
-	users = [User(name="testuser"+str(i), id=i) for i in r]
+	users = [User(name="testuser"+str(i), id=i, email="test"+str(i)+"@us.er") for i in r]
 	random.shuffle(users)
 	ais = [AI(id=i, user=users[i-1], name="testai"+str(i), desc="Beschreibung", lang=py, type=minesweeper) for i in r]
 	games = [Game(id=i, type=minesweeper) for i in r]
@@ -392,7 +407,9 @@ def populate(count=20):
 	for ri, role in enumerate(minesweeper.roles, 1):
 		assocs += [AI_Game_Assoc(game_id=games[i-1].id, ai_id=ais[i-ri].id, role=role) for i in r]
 
-	users.append(User(name="admin", admin=True))
+	admin = User(name="admin", admin=True, email="admin@ad.min")
+	admin.set_pw("admin")
+	users.append(admin)
 
 	db.session.add_all(users + ais + games + assocs + langs + gametypes)
 	db.session.commit()

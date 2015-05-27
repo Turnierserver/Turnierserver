@@ -5,7 +5,8 @@ print("-"*36 + "\n"*2)
 
 from flask import Flask, got_request_exception
 from flask.ext.sqlalchemy import SQLAlchemy
-from commons import cache
+from flask.ext.login import current_user
+from commons import cache, bcrypt
 
 
 from api import api, login_manager
@@ -51,6 +52,15 @@ if env.clean_db:
 		populate(5)
 
 cache.init_app(app)
+bcrypt.init_app(app)
+
+@app.context_processor
+def inject_globals():
+	logged_in = False
+	if current_user:
+		if current_user.is_authenticated():
+			logged_in = True
+	return dict(env=env, logged_in=logged_in)
 
 
 Activity("Serverstart abgeschlossen...", extratext="Hier gehts los.\nAlle vorherigen Events sollten nicht wichtig sein.")

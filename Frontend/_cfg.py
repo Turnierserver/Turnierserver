@@ -12,6 +12,7 @@ class LocalEnvironment:
 	web_port = 5000
 	clean_db = True
 	ssl = False
+	env_supports_https = False
 
 	##Flask cfg-obj
 	DEBUG = True

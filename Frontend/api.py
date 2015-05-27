@@ -2,16 +2,18 @@ from flask import Blueprint, Response, request, abort
 from flask.ext.login import current_user, login_user, logout_user, LoginManager, UserMixin
 from functools import wraps
 from queue import Empty
+from werkzeug.utils import secure_filename
+from sqlalchemy.orm.exc import NoResultFound
 import json
 
 from database import AI, User, Game, Lang, db, populate, ftp
 from backend import backend
-from commons import authenticated, cache, CommonErrors
+from commons import authenticated, cache, CommonErrors, bcrypt
 from _cfg import env
 from activityfeed import Activity
 from sse import sse_stream
 
-from werkzeug.utils import secure_filename
+
 
 
 
@@ -130,24 +132,28 @@ def api_login():
 			return {"error": "Not valid JSON."}, 400
 		username = request.json.get("username", None)
 		password = request.json.get("password", None)
+		remember = request.json.get("remember", False)
 	elif request.mimetype == "application/x-www-form-urlencoded":
 		username = request.form['username']
 		password = request.form['password']
+		remember = request.form.get("remember", False)
+		if remember:
+			remember = True
 	else:
 		return {"error": "Wrong Content-Type, must be application/json or application/x-www-form-urlencoded"}, 400
 	if not username or not password:
 		return { 'error': 'Missing username or password' }, 400
 
+	## Auch EMails akzeptieren?
 	user = User.query.filter(User.name.ilike(username)).first()
 
 	if not user:
 		return { 'error': 'Invalid Username.' }, 404
 
-	##Check for PW here :P
-	if not True:
-		return CommonErrors.NO_ACCESS
+	if not user.check_pw(password):
+		return {'error': 'Wrong password.'}, 400
 
-	login_user(user)
+	login_user(user, remember=remember)
 
 	Activity(user.name + " hat sich erfolgreich eingeloggt.")
 
@@ -166,6 +172,52 @@ def api_logout():
 @authenticated
 def api_logged_in():
 	return current_user.info()
+
+@api.route("/user/create", methods=['GET', 'POST'])
+@json_out
+def api_user_create():
+	if request.mimetype == "application/json":
+		if not request.json:
+			return {"error": "Not valid JSON."}, 400
+		username = request.json.get("username", None)
+		lastname = request.json.get("lastname", None)
+		firstname = request.json.get("firstname", None)
+		password = request.json.get("password", None)
+		email = request.json.get("email", None)
+	elif request.mimetype == "application/x-www-form-urlencoded":
+		username = request.form['username']
+		lastname = request.form['lastname']
+		firstname = request.form['firstname']
+		password = request.form['password']
+		email = request.form.get("email", None)
+	else:
+		return {"error": "Wrong Content-Type, must be application/json or application/x-www-form-urlencoded"}, 400
+	if not username or not password or not email:
+		return { 'error': 'Missing username, password or email' }, 400
+
+	try:
+		User.query.filter(User.name.ilike(username)).one()
+		return {'error': 'Username already registered'}, 400
+	except NoResultFound:
+		pass
+
+	try:
+		User.query.filter(User.email.ilike(email)).one()
+		return {'error': 'EMail already registered'}, 400
+	except NoResultFound:
+		pass
+
+	user = User(name=username, firstname=firstname,
+				lastname=lastname, email=email)
+	user.set_pw(password)
+
+	db.session.add(user)
+	# es muss zur Datenbank geschrieben werden, um die Infos zu bekommen
+	db.session.commit()
+
+	login_user(user)
+
+	return {'error': False, 'user': user.info()}, 200
 
 
 @api.route("/ai/create")
@@ -622,5 +674,23 @@ def upload_game_libs(id, lang):
 @json_out
 @admin_required
 def upload_game_logic(id):
-	return upload_single_file(request, "Games/1/Logic.jar")
+	return upload_single_file(request, "Games/"+secure_filename(str(id))+"/Logic.jar")
 
+
+@api.route("/simple_players/<int:id>")
+def simple_players(id):
+	"""
+	in der ESU:
+	SimplePlayer/Java/
+				/Python/
+	im FTP:
+	Games/1/Java/example_ai
+			Python/example_ai
+	"""
+	@ftp.failsafe_locked
+	def f(self):
+		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/simple_player.zip"):
+			return ftp.send_file("Games/"+secure_filename(str(id))+"/simple_player.zip")
+		else:
+			abort(404)
+	return f()
