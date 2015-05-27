@@ -7,10 +7,10 @@
 {% else %}
 <h2>Einloggen oder Account erstellen um Features zu benutzen</h2>
 
-<div id="caform" class="ui form error">
+<form id="caform" class="ui form segment">
 	<div class="required field">
 		<label>Nutzername</label>
-		<input id="username" placeholder="penis_cola69" type="text" name="user">
+		<input id="username" placeholder="penis_cola69" type="text" name="username">
 	</div>
 	<div class="two fields">
 		<div class="field">
@@ -24,34 +24,32 @@
 	</div>
 	<div class="required field">
 		<label>Email-Adresse</label>
-		<input id="email" placeholder="max@mustermann.de" type="email">
+		<input id="email" placeholder="max@mustermann.de" type="email" name="email">
 	</div>
 	<div class="required field">
 		<label>Password</label>
-		<input id="password" type="password">
+		<input id="password" name="password" type="password">
 	</div>
 	<div class="inline required field">
 		<div class="ui checkbox">
-			<input id="accept" type="checkbox" tabindex="0">
+			<input id="accept" name="terms" type="checkbox" tabindex="0">
 			{% if env.DEBUG %}
 			<label>Ich verstehe, dass das hier ein Test-Server ist.</label>
 			{% else %}
-			<label>Ich akzeptiere die (nicht existierenden) TOCs.</label>
+			<label>Ich akzeptiere die (nicht existierenden) TOS.</label>
 			{% endif %}
 		</div>
 	</div>
-	<div id="create-account" class="ui submit button">Account erstellen</div>
-</div>
+	<div id="create-account" class="ui button">Account erstellen</div>
+	<div class="ui error message"></div>
+</form>
 
 <script>
+
 $(".ui.checkbox").checkbox()
-$("#create-account").on("click", function () {
+function send () {
 	console.log("Creating User...")
 	$('#form').addClass('loading')
-	if (!$("#accept").prop("checked")) {
-		alert("Die untere Checkbox fehlt")
-		return;
-	}
 
 	var d = {
 		username:  $("#caform #username").val(),
@@ -71,6 +69,56 @@ $("#create-account").on("click", function () {
 		alert(JSON.parse(xhr.responseText).error)
 		$("#create-account-form").removeClass("loading")
 	})
+}
+
+$('#caform').form({
+	onSuccess: send,
+	fields: {
+		username: {
+			identifier : 'username',
+			rules: [
+				{
+					type   : 'empty',
+					prompt : 'Du brauchst einen Nutzernamen!'
+				}
+			]
+		},
+		email: {
+			identifier : 'email',
+			rules: [
+				{
+					type   : 'empty',
+					prompt : 'Du brauchst eine E-Mail Adresse!'
+				}
+			]
+		},
+		password: {
+			identifier : 'password',
+			rules: [
+				{
+					type   : 'empty',
+					prompt : 'Du brauchst ein Passwort'
+				},
+				{
+					type   : 'length[3]',
+					prompt : 'Dein Passwort sollte länger als 3 Zeichen sein'
+				}
+			]
+		},
+		terms: {
+			identifier : 'terms',
+			rules: [
+				{
+					type   : 'checked',
+					prompt : 'Du musst die TOS akzeptieren'
+				}
+			]
+		}
+	}
+});
+
+$("#create-account").on("click", function () {
+	$("#caform").form("validate form")
 })
 </script>
 
