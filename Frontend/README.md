@@ -53,6 +53,8 @@ Alle implementierten sind gehäkelt.
 - [x] /api/ai/create
   * *erstellt eine neue KI, gibt deren Infos zurück.*
   * *die KI-Infos werden später mit /api/ai/\<id\>/update geändert.*
+- [x] /api/user/create
+  * *erstellt einen neuen User, nimmt 'username', 'email', 'password', 'firstname', 'lastname' an.*
 - [x] /api/ai/\<id\>/update
   * *nimmt 'name', 'description', 'lang' und 'extra[]' an*
 - [x] /api/ai/\<id\>/upload
@@ -63,7 +65,7 @@ Alle implementierten sind gehäkelt.
   * *nimmt 'path' und 'filename' an.*
 - [x] /api/ai/\<id\>/delete
   * *löscht die KI*
-- [x ] /api/games/start
+- [x] /api/games/start
   * *nimmt 'ai[]' an und startet ein Spiel*
 
 - [x] /api/ai/\<id\>/update
