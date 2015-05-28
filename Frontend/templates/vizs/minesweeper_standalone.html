@@ -29,7 +29,7 @@ var step = 0;
 var god_mode = false;
 
 function getNear(d, x, y) {
-	var count=0;
+	var count = 0;
 	var mxl = [-1, 0, 1]
 	if (x < 1) {
 		mxl.splice(0, 1)
@@ -46,7 +46,7 @@ function getNear(d, x, y) {
 		for (var iy = myl.length - 1; iy >= 0; iy--) {
 			var mx = mxl[ix];
 			var my = myl[iy];
-			if (d[x+mx][y+my] == CELL_TYPE.BOMB || d[x+mx][y+my] == CELL_TYPE.COVERED_BOMB) {
+			if (d[x+mx][y+my] === CELL_TYPE.BOMB || d[x+mx][y+my] === CELL_TYPE.COVERED_BOMB) {
 				count++;
 			}
 		};
