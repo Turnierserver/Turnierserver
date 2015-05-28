@@ -1,10 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.40" fx:controller="org.pixelgaffer.turnierserver.esu.view.ControllerGameManagement">
-	<!-- TODO Add Nodes -->
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pixelgaffer.turnierserver.esu.view.ControllerGameManagement">
+   <children>
+      <BorderPane layoutX="418.0" layoutY="125.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <left>
+            <ListView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+         </left>
+         <right>
+            <ListView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+         </right>
+         <center>
+            <SplitPane dividerPositions="0.666189111747851" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+               <items>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <WebView layoutX="232.0" layoutY="14.0" prefHeight="433.0" prefWidth="456.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="228.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
+                        <VBox prefHeight="461.0" prefWidth="222.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <TitledPane animated="false" text="Neues Spiel">
+                                <content>
+                                  <AnchorPane minHeight="165.0" minWidth="0.0" prefHeight="165.0" prefWidth="200.0">
+                                       <children>
+                                          <ToggleButton layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="83.0" text="Offline" />
+                                          <ChoiceBox layoutX="103.0" layoutY="50.0" prefHeight="31.0" prefWidth="83.0" />
+                                          <ToggleButton layoutX="103.0" layoutY="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="83.0" text="Online" />
+                                          <ChoiceBox layoutX="103.0" layoutY="86.0" prefHeight="31.0" prefWidth="83.0" />
+                                          <Label layoutX="14.0" layoutY="55.0" text="Logik" />
+                                          <Label layoutX="14.0" layoutY="91.0" text="Startzustand" />
+                                          <Button layoutX="103.0" layoutY="122.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="83.0" text="Starten" />
+                                       </children>
+                                    </AnchorPane>
+                                </content>
+                              </TitledPane>
+                              <Button mnemonicParsing="false" prefHeight="31.0" prefWidth="202.0" text="gespeichertes Spiel laden" />
+                              <Button mnemonicParsing="false" prefHeight="31.0" prefWidth="202.0" text="Online-Spiele anschauen" />
+                              <AnchorPane prefHeight="200.0">
+                                 <children>
+                                    <Button layoutX="6.0" layoutY="30.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="202.0" text="Infos zum Spiel" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+                  <SplitPane dividerPositions="0.5" prefHeight="200.0" prefWidth="200.0">
+                     <items>
+                        <TextArea prefHeight="200.0" prefWidth="200.0" />
+                        <TextArea prefHeight="200.0" prefWidth="200.0" />
+                     </items>
+                  </SplitPane>
+               </items>
+            </SplitPane>
+         </center>
+      </BorderPane>
+   </children>
 </AnchorPane>
