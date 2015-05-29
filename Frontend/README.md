@@ -13,7 +13,13 @@ Die Libs können mit
 
     pip3 install -r requirements.txt
 
-installiert werden
+installiert werden.
+
+Der Server wird dann mit
+
+    python3 app.py run
+
+gestartet.
 
 Es werden möglicherweise Teile vom alten Frontend übernommen und verbessert.
 

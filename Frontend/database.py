@@ -344,7 +344,7 @@ class Game(db.Model):
 
 	def __init__(self, *args, **kwargs):
 		super(Game, self).__init__(*args, **kwargs)
-		self.timestamp = arrow.utcnow().timestamp
+		self.timestamp = timestamp()
 		db_obj_init_msg(self)
 
 	def time(self, locale):

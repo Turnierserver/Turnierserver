@@ -6,6 +6,9 @@ print("-"*36 + "\n"*2)
 from flask import Flask, got_request_exception
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import current_user
+from flask.ext.script import Manager
+from flask.ext.migrate import Migrate, MigrateCommand
+
 from commons import cache, bcrypt
 
 
@@ -26,6 +29,14 @@ app = Flask("Turnierserver - Frontend")
 app.config.from_object("_cfg.env")
 login_manager.init_app(app)
 
+print("Connecting to", env.SQLALCHEMY_DATABASE_URI)
+db.init_app(app)
+
+migrate = Migrate(app, db)
+
+manager = Manager(app)
+manager.add_command('db', MigrateCommand)
+
 app.jinja_env.add_extension("jinja2.ext.do")
 
 app.register_blueprint(api)
@@ -43,14 +54,6 @@ if env.airbrake:
 	got_request_exception.connect(log_exception, app)
 
 
-print("Connecting to", env.SQLALCHEMY_DATABASE_URI)
-db.init_app(app)
-
-if env.clean_db:
-	with app.app_context():
-		db.drop_all()
-		populate(5)
-
 cache.init_app(app)
 bcrypt.init_app(app)
 
@@ -62,16 +65,26 @@ def inject_globals():
 			logged_in = True
 	return dict(env=env, logged_in=logged_in)
 
-
 Activity("Serverstart abgeschlossen...", extratext="Hier gehts los.\nAlle vorherigen Events sollten nicht wichtig sein.")
 
-app_run_params = dict(host="::", port=env.web_port, threaded=True)
+@manager.command
+def clean_db():
+	with app.app_context():
+		db.drop_all()
+		populate(5)
 
-
-if __name__ == '__main__':
+@manager.command
+def run():
+	"Startet den Server."
+	app_run_params = dict(host="::", port=env.web_port, threaded=True)
 	if env.ssl:
 		import ssl
 		context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
 		context.load_cert_chain('server.crt', 'server.key')
 		app_run_params["ssl_context"] = context
 	app.run(**app_run_params)
+
+
+
+if __name__ == '__main__':
+	manager.run()
