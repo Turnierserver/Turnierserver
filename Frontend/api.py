@@ -5,6 +5,7 @@ from queue import Empty
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm.exc import NoResultFound
 import json
+import magic
 
 from database import AI, User, Game, Lang, db, populate, ftp
 from backend import backend
@@ -99,6 +100,29 @@ def api_game(id):
 		return game.info()
 	else:
 		return CommonErrors.INVALID_ID
+
+
+@api.route("/game/<int:id>/log")
+@sse_stream
+def api_game_log(id):
+	game = Game.query.get(id)
+	if game:
+		for chunk in []:
+			yield chunk
+	else:
+		return CommonErrors.INVALID_ID
+
+@api.route("/game/inprogress/<int:id>/log")
+@sse_stream
+def api_game_inprogress_log(id):
+	game = None
+	if game:
+		for chunk in []:
+			yield chunk
+	else:
+		return CommonErrors.INVALID_ID
+
+
 
 @api.route("/users", methods=["GET"])
 @json_out
@@ -244,7 +268,7 @@ def api_ai_icon(id):
 	else:
 		abort(404)
 
-def upload_single_file(request, path):
+def upload_single_file(request, path, image=False):
 	print(request.mimetype)
 	print(request.files)
 	print(request.data)
@@ -254,6 +278,12 @@ def upload_single_file(request, path):
 		content = list(request.files.values())[0].read()
 	else:
 		content = request.data
+
+	if image:
+		mime = magic.from_buffer(content, mime=True).decode("ascii")
+		print(mime, magic.from_buffer(content))
+		if not "image/" in mime:
+			return {"error": "Invalid mimetype for an image.", "mimetype": mime}
 
 	@ftp.safe
 	def f():
@@ -272,7 +302,7 @@ def api_ai_upload_icon(id):
 	ai = AI.query.get(id)
 	if ai:
 		cache.delete_memoized(api_ai_icon, id)
-		return upload_single_file(request, "AIs/"+str(id)+"/icon.png")
+		return upload_single_file(request, "AIs/"+str(id)+"/icon.png", image=True)
 	else:
 		return CommonErrors.INVALID_ID
 
@@ -305,7 +335,7 @@ def api_user_upload_icon(id):
 	user = User.query.get(id)
 	if user:
 		cache.delete_memoized(api_user_icon, id)
-		return upload_single_file(request, "Users/"+str(id)+"/icon.png")
+		return upload_single_file(request, "Users/"+str(id)+"/icon.png", image=True)
 	else:
 		return CommonErrors.INVALID_ID
 

@@ -9,6 +9,7 @@ import ftputil
 import socket
 import arrow
 import json
+import magic
 
 
 def timestamp():
@@ -77,9 +78,11 @@ class SyncedFTP:
 			Activity("Datei '" + path + "' existiert auf dem FTP nicht.")
 			abort(404)
 		with self.ftp_host.open(path, "rb") as remote_obj:
-			f = BytesIO(remote_obj.read())
+			print(path)
+			data = remote_obj.read()
+			f = BytesIO(data)
 			f.seek(0)
-			return send_file(f)
+			return send_file(f, mimetype=magic.from_buffer(data, mime=True).decode("ascii"))
 
 	def send_cached(self, path):
 		pass
@@ -387,6 +390,8 @@ class GameTypeRole(db.Model):
 def populate(count=20):
 	r = list(range(1, count+1))
 	import random
+	from faker import Faker
+	fake = Faker()
 	db.create_all()
 
 	py = Lang(id=1, name="Python", ace_name="python", url="https://www.python.org")
@@ -399,9 +404,12 @@ def populate(count=20):
 	])
 	gametypes = [minesweeper]
 
-	users = [User(name="testuser"+str(i), id=i, email="test"+str(i)+"@us.er") for i in r]
+	users = []
+	for i in r:
+		p = fake.simple_profile()
+		users.append(User(id=i, name=p["username"], email=p["mail"], firstname=fake.first_name(), lastname=fake.last_name()))
 	random.shuffle(users)
-	ais = [AI(id=i, user=users[i-1], name="testai"+str(i), desc="Beschreibung", lang=py, type=minesweeper) for i in r]
+	ais = [AI(id=i, user=users[i-1], name=fake.word(), desc=fake.text(50), lang=random.choice(langs), type=minesweeper) for i in r]
 	games = [Game(id=i, type=minesweeper) for i in r]
 	assocs = []
 	for ri, role in enumerate(minesweeper.roles, 1):

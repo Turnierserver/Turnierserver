@@ -35,7 +35,16 @@
 				contentType: false,
 				success: function (data, status)
 				{
-					location.reload()
+					console.log(data);
+					if (data.error) {
+						if (data.mimetype) {
+							alert(data.error + ": " + data.mimetype)
+						} else {
+							alert(data.error)
+						}
+					} else {
+						location.reload()
+					}
 				},
 				error: function (xhr, desc, err)
 				{
