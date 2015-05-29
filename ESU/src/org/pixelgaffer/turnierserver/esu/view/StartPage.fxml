@@ -60,7 +60,7 @@
                                                          </HBox.margin>
                                                       </Label>
                                                       <Button fx:id="btDownload" mnemonicParsing="false" onAction="#clickDownload" text="Download" />
-                                                      <ProgressIndicator prefHeight="25.0" prefWidth="25.0" visible="false">
+                                                      <ProgressIndicator prefHeight="25.0" prefWidth="25.0" progress="0.0">
                                                          <HBox.margin>
                                                             <Insets bottom="3.0" left="6.0" right="6.0" top="3.0" />
                                                          </HBox.margin>
