@@ -1,3 +1,5 @@
+from flask.ext.script import prompt_bool
+
 import os
 import shutil
 import zipfile
@@ -20,12 +22,16 @@ def zipdir(path, ziph):
 def manage(manager, app, db, populate, AI, ftp, **_):
 	@manager.command
 	def clean_db():
-		with app.app_context():
-			db.drop_all()
-			populate(5)
+		"Löscht die DB, und füllt sie mit Beispieldaten."
+		if prompt_bool("Sicher, die DB zu leeren?"):
+			with app.app_context():
+				db.drop_all()
+				if prompt_bool("Mit Fakedaten füllen"):
+					populate(5)
 
 	@manager.command
 	def sync_ftp():
+		"Updated die Information von allen KIs zum FTP"
 		for ai in AI.query.all():
 			print("Syncing:", ai.name)
 			try:
@@ -35,6 +41,7 @@ def manage(manager, app, db, populate, AI, ftp, **_):
 
 	@manager.command
 	def create_simple_players(game_id):
+		"Packt die Beispiel-KIs in eine SimplePlayers.zip zusammen"
 		#in der ESU:
 		#SimplePlayer/Java/
 		#			/Python/

@@ -66,9 +66,6 @@ def inject_globals():
 			logged_in = True
 	return dict(env=env, logged_in=logged_in)
 
-Activity("Serverstart abgeschlossen...", extratext="Hier gehts los.\nAlle vorherigen Events sollten nicht wichtig sein.")
-
-
 @manager.command
 def run():
 	"Startet den Server."
@@ -82,6 +79,7 @@ def run():
 
 manage(**locals())
 
+Activity("Serverstart abgeschlossen...", extratext="Hier gehts los.\nAlle vorherigen Events sollten nicht wichtig sein.")
 
 if __name__ == '__main__':
 	manager.run()
