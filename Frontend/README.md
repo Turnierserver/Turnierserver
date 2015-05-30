@@ -1,7 +1,7 @@
 ###Frontend
 
 Server, der den Usern eine Webseite (mit ESU-API) liefert, auf der sie ihre KI managen und spielen lassen können.
-Sprache: Python 3 (mit [Flask](http://flask.pocoo.org))
+Sprache: Python 3
 
 Libs:
 - [Flask](http://flask.pocoo.org)
@@ -25,7 +25,7 @@ Es werden möglicherweise Teile vom alten Frontend übernommen und verbessert.
 
 
 ##API-Spezifikation (wird sich noch ändern)
-[Hier] (https://github.com/LuckyLukert/Turnierserver/blob/master/Frontend/api.py) gibt es die aktuelle API implementation.
+[Hier](https://github.com/LuckyLukert/Turnierserver/blob/master/Frontend/api.py) gibt es die aktuelle API implementation.
 
 Alle implementierten sind gehäkelt.
 

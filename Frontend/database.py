@@ -210,9 +210,14 @@ class AI(db.Model):
 	def updated(self, ftpsync=True):
 		self.last_modified = timestamp()
 		if ftpsync:
-			self.ftp_sync()
+			try:
+				self.ftp_sync()
+			except ftp.err:
+				print("Failed to sync", ftp.name)
+				return False
+		return True
 
-	@ftp.failsafe_locked
+	@ftp.safe
 	def ftp_sync(self):
 		print("FTP-Sync von " + self.name)
 		bd = "AIs/"+str(self.id)
@@ -282,6 +287,7 @@ class AI(db.Model):
 			return f()
 		except ftp.err:
 			print("Example code copy failed!")
+			return False
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(

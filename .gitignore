@@ -22,3 +22,5 @@ build-*/
 .idea
 *.iml
 META-INF
+Frontend/migrations
+Frontend/tmp

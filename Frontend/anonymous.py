@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, abort
 from flask.ext.login import current_user
-from database import AI, User, Game
+from database import AI, User, Game, GameType
 from activityfeed import Activity
 from backend import backend
 import json
@@ -47,3 +47,8 @@ def game(id):
 
 	return render_template(game.type.viz, game=game)
 
+@anonymous.route("/game/inprogress/<int:id>")
+def inprogress_game(id):
+	## inpgrogress type
+	t = GameType.query.first()
+	return render_template(game.type.viz, game=game, inprogress=True)

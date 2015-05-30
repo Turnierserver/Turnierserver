@@ -405,8 +405,12 @@ def api_ai_copy_example_code(id):
 	if not current_user.can_access(ai):
 		return CommonErrors.NO_ACCESS
 
-	ai.ftp_sync()
-	ai.copy_example_code()
+	try:
+		ai.ftp_sync()
+	except ftp.err:
+		return CommonErrors.FTP_ERROR
+	if not ai.copy_example_code():
+		return CommonErrors.FTP_ERROR
 
 	return ({"error": False}, 200)
 
@@ -635,7 +639,10 @@ def start_game():
 def admin_ftp_sync():
 	Activity(current_user.name + " hat FTP-Sync ausgelöst.")
 	for ai in AI.query.all():
-		ai.ftp_sync()
+		try:
+			ai.ftp_sync()
+		except ftp.err:
+			print("failed to Sync " + ai.name)
 	return {"error": False}
 
 @api.route("/admin/clear_db")
@@ -719,8 +726,8 @@ def simple_players(id):
 	"""
 	@ftp.failsafe_locked
 	def f(self):
-		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/simple_player.zip"):
-			return ftp.send_file("Games/"+secure_filename(str(id))+"/simple_player.zip")
+		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/simple_players.zip"):
+			return ftp.send_file("Games/"+secure_filename(str(id))+"/simple_players.zip")
 		else:
 			abort(404)
 	return f()

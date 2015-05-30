@@ -15,11 +15,12 @@ from commons import cache, bcrypt
 from api import api, login_manager
 from anonymous import anonymous
 from profile import profile
-from database import db, populate, AI
+from database import db, populate, AI, ftp
 from backend import backend
 from _cfg import env
 from activityfeed import activity_feed, Activity
 from errorhandling import handle_errors
+from cli import manage
 from time import time
 
 
@@ -67,11 +68,6 @@ def inject_globals():
 
 Activity("Serverstart abgeschlossen...", extratext="Hier gehts los.\nAlle vorherigen Events sollten nicht wichtig sein.")
 
-@manager.command
-def clean_db():
-	with app.app_context():
-		db.drop_all()
-		populate(5)
 
 @manager.command
 def run():
@@ -84,6 +80,7 @@ def run():
 		app_run_params["ssl_context"] = context
 	app.run(**app_run_params)
 
+manage(**locals())
 
 
 if __name__ == '__main__':
