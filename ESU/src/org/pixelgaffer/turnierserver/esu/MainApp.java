@@ -7,6 +7,7 @@ import org.pixelgaffer.turnierserver.esu.view.ControllerRoot;
 import org.pixelgaffer.turnierserver.esu.view.ControllerStartPage;
 import org.pixelgaffer.turnierserver.esu.view.ControllerSubmission;
 
+import utilities.ErrorLog;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

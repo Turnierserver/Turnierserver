@@ -3,10 +3,11 @@ package org.pixelgaffer.turnierserver.esu.view;
 import java.io.File;
 
 import org.pixelgaffer.turnierserver.esu.*;
-import org.pixelgaffer.turnierserver.esu.Dialog;
 import org.pixelgaffer.turnierserver.esu.Player.Language;
 import org.pixelgaffer.turnierserver.esu.Player.NewVersionType;
 
+import utilities.Dialog;
+import utilities.Resources;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;

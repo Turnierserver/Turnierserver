@@ -1,4 +1,4 @@
-package org.pixelgaffer.turnierserver.esu;
+package utilities;
 
 import java.io.File;
 import java.util.Optional;

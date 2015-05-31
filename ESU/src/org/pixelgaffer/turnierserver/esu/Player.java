@@ -5,6 +5,8 @@ import java.util.*;
 
 import javax.imageio.ImageIO;
 
+import utilities.ErrorLog;
+import utilities.Resources;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
