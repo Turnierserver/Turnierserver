@@ -7,12 +7,29 @@ from errorhandling import error
 import ftputil
 
 profile = Blueprint("profile", __name__)
+
 @profile.route("/profile")
 @authenticated_web
 def current_profile():
-	ais = AI.query.filter(AI.user == current_user).all()
+	user = current_user
+	ais = user.ai_list
 	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
-	return render_template("profile.html", columns=columns)
+	return render_template("profile.html", columns=columns, user=user)
+
+@profile.route("/profile/<int:id>")
+@authenticated_web
+def profile_id(id):
+	user = User.query.get(id)
+	if not user:
+		abort(404)
+	if not current_user.can_access(user):
+		abort(403)
+
+	ais = user.ai_list
+	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
+	return render_template("profile.html", columns=columns, user=user)
+
+
 
 @profile.route("/create_ai")
 @authenticated_web

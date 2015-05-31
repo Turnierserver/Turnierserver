@@ -120,8 +120,13 @@ class User(db.Model):
 		else:
 			return ftp.send_file("Users/default.png")
 
-	def can_access(self, ai):
-		return ai in self.ai_list or self.admin
+	def can_access(self, obj):
+		if type(obj) == AI:
+			return obj in self.ai_list or self.admin
+		elif type(obj) == User:
+			return obj == self or self.admin
+		else:
+			raise RuntimeError("Invalid Type: "+str(type(obj)))
 
 	def check_pw(self, password):
 		from commons import bcrypt
@@ -181,6 +186,7 @@ class AI(db.Model):
 		super(AI, self).__init__(*args, **kwargs)
 		self.lastest_version()
 		## FTP-Sync beim erstellen!
+		## Icon zurücksetzen
 		self.updated(False)
 		db_obj_init_msg(self)
 

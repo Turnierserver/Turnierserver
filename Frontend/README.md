@@ -61,6 +61,10 @@ Alle implementierten sind gehäkelt.
   * *die KI-Infos werden später mit /api/ai/\<id\>/update geändert.*
 - [x] /api/user/create
   * *erstellt einen neuen User, nimmt 'username', 'email', 'password', 'firstname', 'lastname' an.*
+- [x] /api/user/\<id\>/update
+  * *nimmt 'firstname', 'lastname', 'email' und 'password' an*
+- [x] /api/user/\<id\>/delete
+  * *löscht den Nutzer*
 - [x] /api/ai/\<id\>/update
   * *nimmt 'name', 'description', 'lang' und 'extra[]' an*
 - [x] /api/ai/\<id\>/upload

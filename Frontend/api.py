@@ -148,6 +148,52 @@ def api_user_icon(id):
 		abort(404)
 
 
+@api.route("/user/<int:id>/update", methods=["POST"])
+@json_out
+@authenticated
+def api_user_update(id):
+	user = User.query.get(id)
+	if not user:
+		return CommonErrors.INVALID_ID
+
+	if not current_user.can_access(user):
+		return CommonErrors.NO_ACCESS
+
+	a = Activity("User " + user.name + " geaendert")
+	a.extratext = str(user) + " -> "
+
+	user.firstname = request.form.get('firstname', user.firstname)
+	user.lastname = request.form.get('lastname', user.lastname)
+	user.email = request.form.get('email', user.email)
+	if "password" in request.form:
+		user.set_pw(request.form["password"])
+
+
+	# es muss zur Datenbank geschrieben werden, um die aktuellen Infos zu bekommen
+	db.session.commit()
+
+	a.extratext += str(user)
+
+	return {"error": False, "user": user.info()}, 200
+
+
+@api.route("/user/<int:id>/delete", methods=["GET", "POST"])
+@json_out
+@authenticated
+def api_user_delete(id):
+	user = User.query.get(id)
+	if not user:
+		return CommonErrors.INVALID_ID
+
+	if not current_user.can_access(user):
+		return CommonErrors.NO_ACCESS
+
+	Activity("User " + user.name + " von " + current_user.name + " geloescht!")
+	user.delete()
+	return {"error": False}
+
+
+
 @api.route("/login", methods=['POST'])
 @json_out
 def api_login():
@@ -283,6 +329,7 @@ def upload_single_file(request, path, image=False):
 		mime = magic.from_buffer(content, mime=True).decode("ascii")
 		print(mime, magic.from_buffer(content))
 		if not "image/" in mime:
+			## no gifs?
 			return {"error": "Invalid mimetype for an image.", "mimetype": mime}
 
 	@ftp.safe
@@ -350,16 +397,6 @@ def api_ai_code(id):
 		return CommonErrors.NO_ACCESS
 
 	return CommonErrors.NOT_IMPLEMENTED
-
-
-@api.route("/user/update")
-@json_out
-@authenticated
-def api_user_update():
-	u = current_user
-	u.name = request.args.get('name', u.name)
-	return u.info()
-
 
 @api.route("/ai/<int:id>/update", methods=["POST"])
 @json_out

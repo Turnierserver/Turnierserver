@@ -2,41 +2,160 @@
 {% from "macros.html" import render_ai %}
 {% set active_page = "profile" %}
 {% block body %}
-
-	<div class="ui hidden divider"></div>
+<div class="ui hidden divider"></div>
+<div class="ui three column divided grid">
+	<div class="row">
+		<div class="column">
+			<h2 class="ui header">Alles über KIs</h2>
+			<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
+			<a class="ui tiny button m-top-10" href="{{ url_for("profile.create_ai" )}}">Erstell ne KI &raquo;</a>
+		</div>
+		<div class="column">
+			<h2 class="ui header">Spiele sind toll</h2>
+			<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
+			<button class="ui tiny button m-top-10">Alle Spiele &raquo;</button>
+		</div>
+		<div class="column">
+			<h2 class="ui header">Neuigkeiten</h2>
+			<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
+			<button class="ui tiny button m-top-10">Alle Neuigkeiten &raquo;</button>
+		</div>
+	</div>
+</div>
+{% if columns %}
+<div class="ui divider"></div>
+<div class="column">
+	<h2 class="ui header">Deine KIs</h2>
 	<div class="ui three column divided grid">
-		<div class="row">
-			<div class="column">
-				<h2 class="ui header">Alles über KIs</h2>
-				<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
-				<a class="ui tiny button m-top-10" href="{{ url_for("profile.create_ai" )}}">Erstell ne KI &raquo;</a>
-			</div>
-			<div class="column">
-				<h2 class="ui header">Spiele sind toll</h2>
-				<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
-				<button class="ui tiny button m-top-10">Alle Spiele &raquo;</button>
-			</div>
-			<div class="column">
-				<h2 class="ui header">Neuigkeiten</h2>
-				<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
-				<button class="ui tiny button m-top-10">Alle Neuigkeiten &raquo;</button>
-			</div>
-		</div>
-	</div>
-	<div class="ui divider"></div>
-	<div class="column">
-		<h2 class="ui header">Deine KIs</h2>
-		<div class="ui three column divided grid">
 		{% for column in columns %}
-			<div class="row">
+		<div class="row">
 			{% for ai in column %}
-				<div class="column">
-					{{ render_ai(ai, current_user) }}
-				</div>
-			{% endfor %}
+			<div class="column">
+				{{ render_ai(ai, user) }}
 			</div>
+			{% endfor %}
+		</div>
 		{% endfor %}
+	</div>
+</div>
+{% endif %}
+
+<form id="profile_form" class="ui form segment">
+	<div class="two fields">
+		<div class="field">
+			<label>Vorname</label>
+			<input id="firstname" placeholder="{% if user.firstname %}{{user.firstname}}{% endif %}" type="text">
+		</div>
+		<div class="field">
+			<label>Nachname</label>
+			<input id="lastname" placeholder="{% if user.firstname %}{{user.lastname}}{% endif %}" type="text">
 		</div>
 	</div>
+	<div class="field">
+		<label>Email-Adresse</label>
+		<input id="email" placeholder="{{user.email}}" type="email" name="email">
+	</div>
+	<div class="field">
+		<label>Password</label>
+		<input id="password" name="password" type="password">
+	</div>
+	<div id="confirm_pw" class="transition hidden field">
+		<label>Password bestätigen</label>
+		<input id="confirm_pw_input" name="password" type="password">
+	</div>
+	<div id="change_account" class="ui button">Änderung speichern (leere Felder bleiben gleich)</div>
+	<div id="delete_account" class="ui red button">Account löschen</div>
+	<div class="ui error message"></div>
+</form>
+
+
+<div id="delete_modal" class="ui basic modal">
+	<i class="close icon"></i>
+	<div class="header">
+		Account löschen
+	</div>
+	<div class="content">
+		<div class="image">
+			<i class="trash outline icon"></i>
+		</div>
+		<div class="description">
+			<p>Das löschen deines Accounts kann nicht rückgängig gemacht werden! Willst du deinen Account ({{user.name}}) wirklich löschen?</p>
+		</div>
+	</div>
+	<div class="actions">
+		<div class="two fluid ui inverted buttons">
+			<div class="ui red basic inverted cancel button">
+				<i class="remove icon"></i>
+				Nein
+			</div>
+			<div class="ui green basic inverted ok button">
+				<i class="checkmark icon"></i>
+				Ja
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+$("#password").on("input", function() {
+	var hidden = $("#confirm_pw").hasClass("hidden")
+	if ($("#password").val() != "") {
+		if (hidden)
+			$("#confirm_pw").transition("scale")
+	} else {
+		if (!hidden)
+			$("#confirm_pw").transition("scale")
+		$("#confirm_pw_input").val("")
+	}
+})
+
+$("#change_account").on("click", function() {
+	var d = {};
+
+	if ($("#firstname").val() != "")
+		d.firstname = $("#firstname").val()
+
+	if ($("#lastname").val() != "")
+		d.lastname = $("#lastname").val()
+
+	if ($("#email").val() != "")
+		d.email = $("#email").val()
+
+	if ($("#password").val() != "") {
+		if ($("#password").val() != $("#confirm_pw_input").val()) {
+			alert("Die eingetippten Passwörter sind nicht gleich!")
+			$("#confirm_pw").transition("pulse")
+			return;
+		}
+		d.password = $("#password").val();
+	}
+
+	$("#profile_form").addClass("loading")
+	$.post("/api/user/{{user.id}}/update", d).done(function(data) {
+		console.log("User changed.")
+		location.reload();
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error)
+		alert(JSON.parse(xhr.responseText).error)
+	})
+})
+
+
+$("#delete_account").on("click", function() {
+	$('#delete_modal').modal({
+		onApprove: function() {
+			$.post("/api/user/{{user.id}}/delete").done(function(data) {
+				console.log("User deleted.")
+				location.href = "/"
+			}).fail(function(xhr, textStatus, errorThrown) {
+				console.log(xhr.responseText.error)
+				alert(JSON.parse(xhr.responseText).error)
+			})
+		}
+	}).modal('show')
+});
+
+</script>
 
 {% endblock %}

@@ -17,85 +17,85 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-		<meta charset="utf-8">
-		<title>{% block title %}Turnierserver{% endblock %}</title>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-		<link rel="stylesheet" href="https://rawgit.com/Semantic-Org/Semantic-UI/next/dist/semantic.min.css">
-		<script src="https://rawgit.com/Semantic-Org/Semantic-UI/next/dist/semantic.min.js"></script>
-		{% block head %}
-		{% endblock %}
+	<meta charset="utf-8">
+	<title>{% block title %}Turnierserver{% endblock %}</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://rawgit.com/Semantic-Org/Semantic-UI/next/dist/semantic.min.css">
+	<script src="https://rawgit.com/Semantic-Org/Semantic-UI/next/dist/semantic.min.js"></script>
+	{% block head %}
+	{% endblock %}
 </head>
 <body>
 	<nav class="ui menu inverted navbar page grid">
 		<a href="{{ url_for("anonymous.index") }}" class="brand {{'active' if active_page == 'index'}} item">Turnierserver</a>
 		<div class="right menu">
 			{% for url, id, name in nav_menu %}
-				<a href="{{ url | e }}" class="{{'active' if id == active_page}} item">{{ name | e }}</a>
+			<a href="{{ url | e }}" class="{{'active' if id == active_page}} item">{{ name | e }}</a>
 			{% endfor %}
 			{% if current_user and current_user.is_authenticated() %}
-				<div class="item"><button id="logout" class="ui green button">Ausloggen</button></div>
-				<script>
-					$("#logout").on("click", function() {
-						$.post("/api/logout").done(function() { window.location.href = "/" })
-					});
-				</script>
+			<div class="item"><button id="logout" class="ui green button">Ausloggen</button></div>
+			<script>
+				$("#logout").on("click", function() {
+					$.post("/api/logout").done(function() { window.location.href = "/" })
+				});
+			</script>
 			{% else %}
-				<div class="item">
-					<div class="ui input">
-						<input id="username" type="text" placeholder="Nutzername">
+			<div class="item">
+				<div class="ui input">
+					<input id="username" type="text" placeholder="Nutzername">
+				</div>
+			</div>
+			<div class="item">
+				<div class="ui input">
+					<input id="password" type="password" placeholder="Passwort">
+				</div>
+			</div>
+			<div class="item">
+				<button id="login" class="ui green button">Einloggen</button>
+				<div class="ui flowing special popup" style="min-width: 13em;">
+					<div class="ui slider checkbox checked">
+						<input id="remember-me" type="checkbox">
+						<label>Login merken</label>
 					</div>
 				</div>
-				<div class="item">
-					<div class="ui input">
-						<input id="password" type="password" placeholder="Passwort">
-					</div>
-				</div>
-				<div class="item">
-					<button id="login" class="ui green button">Einloggen</button>
-					<div class="ui flowing special popup" style="min-width: 13em;">
-						<div class="ui slider checkbox checked">
-							<input id="remember-me" type="checkbox">
-							<label>Login merken</label>
-						</div>
-					</div>
-				</div>
-				<script>
-					var f = function() {
-						console.log("Logging in...")
-						var pw = $("#password").val()
-						var name = $("#username").val()
-						var remember = $("#remember-me").prop("checked")
-						$.post("/api/login", {username: name, password: pw, remember: remember}).done(function(data) {
-							console.log("Logged in.")
-							location.reload();
-						}).fail(function(xhr, textStatus, errorThrown) {
-							console.log(xhr.responseText.error)
-							alert(JSON.parse(xhr.responseText).error)
-						})
-					}
-					$("#login").on("click", f)
-					$('#username, #password').keypress(function(event){
-						var keycode = (event.keyCode ? event.keyCode : event.which);
-							if(keycode == '13'){
-								f()
-							}
-					});
-					$('#login').popup({
-						inline: true,
-						hoverable: true,
-						delay: { hide: 800},
-						position:"bottom center"
-					});
-					$('.ui.checkbox').checkbox();
-				</script>
+			</div>
+			<script>
+				var f = function() {
+					console.log("Logging in...")
+					var pw = $("#password").val()
+					var name = $("#username").val()
+					var remember = $("#remember-me").prop("checked")
+					$.post("/api/login", {username: name, password: pw, remember: remember}).done(function(data) {
+						console.log("Logged in.")
+						location.reload();
+					}).fail(function(xhr, textStatus, errorThrown) {
+						console.log(xhr.responseText.error)
+						alert(JSON.parse(xhr.responseText).error)
+					})
+				}
+				$("#login").on("click", f)
+				$('#username, #password').keypress(function(event){
+					var keycode = (event.keyCode ? event.keyCode : event.which);
+						if(keycode == '13'){
+							f()
+						}
+				});
+				$('#login').popup({
+					inline: true,
+					hoverable: true,
+					delay: { hide: 800},
+					position:"bottom center"
+				});
+				$('.ui.checkbox').checkbox();
+			</script>
 			{% endif %}
 		</div>
 	</nav>
 	{% block rawbody %}
 	<div class="ui page grid">
-		<div class="row">
+		<div id="msg" class="row">
 			<div class="column">
-				<div id="msg" class="ui basic message page grid center aligned">
+				<div class="ui basic message page grid center aligned">
 					<h1 class="ui basic header">#Yolo Swag Yolonese</h1>
 					<p>Weit hinten, hinter den Wortbergen, fern der Länder Vokalien und Konsonantien leben die Blindtexte. Abgeschieden wohnen sie in Buchstabhausen an der Küste des Semantik, eines großen Sprachozeans. Ein kleines Bächlein namens Duden fließt durch ihren Ort und versorgt sie mit den nötigen Regelialien. Es ist ein paradiesmatisches Land, in dem einem gebratene Satzteile in den Mund fliegen.</p>
 					<a id="msgbutton" class="ui basic green button">Verstanden</a>
@@ -107,11 +107,10 @@
 				</div>
 			</div>
 		</div>
-		<div class="ui hidden divider"></div>
 		<div class="one column row">
 			<div class="column">
-				{% block body %}
-				{% endblock %}
+			{% block body %}
+			{% endblock %}
 			</div>
 		</div>
 	</div>
