@@ -1,4 +1,5 @@
-from flask.ext.script import prompt_bool
+from flask.ext.script import prompt_bool, prompt, prompt_pass
+from database import db, populate, AI, User, ftp
 
 import os
 import shutil
@@ -19,7 +20,7 @@ def zipdir(path, ziph):
 			ziph.write(os.path.join(root, file))
 
 
-def manage(manager, app, db, populate, AI, ftp, **_):
+def manage(manager, app):
 	@manager.command
 	def clean_db():
 		"Löscht die DB, und füllt sie mit Beispieldaten."
@@ -38,6 +39,21 @@ def manage(manager, app, db, populate, AI, ftp, **_):
 				ai.ftp_sync()
 			except ftp.err:
 				print("Failed to sync", ai.name)
+
+	@manager.command
+	def add_admin():
+		"Fügt einen Admin hinzu und zeigt alle aktuellen Admins."
+		print("Aktuelle Admins:")
+		for admin in User.query.filter(User.admin == True).all():
+			print(admin)
+		print()
+		if prompt_bool("Sicher, dass du einen neuen Admin hinzufügen willst?"):
+			name = prompt("Name?")
+			pw = prompt_pass("Passwort?")
+			admin = User(name=name, admin=True)
+			admin.set_pw(pw)
+			db.session.add(admin)
+			print(admin)
 
 	@manager.command
 	def create_simple_players(game_id):

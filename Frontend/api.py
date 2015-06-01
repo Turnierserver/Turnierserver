@@ -52,7 +52,6 @@ def admin_required(f):
 
 
 login_manager = LoginManager()
-##
 @login_manager.user_loader
 def load_user(id):
 	return User.query.get(id)
@@ -117,6 +116,7 @@ def api_game_log(id):
 def api_game_inprogress_log(id):
 	game = None
 	if game:
+		##
 		for chunk in []:
 			yield chunk
 	else:
@@ -417,7 +417,10 @@ def api_ai_update(id):
 	if 'lang' in request.form:
 		l = Lang.query.get(request.form.get('lang'))
 		if l:
+			## remove versions, prompt user?
 			ai.lang = l
+			for version in ai.version_list:
+				version.delete()
 
 	if 'extra[]' in request.form:
 		extras = request.form.getlist("extra[]")
@@ -552,6 +555,10 @@ def ai_upload(id):
 	if not len(filename):
 		return ({"error": "Missing filename."}, 400)
 	data = request.form["data"]
+
+	## check version frozen
+	if ai.newest_version().frozen:
+		return {"error": "AI is frozen, you need to create a new version."}, 400
 
 	@ftp.safe
 	def f():

@@ -15,7 +15,7 @@ from commons import cache, bcrypt
 from api import api, login_manager
 from anonymous import anonymous
 from profile import profile
-from database import db, populate, AI, ftp
+from database import db, populate, AI, User, ftp
 from backend import backend
 from _cfg import env
 from activityfeed import activity_feed, Activity
@@ -77,7 +77,7 @@ def run():
 		app_run_params["ssl_context"] = context
 	app.run(**app_run_params)
 
-manage(**locals())
+manage(manager, app)
 
 Activity("Serverstart abgeschlossen...", extratext="Hier gehts los.\nAlle vorherigen Events sollten nicht wichtig sein.")
 

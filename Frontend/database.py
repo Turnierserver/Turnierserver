@@ -87,6 +87,34 @@ class SyncedFTP:
 	def send_cached(self, path):
 		pass
 
+	def copy_tree(from_dir, to_dir, overwrite=True):
+		@ftp.safe
+		def f():
+			if overwrite:
+				print("DEL:", to_dir)
+				ftp.ftp_host.rmtree(to_dir)
+				print("MKDIR:", to_dir)
+				ftp.ftp_host.mkdir(to_dir)
+
+			for root, dirs, files in ftp.ftp_host.walk(from_dir, topdown=True, followlinks=False):
+				t_dir = to_dir + root[len(from_dir):] + "/"
+				s_dir = root + "/"
+				for d in dirs:
+					print("MKDIR:", t_dir + d)
+					ftp.ftp_host.mkdir(t_dir+d)
+				for f in files:
+					print(s_dir+f, "->", t_dir+f)
+					with ftp.ftp_host.open(s_dir+f, "r", encoding="utf-8") as source:
+						with ftp.ftp_host.open(t_dir+f, "w", encoding="utf-8") as target:
+							target.write(source.read())
+			return True
+
+		try:
+			return f()
+		except ftp.err:
+			print("copy_tree failed!")
+			return False
+
 
 ftp = SyncedFTP()
 
@@ -166,6 +194,9 @@ class AI_Game_Assoc(db.Model):
 	role_id = db.Column(db.Integer, db.ForeignKey('t_gametyperoles.id'), primary_key=True)
 	role = db.relationship("GameTypeRole", backref="assocs")
 
+	def __repr__(self):
+		return "<AI_Game_Assoc(game={}, ai={})".format(game.id, ai.name)
+
 
 class AI(db.Model):
 	__tablename__ = 't_ais'
@@ -207,6 +238,10 @@ class AI(db.Model):
 
 	def new_version(self):
 		self.version_list.append(AI_Version(version_id = len(self.version_list) + 1))
+		if len(self.version_list > 1):
+			## copy AI code from prev version...
+			new_path = "AIs/{}/v{}/".format(self.id, self.version_list[-1].version_id)
+			self.version_list[-2].copy_code(new_path)
 		return self.version_list[-1]
 
 	def delete(self):
@@ -269,31 +304,8 @@ class AI(db.Model):
 	def copy_example_code(self):
 		source_dir_base = "Games/{}/{}/example_ai".format(GameType.query.first().id, self.lang.name)
 		target_dir_base = "AIs/{}/v{}".format(self.id, self.lastest_version().version_id)
-		@ftp.safe
-		def f():
-			print("DEL:", target_dir_base)
-			ftp.ftp_host.rmtree(target_dir_base)
-			print("MKDIR:", target_dir_base)
-			ftp.ftp_host.mkdir(target_dir_base)
+		return ftp.copy_tree(source_dir_base, target_dir_base):
 
-			for root, dirs, files in ftp.ftp_host.walk(source_dir_base, topdown=True, followlinks=False):
-				t_dir = target_dir_base + root[len(source_dir_base):] + "/"
-				s_dir = root + "/"
-				for d in dirs:
-					print("ORD:", t_dir + d)
-					ftp.ftp_host.mkdir(t_dir+d)
-				for f in files:
-					print(s_dir+f, "->", t_dir+f)
-					with ftp.ftp_host.open(s_dir+f, "r", encoding="utf-8") as source:
-						with ftp.ftp_host.open(t_dir+f, "w", encoding="utf-8") as target:
-							target.write(source.read())
-			return True
-
-		try:
-			return f()
-		except ftp.err:
-			print("Example code copy failed!")
-			return False
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(
@@ -305,10 +317,12 @@ class AI_Version(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	version_id = db.Column(db.Integer)
 	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'))
+	compiled = db.Column(db.Boolean, default=False)
 	qualified = db.Column(db.Boolean, default=False)
+	frozen = db.Column(db.Boolean, default=False)
 	ai = db.relationship("AI", backref=db.backref('t_ai_versions', order_by=id))
 	extras_str = db.Column(db.Text, default="[]")
-	# dafuer komm ich in die DB-Hoelle
+	## dafuer komm ich in die DB-Hoelle
 
 	def __init__(self, *args, **kwargs):
 		super(AI_Version, self).__init__(*args, **kwargs)
@@ -324,6 +338,26 @@ class AI_Version(db.Model):
 		if e:
 			self.extras_str = json.dumps(e)
 		return json.loads(self.extras_str)
+
+	def delete(self):
+		## remove code, delete from DB
+		path = "AIs/{}/v{}/".format(self.ai_id, self.version_id)
+
+		@ftp.safe
+		def f():
+			print("removing AI_Version data...")
+			ftp.ftp_host.rmtree(path)
+		try:
+			f()
+		except ftp.err:
+			print("coudlnt delete version data!")
+
+		db.session.delete(self)
+		db.session.commit()
+
+	def copy_code(self, new_path):
+		mypath = "AIs/{}/v{}/".format(self.ai_id, self.version_id)
+		return ftp.copy_tree(mypath, new_path)
 
 	def __repr__(self):
 		return "<AI_Version(id={}, version_id={}, ai_id={}>".format(self.id, self.version_id, self.ai_id)
@@ -351,6 +385,7 @@ class Game(db.Model):
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	ai_assocs = db.relationship("AI_Game_Assoc", cascade="all, delete, delete-orphan")
 	timestamp = db.Column(db.BigInteger)
+	status = db.Column(db.Text)
 	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
 	type = db.relationship("GameType", backref=db.backref('t_games', order_by=id))
 
@@ -433,11 +468,6 @@ def populate(count=20):
 
 	db.session.add_all(users + ais + games + assocs + langs + gametypes)
 	db.session.commit()
-
-	#games[0].delete()
-
-	#for ai in ais:
-	#	ai.ftp_sync()
 
 
 if __name__ == '__main__':

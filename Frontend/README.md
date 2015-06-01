@@ -77,7 +77,6 @@ Alle implementierten sind gehäkelt.
   * *löscht die KI*
 - [x] /api/games/start
   * *nimmt 'ai[]' an und startet ein Spiel*
-
 - [x] /api/ai/\<id\>/update
   * *updatet infos zur Ki.*
 - [x] /api/user/update
