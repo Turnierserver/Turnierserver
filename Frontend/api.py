@@ -204,13 +204,13 @@ def api_login():
 		password = request.json.get("password", None)
 		remember = request.json.get("remember", False)
 	elif request.mimetype == "application/x-www-form-urlencoded":
-		email = request.form['email']
-		password = request.form['password']
-		remember = request.form.get("remember", False)
+		email = request.form.get('email')
+		password = request.form.get('password')
+		remember = request.form.get('remember', False)
 		if remember:
 			remember = True
 	else:
-		return {"error": "Wrong Content-Type, must be application/json or application/x-www-form-urlencoded"}, 400
+		return { 'error': "Wrong Content-Type, must be application/json or application/x-www-form-urlencoded"}, 400
 	if not email or not password:
 		return { 'error': 'Missing email or password' }, 400
 
