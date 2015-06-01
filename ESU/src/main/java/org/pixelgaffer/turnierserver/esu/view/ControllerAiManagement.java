@@ -6,6 +6,7 @@ import org.pixelgaffer.turnierserver.esu.*;
 import org.pixelgaffer.turnierserver.esu.Player.Language;
 import org.pixelgaffer.turnierserver.esu.Player.NewVersionType;
 import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
+import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 import org.pixelgaffer.turnierserver.esu.utilities.Resources;
 
 import javafx.beans.value.ChangeListener;
@@ -241,7 +242,7 @@ public class ControllerAiManagement{
     		if (version == null){
     			Dialog.error("Bitte legen Sie zuerst eine Version an.", "Keine Version");
     		}
-    		File result = Dialog.fileSaver(mainApp.stage, "Bitte einen Ort und Dateinamen auswählen", Resources.version(version));
+    		File result = Dialog.fileSaver(mainApp.stage, "Bitte einen Ort und Dateinamen auswählen", Paths.version(version));
     		if (result != null){
     			CodeEditor editor = new CodeEditor(result);
     			editor.forceSave();

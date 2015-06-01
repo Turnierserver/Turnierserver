@@ -3,7 +3,7 @@ package org.pixelgaffer.turnierserver.esu;
 import java.io.File;
 
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.esu.utilities.Resources;
+import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,7 +18,7 @@ public class PlayerManager {
 	 */
 	public void loadPlayers(){
 		players.clear();
-		File dir = new File(Resources.playerFolder());
+		File dir = new File(Paths.playerFolder());
 		dir.mkdirs();
 		File[] playerDirs = dir.listFiles();
 		if (playerDirs == null){

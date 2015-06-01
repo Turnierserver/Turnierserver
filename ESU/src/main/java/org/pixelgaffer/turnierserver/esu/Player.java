@@ -6,6 +6,7 @@ import java.util.*;
 import javax.imageio.ImageIO;
 
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 import org.pixelgaffer.turnierserver.esu.utilities.Resources;
 
 import javafx.collections.FXCollections;
@@ -30,9 +31,9 @@ public class Player {
 	}
 	
 	/**
-	 * Lädt einen Player mit dem übergebenen Titel in das Objekt.
+	 * Lï¿½dt einen Player mit dem ï¿½bergebenen Titel in das Objekt.
 	 * 
-	 * @param tit der übergebene Titel
+	 * @param tit der ï¿½bergebene Titel
 	 */
 	public Player(String tit){
 		title = tit;
@@ -40,16 +41,16 @@ public class Player {
 		loadVersions();
 	}
 	/**
-	 * Speichert einen neuen Player mit dem übergebenen Titel und der Sprache ab.
+	 * Speichert einen neuen Player mit dem ï¿½bergebenen Titel und der Sprache ab.
 	 * 
-	 * @param tit der übergebene Titel
-	 * @param lang die übergebene Sprache
+	 * @param tit der ï¿½bergebene Titel
+	 * @param lang die ï¿½bergebene Sprache
 	 */
 	public Player(String tit, Language lang){
 		title = tit;
 		language = lang;
 		
-		File dir = new File(Resources.player(this));
+		File dir = new File(Paths.player(this));
 		if (!dir.mkdirs()){
 			ErrorLog.write("Der Spieler existiert bereits.");
 			description = "invalid";
@@ -60,10 +61,10 @@ public class Player {
 	}
 	
 	/**
-	 * Fügt eine neue Version der Versionsliste hinzu.
+	 * Fï¿½gt eine neue Version der Versionsliste hinzu.
 	 * 
-	 * @param type die Art, in der die Version hinzugefügt werden soll
-	 * @return die Version, die hinzugefügt wurde
+	 * @param type die Art, in der die Version hinzugefï¿½gt werden soll
+	 * @return die Version, die hinzugefï¿½gt wurde
 	 */
 	public Version newVersion(NewVersionType type){
 		if (type == NewVersionType.fromFile){
@@ -73,9 +74,9 @@ public class Player {
 	}
 	
 	/**
-	 * gibt die neueste Version oder null zurück
+	 * gibt die neueste Version oder null zurï¿½ck
 	 * 
-	 * @return gibt null zurück, wenn es keine Version gibt
+	 * @return gibt null zurï¿½ck, wenn es keine Version gibt
 	 */
 	public Version lastVersion(){
 		if (versions.size() > 0){
@@ -87,11 +88,11 @@ public class Player {
 	}
 	
 	/**
-	 * Fügt eine neue Version der Versionsliste hinzu.
+	 * Fï¿½gt eine neue Version der Versionsliste hinzu.
 	 * 
-	 * @param type die Art, in der die Version hinzugefügt werden soll
+	 * @param type die Art, in der die Version hinzugefï¿½gt werden soll
 	 * @param path der Pfad, von dem die Version kopiert werden soll, falls type==fromFile
-	 * @return die Version, die hinzugefügt wurde
+	 * @return die Version, die hinzugefï¿½gt wurde
 	 */
 	public Version newVersion(NewVersionType type, String path){
 		Version version = null;
@@ -103,7 +104,7 @@ public class Player {
 			if(versions.size() == 0){
 				return null;
 			}
-			version = new Version(this, versions.size(), Resources.version(this, versions.size()-1));
+			version = new Version(this, versions.size(), Paths.version(this, versions.size()-1));
 			break;
 		case simplePlayer:
 			version = new Version(this, versions.size());
@@ -117,11 +118,11 @@ public class Player {
 	
 	
 	/**
-	 * Lädt aus dem Dateiverzeichnis die Eigenschaften des Players.
+	 * Lï¿½dt aus dem Dateiverzeichnis die Eigenschaften des Players.
 	 */
 	public void loadProps(){
 		try {
-			Reader reader = new FileReader(Resources.playerProperties(this));
+			Reader reader = new FileReader(Paths.playerProperties(this));
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
@@ -140,20 +141,20 @@ public class Player {
 		prop.setProperty("language", language.toString());
 		
 		try {
-			Writer writer = new FileWriter(Resources.playerProperties(this));
+			Writer writer = new FileWriter(Paths.playerProperties(this));
 			prop.store(writer, title);
 			writer.close();
 		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Player)");}
 	}
 	
 	/**
-	 * Lädt die Versionen aus dem Dateisystem, mit Hilfe der versionAmount-Property
+	 * Lï¿½dt die Versionen aus dem Dateisystem, mit Hilfe der versionAmount-Property
 	 */
 	public void loadVersions(){
 		versions.clear();
 		int versionAmount = 0;
 		try {
-			Reader reader = new FileReader(Resources.playerProperties(this));
+			Reader reader = new FileReader(Paths.playerProperties(this));
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
@@ -175,12 +176,12 @@ public class Player {
 	}
 	
 	/**
-	 * Gibt das gespeicherte Bild des Spielers zurück.
+	 * Gibt das gespeicherte Bild des Spielers zurï¿½ck.
 	 * 
 	 * @return das gespeicherte Bild
 	 */
 	public Image getPicture(){
-		Image img = Resources.imageFromFile(Resources.playerPicture(this));
+		Image img = Resources.imageFromFile(Paths.playerPicture(this));
 		if (img == null){
 			img = Resources.defaultPicture();
 		}
@@ -194,11 +195,11 @@ public class Player {
 	public void setPicture(Image img){
 		try {
 			if (img == null){
-				File file = new File(Resources.playerPicture(this));
+				File file = new File(Paths.playerPicture(this));
 				file.delete();
 			}
 			else{
-				ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", new File(Resources.playerPicture(this)));
+				ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", new File(Paths.playerPicture(this)));
 			}
 		} catch (IOException e) {
 			ErrorLog.write("Bild konnte nicht gespeichert werden.");

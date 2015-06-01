@@ -9,7 +9,7 @@ import java.io.Writer;
 import java.util.Properties;
 
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.esu.utilities.Resources;
+import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 
 public class ParticipantResult {
 	

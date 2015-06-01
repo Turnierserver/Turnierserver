@@ -7,7 +7,7 @@ import java.sql.Savepoint;
 import java.util.*;
 
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.esu.utilities.Resources;
+import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 
 
 public class Version {
@@ -27,7 +27,7 @@ public class Version {
 		number = n;
 		
 		if (!exists()){
-			copyFromFile(Resources.simplePlayer(player.language));
+			copyFromFile(Paths.simplePlayer(player.language));
 			storeProps();
 			findCode();
 		}
@@ -46,12 +46,12 @@ public class Version {
 	}
 	
 	/**
-	 * Prüft, ob die Version bereits im Dateisystem existiert.
+	 * Prï¿½ft, ob die Version bereits im Dateisystem existiert.
 	 * 
 	 * @return true, wenn die Version bereits existiert
 	 */
 	public boolean exists(){
-		File dir = new File(Resources.version(this));
+		File dir = new File(Paths.version(this));
 		return !dir.mkdirs();
 	}
 	
@@ -62,7 +62,7 @@ public class Version {
 	 */
 	public void copyFromFile(String path){
 		Path srcPath = new File(path).toPath();
-		Path destPath = new File(Resources.version(this)).toPath();
+		Path destPath = new File(Paths.version(this)).toPath();
 		try {
 			Files.walkFileTree(srcPath, new CopyVisitor(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING));
 		} catch (IOException e) {
@@ -74,7 +74,7 @@ public class Version {
 	 * Sucht alle Dateien innerhalb des Versionsordners und speichert sie in files
 	 */
 	public void findCode(){
-		Path path = new File(Resources.version(this)).toPath();
+		Path path = new File(Paths.version(this)).toPath();
 		VersionVisitor visitor = new VersionVisitor(path);
 		try {
 			Files.walkFileTree(path, visitor);
@@ -96,11 +96,11 @@ public class Version {
 	
 
 	/**
-	 * Lädt aus dem Dateiverzeichnis die Eigenschaften des Players.
+	 * Lï¿½dt aus dem Dateiverzeichnis die Eigenschaften des Players.
 	 */
 	public void loadProps(){
 		try {
-			Reader reader = new FileReader(Resources.versionProperties(this));
+			Reader reader = new FileReader(Paths.versionProperties(this));
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
@@ -125,7 +125,7 @@ public class Version {
 		prop.setProperty("qualifyOutput", qualifyOutput);
 		
 		try {
-			Writer writer = new FileWriter(Resources.versionProperties(this));
+			Writer writer = new FileWriter(Paths.versionProperties(this));
 			prop.store(writer, player.title + " v" + number );
 			writer.close();
 		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Version)");}

@@ -11,11 +11,11 @@ public class GameManager {
 	public ObservableList<Game> games = FXCollections.observableArrayList();
 	
 	/**
-	 * Lädt alle Spieler aus dem Dateisystem in die Liste
+	 * Lï¿½dt alle Spieler aus dem Dateisystem in die Liste
 	 */
 	public void loadPlayers(){
 		games.clear();
-		File dir = new File(Resources.gameFolder());
+		File dir = new File(Paths.gameFolder());
 		dir.mkdirs();
 		File[] gameDirs = dir.listFiles();
 		if (gameDirs == null){

@@ -44,7 +44,7 @@ public class Game {
 	
 	public void loadProps(){
 		try {
-			Reader reader = new FileReader(Resources.gameProperties(this));
+			Reader reader = new FileReader(Paths.gameProperties(this));
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
@@ -92,10 +92,10 @@ public class Game {
 		}
 		
 		try {
-			File dir = new File(Resources.game(this));
+			File dir = new File(Paths.game(this));
 			dir.mkdirs();
 			
-			Writer writer = new FileWriter(Resources.gameProperties(this));
+			Writer writer = new FileWriter(Paths.gameProperties(this));
 			prop.store(writer, ID);
 			writer.close();
 		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Game)");}
@@ -112,7 +112,7 @@ public class Game {
 	
 	public void getNewID(){
 		for (int i = 1; i < 10000; i++){
-			File dir = new File(Resources.game("Game" + i));
+			File dir = new File(Paths.game("Game" + i));
 			if (dir.mkdirs()){
 				ID = "Game" + i;
 				return;
