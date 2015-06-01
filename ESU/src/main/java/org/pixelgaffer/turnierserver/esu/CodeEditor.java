@@ -2,7 +2,8 @@ package org.pixelgaffer.turnierserver.esu;
 
 import java.io.*;
 
-import utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
+
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

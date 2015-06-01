@@ -5,9 +5,9 @@ import java.io.File;
 import org.pixelgaffer.turnierserver.esu.*;
 import org.pixelgaffer.turnierserver.esu.Player.Language;
 import org.pixelgaffer.turnierserver.esu.Player.NewVersionType;
+import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
+import org.pixelgaffer.turnierserver.esu.utilities.Resources;
 
-import utilities.Dialog;
-import utilities.Resources;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -35,7 +35,6 @@ public class ControllerAiManagement{
 	@FXML public Label lbName;
 	@FXML public Label lbLanguage;
 	@FXML public Label lbCompiled;
-	@FXML public Label lbQualified;
 	@FXML public Label lbFinished;
 	@FXML public Label lbUploaded;
 	@FXML public RadioButton rbSimple;
@@ -50,6 +49,7 @@ public class ControllerAiManagement{
 	@FXML public ListView<Player> lvAis;
 	@FXML public ImageView image;
 	@FXML public TabPane tpCode;
+	@FXML public Hyperlink hlShowQualified;
 	public Tab infoTab;
 	public Tab newFileTab;
 	
@@ -180,7 +180,7 @@ public class ControllerAiManagement{
 				tbOutput.setText(version.qualifyOutput);
 			}
 			lbCompiled.setVisible(version.compiled);
-			lbQualified.setVisible(version.qualified);
+			hlShowQualified.setVisible(version.qualified);
 			lbFinished.setVisible(version.finished);
 			lbUploaded.setVisible(version.uploaded);
 			btCompile.setDisable(version.compiled || version.finished);
@@ -199,7 +199,7 @@ public class ControllerAiManagement{
 			cbVersion.setValue(null);
 			tbOutput.setText("");
 			lbCompiled.setVisible(false);
-			lbQualified.setVisible(false);
+			hlShowQualified.setVisible(false);
 			lbFinished.setVisible(false);
 			lbUploaded.setVisible(false);
 			btCompile.setDisable(true);
@@ -398,6 +398,13 @@ public class ControllerAiManagement{
 	 * Button: Hochladen
 	 */
 	@FXML void clickUpload(){
+		tbFile.setText("Info14 geklickt");
+	}
+
+	/**
+	 * Hyperlink: zeigt das Qualifizier-Spiel an
+	 */
+	@FXML void clickShowQualified(){
 		tbFile.setText("Info14 geklickt");
 	}
 	

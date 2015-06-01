@@ -4,7 +4,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import utilities.*;
+import org.pixelgaffer.turnierserver.esu.utilities.*;
 
 public class Game {
 	

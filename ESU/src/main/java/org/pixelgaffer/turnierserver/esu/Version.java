@@ -6,8 +6,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Savepoint;
 import java.util.*;
 
-import utilities.ErrorLog;
-import utilities.Resources;
+import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.esu.utilities.Resources;
 
 
 public class Version {

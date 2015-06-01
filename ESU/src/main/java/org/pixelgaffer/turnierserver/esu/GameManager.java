@@ -2,8 +2,9 @@ package org.pixelgaffer.turnierserver.esu;
 
 import java.io.File;
 
+import org.pixelgaffer.turnierserver.esu.utilities.*;
+
 import javafx.collections.*;
-import utilities.*;
 
 public class GameManager {
 

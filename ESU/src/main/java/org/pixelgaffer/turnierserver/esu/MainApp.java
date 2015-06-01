@@ -1,5 +1,6 @@
 package org.pixelgaffer.turnierserver.esu;
 
+import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.esu.view.ControllerGameManagement;
 import org.pixelgaffer.turnierserver.esu.view.ControllerAiManagement;
 import org.pixelgaffer.turnierserver.esu.view.ControllerRanking;
@@ -7,7 +8,6 @@ import org.pixelgaffer.turnierserver.esu.view.ControllerRoot;
 import org.pixelgaffer.turnierserver.esu.view.ControllerStartPage;
 import org.pixelgaffer.turnierserver.esu.view.ControllerSubmission;
 
-import utilities.ErrorLog;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

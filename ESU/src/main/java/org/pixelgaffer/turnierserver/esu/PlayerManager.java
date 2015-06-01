@@ -2,8 +2,9 @@ package org.pixelgaffer.turnierserver.esu;
 
 import java.io.File;
 
-import utilities.ErrorLog;
-import utilities.Resources;
+import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.esu.utilities.Resources;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
