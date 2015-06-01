@@ -77,6 +77,7 @@ public class CompileQueue implements Runnable
 				{
 					String lang = DatastoreFtpClient.retrieveAiLanguage(job.getAiId());
 					Compiler c = Compiler.getCompiler(job.getAiId(), job.getVersion(), job.getGame(), lang);
+					c.setUuid(job.getUuid());
 					CompileResult result = c.compileAndUpload(WorkerMain.getBackendClient());
 					DatastoreFtpClient.storeAiCompileOutput(job.getAiId(), job.getVersion(), result.getOutput());
 					// WorkerMain.getBackendClient().sendSuccess(

@@ -97,6 +97,7 @@ public abstract class Compiler
 		@Override
 		public void write (@NonNull String s) throws IOException
 		{
+			System.out.println("writing " + s);
 			ftpFile.write(s);
 			buf += s;
 		}
