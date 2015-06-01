@@ -81,7 +81,7 @@ public class Dialog {
 	 * @return true, wenn auf ok geklickt wurde
 	 */
 	public static boolean okAbort(String text){
-		return okAbort(text, "Bitte best‰tigen");
+		return okAbort(text, "Bitte best√§tigen");
 	}
 	public static boolean okAbort(String text, String title){
 		return generalDialog(text, title, AlertType.CONFIRMATION);
@@ -112,10 +112,10 @@ public class Dialog {
 	 * Ruft einen Dateiauswahl-Dialog auf
 	 * 
 	 * @param --> mainApp.stage; Stage, auf der der Dialog dargestellt werden soll
-	 * @return die ausgew‰hlte Datei
+	 * @return die ausgew√§hlte Datei
 	 */
 	public static File fileChooser(Stage stage){
-		return fileChooser(stage, "Bitte eine Datei ausw‰hlen");
+		return fileChooser(stage, "Bitte eine Datei ausw√§hlen");
 	}
 	public static File fileChooser(Stage stage, String title){
 		FileChooser fileChooser = new FileChooser();
@@ -127,10 +127,10 @@ public class Dialog {
 	 * Ruft einen Datei-Speicher-Dialog auf
 	 * 
 	 * @param --> mainApp.stage; Stage, auf der der Dialog dargestellt werden soll
-	 * @return die ausgew‰hlte Datei
+	 * @return die ausgew√§hlte Datei
 	 */
 	public static File fileSaver(Stage stage){
-		return fileChooser(stage, "Bitte eine Datei ausw‰hlen");
+		return fileChooser(stage, "Bitte eine Datei ausw√§hlen");
 	}
 	public static File fileSaver(Stage stage, String title, String defaultPath){
 		FileChooser fileChooser = new FileChooser();
@@ -143,10 +143,10 @@ public class Dialog {
 	 * Ruft einen Ordnerauswahl-Dialog auf
 	 * 
 	 * @param --> mainApp.stage; Stage, auf der der Dialog dargestellt werden soll
-	 * @return den ausgew‰hlten Ordner
+	 * @return den ausgew√§hlten Ordner
 	 */
 	public static File folderChooser(Stage stage){
-		return folderChooser(stage, "Bitte einen Ordner ausw‰hlen");
+		return folderChooser(stage, "Bitte einen Ordner ausw√§hlen");
 	}
 	public static File folderChooser(Stage stage, String title){
 		DirectoryChooser folderChooser = new DirectoryChooser();

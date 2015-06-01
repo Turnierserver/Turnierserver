@@ -10,14 +10,14 @@ public class ErrorLog {
 	private static final File file = new File("errorLog.txt");
 	
 	/**
-	 * lˆscht die Datei "errorLog.txt"
+	 * l√∂scht die Datei "errorLog.txt"
 	 */
 	public static void clear(){
 		file.delete();
 	}
 	
 	/**
-	 * Speichert einen neuen Eintrag in "errorLog.txt" mit anschlieﬂender newLine
+	 * Speichert einen neuen Eintrag in "errorLog.txt" mit anschlie√üender newLine
 	 * 
 	 * @param log Inhalt der Fehlermeldung
 	 * @param withClock bestimmt, ob die Uhrzeit mit gespeichert werden soll
@@ -33,7 +33,7 @@ public class ErrorLog {
 	}
 	
 	/**
-	 * ‹berladene Methode ohne withClock-Auswahl (siehe oben)
+	 * √ºberladene Methode ohne withClock-Auswahl (siehe oben)
 	 * 
 	 * @param log Inhalt der Fehlermeldung
 	 */
@@ -43,7 +43,7 @@ public class ErrorLog {
 	}
 	
 	/**
-	 * ‹bernimmt den eigentlichen Vorgang des Schreibens
+	 * √ºbernimmt den eigentlichen Vorgang des Schreibens
 	 * 
 	 * @param log Inhalt der Fehlermeldung
 	 */

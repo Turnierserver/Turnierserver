@@ -50,7 +50,7 @@ public class Game {
 			logic = prop.getProperty("logic");
 			state = prop.getProperty("state");
 			judged = prop.getProperty("judged");
-		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt (Version)");}
+		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt (Game)");}
 	}
 	public void storeProps(){
 		if (isOnline)
@@ -62,6 +62,8 @@ public class Game {
 		prop.setProperty("logic", logic);
 		prop.setProperty("state", state);
 		prop.setProperty("judged", judged);
+		prop.setProperty("participantAmount", participants.size() + "");
+		
 		
 		try {
 			File dir = new File(Resources.game(this));
