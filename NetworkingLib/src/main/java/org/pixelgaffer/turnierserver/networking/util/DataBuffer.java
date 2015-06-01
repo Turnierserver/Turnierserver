@@ -3,6 +3,8 @@ package org.pixelgaffer.turnierserver.networking.util;
 import java.io.ByteArrayOutputStream;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.function.ToIntFunction;
+import java.util.stream.Collectors;
 
 /**
  * Diese Klasse ist ein Buffer für ein byte[], der von Paket-basierten Clients
@@ -11,7 +13,7 @@ import java.util.LinkedList;
 public class DataBuffer
 {
 	private ByteArrayOutputStream buf = new ByteArrayOutputStream();
-	private Deque<Integer> newlines = new LinkedList<>();
+	private LinkedList<Integer> newlines = new LinkedList<>();
 	
 	/**
 	 * Fügt die gelesenen Bytes dem Buffer hinzu.
@@ -28,7 +30,7 @@ public class DataBuffer
 	public void add (byte b)
 	{
 		if (b == 0xa)
-			newlines.add(1 + buf.size() - (newlines.isEmpty() ? 0 : newlines.getLast()));
+			newlines.add(1 + buf.size() - (newlines.isEmpty() ? 0 : newlines.stream().collect(Collectors.summingInt((i) -> i))));
 		buf.write(b);
 	}
 	
