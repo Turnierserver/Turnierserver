@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.esu;
 
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.esu.utilities.WebConnector;
 import org.pixelgaffer.turnierserver.esu.view.ControllerGameManagement;
 import org.pixelgaffer.turnierserver.esu.view.ControllerAiManagement;
 import org.pixelgaffer.turnierserver.esu.view.ControllerRanking;
@@ -25,6 +26,7 @@ public class MainApp extends Application{
 	public ControllerRanking cRanking;
 	public ControllerSubmission cSubmission;
 	
+	public WebConnector webConnector = new WebConnector("http://192.168.178.43:5000/api/");//"http://thuermchen.com/api/");
 	
 	/**
 	 * Main-Methode

@@ -1,6 +1,12 @@
 package org.pixelgaffer.turnierserver.esu.view;
 
+import java.io.IOException;
+
+import javax.xml.transform.ErrorListener;
+
 import org.pixelgaffer.turnierserver.esu.MainApp;
+import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -57,7 +63,18 @@ public class ControllerStartPage{
 	
 	@FXML
 	void clickSignIn(){
-		tbActualLogic.setText("Anmelden geklickt");
+		
+		try {
+			if (!mainApp.webConnector.login(tbEmail.getText(), tbPassword.getText())){
+				Dialog.error("Falsches Passwort oder Email", "Login fehlgeschlagen");
+			}
+			else{
+				Dialog.info("Login erfolgreich!");
+			}
+		} catch (IOException e) {
+			Dialog.error("Login fehlgeschlagen: ERROR", "Login fehlgeschlagen");
+			ErrorLog.write("Login fehlgeschlagen: " + e.getMessage());
+		}
 	}
 	
 }
