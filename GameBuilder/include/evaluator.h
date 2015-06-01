@@ -50,7 +50,7 @@ private:
 	
 	// zeugs für upload
 	QString host;
-	QString user;
+	QString email;
 	QString pass;
 	QNetworkAccessManager *mgr = 0;
 	

@@ -202,10 +202,10 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 					in >> host;
 				}
 				// benutzer fragen
-				if (user.isEmpty())
+				if (email.isEmpty())
 				{
-					printf("Benutzername: ");
-					in >> user;
+					printf("E-Mail: ");
+					in >> email;
 				}
 				// passwort fragen
 				if (pass.isEmpty())
@@ -245,7 +245,7 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 				loginRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 				loginRequest.setHeader(QNetworkRequest::UserAgentHeader, "GameBuilder (QtNetwork " QT_VERSION_STR ")");
 				QJsonObject json;
-				json.insert("username", user);
+				json.insert("email", email);
 				json.insert("password", pass);
 				QJsonDocument doc(json);
 				QEventLoop loop;
