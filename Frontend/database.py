@@ -238,7 +238,7 @@ class AI(db.Model):
 
 	def new_version(self):
 		self.version_list.append(AI_Version(version_id = len(self.version_list) + 1))
-		if len(self.version_list > 1):
+		if len(self.version_list) > 1:
 			## copy AI code from prev version...
 			new_path = "AIs/{}/v{}/".format(self.id, self.version_list[-1].version_id)
 			self.version_list[-2].copy_code(new_path)
@@ -254,7 +254,7 @@ class AI(db.Model):
 			try:
 				self.ftp_sync()
 			except ftp.err:
-				print("Failed to sync", ftp.name)
+				print("Failed to sync", self.name)
 				return False
 		return True
 

@@ -315,9 +315,9 @@ def api_ai_icon(id):
 		abort(404)
 
 def upload_single_file(request, path, image=False):
-	print(request.mimetype)
-	print(request.files)
-	print(request.data)
+	#print(request.mimetype)
+	#print(request.files)
+	#print(request.data)
 	if request.mimetype == "multipart/form-data":
 		if len(request.files) != 1:
 			return {"error": "Invalid number of files attached."}, 400
@@ -749,6 +749,7 @@ def upload_game_libs(id, lang):
 	try:
 		return f()
 	except ftp.err:
+		print("FTP ERR @ upload_game_libs")
 		return CommonErrors.FTP_ERROR
 
 @api.route("/upload_game_logic/<int:id>", methods=["POST"])
