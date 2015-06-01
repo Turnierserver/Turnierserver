@@ -1,7 +1,9 @@
-.directory
+﻿.directory
 ESU/errorLog.txt
 __pycache__
 *.log
+Players/
+Downloads/
 
 .settings/
 .metadata/
