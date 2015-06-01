@@ -151,7 +151,7 @@ public class Games
 	 */
 	public static GameLogic<?, ?> loadGameLogic (int gameId)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
-			ClassNotFoundException, InstantiationException, IllegalAccessException
+			ReflectiveOperationException
 	{
 		// jar runterladen
 		File jar = Files.createTempFile("logic", ".jar").toFile();
@@ -175,7 +175,7 @@ public class Games
 	 * Startet ein Spiel des angegebenen Typs mit den angegebenen KIs.
 	 */
 	public static Game startGame (int gameId, String ... ais)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException,
+			throws ReflectiveOperationException, IOException,
 			FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
 		GameLogic<?, ?> logic = loadGameLogic(gameId);

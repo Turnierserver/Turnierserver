@@ -4,25 +4,27 @@ import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
 
-/**
- * Dieser Command wird vom Worker über den auf dem Backend laufenden Server ans
- * Backend als Nachricht über den Erfolg eines Jobs geschickt.
- */
 @AllArgsConstructor
-@ToString
-public class WorkerCommandSuccess
+public class WorkerCommandAnswer
 {
+	public static final char CRASH = 'C';
+	public static final char MESSAGE = 'M';
+	public static final char SUCCESS = 'S';
+	
 	/** Die Aktion, die der Worker ausgeführt hat. */
 	@Getter
 	private char action;
 	
-	/** Gibt an, ob der Job erfolgreich beendet wurde oder nicht. */
+	/** Gibt an, was gemeldet wird. */
 	@Getter
-	private boolean success;
+	private char what;
 	
 	/** Die UUID die das Backend diesem Job zugewiesen hat. */
 	@Getter
 	private UUID uuid;
+	
+	/** Die Message die an das Backend geschickt werden soll. */
+	@Getter
+	private String message;
 }

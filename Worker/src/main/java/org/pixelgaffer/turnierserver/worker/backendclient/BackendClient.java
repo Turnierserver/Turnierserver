@@ -1,7 +1,8 @@
 package org.pixelgaffer.turnierserver.worker.backendclient;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.*;
+import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.COMPILE;
+import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.STARTAI;
 
 import java.io.IOException;
 
@@ -10,9 +11,10 @@ import naga.NIOSocket;
 import naga.SocketObserver;
 
 import org.pixelgaffer.turnierserver.Parsers;
+import org.pixelgaffer.turnierserver.compile.Backend;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
-import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandSuccess;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 import org.pixelgaffer.turnierserver.worker.Sandboxes;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
@@ -22,7 +24,7 @@ import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
 /**
  * Diese Klasse ist der Client zum Backend.
  */
-public class BackendClient implements SocketObserver
+public class BackendClient implements SocketObserver, Backend
 {
 	private NIOSocket client;
 	
@@ -38,10 +40,10 @@ public class BackendClient implements SocketObserver
 		client.listen(this);
 	}
 	
-	public void sendSuccess (WorkerCommandSuccess success) throws IOException
+	public void sendAnswer (WorkerCommandAnswer answer) throws IOException
 	{
-		System.out.println("BackendClient:39: sending success: " + success);
-		client.write(Parsers.getWorker().parse(success));
+		System.out.println("BackendClient:39: sending success: " + answer);
+		client.write(Parsers.getWorker().parse(answer));
 		client.write("\n".getBytes(UTF_8));
 	}
 	

@@ -15,7 +15,7 @@ import org.pixelgaffer.turnierserver.backend.Workers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
-import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandSuccess;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 
@@ -81,12 +81,27 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 			{
 				try
 				{
-					WorkerCommandSuccess success = Parsers.getWorker().parse(line, WorkerCommandSuccess.class);
-					Jobs.jobFinished(success);
+					// WorkerCommandSuccess success =
+					// Parsers.getWorker().parse(line,
+					// WorkerCommandSuccess.class);
+					// Jobs.jobFinished(success);
+					
+					WorkerCommandAnswer answer = Parsers.getWorker().parse(line, WorkerCommandAnswer.class);
+					if (answer.getWhat() == WorkerCommandAnswer.MESSAGE)
+					{
+						BackendFrontendCompileMessage msg = new BackendFrontendCompileMessage(answer.getMessage(), Jobs.findRequestId(answer.getUuid()));
+						BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(msg));
+					}
+					else if ((answer.getWhat() == WorkerCommandAnswer.CRASH)
+							|| (answer.getWhat() == WorkerCommandAnswer.SUCCESS))
+					{
+						Jobs.jobFinished(answer);
+					}
 				}
 				catch (Exception e)
 				{
-					BackendMain.getLogger().severe("BackendWorkerConnectionHandler: Failed to parse answer from Worker: " + e);
+					BackendMain.getLogger().severe(
+							"BackendWorkerConnectionHandler: Failed to parse answer from Worker: " + e);
 				}
 			}
 		}

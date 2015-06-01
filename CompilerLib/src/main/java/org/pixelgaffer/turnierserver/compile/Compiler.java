@@ -10,25 +10,39 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
+import java.util.UUID;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandAnswer;
 
 /**
  * Diese Klasse ist eine abstrakte Implementation eines Compilers, der die
  * Verbindung zum FTP-Server größtenteils übernimmt.
  */
-@AllArgsConstructor
 public abstract class Compiler
 {
+	public Compiler (int ai, int version, int game)
+	{
+		super();
+		this.ai = ai;
+		this.version = version;
+		this.game = game;
+	}
+
 	public static Compiler getCompiler (int ai, int version, int game, String language)
 			throws ReflectiveOperationException
 	{
@@ -39,6 +53,50 @@ public abstract class Compiler
 		return c;
 	}
 	
+	/**
+	 * Diese Klasse wird verwendet, um Ausgaben beim Kompilieren einer KI an
+	 * Frontend und FTP weiterzuleiten.
+	 */
+	@RequiredArgsConstructor
+	private class CompilerDebugWriter extends Writer
+	{
+		@NonNull
+		private Writer ftpFile;
+		@NonNull
+		private Backend backend;
+		
+		private String buf = "";
+		
+		@Override
+		public void close () throws IOException
+		{
+			flush();
+			ftpFile.close();
+		}
+		
+		@Override
+		public void flush () throws IOException
+		{
+			ftpFile.flush();
+			if (getUuid() != null)
+				backend.sendAnswer(new WorkerCommandAnswer(WorkerCommand.COMPILE, WorkerCommandAnswer.MESSAGE, getUuid(), buf));
+			buf = "";
+		}
+		
+		@Override
+		public void write (char[] buf, int off, int len) throws IOException
+		{
+			write(new String(buf, off, len));
+		}
+		
+		@Override
+		public void write (@NonNull String s) throws IOException
+		{
+			ftpFile.write(s);
+			buf += s;
+		}
+	}
+	
 	@Getter
 	private int ai;
 	@Getter
@@ -46,7 +104,10 @@ public abstract class Compiler
 	@Getter
 	private int game;
 	
-	public CompileResult compileAndUpload ()
+	@Getter @Setter
+	private UUID uuid;
+	
+	public CompileResult compileAndUpload (@NonNull Backend backend)
 			throws IOException, InterruptedException, FTPIllegalReplyException, FTPException, FTPDataTransferException,
 			FTPAbortedException, FTPListParseException
 	{
@@ -56,7 +117,9 @@ public abstract class Compiler
 		// zeugs anlegen
 		File bindir = Files.createTempDirectory("aibin").toFile();
 		File output = Files.createTempFile("compiler", ".txt").toFile();
-		PrintWriter pw = new PrintWriter(new FileOutputStream(output), true);
+		FileWriter ftpFile = new FileWriter(output);
+		Writer w = new CompilerDebugWriter(ftpFile, backend);
+		PrintWriter pw = new PrintWriter(w, true);
 		
 		// properties lesen
 		Properties p = new Properties();
@@ -72,7 +135,8 @@ public abstract class Compiler
 		{
 			// packen
 			File archive = Files.createTempFile("aibin", ".tar.bz2").toFile();
-			String files[] = bindir.list( (dir, name) -> !name.equals("libraries.txt") && !name.equals("settings.prop"));
+			String files[] = bindir
+					.list( (dir, name) -> !name.equals("libraries.txt") && !name.equals("settings.prop"));
 			String cmd[] = new String[files.length + 3];
 			cmd[0] = "tar";
 			cmd[1] = "cfj";
@@ -122,7 +186,7 @@ public abstract class Compiler
 	
 	protected int execute (File wd, PrintWriter output, String ... command) throws IOException, InterruptedException
 	{
-//		output.print(wd.getAbsolutePath());
+		// output.print(wd.getAbsolutePath());
 		output.print("$");
 		for (String cmd : command)
 		{
@@ -142,7 +206,8 @@ public abstract class Compiler
 		Process p = pb.start();
 		int returncode = p.waitFor();
 		Reader in = new FileReader(log);
-		char buf[] = new char[8192]; int read;
+		char buf[] = new char[8192];
+		int read;
 		while ((read = in.read(buf)) > 0)
 			output.write(buf, 0, read);
 		in.close();
@@ -151,21 +216,26 @@ public abstract class Compiler
 		return returncode;
 	}
 	
-	/*public static void main (String args[])
-			throws IOException, InterruptedException, FTPIllegalReplyException, FTPException, FTPDataTransferException,
-			FTPAbortedException, FTPListParseException
-	{
-		PropertyUtils.loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
-		
-		Compiler comp = new JavaCompiler(6, 1, 6);
-		CompileResult r = comp.compileAndUpload();
-		System.out.println("---------------------------------------------------------------------------------------");
-		FileInputStream fis = new FileInputStream(r.getOutput());
-		byte buf[] = new byte[8192];
-		int read;
-		while ((read = fis.read(buf)) != -1)
-			System.out.write(buf, 0, read);
-		fis.close();
-		System.out.println(r.isSuccessfull());
-	}*/
+	/*
+	 * public static void main (String args[])
+	 * throws IOException, InterruptedException, FTPIllegalReplyException,
+	 * FTPException, FTPDataTransferException,
+	 * FTPAbortedException, FTPListParseException
+	 * {
+	 * PropertyUtils.loadProperties(args.length > 0 ? args[0] :
+	 * "/etc/turnierserver/turnierserver.prop");
+	 * Compiler comp = new JavaCompiler(6, 1, 6);
+	 * CompileResult r = comp.compileAndUpload();
+	 * System.out.println(
+	 * "---------------------------------------------------------------------------------------"
+	 * );
+	 * FileInputStream fis = new FileInputStream(r.getOutput());
+	 * byte buf[] = new byte[8192];
+	 * int read;
+	 * while ((read = fis.read(buf)) != -1)
+	 * System.out.write(buf, 0, read);
+	 * fis.close();
+	 * System.out.println(r.isSuccessfull());
+	 * }
+	 */
 }
