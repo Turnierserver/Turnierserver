@@ -96,7 +96,7 @@ public class ControllerAiManagement{
 	
 	
 	/**
-	 * Lädt alle KIs in die KI-Liste
+	 * LÃ¤dt alle KIs in die KI-Liste
 	 */
 	public void showPlayers(){
 		lvAis.setItems(manager.players);
@@ -109,7 +109,7 @@ public class ControllerAiManagement{
 	 * Zeigt eine KI und eine ihrer Versionen an
 	 * 
 	 * @param p die KI
-	 * @param v die zugehörige Version
+	 * @param v die zugehï¿½rige Version
 	 */
 	public void showPlayer(Player p, Version v){
 		player = p;
@@ -117,7 +117,7 @@ public class ControllerAiManagement{
 		showPlayer();
 	}
 	/**
-	 * Setzt alle Eigenschaften der Benutzeroberfläche, wie z.B. das KI-Namensfeld, das KI-Bild, die KI-Beschreibung, ...
+	 * Setzt alle Eigenschaften der Benutzeroberflï¿½che, wie z.B. das KI-Namensfeld, das KI-Bild, die KI-Beschreibung, ...
 	 */
 	public void showPlayer(){
 		
@@ -136,21 +136,21 @@ public class ControllerAiManagement{
 			btEdit.setDisable(false);
 			btToActual.setDisable(false);
 			
-			if (version == null){  //versuchen, die Version zu setzen, wenn keine ausgewählt ist
+			if (version == null){  //versuchen, die Version zu setzen, wenn keine ausgewï¿½hlt ist
 				version = player.lastVersion();
 			}
 			boolean containing = false;
 			for (int i = 0; i < player.versions.size(); i++)
 				if (version == player.versions.get(i))
 					containing = true;
-			if(!containing){  //oder eine nicht-zugehörige ausgewählt ist
+			if(!containing){  //oder eine nicht-zugehï¿½rige ausgewï¿½hlt ist
 				version = player.lastVersion();
 			}
 		}
 		else{
 			lbName.setText("Name");
 			lbLanguage.setText("Sprache: ");
-			tbDescription.setText("Momentan ist kein Spieler ausgewählt");
+			tbDescription.setText("Momentan ist kein Spieler ausgewï¿½hlt");
 			cbVersion.getSelectionModel().clearSelection();
 			ObservableList<Version> emptyFill = FXCollections.observableArrayList();
 			cbVersion.setItems(emptyFill);
@@ -215,7 +215,7 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Lädt mithilfe der CodeEditoren der anzuzeigenden Version alle Dateien der Version in die Tab-Leiste
+	 * LÃ¤dt mithilfe der CodeEditoren der anzuzeigenden Version alle Dateien der Version in die Tab-Leiste
 	 */
 	private void setVersionTabs(){
 		tpCode.getTabs().clear();
@@ -228,17 +228,20 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Speichert und überprüft, ob auf das "neue Datei"-Tab geklickt wurde
+	 * Speichert und Ã¼berprÃ¼ft, ob auf das "neue Datei"-Tab geklickt wurde
 	 * 
-	 * @param oldTab der zuvor ausgewählte Tab
-	 * @param newTab der neu ausgewählte Tab
+	 * @param oldTab der zuvor ausgewÃ¤hlte Tab
+	 * @param newTab der neu ausgewÃ¤hlte Tab
 	 */
 	void clickTabSelection(Tab oldTab, Tab newTab){
     	if (version != null)
     		version.saveCode();
     	if (newTab == newFileTab && newTab != oldTab){
     		tpCode.getSelectionModel().select(oldTab);
-    		File result = Dialog.fileSaver(mainApp.stage, "Bitte einen Ort und Dateinamen auswählen", Resources.version(version));
+    		if (version == null){
+    			Dialog.error("Bitte legen Sie zuerst eine Version an.", "Keine Version");
+    		}
+    		File result = Dialog.fileSaver(mainApp.stage, "Bitte einen Ort und Dateinamen auswÃ¤hlen", Resources.version(version));
     		if (result != null){
     			CodeEditor editor = new CodeEditor(result);
     			editor.forceSave();
@@ -253,10 +256,16 @@ public class ControllerAiManagement{
 	 * Button: Neue KI anlegen
 	 */
 	@FXML void clickNewAi(){
-		String title = tbName.getText();
+		String title = tbName.getText().replace(" ", "");
+		
+		if (title.equals("")){
+			Dialog.error("Bitte einen Namen fÃ¼r die KI eingeben", "Kein Name");
+			return;
+		}
+		
 		for (int i = 0; i < lvAis.getItems().size(); i++){  //Testen, ob die KI schon existiert
 			if (title.equals(lvAis.getItems().get(i).title)){
-				Dialog.error("Es können keine zwei KIs mit dem gleichen Namen erstellt werden", "Doppelter Name");
+				Dialog.error("Es kÃ¶nnen keine zwei KIs mit dem gleichen Namen erstellt werden", "Doppelter Name");
 				return;
 			}
 		}
@@ -266,7 +275,7 @@ public class ControllerAiManagement{
 	}
 
 	/**
-	 * Listenselektions-Änderung: zeigt andere KI an
+	 * Listenselektions-Ã„nderung: zeigt andere KI an
 	 */
 	@FXML void clickChangeAi(){
 		player = lvAis.getSelectionModel().getSelectedItem();
@@ -302,7 +311,7 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Button: aktuelle Version der KI wird ausgewählt
+	 * Button: aktuelle Version der KI wird ausgewï¿½hlt
 	 */
 	@FXML void clickToActual(){
 		version = player.lastVersion();
@@ -310,7 +319,7 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Listenselektions-Änderung: zeigt andere Version an
+	 * Listenselektions-Ã„nderung: zeigt andere Version an
 	 */
 	@FXML void clickVersionChange(){
 		if (version != cbVersion.getValue() && cbVersion.getValue() != null){
@@ -320,7 +329,7 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Radiobutton: "SimplePlayer" wurde ausgewählt
+	 * Radiobutton: "SimplePlayer" wurde ausgewï¿½hlt
 	 */
 	@FXML void clickRbSimple(){
 		rbSimple.setSelected(true);
@@ -329,7 +338,7 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Radiobutton: "Weiterschreiben" wurde ausgewählt
+	 * Radiobutton: "Weiterschreiben" wurde ausgewï¿½hlt
 	 */
 	@FXML void clickRbContinue(){
 		rbSimple.setSelected(false);
@@ -338,7 +347,7 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Radiobutton: "Aus Datei" wurde ausgewählt
+	 * Radiobutton: "Aus Datei" wurde ausgewï¿½hlt
 	 */
 	@FXML void clickRbFromFile(){
 		rbSimple.setSelected(false);
@@ -347,10 +356,10 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Button: Dateiauswahl wenn "Aus Datei" ausgewählt ist
+	 * Button: Dateiauswahl wenn "Aus Datei" ausgewï¿½hlt ist
 	 */
 	@FXML void clickSelectFile(){
-		tbFile.setText(Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner auswählen").getPath());
+		tbFile.setText(Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner auswï¿½hlen").getPath());
 	}
 	
 	/**
@@ -409,10 +418,10 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Button: Bild ändern
+	 * Button: Bild ï¿½ndern
 	 */
 	@FXML void clickChangeImage(){
-		File result = Dialog.fileChooser(mainApp.stage, "Bild auswählen");
+		File result = Dialog.fileChooser(mainApp.stage, "Bild auswï¿½hlen");
 		Image img = Resources.imageFromFile(result);
 		if (img != null){
 			player.setPicture(Resources.imageFromFile(result));
@@ -421,7 +430,7 @@ public class ControllerAiManagement{
 	}
 
 	/**
-	 * Button: Bild löschen
+	 * Button: Bild lï¿½schen
 	 */
 	@FXML void clickDeleteImage(){
 		player.setPicture(null);
