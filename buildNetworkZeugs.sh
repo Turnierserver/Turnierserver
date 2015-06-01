@@ -10,11 +10,9 @@ projects="NetworkingLib CompilerLib Worker Game-Logic Backend"
 for project in $projects
 do
     cd $project
-    mvn clean
-    mvn package
-    mvn install
+    #mvn clean
+    mvn package install dependency:copy-dependencies
     cp target/*.jar ../build/
-    mvn dependency:copy-dependencies
     cp target/dependency/* ../build/
     cd ..
 done
