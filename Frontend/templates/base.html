@@ -42,7 +42,7 @@
 			{% else %}
 			<div class="item">
 				<div class="ui input">
-					<input id="username" type="text" placeholder="Nutzername">
+					<input id="email" type="text" placeholder="Email">
 				</div>
 			</div>
 			<div class="item">
@@ -63,9 +63,9 @@
 				var f = function() {
 					console.log("Logging in...")
 					var pw = $("#password").val()
-					var name = $("#username").val()
+					var email = $("#email").val()
 					var remember = $("#remember-me").prop("checked")
-					$.post("/api/login", {username: name, password: pw, remember: remember}).done(function(data) {
+					$.post("/api/login", {email: email, password: pw, remember: remember}).done(function(data) {
 						console.log("Logged in.")
 						location.reload();
 					}).fail(function(xhr, textStatus, errorThrown) {
@@ -74,7 +74,7 @@
 					})
 				}
 				$("#login").on("click", f)
-				$('#username, #password').keypress(function(event){
+				$('#email, #password').keypress(function(event){
 					var keycode = (event.keyCode ? event.keyCode : event.which);
 						if(keycode == '13'){
 							f()

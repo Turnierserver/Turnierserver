@@ -134,6 +134,7 @@
 			<th>Kompiliert</th>
 			<th>Qualifiziert</th>
 			<th>Freigegeben</th>
+			<th>Aktion</th>
 		</tr></thead>
 		<tbody>
 			{% for version in ai.version_list %}
@@ -166,6 +167,13 @@
 					<button class="ui basic teal button">Freigeben</button>
 					{% else %}
 					<i class="large red remove icon"></i>
+					{% endif %}
+				</td>
+				<td class="center aligned">
+					{% if version.current %}
+					<button class="ui basic teal button">ZIP hochladen</button>
+					{% else %}
+					<button class="ui basic teal button">als ZIP runterladen</button>
 					{% endif %}
 				</td>
 			</tr>

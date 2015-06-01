@@ -200,25 +200,25 @@ def api_login():
 	if request.mimetype == "application/json":
 		if not request.json:
 			return {"error": "Not valid JSON."}, 400
-		username = request.json.get("username", None)
+		email = request.json.get("email", None)
 		password = request.json.get("password", None)
 		remember = request.json.get("remember", False)
 	elif request.mimetype == "application/x-www-form-urlencoded":
-		username = request.form['username']
+		email = request.form['email']
 		password = request.form['password']
 		remember = request.form.get("remember", False)
 		if remember:
 			remember = True
 	else:
 		return {"error": "Wrong Content-Type, must be application/json or application/x-www-form-urlencoded"}, 400
-	if not username or not password:
-		return { 'error': 'Missing username or password' }, 400
+	if not email or not password:
+		return { 'error': 'Missing email or password' }, 400
 
 	## Auch EMails akzeptieren?
-	user = User.query.filter(User.name.ilike(username)).first()
+	user = User.query.filter(User.email.ilike(email)).first()
 
 	if not user:
-		return { 'error': 'Invalid Username.' }, 404
+		return { 'error': 'Invalid email.' }, 404
 
 	if not user.check_pw(password):
 		return {'error': 'Wrong password.'}, 400

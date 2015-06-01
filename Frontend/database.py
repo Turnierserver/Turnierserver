@@ -205,6 +205,7 @@ class AI(db.Model):
 	name = db.Column(db.Text, nullable=False)
 	desc = db.Column(db.Text)
 	last_modified = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+	elo = db.Column(db.Float, default=0)
 	user_id = db.Column(db.Integer, db.ForeignKey('t_users.id'))
 	user = db.relationship("User", backref=db.backref('t_ais', order_by=id))
 	lang_id = db.Column(db.Integer, db.ForeignKey('t_langs.id'))
