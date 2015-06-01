@@ -1,5 +1,0 @@
-#test
-#Tue May 26 16:26:27 CEST 2015
-versionAmount=6
-description=(keine Beschreibung)
-language=Java
