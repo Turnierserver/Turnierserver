@@ -319,7 +319,7 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Listenselektions-�nderung: zeigt andere Version an
+	 * Listenselektions-Änderung: zeigt andere Version an
 	 */
 	@FXML void clickVersionChange(){
 		if (version != cbVersion.getValue() && cbVersion.getValue() != null){
