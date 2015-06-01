@@ -50,11 +50,11 @@ public class Game {
 		prop.setProperty("state", state);
 		prop.setProperty("judged", judged);
 		
-		try {
-			Writer writer = new FileWriter(Resources.versionProperties(this));
-			prop.store(writer, player.title + " v" + number );
-			writer.close();
-		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Version)");}
+//		try {
+//			Writer writer = new FileWriter(Resources.versionProperties(this));
+//			prop.store(writer, player.title + " v" + number );
+//			writer.close();
+//		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Version)");}
 	}
 	public void loadProps(){
 		
