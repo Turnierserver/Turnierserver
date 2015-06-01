@@ -304,7 +304,7 @@ class AI(db.Model):
 	def copy_example_code(self):
 		source_dir_base = "Games/{}/{}/example_ai".format(GameType.query.first().id, self.lang.name)
 		target_dir_base = "AIs/{}/v{}".format(self.id, self.lastest_version().version_id)
-		return ftp.copy_tree(source_dir_base, target_dir_base):
+		return ftp.copy_tree(source_dir_base, target_dir_base)
 
 
 	def __repr__(self):
