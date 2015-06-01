@@ -220,6 +220,9 @@ def api_login():
 	if not user:
 		return { 'error': 'Invalid email.' }, 404
 
+	if not user.validated:
+		return { 'error': 'Account not activated.' }, 400
+
 	if not user.check_pw(password):
 		return {'error': 'Wrong password.'}, 400
 

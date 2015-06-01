@@ -10,6 +10,7 @@ import socket
 import arrow
 import json
 import magic
+import uuid
 
 
 def timestamp():
@@ -134,10 +135,23 @@ class User(db.Model):
 	pw_hash = db.Column(db.Text)
 	ai_list = db.relationship("AI", order_by="AI.id", backref="User", cascade="all, delete, delete-orphan")
 	admin = db.Column(db.Boolean, default=False)
+	validation_code = db.Column(db.String(36), nullable=True)
 
 	def __init__(self, *args, **kwargs):
 		super(User, self).__init__(*args, **kwargs)
+		self.validation_code = str(uuid.uuid4())
 		db_obj_init_msg(self)
+
+	def validate(self, uuid):
+		if self.validation_code == uuid:
+			self.validation_code = None
+			print("sucessfully validated", self.name)
+		return self.validated
+
+	@property
+	def validated(self):
+		return self.validation_code == None
+
 
 	def info(self):
 		return {"id": self.id, "name": self.name, "ais": [ai.info() for ai in self.ai_list], "admin": self.admin}
