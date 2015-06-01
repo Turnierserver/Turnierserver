@@ -39,6 +39,19 @@ public class Game {
 	}
 	
 	
+	public void loadProps(){
+		try {
+			Reader reader = new FileReader(Resources.gameProperties(this));
+			Properties prop = new Properties();
+			prop.load(reader);
+			reader.close();
+			date = prop.getProperty("date");
+			duration = prop.getProperty("duration");
+			logic = prop.getProperty("logic");
+			state = prop.getProperty("state");
+			judged = prop.getProperty("judged");
+		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt (Version)");}
+	}
 	public void storeProps(){
 		if (isOnline)
 			return;
@@ -50,14 +63,14 @@ public class Game {
 		prop.setProperty("state", state);
 		prop.setProperty("judged", judged);
 		
-//		try {
-//			Writer writer = new FileWriter(Resources.versionProperties(this));
-//			prop.store(writer, player.title + " v" + number );
-//			writer.close();
-//		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Version)");}
-	}
-	public void loadProps(){
-		
+		try {
+			File dir = new File(Resources.game(this));
+			dir.mkdirs();
+			
+			Writer writer = new FileWriter(Resources.gameProperties(this));
+			prop.store(writer, ID);
+			writer.close();
+		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Game)");}
 	}
 	
 	/**

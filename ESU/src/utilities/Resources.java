@@ -31,6 +31,12 @@ public class Resources {
 	public static String game(Game game){
 		return gameFolder() + "/" + game.ID;
 	}
+	/**
+	 * Gibt den Pfad zu den Properties eines bestimmten Spiels zurück
+	 */
+	public static String gameProperties(Game game){
+		return gameFolder() + "/" + game.ID + "/properties.txt";
+	}
 	
 	/**
 	 * Gibt den Pfad zum Ordner eines bestimmten Spielers zurück
