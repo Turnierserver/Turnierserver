@@ -2,7 +2,7 @@
 ESU/errorLog.txt
 __pycache__
 *.log
-Player/
+Players/
 Downloads/
 
 .settings/
