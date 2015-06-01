@@ -87,31 +87,32 @@ class SyncedFTP:
 	def send_cached(self, path):
 		pass
 
-	def copy_tree(from_dir, to_dir, overwrite=True):
-		@ftp.safe
+	def copy_tree(self, from_dir, to_dir, overwrite=True):
+		@self.safe
 		def f():
 			if overwrite:
-				print("DEL:", to_dir)
-				ftp.ftp_host.rmtree(to_dir)
+				if self.ftp_host.path.isdir(to_dir):
+					print("DEL:", to_dir)
+					self.ftp_host.rmtree(to_dir)
 				print("MKDIR:", to_dir)
-				ftp.ftp_host.mkdir(to_dir)
+				self.ftp_host.mkdir(to_dir)
 
-			for root, dirs, files in ftp.ftp_host.walk(from_dir, topdown=True, followlinks=False):
+			for root, dirs, files in self.ftp_host.walk(from_dir, topdown=True, followlinks=False):
 				t_dir = to_dir + root[len(from_dir):] + "/"
 				s_dir = root + "/"
 				for d in dirs:
 					print("MKDIR:", t_dir + d)
-					ftp.ftp_host.mkdir(t_dir+d)
+					self.ftp_host.mkdir(t_dir+d)
 				for f in files:
 					print(s_dir+f, "->", t_dir+f)
-					with ftp.ftp_host.open(s_dir+f, "r", encoding="utf-8") as source:
-						with ftp.ftp_host.open(t_dir+f, "w", encoding="utf-8") as target:
+					with self.ftp_host.open(s_dir+f, "r", encoding="utf-8") as source:
+						with self.ftp_host.open(t_dir+f, "w", encoding="utf-8") as target:
 							target.write(source.read())
 			return True
 
 		try:
 			return f()
-		except ftp.err:
+		except self.err:
 			print("copy_tree failed!")
 			return False
 
@@ -237,10 +238,14 @@ class AI(db.Model):
 		return self.version_list[-1]
 
 	def new_version(self):
+		try:
+			self.ftp_sync()
+		except ftp.err:
+			pass
 		self.version_list.append(AI_Version(version_id = len(self.version_list) + 1))
 		if len(self.version_list) > 1:
 			## copy AI code from prev version...
-			new_path = "AIs/{}/v{}/".format(self.id, self.version_list[-1].version_id)
+			new_path = "AIs/{}/v{}".format(self.id, self.version_list[-1].version_id)
 			self.version_list[-2].copy_code(new_path)
 		return self.version_list[-1]
 
@@ -356,8 +361,12 @@ class AI_Version(db.Model):
 		db.session.commit()
 
 	def copy_code(self, new_path):
-		mypath = "AIs/{}/v{}/".format(self.ai_id, self.version_id)
+		mypath = "AIs/{}/v{}".format(self.ai_id, self.version_id)
 		return ftp.copy_tree(mypath, new_path)
+
+	@property
+	def current(self):
+		return self.ai.lastest_version() == self
 
 	def __repr__(self):
 		return "<AI_Version(id={}, version_id={}, ai_id={}>".format(self.id, self.version_id, self.ai_id)

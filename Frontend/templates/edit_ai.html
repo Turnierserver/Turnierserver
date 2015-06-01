@@ -107,7 +107,7 @@
 		<label>Beschreibung</label>
 		<textarea id="desc">{{ ai.desc }}</textarea>
 	</div>
-	<div class="ui centered grid" style="margin-top: 1em;">
+	<div class="ui centered grid" style="margin-top: 1em; margin-bottom: 1em;">
 		<div id="submit" class="ui teal labeled icon submit button">
 			<i class="save outline icon"></i> Update
 		</div>
@@ -125,6 +125,66 @@
 		</div>
 	</div>
 </form>
+
+<div class="ui segment">
+	<h2>Versionen:</h2>
+	<table class="ui celled padded table">
+		<thead>
+			<tr><th class="single line">Versionsnummer</th>
+			<th>Kompiliert</th>
+			<th>Qualifiziert</th>
+			<th>Freigegeben</th>
+		</tr></thead>
+		<tbody>
+			{% for version in ai.version_list %}
+			<tr>
+				<td>
+					<h2 class="ui center aligned header">{{version.version_id}}</h2>
+				</td>
+				<td class="center aligned">
+					{% if version.compiled %}
+					<i class="large green checkmark icon"></i>
+					{% elif version.current %}
+					<a class="ui basic teal button" href="{{url_for("profile.compile_ai", id=ai.id)}}">Kompilieren</a>
+					{% else %}
+					<i class="large red remove icon"></i>
+					{% endif %}
+				</td>
+				<td class="center aligned">
+					{% if version.qualified %}
+					<i class="large green checkmark icon"></i>
+					{% elif version.compiled and version.current %}
+					<button class="ui basic teal button">Qualifizieren</button>
+					{% else %}
+					<i class="large red remove icon"></i>
+					{% endif %}
+				</td>
+				<td class="center aligned">
+					{% if version.frozen %}
+					<i class="large green checkmark icon"></i>
+					{% elif version.qualified and version.current %}
+					<button class="ui basic teal button">Freigeben</button>
+					{% else %}
+					<i class="large red remove icon"></i>
+					{% endif %}
+				</td>
+			</tr>
+			{% endfor %}
+			<tr>
+				<td class="three wide center aligned">
+					<button id="new_version" class="ui large basic teal button">Neue Version</button>
+					<script>
+					$("#new_version").on("click", function() {
+						$.post("/api/ai/{{ai.id}}/new_version", {}, function () {
+							location.reload();
+						})
+					})
+					</script>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 
 <div id="delete_modal" class="ui basic modal">
 	<i class="close icon"></i>

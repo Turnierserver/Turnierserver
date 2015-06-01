@@ -419,8 +419,8 @@ def api_ai_update(id):
 		if l:
 			## remove versions, prompt user?
 			ai.lang = l
-			for version in ai.version_list:
-				version.delete()
+			#for version in ai.version_list:
+			#	version.delete()
 
 	if 'extra[]' in request.form:
 		extras = request.form.getlist("extra[]")
@@ -480,22 +480,16 @@ def api_ai_compile(id):
 		return (CommonErrors.INVALID_ID[0]["error"], "error")
 	if not current_user.can_access(ai):
 		return (CommonErrors.NO_ACCESS[0]["error"], "error")
+
+
+	if ai.lastest_version().frozen:
+		return {"error": "AI_Version is frozen"}, 400
+	ai.lastest_version().compiled = True
+	db.session.commit()
+
 	reqid = backend.request_compile(ai)
 	yield ("compiling", "status")
 	yield ("F: Kompilierung mit ID {} angefangen.\n".format(reqid), "set_text")
-
-
-
-	@ftp.safe
-	def f():
-		yield ("F: Kompilierungs-Log:\n", "log")
-		path = "AIs/{}/bin/v{}-compile.out".format(ai.id, ai.lastest_version().version_id)
-		if ftp.ftp_host.path.isfile(path):
-			with ftp.ftp_host.open(path, "r", encoding="utf-8") as f:
-				yield (path+"\n"+f.read(), "log")
-		else:
-			yield (path + " existiert noch nicht.\n", "log")
-
 
 	timed_out = 0
 	while True:
@@ -513,23 +507,37 @@ def api_ai_compile(id):
 			if timed_out > 0:
 				yield ("\n", "log")
 			timed_out = 0
-			yield ("B: " + str(resp) + "\n", "log")
 			if "success" in b_req:
 				if b_req["success"]:
 					yield ("Anfrage erfolgreich beendet\n", "log")
+					ai.lastest_version().compiled = True
+					db.session.commit()
 				else:
 					yield ("Anfrage beendet\n", "log")
 					if "exception" in b_req:
 						yield (b_req["exception"], "log")
-				try:
-					yield from f()
-				except ftp.err:
-					yield ("FTP-Error\n", "log")
 				return
 			elif "status" in resp:
 				if resp["status"] == "processed":
 					yield ("Anfrage angefangen\n", "log")
+			elif "compilelog" in resp:
+				yield ("C: "+resp["compilelog"], "log")
+			else:
+				# Falls die Antwort vom Backend nicht verstanden wurde.
+				yield ("B: " + str(resp) + "\n", "log")
 
+@api.route("/ai/<int:id>/new_version", methods=["POST"])
+@json_out
+@authenticated
+def ai_new_version(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+
+	ai.new_version()
+	return {"error": False}, 200
 
 
 @api.route("/ai/<int:id>/upload", methods=["POST"])
@@ -557,7 +565,7 @@ def ai_upload(id):
 	data = request.form["data"]
 
 	## check version frozen
-	if ai.newest_version().frozen:
+	if ai.lastest_version().frozen:
 		return {"error": "AI is frozen, you need to create a new version."}, 400
 
 	@ftp.safe
@@ -565,10 +573,10 @@ def ai_upload(id):
 		if not ftp.ftp_host.path.isdir(path):
 			return ({'error': 'Invalid path.'}, 400)
 
-		with open("tmp", "w") as f:
+		with open("tmpfile", "w") as f:
 			f.write(data)
 
-		ftp.ftp_host.upload("tmp", path + filename)
+		ftp.ftp_host.upload("tmpfile", path + filename)
 		return ({"error": False}, 200)
 
 	try:
