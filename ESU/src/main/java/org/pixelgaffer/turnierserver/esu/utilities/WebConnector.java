@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
+import java.util.logging.ErrorManager;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -27,7 +29,7 @@ public class WebConnector {
 	private final String url;
 	
 	private CookieStore cookies = new BasicCookieStore();
-	private CloseableHttpClient http = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES).build()).setDefaultCookieStore(cookies).build();
+	private CloseableHttpClient http = HttpClients.custom().setDefaultCookieStore(cookies).build();
 	
 	/**
 	 * Erstellt einen neuen Web Connector
@@ -48,7 +50,7 @@ public class WebConnector {
 	 * @throws IOException 
 	 */
 	public boolean login(String username, String password) throws IOException{
-		boolean result = sendPost("login", new BasicNameValuePair("username", username), new BasicNameValuePair("password", password)) != null;
+		boolean result = sendPost("login", new BasicNameValuePair("email", username), new BasicNameValuePair("password", password)) != null;
 		saveToFile();
 		return result;
 	}
@@ -72,6 +74,10 @@ public class WebConnector {
 	 * @param sessionToken Den Session Token
 	 */
 	public void setTokens(String rememberToken, String sessionToken) {
+		if(rememberToken == null || sessionToken == null) {
+			cookies.clear();
+			return;
+		}
 		cookies.addCookie(new BasicClientCookie("remember_token", rememberToken));
 		cookies.addCookie(new BasicClientCookie("session", sessionToken));
 	}
@@ -82,8 +88,8 @@ public class WebConnector {
 	 * @return Den Session Token der Session
 	 */
 	public String getSession() {
-		Cookie cookie = cookies.getCookies().stream().filter((Cookie o) -> o.getName().equals("session")).collect(Collectors.toList()).get(0);
-		return cookie == null ? null : cookie.getValue();
+		List<Cookie> cookie = cookies.getCookies().stream().filter((Cookie o) -> o.getName().equals("session")).collect(Collectors.toList());
+		return cookie.isEmpty() ? null : cookie.get(0).getValue();
 	}
 	
 	/**
@@ -92,8 +98,8 @@ public class WebConnector {
 	 * @return Den Remember Token der Session
 	 */
 	public String getRememberToken() {
-		Cookie cookie = cookies.getCookies().stream().filter((Cookie o) -> o.getName().equals("remember_token")).collect(Collectors.toList()).get(0);
-		return cookie == null ? null : cookie.getValue();
+		List<Cookie> cookie = cookies.getCookies().stream().filter((Cookie o) -> o.getName().equals("remember_token")).collect(Collectors.toList());
+		return cookie.isEmpty() ? null : cookie.get(0).getValue();
 	}
 	
 	/**
@@ -103,7 +109,7 @@ public class WebConnector {
 		File file = new File(Paths.sessionFile());
 		try {
 			file.createNewFile();
-			FileUtils.write(file, getSession() + System.lineSeparator() + getRememberToken(), false);
+			FileUtils.write(file, (getSession() == null ? "" : getSession()) + System.lineSeparator() + (getRememberToken() == null ? "" : getRememberToken()), false);
 		} catch (IOException e) {
 			ErrorLog.write("ERROR SAVING SESSION: " + e.getMessage());
 			return;
@@ -116,9 +122,14 @@ public class WebConnector {
 	public void readFromFile() {
 		File file = new File(Paths.sessionFile());
 		try {
-			file.createNewFile();
+			if(!file.exists()) {
+				return;
+			}
 			String[] tokens = FileUtils.readFileToString(file).split("\n");
-			setTokens(tokens[1], tokens[0]);
+			if(tokens.length != 2) {
+				return;
+			}
+			setTokens(tokens[1].isEmpty() ? null : tokens[1], tokens[0].isEmpty() ? null : tokens[0]);
 		} catch (IOException e) {
 			ErrorLog.write("ERROR SAVING SESSION: " + e.getMessage());
 			return;
@@ -135,12 +146,14 @@ public class WebConnector {
 	 */
 	public String sendPost(String command, NameValuePair...data) throws IOException{
 		HttpPost post = new HttpPost(url + command);
-		post.setEntity(new UrlEncodedFormEntity(Arrays.asList(data)));
+		if(data.length != 0) {
+			post.setEntity(new UrlEncodedFormEntity(Arrays.asList(data)));
+		}
 		
 		HttpResponse response = http.execute(post);
 		
 		if(response.getStatusLine().getStatusCode() != 200) {
-			ErrorLog.write("ERROR: Executing post request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + response.getStatusLine().getReasonPhrase());
+			ErrorLog.write("ERROR: Executing post request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + getString(response.getEntity().getContent()));
 			return null;
 		}
 		
@@ -174,7 +187,7 @@ public class WebConnector {
 		
 		while((read = in.read(buffer)) > 0) {
 			for(int i = 0; i < read; i++) {
-				responseContent.append(buffer[i]);
+				responseContent.append((char) buffer[i]);
 			}
 		}
 		

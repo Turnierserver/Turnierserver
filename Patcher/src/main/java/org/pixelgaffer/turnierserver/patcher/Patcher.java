@@ -52,7 +52,7 @@ public class Patcher implements Runnable {
 		p.load(new FileInputStream(new File(configDir, "/turnierserver.prop")));
 		System.setProperties(p);
 		
-		new Thread(new Patcher(Boolean.parseBoolean(args[0]), Boolean.parseBoolean(args[1]), Boolean.parseBoolean(args[2]), Boolean.parseBoolean(args[3]))).start();
+		new Thread(new Patcher(Boolean.parseBoolean(args[0]), Boolean.parseBoolean(args[1]), Boolean.parseBoolean(args[2]), Boolean.parseBoolean(args[3]), args[4])).start();
 	}
 	
 	private GitHub github;
@@ -67,9 +67,12 @@ public class Patcher implements Runnable {
 	
 	private boolean release;
 	
-	public Patcher(boolean worker, boolean backend, boolean frontend, boolean release) throws IOException {
+	private String configRepo;
+	
+	public Patcher(boolean worker, boolean backend, boolean frontend, boolean release, String configRepo) throws IOException {
 		
 		this.release = release;
+		this.configRepo = configRepo;
 		
 		pull(turnierserverDir, turnierserver);
 		pull(configDir, config);
