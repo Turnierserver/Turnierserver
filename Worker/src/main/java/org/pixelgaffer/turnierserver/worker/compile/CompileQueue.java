@@ -12,7 +12,7 @@ import org.pixelgaffer.turnierserver.compile.CompileResult;
 import org.pixelgaffer.turnierserver.compile.Compiler;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
-import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandSuccess;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
 
 /**
@@ -76,10 +76,15 @@ public class CompileQueue implements Runnable
 				{
 					String lang = DatastoreFtpClient.retrieveAiLanguage(job.getAiId());
 					Compiler c = Compiler.getCompiler(job.getAiId(), job.getVersion(), job.getGame(), lang);
-					CompileResult result = c.compileAndUpload();
+					CompileResult result = c.compileAndUpload(WorkerMain.getBackendClient());
 					DatastoreFtpClient.storeAiCompileOutput(job.getAiId(), job.getVersion(), result.getOutput());
-					WorkerMain.getBackendClient().sendSuccess(
-							new WorkerCommandSuccess(job.getAction(), result.isSuccessfull(), job.getUuid()));
+					// WorkerMain.getBackendClient().sendSuccess(
+					// new WorkerCommandSuccess(job.getAction(),
+					// result.isSuccessfull(), job.getUuid()));
+					WorkerMain.getBackendClient().sendAnswer(
+							new WorkerCommandAnswer(job.getAction(),
+									result.isSuccessfull() ? WorkerCommandAnswer.SUCCESS : WorkerCommandAnswer.CRASH,
+									job.getUuid(), null));
 					result.getOutput().delete();
 				}
 				catch (Exception e)
@@ -95,8 +100,11 @@ public class CompileQueue implements Runnable
 						e.printStackTrace(out);
 						out.close();
 						DatastoreFtpClient.storeAiCompileOutput(job.getAiId(), job.getVersion(), tmp);
-						WorkerMain.getBackendClient().sendSuccess(
-								new WorkerCommandSuccess(job.getAction(), false, job.getUuid()));
+						// WorkerMain.getBackendClient().sendSuccess(
+						// new WorkerCommandSuccess(job.getAction(), false,
+						// job.getUuid()));
+						WorkerMain.getBackendClient().sendAnswer(new WorkerCommandAnswer(job.getAction(),
+								WorkerCommandAnswer.CRASH, job.getUuid(), null));
 						tmp.delete();
 					}
 					catch (Exception e1)

@@ -17,7 +17,7 @@ import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCommandProces
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCompileResult;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
-import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandSuccess;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandAnswer;
 
 /**
  * Diese Klasse speichert Informationen zu den aktuell ausgeführten Jobs.
@@ -33,6 +33,16 @@ public class Jobs
 	
 	/** Die Map mit den Request IDs und den zugehörigen Jobs. */
 	private static final Map<Integer, Job> jobRequestIds = new HashMap<>();
+	
+	public static final int findRequestId (UUID uuid)
+	{
+		return jobUuids.get(uuid).getRequestId();
+	}
+	
+	public static final UUID findUuid (int requestId)
+	{
+		return jobRequestIds.get(requestId).getUuid();
+	}
 	
 	public static void addJob (@NonNull Job job)
 	{
@@ -50,7 +60,8 @@ public class Jobs
 				WorkerCommand wcmd = Workers.getAvailableWorker().compile(cmd.getId(), cmd.getGametype());
 				Job job = new Job(wcmd, cmd);
 				addJob(job);
-				BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(cmd.getRequestid())));
+				BackendFrontendConnectionHandler.getFrontend().sendMessage(
+						Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(cmd.getRequestid())));
 			}
 			catch (Exception e)
 			{
@@ -71,7 +82,8 @@ public class Jobs
 			try
 			{
 				Games.startGame(cmd.getGametype(), cmd.getAis());
-				BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(cmd.getRequestid())));
+				BackendFrontendConnectionHandler.getFrontend().sendMessage(
+						Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(cmd.getRequestid())));
 			}
 			catch (Exception e)
 			{
@@ -92,9 +104,9 @@ public class Jobs
 					"Unknown action from Frontend: " + cmd.getAction());
 	}
 	
-	public static void jobFinished (@NonNull WorkerCommandSuccess success) throws IOException
+	public static void jobFinished (@NonNull WorkerCommandAnswer answer) throws IOException
 	{
-		UUID uuid = success.getUuid();
+		UUID uuid = answer.getUuid();
 		Job job = jobUuids.get(uuid);
 		if (job == null)
 		{
@@ -102,7 +114,8 @@ public class Jobs
 			return;
 		}
 		int requestId = job.getRequestId();
-		BackendFrontendCompileResult result = new BackendFrontendCompileResult(requestId, success.isSuccess());
+		BackendFrontendCompileResult result = new BackendFrontendCompileResult(requestId,
+				answer.getWhat() == WorkerCommandAnswer.SUCCESS);
 		BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result));
 		jobs.remove(job);
 		jobUuids.remove(uuid);
