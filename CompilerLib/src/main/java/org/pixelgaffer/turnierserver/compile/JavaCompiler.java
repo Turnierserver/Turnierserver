@@ -92,8 +92,20 @@ public class JavaCompiler extends Compiler
 		}
 		PrintWriter script = new PrintWriter(new FileOutputStream(scriptFile));
 		script.println("#!/bin/sh");
+		String mainclass = p.getProperty("mainclass");
+		if (mainclass == null)
+		{
+			output.println("failed");
+			output.println("FEHLER: Die Hauptklasse wurde nicht in der settings.prop-Datei angegeben!");
+			output.println("        Bitte die Zeile");
+			output.println("            mainclass=com.example.Ai");
+			output.println("        der settings.prop hinzufügen!");
+			script.println("echo missing mainclass property");
+			script.close();
+			return false;
+		}
 		script.println("java -classpath '" + classpath + "' -Xmx500M '"
-				+ p.getProperty("mainclass").replace("'", "\\'") + "' ${@}");
+				+ mainclass.replace("'", "\\'") + "' ${@}");
 		script.close();
 		output.println("done");
 		
