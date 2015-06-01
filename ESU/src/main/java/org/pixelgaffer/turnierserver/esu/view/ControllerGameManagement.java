@@ -27,9 +27,10 @@ public class ControllerGameManagement {
 	@FXML public TextArea tbOutput2;
 	@FXML public TableView<ParticipantResult> tableResult;
 	
-	
 	MainApp mainApp;
-
+	
+	Game game = null;
+	
 	/**
 	 * Initialisiert den Controller
 	 * 
@@ -39,6 +40,24 @@ public class ControllerGameManagement {
 		mainApp = app;
 		mainApp.cGame = this;
 	}
+	
+	
+	public void showGame(Game ggame){
+		
+	}
+	
+	public void showGame(){
+		if (game != null){
+			
+		}
+		else{
+			lbMode.setText("Offline");
+			lbDate.setText("Jetzt");
+			lbDuration.setText("555ms");
+			lbLogic.setText("Test-Logik");
+		}
+	}
+	
 	
 
 	@FXML

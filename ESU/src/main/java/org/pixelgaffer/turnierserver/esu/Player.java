@@ -20,6 +20,7 @@ public class Player {
 	public final String title;
 	public Language language;
 	public String description = "(keine Beschreibung)";
+	public Image onlinePicture;
 	public ObservableList<Version> versions = FXCollections.observableArrayList();
 
 	public static enum Language{
@@ -29,11 +30,19 @@ public class Player {
 	public static enum NewVersionType{
 		fromFile, simplePlayer, lastVersion
 	}
-	
+
 	/**
-	 * L�dt einen Player mit dem �bergebenen Titel in das Objekt.
+	 * Erstellt einen leeren Player
 	 * 
-	 * @param tit der �bergebene Titel
+	 * @param tit der übergebene Titel
+	 */
+	public Player(String tit, boolean autoLoad){
+		title = tit;
+	}
+	/**
+	 * Lädt einen Player mit dem übergebenen Titel in das Objekt.
+	 * 
+	 * @param tit der übergebene Titel
 	 */
 	public Player(String tit){
 		title = tit;
@@ -41,10 +50,10 @@ public class Player {
 		loadVersions();
 	}
 	/**
-	 * Speichert einen neuen Player mit dem �bergebenen Titel und der Sprache ab.
+	 * Speichert einen neuen Player mit dem übergebenen Titel und der Sprache ab.
 	 * 
-	 * @param tit der �bergebene Titel
-	 * @param lang die �bergebene Sprache
+	 * @param tit der übergebene Titel
+	 * @param lang die übergebene Sprache
 	 */
 	public Player(String tit, Language lang){
 		title = tit;
@@ -61,10 +70,10 @@ public class Player {
 	}
 	
 	/**
-	 * F�gt eine neue Version der Versionsliste hinzu.
+	 * Fügt eine neue Version der Versionsliste hinzu.
 	 * 
-	 * @param type die Art, in der die Version hinzugef�gt werden soll
-	 * @return die Version, die hinzugef�gt wurde
+	 * @param type die Art, in der die Version hinzugefügt werden soll
+	 * @return die Version, die hinzugefügt wurde
 	 */
 	public Version newVersion(NewVersionType type){
 		if (type == NewVersionType.fromFile){
@@ -88,7 +97,7 @@ public class Player {
 	}
 	
 	/**
-	 * F�gt eine neue Version der Versionsliste hinzu.
+	 * Fügt eine neue Version der Versionsliste hinzu.
 	 * 
 	 * @param type die Art, in der die Version hinzugef�gt werden soll
 	 * @param path der Pfad, von dem die Version kopiert werden soll, falls type==fromFile
@@ -118,7 +127,7 @@ public class Player {
 	
 	
 	/**
-	 * L�dt aus dem Dateiverzeichnis die Eigenschaften des Players.
+	 * Lädt aus dem Dateiverzeichnis die Eigenschaften des Players.
 	 */
 	public void loadProps(){
 		try {
@@ -148,7 +157,7 @@ public class Player {
 	}
 	
 	/**
-	 * L�dt die Versionen aus dem Dateisystem, mit Hilfe der versionAmount-Property
+	 * Lädt die Versionen aus dem Dateisystem, mit Hilfe der versionAmount-Property
 	 */
 	public void loadVersions(){
 		versions.clear();

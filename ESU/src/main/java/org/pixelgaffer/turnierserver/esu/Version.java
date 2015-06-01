@@ -22,6 +22,17 @@ public class Version {
 	public String qualifyOutput = "";
 	public List<CodeEditor> files = new ArrayList<CodeEditor>();
 	
+	public Version(Player p, int n, boolean autoload){
+		player = p;
+		number = n;
+	}
+	
+	/**
+	 * Erstellt eine neue Version und lädt automatisch den Quellcode
+	 * 
+	 * @param p
+	 * @param n
+	 */
 	public Version(Player p, int n){
 		player = p;
 		number = n;
@@ -46,7 +57,7 @@ public class Version {
 	}
 	
 	/**
-	 * Pr�ft, ob die Version bereits im Dateisystem existiert.
+	 * Prüft, ob die Version bereits im Dateisystem existiert.
 	 * 
 	 * @return true, wenn die Version bereits existiert
 	 */
@@ -96,7 +107,7 @@ public class Version {
 	
 
 	/**
-	 * L�dt aus dem Dateiverzeichnis die Eigenschaften des Players.
+	 * Lädt aus dem Dateiverzeichnis die Eigenschaften des Players.
 	 */
 	public void loadProps(){
 		try {

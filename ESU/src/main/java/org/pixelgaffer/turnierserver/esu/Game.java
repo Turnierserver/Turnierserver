@@ -118,7 +118,7 @@ public class Game {
 				return;
 			}
 		}
-		ErrorLog.write("Mehr als 10.000 Spielordner wurden ausprobiert: Möglicherweise gibt es keine Zugriffsberechtigung.");
+		ErrorLog.write("GetNewID-ERROR: Mehr als 10.000 Spielordner wurden ausprobiert: Möglicherweise gibt es keine Zugriffsberechtigung.");
 	}
 	
 	public void play(List<Version> opponents){
