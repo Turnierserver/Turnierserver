@@ -139,13 +139,15 @@ class Backend(threading.Thread):
 			if self.connected:
 				r = self.sock.recv(1024*10).decode("utf-8")
 				print('recvd', r)
-				if r == '':
-					##
-					break
-				if r == '\n':
-					pass
-				else:
-					self.parse(json.loads(r))
+				## zerstückelte blöcke?
+				for d in r.split("\n"):
+					if d == '':
+						##
+						continue
+					if d == '\n':
+						pass
+					else:
+						self.parse(json.loads(d))
 			else:
 				print("No connection to Backend...")
 				time.sleep(60*15)

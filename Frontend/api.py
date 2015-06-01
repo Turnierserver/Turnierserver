@@ -507,15 +507,15 @@ def api_ai_compile(id):
 			if timed_out > 0:
 				yield ("\n", "log")
 			timed_out = 0
-			if "success" in b_req:
-				if b_req["success"]:
+			if "success" in resp:
+				if resp["success"]:
 					yield ("Anfrage erfolgreich beendet\n", "log")
 					ai.lastest_version().compiled = True
 					db.session.commit()
 				else:
 					yield ("Anfrage beendet\n", "log")
-					if "exception" in b_req:
-						yield (b_req["exception"], "log")
+					if "exception" in resp:
+						yield (resp["exception"], "log")
 				return
 			elif "status" in resp:
 				if resp["status"] == "processed":
