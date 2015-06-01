@@ -14,7 +14,7 @@ public class PlayerManager {
 	public ObservableList<Player> players = FXCollections.observableArrayList();
 	
 	/**
-	 * Lädt alle Spieler aus dem Dateisystem in die Liste
+	 * LÃ¤dt alle Spieler aus dem Dateisystem in die Liste
 	 */
 	public void loadPlayers(){
 		players.clear();

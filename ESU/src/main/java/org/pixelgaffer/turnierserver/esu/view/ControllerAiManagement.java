@@ -117,7 +117,7 @@ public class ControllerAiManagement{
 		showPlayer();
 	}
 	/**
-	 * Setzt alle Eigenschaften der Benutzeroberfl�che, wie z.B. das KI-Namensfeld, das KI-Bild, die KI-Beschreibung, ...
+	 * Setzt alle Eigenschaften der Benutzeroberfläche, wie z.B. das KI-Namensfeld, das KI-Bild, die KI-Beschreibung, ...
 	 */
 	public void showPlayer(){
 		
@@ -173,10 +173,10 @@ public class ControllerAiManagement{
 		if (version != null && player != null){
 			cbVersion.setValue(version);
 			tbOutput.setText("");
-			if (version.compiled){
+			if (!version.compileOutput.equals("")){
 				tbOutput.setText(version.compileOutput);
 			}
-			if (version.qualified){
+			if (!version.qualifyOutput.equals("")){
 				tbOutput.setText(version.qualifyOutput);
 			}
 			lbCompiled.setVisible(version.compiled);
@@ -311,7 +311,7 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Button: aktuelle Version der KI wird ausgew�hlt
+	 * Button: aktuelle Version der KI wird ausgewählt
 	 */
 	@FXML void clickToActual(){
 		version = player.lastVersion();
@@ -329,7 +329,7 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Radiobutton: "SimplePlayer" wurde ausgew�hlt
+	 * Radiobutton: "SimplePlayer" wurde ausgewählt
 	 */
 	@FXML void clickRbSimple(){
 		rbSimple.setSelected(true);
@@ -338,7 +338,7 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Radiobutton: "Weiterschreiben" wurde ausgew�hlt
+	 * Radiobutton: "Weiterschreiben" wurde ausgewählt
 	 */
 	@FXML void clickRbContinue(){
 		rbSimple.setSelected(false);
@@ -347,7 +347,7 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Radiobutton: "Aus Datei" wurde ausgew�hlt
+	 * Radiobutton: "Aus Datei" wurde ausgewählt
 	 */
 	@FXML void clickRbFromFile(){
 		rbSimple.setSelected(false);
@@ -418,7 +418,7 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Button: Bild �ndern
+	 * Button: Bild ändern
 	 */
 	@FXML void clickChangeImage(){
 		File result = Dialog.fileChooser(mainApp.stage, "Bild ausw�hlen");
@@ -430,7 +430,7 @@ public class ControllerAiManagement{
 	}
 
 	/**
-	 * Button: Bild l�schen
+	 * Button: Bild löschen
 	 */
 	@FXML void clickDeleteImage(){
 		player.setPicture(null);

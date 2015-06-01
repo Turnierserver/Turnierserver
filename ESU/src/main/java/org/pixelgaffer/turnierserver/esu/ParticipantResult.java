@@ -34,35 +34,5 @@ public class ParticipantResult {
 	
 	
 	
-
-	public void loadProps(){
-		try {
-			Reader reader = new FileReader(Resources.participant(this));
-			Properties prop = new Properties();
-			prop.load(reader);
-			reader.close();
-			playerName = prop.getProperty("playerName");
-			kiName = prop.getProperty("kiName");
-			duration = prop.getProperty("duration");
-			moveCount = prop.getProperty("moveCount");
-			points = prop.getProperty("points");
-			won = prop.getProperty("won");
-		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt (Participant)");}
-	}
-	public void storeProps(){
-		Properties prop = new Properties();
-		prop.setProperty("playerName", playerName);
-		prop.setProperty("kiName", kiName);
-		prop.setProperty("duration", duration);
-		prop.setProperty("moveCount", moveCount);
-		prop.setProperty("points", points);
-		prop.setProperty("won", won);
-		
-		try {
-			Writer writer = new FileWriter(Resources.participant(this));
-			prop.store(writer, number);
-			writer.close();
-		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Participant)");}
-	}
 	
 }
