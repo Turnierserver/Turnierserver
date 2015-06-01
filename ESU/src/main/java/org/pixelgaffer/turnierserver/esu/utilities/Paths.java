@@ -1,17 +1,16 @@
 package org.pixelgaffer.turnierserver.esu.utilities;
 
-import java.io.File;
-import java.io.FileInputStream;
-
-import javafx.scene.image.Image;
-
 import org.pixelgaffer.turnierserver.esu.Game;
 import org.pixelgaffer.turnierserver.esu.ParticipantResult;
 import org.pixelgaffer.turnierserver.esu.Player;
-import org.pixelgaffer.turnierserver.esu.Version;
 import org.pixelgaffer.turnierserver.esu.Player.Language;
+import org.pixelgaffer.turnierserver.esu.Version;
 
 public class Paths {
+	
+	public static String sessionFile() {
+		return "session.conf";
+	}
 	
 	/**
 	 * Gibt den Pfad zum Spieler-Ordner zurück

@@ -78,7 +78,6 @@ public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 	 */
 	protected abstract E getState(R change);
 	
-	@Override
 	public final void run() {
 		
 		try {
