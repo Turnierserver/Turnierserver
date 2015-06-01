@@ -42,7 +42,7 @@ public abstract class Compiler
 		this.version = version;
 		this.game = game;
 	}
-
+	
 	public static Compiler getCompiler (int ai, int version, int game, String language)
 			throws ReflectiveOperationException
 	{
@@ -79,7 +79,12 @@ public abstract class Compiler
 		{
 			ftpFile.flush();
 			if (getUuid() != null)
-				backend.sendAnswer(new WorkerCommandAnswer(WorkerCommand.COMPILE, WorkerCommandAnswer.MESSAGE, getUuid(), buf));
+			{
+				System.out.println(new WorkerCommandAnswer(WorkerCommand.COMPILE, WorkerCommandAnswer.MESSAGE,
+						getUuid(), buf));
+				backend.sendAnswer(new WorkerCommandAnswer(WorkerCommand.COMPILE, WorkerCommandAnswer.MESSAGE,
+						getUuid(), buf));
+			}
 			buf = "";
 		}
 		
@@ -104,7 +109,8 @@ public abstract class Compiler
 	@Getter
 	private int game;
 	
-	@Getter @Setter
+	@Getter
+	@Setter
 	private UUID uuid;
 	
 	public CompileResult compileAndUpload (@NonNull Backend backend)

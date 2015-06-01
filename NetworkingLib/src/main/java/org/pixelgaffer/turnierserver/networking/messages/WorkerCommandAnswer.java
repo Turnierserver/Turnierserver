@@ -4,8 +4,10 @@ import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 @AllArgsConstructor
+@ToString
 public class WorkerCommandAnswer
 {
 	public static final char CRASH = 'C';

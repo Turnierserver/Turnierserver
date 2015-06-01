@@ -90,6 +90,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 					if (answer.getWhat() == WorkerCommandAnswer.MESSAGE)
 					{
 						BackendFrontendCompileMessage msg = new BackendFrontendCompileMessage(answer.getMessage(), Jobs.findRequestId(answer.getUuid()));
+						System.out.println(msg);
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(msg));
 					}
 					else if ((answer.getWhat() == WorkerCommandAnswer.CRASH)

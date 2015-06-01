@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -103,6 +104,10 @@ public class CompileQueue implements Runnable
 						// WorkerMain.getBackendClient().sendSuccess(
 						// new WorkerCommandSuccess(job.getAction(), false,
 						// job.getUuid()));
+						StringWriter sw = new StringWriter();
+						e.printStackTrace(new PrintWriter(sw));
+						WorkerMain.getBackendClient().sendAnswer(new WorkerCommandAnswer(job.getAction(),
+								WorkerCommandAnswer.MESSAGE, job.getUuid(), sw.toString()));
 						WorkerMain.getBackendClient().sendAnswer(new WorkerCommandAnswer(job.getAction(),
 								WorkerCommandAnswer.CRASH, job.getUuid(), null));
 						tmp.delete();
