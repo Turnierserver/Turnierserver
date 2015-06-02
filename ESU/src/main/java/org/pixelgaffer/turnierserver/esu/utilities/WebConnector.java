@@ -247,7 +247,7 @@ public class WebConnector {
 			String apparentLine = gametype.getString("name") + "->" + gametype.getLong("last_modified");
 			
 			if(!fileLines.contains(apparentLine)) {
-				if(!loadGamelogic(gametype.getInt("id")) || !loadDataContainer(gametype.getInt("id"))) {
+				if(!loadGamelogic(gametype.getInt("id"), gametype.getString("name")) || !loadDataContainer(gametype.getInt("id"), gametype.getString("name"))) {
 					ErrorLog.write("Konnte Spiel " + gametype.getInt("id") + " nicht aktualisieren!");
 				}
 				else {
@@ -277,7 +277,7 @@ public class WebConnector {
 		return result;
 	}
 	
-	public boolean loadGamelogic(int game) {
+	public boolean loadGamelogic(int game, String gameName) {
 		String logic;
 		try {
 			logic = sendGet("gamelogic/" + game);
@@ -291,7 +291,7 @@ public class WebConnector {
 		}
 		
 		try {
-			FileUtils.write(new File(Paths.gameLogic(game + "")), logic);
+			FileUtils.write(new File(Paths.gameLogic("gameName")), logic);
 		} catch (IOException e) {
 			ErrorLog.write("Spiellogik konnte nicht gespeichert werden: " + e.getLocalizedMessage());
 			return false;
@@ -299,7 +299,7 @@ public class WebConnector {
 		return true;
 	}
 	
-	public boolean loadDataContainer(int game) {
+	public boolean loadDataContainer(int game, String gameName) {
 		String libraries;
 		try {
 			libraries = sendGet("data_container/" + game);
@@ -322,7 +322,7 @@ public class WebConnector {
 				if(file.isFile()) {
 					continue;
 				}
-				File target = new File(Paths.ailibrary(game + "", file.getName()));
+				File target = new File(Paths.ailibrary(gameName, file.getName()));
 				target.mkdirs();
 				FileUtils.copyDirectory(file, target);
 			}
@@ -330,7 +330,7 @@ public class WebConnector {
 				if(file.isFile()) {
 					continue;
 				}
-				File target = new File(Paths.simplePlayer(game + "", file.getName()) + "/v0/src");
+				File target = new File(Paths.simplePlayer(gameName, file.getName()) + "/v0/src");
 				target.mkdirs();
 				//TODO properties schreiben
 				FileUtils.copyDirectory(file, target);
