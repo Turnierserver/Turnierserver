@@ -56,7 +56,7 @@ public class Ai {
 		userName = json.getString("author");
 		description = json.getString("description");
 		gametype = json.getJSONObject("gametype").getInt("id") + "";
-		language = MainApp.languages.get(json.getJSONObject("lang").getInt("id") - 1);
+		language = json.getJSONObject("lang").getString("name");
 		JSONArray versions = json.getJSONArray("versions");
 		for(int i = 0; i < versions.length(); i++) {
 			newVersion(versions.getJSONObject(i));

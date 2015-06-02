@@ -295,7 +295,7 @@ public class WebConnector {
 		}
 		
 		try {
-			FileUtils.writeByteArrayToFile(new File(Paths.gameLogic("gameName")), logic);
+			FileUtils.writeByteArrayToFile(new File(Paths.gameLogic(gameName)), logic);
 		} catch (IOException e) {
 			ErrorLog.write("Spiellogik konnte nicht gespeichert werden: " + e.getLocalizedMessage());
 			return false;
@@ -337,8 +337,16 @@ public class WebConnector {
 					continue;
 				}
 				File target = new File(Paths.simplePlayer(gameName, file.getName()) + "/v0/src");
+				target.delete();
 				target.mkdirs();
-				//TODO properties schreiben
+				File property = new File(Paths.simplePlayer(gameName, file.getName()), "properties.txt");
+				property.createNewFile();
+				FileUtils.write(property, "versionAmount=1" + System.lineSeparator() + "gametype=" + gameName + System.lineSeparator() + "description=Das ist der " + file.getName() + "-SimplePlayer" +
+						System.lineSeparator() + "language=" + file.getName());
+				property = new File(property.getParent(), "v0/properties.txt");
+				property.createNewFile();
+				FileUtils.write(property, "uploaded=false" + System.lineSeparator() + "compileOutput=" + System.lineSeparator() + "qualifyOutput=" + System.lineSeparator() +
+						"qualified=false" + System.lineSeparator() + "compiled=false" + System.lineSeparator() + "finished=false");
 				FileUtils.copyDirectory(file, target);
 			}
 		} catch (IOException | ZipException e) {

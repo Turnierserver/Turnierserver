@@ -126,6 +126,8 @@ public class ControllerAiManagement{
 		// Ai-spezifisches
 		if (ai != null){
 			lbName.setText(ai.title);
+			System.out.println(ai);
+			System.out.println(ai.language);
 			lbLanguage.setText("Sprache: " + ai.language.toString());
 			tbDescription.setText(ai.description);
 			cbVersion.getSelectionModel().clearSelection();
