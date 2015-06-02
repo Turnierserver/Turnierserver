@@ -60,7 +60,7 @@ public class Version {
 		
 		if (mode == AiMode.saved || mode == AiMode.simplePlayer){
 			if (!exists()){
-				copyFromFile(Paths.simplePlayer(ai.language));
+				copyFromFile(Paths.simplePlayer("" + ai.gametype, ai.language));
 				storeProps();
 				findCode();
 			}
@@ -111,7 +111,8 @@ public class Version {
 		try {
 			Files.walkFileTree(srcPath, new CopyVisitor(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING));
 		} catch (IOException e) {
-			ErrorLog.write("Version konnte nicht kopiert werden");
+			e.printStackTrace();
+			ErrorLog.write("Version konnte nicht kopiert werden: "+ e.getMessage());
 		}
 	}
 	

@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -319,8 +319,10 @@ public class WebConnector {
 			File tempZip = File.createTempFile("datacontainer", System.currentTimeMillis() + ".zip");
 			FileUtils.writeByteArrayToFile(tempZip, libraries);
 			ZipFile zipFile = new ZipFile(tempZip);
+			tempZip.deleteOnExit();
 			File zip;
-			zipFile.extractAll((zip = File.createTempFile("datacontainer-unzipped", System.currentTimeMillis() + "")).getAbsolutePath());
+			zipFile.extractAll((zip = Files.createTempDirectory("datacontainerUnzipped" + System.currentTimeMillis()).toFile()).getAbsolutePath());
+			zip.deleteOnExit();
 			for(File file : new File(zip, "AiLibraries").listFiles()) {
 				if(file.isFile()) {
 					continue;
@@ -339,6 +341,7 @@ public class WebConnector {
 				FileUtils.copyDirectory(file, target);
 			}
 		} catch (IOException | ZipException e) {
+			e.printStackTrace();
 			ErrorLog.write("Ai Libraries konnte nicht entpackt werden: " + e.getLocalizedMessage());
 			return false;
 		}

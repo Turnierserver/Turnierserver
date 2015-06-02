@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.pixelgaffer.turnierserver.esu.*;
-import org.pixelgaffer.turnierserver.esu.Ai.Language;
 import org.pixelgaffer.turnierserver.esu.Ai.NewVersionType;
 import org.pixelgaffer.turnierserver.esu.Ai.AiMode;
 import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
@@ -48,7 +47,7 @@ public class ControllerAiManagement{
 	@FXML public TextArea tbOutput;
 	@FXML public TextArea tbDescription;
 	@FXML public ChoiceBox<Version> cbVersion;
-	@FXML public ChoiceBox<Language> cbLanguage;
+	@FXML public ChoiceBox<String> cbLanguage;
 	@FXML public ListView<Ai> lvAis;
 	@FXML public ImageView image;
 	@FXML public TabPane tpCode;
@@ -86,8 +85,9 @@ public class ControllerAiManagement{
 		    	clickTabSelection(oldValue, newValue);
 		    }
 		});
-		cbLanguage.itemsProperty().get().add(Language.Java);
-		cbLanguage.itemsProperty().get().add(Language.Python);
+		for (int i = 0; i < MainApp.languages.size(); i++){
+			cbLanguage.getItems().add(MainApp.languages.get(i));
+		}
 		cbLanguage.getSelectionModel().selectFirst();
 		
 		infoTab = tpCode.getTabs().get(0);

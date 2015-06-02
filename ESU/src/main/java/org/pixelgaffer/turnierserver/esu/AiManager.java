@@ -30,7 +30,7 @@ public class AiManager {
 			ais.add(new Ai(playerDirs[i].getName(), AiMode.saved));
 		}
 
-		File simpleDir = new File(Paths.simplePlayerFolder());
+		File simpleDir = new File(Paths.simplePlayerFolder(MainApp.actualGameType));
 		simpleDir.mkdirs();
 		File[] simpleDirs = simpleDir.listFiles();
 		if (simpleDirs == null){

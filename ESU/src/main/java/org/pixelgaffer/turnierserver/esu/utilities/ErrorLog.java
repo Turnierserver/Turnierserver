@@ -49,6 +49,7 @@ public class ErrorLog {
 	 */
 	private static void writeWithoutBlanck(String log){
 		try {
+			System.out.print(log);
 			FileWriter writer = new FileWriter(file ,true);
 			writer.write(log);
 			writer.flush();
