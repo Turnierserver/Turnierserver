@@ -14,7 +14,7 @@ public class PropertyUtils
 	private static final String TURNIERSERVER_BASE = "turnierserver.";
 	private static final String BACKEND_BASE = TURNIERSERVER_BASE + "backend.";
 	private static final String WORKER_BASE = TURNIERSERVER_BASE + "worker.";
-	private static final String WORKER_SERVER_BASE = WORKER_BASE + ".server";
+	private static final String WORKER_SERVER_BASE = WORKER_BASE + ".server.";
 	private static final String DATASTORE_BASE = TURNIERSERVER_BASE + "datastore.";
 	private static final String SERIALIZER_BASE = TURNIERSERVER_BASE + "serializer.";
 	private static final String AI_BASE = TURNIERSERVER_BASE + "ai.";
@@ -25,7 +25,7 @@ public class PropertyUtils
 	public static final String BACKEND_FRONTEND_SERVER_PORT = BACKEND_FRONTEND_SERVER_BASE + "port";
 	public static final String BACKEND_WORKER_SERVER_PORT = BACKEND_WORKER_SERVER_BASE + "port";
 	public static final String WORKER_HOST = WORKER_BASE + "host";
-	public static final String WORKER_SERVER_PORT = WORKER_SERVER_BASE + ".port";
+	public static final String WORKER_SERVER_PORT = WORKER_SERVER_BASE + "port";
 	public static final String WORKER_SERVER_AICHAR = WORKER_SERVER_BASE + "aichar";
 	public static final String DATASTORE_HOST = DATASTORE_BASE + "host";
 	public static final String DATASTORE_PORT = DATASTORE_BASE + "port";
