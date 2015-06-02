@@ -408,17 +408,6 @@ def api_user_upload_icon(id):
 	else:
 		return CommonErrors.INVALID_ID
 
-@api.route("/ai/<int:id>/code")
-@json_out
-@authenticated
-def api_ai_code(id):
-	ai = AI.query.get(id)
-	if not ai:
-		return CommonErrors.INVALID_ID
-	if not current_user.can_access(ai):
-		return CommonErrors.NO_ACCESS
-
-	return CommonErrors.NOT_IMPLEMENTED
 
 @api.route("/ai/<int:id>/update", methods=["POST"])
 @json_out

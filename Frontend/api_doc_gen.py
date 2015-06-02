@@ -64,11 +64,14 @@ class Endpoint:
 		if r.json():
 			respbody = pformat(r.json())
 
+		def headers(o):
+			return [h for h in sorted(o.headers.items()) if not h[0] == "date"]
+
 		return template.render(
 			reqtype=self.type, url=self.url,
 			response=r,
-			reqheaders = sorted(r.request.headers.items()),
-			respheaders = sorted(r.headers.items()),
+			reqheaders = headers(r.request),
+			respheaders = headers(r),
 			respbody = respbody
 		)
 
@@ -96,3 +99,7 @@ with open("api_docs.md", "w") as f:
 	w(Endpoint("/api/ai/1"))
 	w(Endpoint("/api/user/1"))
 	w(Endpoint("/api/game/1"))
+
+	w("Funkionen mit Authentifizierung")
+	w(Endpoint("/api/login", ReqTypes.POST, {"email": "admin@ad.min", "password": "admin"}))
+	w(Endpoint("/api/ai/3/update", ReqTypes.POST, {"name": "Top Keks", "description": "Top Keks", "lang": 1}))
