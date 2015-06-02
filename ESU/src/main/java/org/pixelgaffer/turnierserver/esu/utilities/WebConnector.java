@@ -247,7 +247,7 @@ public class WebConnector {
 			String apparentLine = gametype.getString("name") + "->" + gametype.getLong("last_modified");
 			
 			if(!fileLines.contains(apparentLine)) {
-				if(!loadGamelogic(gametype.getInt("id")) || !loadEsuContainer(gametype.getInt("id"))) {
+				if(!loadGamelogic(gametype.getInt("id")) || !loadDataContainer(gametype.getInt("id"))) {
 					ErrorLog.write("Konnte Spiel " + gametype.getInt("id") + " nicht aktualisieren!");
 				}
 				else {
@@ -299,7 +299,7 @@ public class WebConnector {
 		return true;
 	}
 	
-	public boolean loadEsuContainer(int game) {
+	public boolean loadDataContainer(int game) {
 		String libraries;
 		try {
 			libraries = sendGet("data_container/" + game);
@@ -313,16 +313,27 @@ public class WebConnector {
 		}
 		
 		try {
-			File tempZip = File.createTempFile("ailibraries", System.currentTimeMillis() + "");
+			File tempZip = File.createTempFile("datacontainer", System.currentTimeMillis() + "");
 			FileUtils.write(tempZip, libraries);
 			ZipFile zipFile = new ZipFile(tempZip);
 			File zip;
-			zipFile.extractAll((zip = File.createTempFile("ailibrariesunzipped", System.currentTimeMillis() + "")).getAbsolutePath());
-			for(File file : zip.listFiles()) {
+			zipFile.extractAll((zip = File.createTempFile("datacontainer-unzipped", System.currentTimeMillis() + "")).getAbsolutePath());
+			for(File file : new File(zip, "AiLibraries").listFiles()) {
 				if(file.isFile()) {
 					continue;
 				}
-				FileUtils.copyDirectory(file, new File(Paths.ailibrary(game + "", file.getName())));
+				File target = new File(Paths.ailibrary(game + "", file.getName()));
+				target.mkdirs();
+				FileUtils.copyDirectory(file, target);
+			}
+			for(File file : new File(zip, "SimplePlayers").listFiles()) {
+				if(file.isFile()) {
+					continue;
+				}
+				File target = new File(Paths.simplePlayer(game + "", file.getName()) + "/v0/src");
+				target.mkdirs();
+				//TODO properties schreiben
+				FileUtils.copyDirectory(file, target);
 			}
 		} catch (IOException | ZipException e) {
 			ErrorLog.write("Ai Libraries konnte nicht entpackt werden: " + e.getLocalizedMessage());
