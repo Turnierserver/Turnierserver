@@ -16,16 +16,16 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
 
-public class Player {
+public class Ai {
 	
 	public final String title;
-	public final PlayerMode mode;
+	public final AiMode mode;
 	public Language language;
 	public String description = "(keine Beschreibung)";
 	private Image onlinePicture;
 	public ObservableList<Version> versions = FXCollections.observableArrayList();
 	
-	public static enum PlayerMode{
+	public static enum AiMode{
 		saved, online, simplePlayer
 	}
 	
@@ -38,42 +38,42 @@ public class Player {
 	}
 	
 	/**
-	 * Erstellt einen neuen Online-Player aus einem JSONObject
+	 * Erstellt einen neuen Online-Ai aus einem JSONObject
 	 * 
 	 * @param json das übergebene JSONObject
 	 */
-	public Player(JSONObject json){
-		title = "Titel bitte eingeben";
-		mode = PlayerMode.online;
+	public Ai(JSONObject json){
+		title = json.getString("name");
+		mode = AiMode.online;
 		//////////////Nico: hier kommt dein Code rein!//////////////////////////////////////////////////////////
 	}
 	
 	/**
-	 * Erstellt einen neuen Player
+	 * Erstellt einen neuen Ai
 	 * 
 	 * @param tit der übergebene Titel
 	 */
-	public Player(String tit, PlayerMode mmode){
+	public Ai(String tit, AiMode mmode){
 		title = tit;
 		mode = mmode;
-		if (mode == PlayerMode.saved || mode == PlayerMode.simplePlayer){
+		if (mode == AiMode.saved || mode == AiMode.simplePlayer){
 			loadProps();
 			loadVersions();
 		}
 	}
 	
 	/**
-	 * Speichert einen neuen Player mit dem übergebenen Titel und der Sprache ab.
+	 * Speichert einen neuen Ai mit dem übergebenen Titel und der Sprache ab.
 	 * 
 	 * @param tit der übergebene Titel
 	 * @param lang die übergebene Sprache
 	 */
-	public Player(String tit, Language lang){
+	public Ai(String tit, Language lang){
 		title = tit;
 		language = lang;
-		mode = PlayerMode.saved;
+		mode = AiMode.saved;
 		
-		File dir = new File(Paths.player(this));
+		File dir = new File(Paths.ai(this));
 		if (!dir.mkdirs()){
 			ErrorLog.write("Der Spieler existiert bereits.");
 			description = "invalid";
@@ -156,7 +156,7 @@ public class Player {
 	 */
 	public void loadProps(){
 		try {
-			Reader reader = new FileReader(Paths.playerProperties(this));
+			Reader reader = new FileReader(Paths.aiProperties(this));
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
@@ -175,10 +175,10 @@ public class Player {
 		prop.setProperty("language", language.toString());
 		
 		try {
-			Writer writer = new FileWriter(Paths.playerProperties(this));
+			Writer writer = new FileWriter(Paths.aiProperties(this));
 			prop.store(writer, title);
 			writer.close();
-		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Player)");}
+		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Ai)");}
 	}
 	
 	/**
@@ -188,7 +188,7 @@ public class Player {
 		versions.clear();
 		int versionAmount = 0;
 		try {
-			Reader reader = new FileReader(Paths.playerProperties(this));
+			Reader reader = new FileReader(Paths.aiProperties(this));
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
@@ -200,7 +200,7 @@ public class Player {
 	}
 	
 	/**
-	 * Setzt die Player-Beschreibung.
+	 * Setzt die Ai-Beschreibung.
 	 * 
 	 * @param des die Beschreibung des Players
 	 */
@@ -215,7 +215,7 @@ public class Player {
 	 * @return das gespeicherte Bild
 	 */
 	public Image getPicture(){
-		if (mode == PlayerMode.online){
+		if (mode == AiMode.online){
 			if (onlinePicture != null){
 				return onlinePicture;
 			}
@@ -223,7 +223,7 @@ public class Player {
 				return Resources.defaultPicture();
 			}
 		}
-		Image img = Resources.imageFromFile(Paths.playerPicture(this));
+		Image img = Resources.imageFromFile(Paths.aiPicture(this));
 		if (img == null){
 			img = Resources.defaultPicture();
 		}
@@ -235,17 +235,17 @@ public class Player {
 	 * @param img das zu speichernde Bild
 	 */
 	public void setPicture(Image img){
-		if (mode == PlayerMode.online){
+		if (mode == AiMode.online){
 			onlinePicture = img;
 		}
 		else{
 			try {
 				if (img == null){
-					File file = new File(Paths.playerPicture(this));
+					File file = new File(Paths.aiPicture(this));
 					file.delete();
 				}
 				else{
-					ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", new File(Paths.playerPicture(this)));
+					ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", new File(Paths.aiPicture(this)));
 				}
 			} catch (IOException e) {
 				ErrorLog.write("Bild konnte nicht gespeichert werden.");
@@ -254,7 +254,7 @@ public class Player {
 	}
 	
 	/**
-	 * damit die Player-Liste richtig angezeigt wird
+	 * damit die Ai-Liste richtig angezeigt wird
 	 */
 	public String toString(){
 		return title;

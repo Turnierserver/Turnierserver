@@ -28,7 +28,7 @@ public class MainApp extends Application{
 	
 	public WebConnector webConnector = new WebConnector("http://192.168.178.43:5000/api/", "192.168.178.43");//"http://thuermchen.com/api/");
 	public GameManager gameManager = new GameManager();
-	public PlayerManager playerManager = new PlayerManager();
+	public AiManager aiManager = new AiManager();
 	
 	/**
 	 * Main-Methode

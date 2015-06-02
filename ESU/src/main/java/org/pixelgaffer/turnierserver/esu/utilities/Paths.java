@@ -2,9 +2,9 @@ package org.pixelgaffer.turnierserver.esu.utilities;
 
 import org.pixelgaffer.turnierserver.esu.Game;
 import org.pixelgaffer.turnierserver.esu.ParticipantResult;
-import org.pixelgaffer.turnierserver.esu.Player;
-import org.pixelgaffer.turnierserver.esu.Player.Language;
-import org.pixelgaffer.turnierserver.esu.Player.PlayerMode;
+import org.pixelgaffer.turnierserver.esu.Ai;
+import org.pixelgaffer.turnierserver.esu.Ai.Language;
+import org.pixelgaffer.turnierserver.esu.Ai.AiMode;
 import org.pixelgaffer.turnierserver.esu.Version;
 
 public class Paths {
@@ -16,14 +16,14 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zum Spieler-Ordner zurück
 	 */
-	public static String playerFolder(){
-		return "Players";
+	public static String aiFolder(){
+		return "AIs";
 	}
 	/**
 	 * Gibt den Pfad zum Spiele-Ordner zurück
 	 */
 	public static String gameFolder(){
-		return "Players";
+		return "Games";
 	}
 	/**
 	 * Gibt den Pfad zum SimplePlayer-Ordner zurück
@@ -58,42 +58,42 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zum Ordner eines bestimmten Spielers zurück
 	 */
-	public static String player(Player player){
-		if (player.mode == PlayerMode.saved){
-			return playerFolder() + "/" + player.title;
+	public static String ai(Ai ai){
+		if (ai.mode == AiMode.saved){
+			return aiFolder() + "/" + ai.title;
 		}
-		else if (player.mode == PlayerMode.simplePlayer){
-			return simplePlayerFolder() + "/" + player.title;
+		else if (ai.mode == AiMode.simplePlayer){
+			return simplePlayerFolder() + "/" + ai.title;
 		}
 		else{
-			ErrorLog.write("Es wurde ein Pfad zu einem nicht gespeicherten Player angefordert");
+			ErrorLog.write("Es wurde ein Pfad zu einem nicht gespeicherten Ai angefordert");
 			return null;
 		}
 	}
 	/**
 	 * Gibt den Pfad zu den Properties eines Spielers zurück
 	 */
-	public static String playerProperties(Player player){
-		return player(player) + "/properties.txt";
+	public static String aiProperties(Ai ai){
+		return ai(ai) + "/properties.txt";
 	}
 	/**
 	 * Gibt den Pfad zum Bild eines Spielers zurück
 	 */
-	public static String playerPicture(Player player){
-		return player(player) + "/picture.png";
+	public static String aiPicture(Ai ai){
+		return ai(ai) + "/picture.png";
 	}
 
 	/**
 	 * Gibt den Pfad zu einer bestimmten Version zurück
 	 */
 	public static String version(Version version){
-		return player(version.player) + "/v" + version.number;
+		return ai(version.ai) + "/v" + version.number;
 	}
 	/**
 	 * Gibt den Pfad zu einer bestimmten Version zurück
 	 */
-	public static String version(Player player, int number){
-		return player(player) + "/v" + number;
+	public static String version(Ai ai, int number){
+		return ai(ai) + "/v" + number;
 	}
 	/**
 	 * Gibt den Pfad zu den Properties einer Version zurück
@@ -104,8 +104,8 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zu den Properties einer Version zurück
 	 */
-	public static String versionProperties(Player player, int number){
-		return version(player, number) + "/properties.txt";
+	public static String versionProperties(Ai ai, int number){
+		return version(ai, number) + "/properties.txt";
 	}
 
 	/**
