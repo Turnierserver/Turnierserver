@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javafx.scene.image.Image;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -25,6 +27,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.esu.Ai;
+import org.pixelgaffer.turnierserver.esu.Game;
 
 public class WebConnector {
 	
@@ -102,10 +105,29 @@ public class WebConnector {
 		List<Ai> result = new ArrayList<Ai>();
 		
 		for(int i = 0; i < ais.length(); i++) {
-			result.add(new Ai(ais.getJSONObject(i)));
+			result.add(new Ai(ais.getJSONObject(i), this));
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Gibt das Bild einer AI zurück
+	 * 
+	 * @param id Die id der AI
+	 * @return Das Bild der AI
+	 * @throws IOException
+	 */
+	public Image getImage(int id) throws IOException {
+		return new Image(sendGet("ai/" + id + "/icon"));
+	}
+	
+	public List<Game> getGames() {
+		throw new UnsupportedOperationException("Ich bin so pöse!");
+	}
+	
+	public void uploadVersion() {
+		
 	}
 	
 	/**

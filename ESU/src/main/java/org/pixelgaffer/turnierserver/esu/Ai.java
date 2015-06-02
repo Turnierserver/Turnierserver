@@ -1,20 +1,27 @@
 package org.pixelgaffer.turnierserver.esu;
 
-import java.io.*;
-import java.util.*;
-
-import javax.imageio.ImageIO;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.esu.utilities.Paths;
-import org.pixelgaffer.turnierserver.esu.utilities.Resources;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Properties;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+
+import javax.imageio.ImageIO;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.esu.utilities.Paths;
+import org.pixelgaffer.turnierserver.esu.utilities.Resources;
+import org.pixelgaffer.turnierserver.esu.utilities.WebConnector;
 
 
 public class Ai {
@@ -43,8 +50,9 @@ public class Ai {
 	 * Erstellt einen neuen Online-Ai aus einem JSONObject
 	 * 
 	 * @param json das übergebene JSONObject
+	 * @throws  
 	 */
-	public Ai(JSONObject json){
+	public Ai(JSONObject json, WebConnector connector) {
 		title = json.getString("name");
 		mode = AiMode.online;
 		userName = json.getString("author");
@@ -59,6 +67,16 @@ public class Ai {
 		JSONArray versions = json.getJSONArray("versions");
 		for(int i = 0; i < versions.length(); i++) {
 			newVersion(versions.getJSONObject(i));
+		}
+		
+		new Thread(() -> loadPicture(json, connector), "Image Loader").start();
+	}
+	
+	private void loadPicture(JSONObject json, WebConnector connector) {
+		try {
+			onlinePicture = connector.getImage(json.getInt("id"));
+		} catch (IOException e) {
+			ErrorLog.write("ERROR: Konnte das Bild der AI " + json.getString("name") + " nicht laden (" + e.getLocalizedMessage() + ")!");
 		}
 	}
 	
