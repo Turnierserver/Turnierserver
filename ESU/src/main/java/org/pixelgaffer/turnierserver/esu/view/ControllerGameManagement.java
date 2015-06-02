@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.esu.view;
 
 import org.pixelgaffer.turnierserver.esu.*;
+import org.pixelgaffer.turnierserver.esu.Game.GameMode;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -71,7 +72,7 @@ public class ControllerGameManagement {
 	
 	public void showGame(){
 		if (game != null){
-			if (game.isOnline)
+			if (game.mode == GameMode.onlineLoaded)
 				lbMode.setText("Online");
 			else
 				lbMode.setText("Offline");
@@ -98,16 +99,13 @@ public class ControllerGameManagement {
 
 	@FXML
 	void clickOnline(){
-//		btOnline.setSelected(false);
-//		btOffline.setSelected(true);
+		
 	}
 
 	@FXML
 	void clickOffline(){
 		lvPlayer1.setItems(mainApp.aiManager.ais);
 		lvPlayer2.setItems(mainApp.aiManager.ais);
-//		btOnline.setSelected(true);
-//		btOffline.setSelected(false);
 	}
 
 	@FXML

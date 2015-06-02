@@ -7,10 +7,12 @@ import java.util.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.esu.utilities.*;
 
 public class Game {
 	
+	public final GameMode mode;
 	public String ID = null;
 	public String date;
 	public String duration;
@@ -18,31 +20,35 @@ public class Game {
 	public String state;
 	public String judged;
 	public ObservableList<ParticipantResult> participants = FXCollections.observableArrayList();
-	public boolean isOnline;  //muss nicht gespeichert werden
 	
+	
+	public static enum GameMode{
+		playing, saved, onlineLoaded
+	}
 	
 	public Game(String id){
+		mode = GameMode.saved;
 		ID = id;
-		isOnline = false;
+		loadProps();
 	}
 	public Game(String llogic, String sstate){
+		mode = GameMode.playing;
 		logic = llogic;
 		state = sstate;
 		judged = "Nein";
-		isOnline = false;
+		storeProps();
 	}
-	public Game(String llogic, String sstate, String jjudged, String ddate, String dduration, ObservableList<ParticipantResult> pparticipants){
-		logic = llogic;
-		state = sstate;
-		judged = jjudged;
-		date = ddate;
-		duration = dduration;
-		participants = pparticipants;
-		isOnline = true;
+	public Game(JSONObject json){
+		mode = GameMode.onlineLoaded;
+		////////////////////////Nico: hier kommt dein Code rein/////////////////////////////////////////////////////
 	}
 	
 	
 	public void loadProps(){
+		if (mode != GameMode.saved && mode != GameMode.playing){
+			ErrorLog.write("dies ist kein lesbares Objekt (Game.loadProps)");
+			return;
+		}
 		try {
 			Reader reader = new FileReader(Paths.gameProperties(this));
 			Properties prop = new Properties();
@@ -67,8 +73,10 @@ public class Game {
 		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt (Game)");}
 	}
 	public void storeProps(){
-		if (isOnline)
+		if (mode != GameMode.playing){
+			ErrorLog.write("dies ist kein speicherbares Objekt (Game.loadProps)");
 			return;
+		}
 		
 		if (ID == null){
 			getNewID();
