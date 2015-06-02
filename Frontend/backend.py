@@ -65,6 +65,9 @@ class Backend(threading.Thread):
 		Activity("Backend[{}]: Spiel mit {} gestartet".format(reqid, [ai.name for ai, version in ais]))
 		return reqid
 
+	def request_qualify(self, ai):
+		return self.request_game([str(ai.id) + "v" + str(ai.lastest_version().version_id), "-1v1"])
+
 	def send_dict(self, d):
 		if not self.is_connected():
 			self.connect()

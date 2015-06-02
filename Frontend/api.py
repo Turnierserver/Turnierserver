@@ -61,7 +61,7 @@ api = Blueprint("api", __name__, url_prefix="/api")
 
 @api.route("/", methods=["GET"])
 def api_index():
-	return "Ein API Skelett, damit anderes Zeugs implementiert werden kann."
+	return "PONG!"
 
 @api.route("/ais", methods=["GET"])
 @json_out
@@ -539,6 +539,24 @@ def api_ai_compile(id):
 				# Falls die Antwort vom Backend nicht verstanden wurde.
 				yield ("B: " + str(resp) + "\n", "log")
 
+
+@api.route("/ai/<int:id>/qualify", methods=["GET"])
+@authenticated
+@sse_stream
+def api_ai_qualify(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return (CommonErrors.INVALID_ID[0]["error"], "error")
+	if not current_user.can_access(ai):
+		return (CommonErrors.NO_ACCESS[0]["error"], "error")
+
+
+	if not ai.lastest_version().compiled:
+		return {"error": "AI_Version isnt compiled"}, 400
+
+	backend.request_qualify()
+
+
 @api.route("/ai/<int:id>/new_version", methods=["POST"])
 @json_out
 @authenticated
@@ -671,6 +689,28 @@ def ai_create_folder(id):
 		return f()
 	except ftp.err:
 		return CommonErrors.FTP_ERROR
+
+
+@api.route("/ai/<int:id>/upload_zip", methods=["POST"])
+@json_out
+@authenticated
+def ai_upload_zip(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+	return CommonErrors.NOT_IMPLEMENTED
+
+@api.route("/ai/<int:id>/<int:version_id>/download_zip")
+@authenticated
+def ai_download_zip(id, version_id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+	return CommonErrors.NOT_IMPLEMENTED
 
 
 @api.route("/games/start", methods=["POST"])

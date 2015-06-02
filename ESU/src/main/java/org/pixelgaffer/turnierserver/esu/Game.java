@@ -1,14 +1,22 @@
 package org.pixelgaffer.turnierserver.esu;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import org.json.JSONObject;
-import org.pixelgaffer.turnierserver.esu.utilities.*;
+import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 
 public class Game {
 	
@@ -40,7 +48,7 @@ public class Game {
 	}
 	public Game(JSONObject json){
 		mode = GameMode.onlineLoaded;
-		////////////////////////Nico: hier kommt dein Code rein/////////////////////////////////////////////////////
+		
 	}
 	
 	
