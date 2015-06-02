@@ -1,6 +1,6 @@
 import requests
 from jinja2 import Template
-
+from pprint import pformat
 from _cfg import env
 
 baseurl = "http://localhost:5000"
@@ -32,7 +32,7 @@ Headers:
 
 Body:
 ```
-	{{response.content.decode("utf-8")}}
+{{respbody}}
 ```
 
 """)
@@ -60,11 +60,16 @@ class Endpoint:
 		if self.type == ReqTypes.GET:
 			r = s.get(requrl)
 
+		respbody = r.content.decode("utf-8")
+		if r.json():
+			respbody = pformat(r.json())
+
 		return template.render(
 			reqtype=self.type, url=self.url,
 			response=r,
 			reqheaders = sorted(r.request.headers.items()),
-			respheaders = sorted(r.headers.items())
+			respheaders = sorted(r.headers.items()),
+			respbody = respbody
 		)
 
 
