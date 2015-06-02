@@ -8,28 +8,30 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Properties;
 
+import javafx.beans.property.SimpleStringProperty;
+
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 
 public class ParticipantResult {
 	
 	public final Game game;
-	public String number;
-	public String playerName;
-	public String kiName;
-	public String duration;
-	public String moveCount;
-	public String points;
-	public String won;
+	public SimpleStringProperty number;
+	public SimpleStringProperty playerName;
+	public SimpleStringProperty kiName;
+	public SimpleStringProperty duration;
+	public SimpleStringProperty moveCount;
+	public SimpleStringProperty points;
+	public SimpleStringProperty won;
 	
 	public ParticipantResult(Game ggame, String pplayerName, String kkiName, String dduration, String mmoveCount, String ppoints, String wwon){
 		game = ggame;
-		playerName = pplayerName;
-		kiName = kkiName;
-		duration = dduration;
-		moveCount = mmoveCount;
-		points = ppoints;
-		won = wwon;
+		playerName.set(pplayerName);
+		kiName.set(kkiName);
+		duration.set(dduration);
+		moveCount.set(mmoveCount);
+		points.set(ppoints);
+		won.set(wwon);
 	}
 	
 	

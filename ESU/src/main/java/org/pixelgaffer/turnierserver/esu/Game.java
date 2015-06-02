@@ -56,12 +56,12 @@ public class Game {
 			
 			int amount = Integer.parseInt(prop.getProperty("participantAmount"));
 			for (int i = 0; i < amount; i++){
-				participants.get(i).playerName = prop.getProperty("playerName" + participants.get(i).number);
-				participants.get(i).kiName = prop.getProperty("kiName" + participants.get(i).number);
-				participants.get(i).duration = prop.getProperty("duration" + participants.get(i).number);
-				participants.get(i).moveCount = prop.getProperty("moveCount" + participants.get(i).number);
-				participants.get(i).points = prop.getProperty("points" + participants.get(i).number);
-				participants.get(i).won = prop.getProperty("won" + participants.get(i).number);
+				participants.get(i).playerName.set(prop.getProperty("playerName" + participants.get(i).number));
+				participants.get(i).kiName.set(prop.getProperty("kiName" + participants.get(i).number));
+				participants.get(i).duration.set(prop.getProperty("duration" + participants.get(i).number));
+				participants.get(i).moveCount.set(prop.getProperty("moveCount" + participants.get(i).number));
+				participants.get(i).points.set(prop.getProperty("points" + participants.get(i).number));
+				participants.get(i).won.set(prop.getProperty("won" + participants.get(i).number));
 			}
 			
 		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt (Game)");}
@@ -83,12 +83,12 @@ public class Game {
 		
 		prop.setProperty("participantAmount", participants.size() + "");
 		for (int i = 0; i < participants.size(); i++){
-			prop.setProperty("playerName" + participants.get(i).number, participants.get(i).playerName);
-			prop.setProperty("kiName" + participants.get(i).number, participants.get(i).kiName);
-			prop.setProperty("duration" + participants.get(i).number, participants.get(i).duration);
-			prop.setProperty("moveCount" + participants.get(i).number, participants.get(i).moveCount);
-			prop.setProperty("points" + participants.get(i).number, participants.get(i).points);
-			prop.setProperty("won" + participants.get(i).number, participants.get(i).won);
+			prop.setProperty("playerName" + participants.get(i).number.get(), participants.get(i).playerName.get());
+			prop.setProperty("kiName" + participants.get(i).number.get(), participants.get(i).kiName.get());
+			prop.setProperty("duration" + participants.get(i).number.get(), participants.get(i).duration.get());
+			prop.setProperty("moveCount" + participants.get(i).number.get(), participants.get(i).moveCount.get());
+			prop.setProperty("points" + participants.get(i).number.get(), participants.get(i).points.get());
+			prop.setProperty("won" + participants.get(i).number.get(), participants.get(i).won.get());
 		}
 		
 		try {

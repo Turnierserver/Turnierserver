@@ -16,6 +16,8 @@ public class WorkerCommand
 {
 	public static final char COMPILE = 'C';
 	public static final char STARTAI = 'S';
+	public static final char TERMAI = 'T';
+	public static final char KILLAI = 'K';
 	
 	/** Die Aktion, die der Worker ausführen soll. */
 	@Getter

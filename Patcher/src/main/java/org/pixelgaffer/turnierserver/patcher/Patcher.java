@@ -15,17 +15,17 @@ import org.kohsuke.github.GitHub;
 
 public class Patcher implements Runnable {
 	
-	public static final File rootDir = new File("..");
-	public static final File configDir = new File(rootDir, "Turnierserver-Config");
-	public static final File turnierserverDir = new File(rootDir, "Turnierserver");
-	public static final File buildDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.build"));
-	public static final File frontendDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.frontend"));
-	public static final File compilerDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.compiler"));
-	public static final File patcherDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher"));
-	public static final File networkingDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.networking"));
-	public static final File gamelogicDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.gamelogic"));
-	public static final File workerDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.worker"));
-	public static final File backendDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.backend"));
+	public static File rootDir = new File("..");
+	public static File configDir;
+	public static File turnierserverDir = new File(rootDir, "Turnierserver");
+	public static File buildDir;
+	public static File frontendDir;
+	public static File compilerDir;
+	public static File patcherDir;
+	public static File networkingDir;
+	public static File gamelogicDir;
+	public static File workerDir;
+	public static File backendDir;
 	
 	public static Process exe(File dir, String...command) throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(command);
@@ -44,15 +44,34 @@ public class Patcher implements Runnable {
 	}
 	
 	public static void main(String[] args) throws IOException {
+		
+		Properties p = new Properties(System.getProperties());
+		p.load(new FileInputStream(new File(rootDir, "patcher.prop")));
+		System.setProperties(p);
+		
+		configDir = new File(rootDir, System.getProperty("turnierserver.patcher.github.repos.turnierserver-config").split("/")[1]);
+		
 		if(!configDir.exists()) {
 			git(rootDir, "clone", "https://" + System.getProperty("turnierserver.patcher.github.username") + ":" + System.getProperty("turnierserver.patcher.github.password") + "github.com/nicosio2/Turnierserver-Config.git");
 		}
-				
-		Properties p = new Properties(System.getProperties());
-		p.load(new FileInputStream(new File(configDir, "/turnierserver.prop")));
+		
+		p = new Properties(System.getProperties());
+		p.load(new FileInputStream(new File(configDir, "turnierserver.prop")));
 		System.setProperties(p);
 		
-		new Thread(new Patcher(Boolean.parseBoolean(args[0]), Boolean.parseBoolean(args[1]), Boolean.parseBoolean(args[2]), Boolean.parseBoolean(args[3]), args[4])).start();
+		turnierserverDir = new File(rootDir, System.getProperty("turnierserver.patcher.github.repos.turnierserver").split("/")[1]);
+		buildDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.build"));
+		frontendDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.frontend"));
+		compilerDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.compiler"));
+		patcherDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher"));
+		networkingDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.networking"));
+		gamelogicDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.gamelogic"));
+		workerDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.worker"));
+		backendDir = new File(turnierserverDir, System.getProperty("turnierserver.patcher.backend"));
+		
+		
+		
+		new Thread(new Patcher(Boolean.parseBoolean(args[0]), Boolean.parseBoolean(args[1]), Boolean.parseBoolean(args[2]), Boolean.parseBoolean(args[3]))).start();
 	}
 	
 	private GitHub github;
@@ -66,13 +85,14 @@ public class Patcher implements Runnable {
 	private Process frontend;
 	
 	private boolean release;
-	
-	private String configRepo;
-	
-	public Patcher(boolean worker, boolean backend, boolean frontend, boolean release, String configRepo) throws IOException {
+		
+	public Patcher(boolean worker, boolean backend, boolean frontend, boolean release) throws IOException {
 		
 		this.release = release;
-		this.configRepo = configRepo;
+		
+		github = GitHub.connectUsingPassword(System.getProperty("turnierserver.patcher.github.username"), System.getProperty("turnierserver.patcher.github.password"));
+		turnierserver = github.getRepository(System.getProperty("turnierserver.patcher.github.repos.turnierserver"));
+		config = github.getRepository(System.getProperty("turnierserver.patcher.github.repos.turnierserver-config"));
 		
 		pull(turnierserverDir, turnierserver);
 		pull(configDir, config);
@@ -92,10 +112,6 @@ public class Patcher implements Runnable {
 		if(frontend) {
 			restartFrontend();
 		}
-		
-		github = GitHub.connectUsingPassword(System.getProperty("turnierserver.patcher.github.username"), System.getProperty("turnierserver.patcher.github.password"));
-		turnierserver = github.getRepository(System.getProperty("turnierserver.patcher.github.repos.turnierserver"));
-		config = github.getRepository(System.getProperty("turnierserver.patcher.github.repos.turnierserver-config"));
 		
 		lastTurnierserverCommit = release ? turnierserver.getCommit(turnierserver.listReleases().asList().get(0).getName()) : turnierserver.listCommits().asList().get(0);
 		lastConfigCommit = release ? config.getCommit(config.listReleases().asList().get(0).getName()) : config.listCommits().asList().get(0);

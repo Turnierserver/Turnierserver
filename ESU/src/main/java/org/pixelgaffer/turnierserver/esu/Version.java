@@ -6,6 +6,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Savepoint;
 import java.util.*;
 
+import org.json.JSONObject;
+import org.pixelgaffer.turnierserver.esu.Player.PlayerMode;
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 
@@ -14,6 +16,8 @@ public class Version {
 	
 	public final Player player;
 	public final int number;
+	public final PlayerMode mode;
+	
 	public boolean compiled = false;
 	public boolean qualified = false;
 	public boolean finished = false;
@@ -22,9 +26,12 @@ public class Version {
 	public String qualifyOutput = "";
 	public List<CodeEditor> files = new ArrayList<CodeEditor>();
 	
-	public Version(Player p, int n, boolean autoload){
+	
+	public Version(Player p, int n, JSONObject json){
 		player = p;
 		number = n;
+		mode = PlayerMode.online;
+		////////////////////////Nico: hier kommt dein Code rein////////////////////////////////////////////
 	}
 	
 	/**
@@ -33,23 +40,27 @@ public class Version {
 	 * @param p
 	 * @param n
 	 */
-	public Version(Player p, int n){
+	public Version(Player p, int n, PlayerMode mmode){
 		player = p;
 		number = n;
+		mode = mmode;
 		
-		if (!exists()){
-			copyFromFile(Paths.simplePlayer(player.language));
-			storeProps();
-			findCode();
-		}
-		else{
-			loadProps();
-			findCode();
+		if (mode == PlayerMode.saved || mode == PlayerMode.simplePlayer){
+			if (!exists()){
+				copyFromFile(Paths.simplePlayer(player.language));
+				storeProps();
+				findCode();
+			}
+			else{
+				loadProps();
+				findCode();
+			}
 		}
 	}
 	public Version(Player p, int n, String path){
 		player = p;
 		number = n;
+		mode = PlayerMode.saved;
 		
 		copyFromFile(path);
 		storeProps();

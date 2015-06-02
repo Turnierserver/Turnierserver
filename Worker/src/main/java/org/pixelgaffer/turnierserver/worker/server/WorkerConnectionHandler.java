@@ -42,12 +42,24 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	/**
 	 * Schickt den Job an den Client, sollte eine Sandbox sein.
 	 */
-	public void send (SandboxCommand job) throws IOException
+	public void sendJob (SandboxCommand job) throws IOException
 	{
 		if (type.getType() != SANDBOX)
-			WorkerMain.getLogger().warning("WorkerConnectionHandler: Submitting StartAi Job to " + type.getType()
-					+ "( should be " + SANDBOX + ")");
+			WorkerMain.getLogger().warning("WorkerConnectionHandler: Submitting Job to " + type.getType()
+					+ " ( should be " + SANDBOX + ")");
 		getClient().write(Parsers.getSandbox().parse(job));
+		getClient().write("\n".getBytes(UTF_8));
+	}
+	
+	/**
+	 * Schickt die Message an den Client, sollte eine KI sein.
+	 */
+	public void sendMessage (MessageForward mf)
+	{
+		if (type.getType() != AI)
+			WorkerMain.getLogger().warning("WorkerConnectionHandler: Submitting Message to " + type.getType()
+					+ " (should be " + AI + ")");
+		getClient().write(mf.getMessage());
 		getClient().write("\n".getBytes(UTF_8));
 	}
 	
@@ -137,7 +149,10 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					try
 					{
 						MessageForward mf = Parsers.getWorker().parse(line, MessageForward.class);
-						System.out.println(mf);
+						WorkerConnectionHandler con = WorkerServer.aiConnections.get(mf.getAi());
+						if (con == null)
+							throw new IllegalArgumentException("Unknown AI with UUID " + mf.getAi());
+						con.sendMessage(mf);
 					}
 					catch (Exception e)
 					{

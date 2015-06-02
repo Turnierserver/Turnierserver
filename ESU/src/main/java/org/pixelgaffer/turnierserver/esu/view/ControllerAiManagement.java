@@ -5,6 +5,7 @@ import java.io.File;
 import org.pixelgaffer.turnierserver.esu.*;
 import org.pixelgaffer.turnierserver.esu.Player.Language;
 import org.pixelgaffer.turnierserver.esu.Player.NewVersionType;
+import org.pixelgaffer.turnierserver.esu.Player.PlayerMode;
 import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
 import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 import org.pixelgaffer.turnierserver.esu.utilities.Resources;
@@ -55,7 +56,6 @@ public class ControllerAiManagement{
 	public Tab newFileTab;
 	
 	public MainApp mainApp;
-	public PlayerManager manager = new PlayerManager();
 	public Player player;
 	public Version version;
 
@@ -91,7 +91,7 @@ public class ControllerAiManagement{
 		
 		infoTab = tpCode.getTabs().get(0);
 		newFileTab = tpCode.getTabs().get(1);
-		manager.loadPlayers();
+		mainApp.playerManager.loadPlayers();
 		showPlayers();
 	}
 	
@@ -100,7 +100,7 @@ public class ControllerAiManagement{
 	 * Lädt alle KIs in die KI-Liste
 	 */
 	public void showPlayers(){
-		lvAis.setItems(manager.players);
+		lvAis.setItems(mainApp.playerManager.players);
 		try {
 			lvAis.getSelectionModel().selectFirst();
 		} catch (Exception e) {}
@@ -213,6 +213,24 @@ public class ControllerAiManagement{
 			rbFromFile.setSelected(false);
 			rbSimple.setSelected(true);
 		}
+		
+		if (player != null){
+			if (player.mode == PlayerMode.simplePlayer){
+				btEdit.setDisable(true);
+				btNewVersion.setDisable(true);
+				btCompile.setDisable(true);
+				btQualify.setDisable(true);
+				btFinish.setDisable(true);
+				btUpload.setDisable(true);
+				lbCompiled.setVisible(false);
+				hlShowQualified.setVisible(false);
+				lbFinished.setVisible(false);
+				lbUploaded.setVisible(false);
+				
+				btChangeImage.setDisable(true);
+				btDeleteImage.setDisable(true);
+			}
+		}
 	}
 	
 	/**
@@ -271,7 +289,7 @@ public class ControllerAiManagement{
 			}
 		}
 		
-		manager.players.add(new Player(title, cbLanguage.getValue()));
+		mainApp.playerManager.players.add(new Player(title, cbLanguage.getValue()));
 		lvAis.getSelectionModel().selectLast();
 	}
 

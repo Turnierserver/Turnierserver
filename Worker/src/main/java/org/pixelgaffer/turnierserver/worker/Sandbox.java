@@ -7,6 +7,7 @@ import java.io.IOException;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
 import org.pixelgaffer.turnierserver.worker.server.WorkerConnectionHandler;
 
@@ -31,8 +32,9 @@ public class Sandbox
 		connection = connectionHandler;
 	}
 	
-	public void send (SandboxCommand job) throws IOException
+	/** Schickt den Job an die Sandbox. */
+	public void sendJob (SandboxCommand job) throws IOException
 	{
-		connection.send(job);
+		connection.sendJob(job);
 	}
 }

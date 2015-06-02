@@ -4,6 +4,7 @@ import org.pixelgaffer.turnierserver.esu.Game;
 import org.pixelgaffer.turnierserver.esu.ParticipantResult;
 import org.pixelgaffer.turnierserver.esu.Player;
 import org.pixelgaffer.turnierserver.esu.Player.Language;
+import org.pixelgaffer.turnierserver.esu.Player.PlayerMode;
 import org.pixelgaffer.turnierserver.esu.Version;
 
 public class Paths {
@@ -22,7 +23,13 @@ public class Paths {
 	 * Gibt den Pfad zum Spiele-Ordner zurück
 	 */
 	public static String gameFolder(){
-		return "Games";
+		return "Players";
+	}
+	/**
+	 * Gibt den Pfad zum SimplePlayer-Ordner zurück
+	 */
+	public static String simplePlayerFolder(){
+		return "Downloads/SimplePlayer";
 	}
 	
 	/**
@@ -52,51 +59,60 @@ public class Paths {
 	 * Gibt den Pfad zum Ordner eines bestimmten Spielers zurück
 	 */
 	public static String player(Player player){
-		return playerFolder() + "/" + player.title;
+		if (player.mode == PlayerMode.saved){
+			return playerFolder() + "/" + player.title;
+		}
+		else if (player.mode == PlayerMode.simplePlayer){
+			return simplePlayerFolder() + "/" + player.title;
+		}
+		else{
+			ErrorLog.write("Es wurde ein Pfad zu einem nicht gespeicherten Player angefordert");
+			return null;
+		}
 	}
 	/**
 	 * Gibt den Pfad zu den Properties eines Spielers zurück
 	 */
 	public static String playerProperties(Player player){
-		return playerFolder() + "/" + player.title + "/properties.txt";
+		return player(player) + "/properties.txt";
 	}
 	/**
 	 * Gibt den Pfad zum Bild eines Spielers zurück
 	 */
 	public static String playerPicture(Player player){
-		return playerFolder() + "/" + player.title + "/picture.png";
+		return player(player) + "/picture.png";
 	}
 
 	/**
 	 * Gibt den Pfad zu einer bestimmten Version zurück
 	 */
 	public static String version(Version version){
-		return playerFolder() + "/" + version.player.title + "/v" + version.number;
+		return player(version.player) + "/v" + version.number;
 	}
 	/**
 	 * Gibt den Pfad zu einer bestimmten Version zurück
 	 */
 	public static String version(Player player, int number){
-		return playerFolder() + "/" + player.title + "/v" + number;
+		return player(player) + "/v" + number;
 	}
 	/**
 	 * Gibt den Pfad zu den Properties einer Version zurück
 	 */
 	public static String versionProperties(Version version){
-		return playerFolder() + "/" + version.player.title + "/v" + version.number + "/properties.txt";
+		return version(version) + "/properties.txt";
 	}
 	/**
 	 * Gibt den Pfad zu den Properties einer Version zurück
 	 */
 	public static String versionProperties(Player player, int number){
-		return playerFolder() + "/" + player.title + "/v" + number + "/properties.txt";
+		return version(player, number) + "/properties.txt";
 	}
 
 	/**
 	 * Gibt den Pfad zum SimplePlayer einer Sprache zurück
 	 */
 	public static String simplePlayer(Language language){
-		return "Downloads/SimplePlayer/" + language.toString();
+		return simplePlayerFolder() + "/SimplePlayer" + language.toString() + "/v0";
 	}
 
 	
