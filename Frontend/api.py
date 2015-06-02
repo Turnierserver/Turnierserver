@@ -192,6 +192,11 @@ def api_user_delete(id):
 	user.delete()
 	return {"error": False}
 
+@api.route("/langs")
+@json_out
+def api_langs():
+	return [l.info() for l in Lang.query.all()]
+
 
 @api.route("/activate/<int:id>/<string:uuid>", methods=["GET", "POST"])
 @json_out
@@ -834,6 +839,27 @@ def simple_players(id):
 	def f(self):
 		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/simple_players.zip"):
 			return ftp.send_file("Games/"+secure_filename(str(id))+"/simple_players.zip")
+		else:
+			abort(404)
+	return f()
+
+@api.route("/gamelogic/<int:id>")
+def game_logic(id):
+	@ftp.failsafe_locked
+	def f(self):
+		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/Java/gamelogic.jar"):
+			return ftp.send_file("Games/"+secure_filename(str(id))+"/Java/gamelogic.jar")
+		else:
+			abort(404)
+	return f()
+
+@api.route("/ai_library/<int:game_id>/<int:lang_name>")
+def ai_library(id):
+	p = "Games/{}/{}/ailibrary.zip".format(secure_filename(str(game_id)), lang_name)
+	@ftp.failsafe_locked
+	def f(self):
+		if ftp.ftp_host.path.isfile(p):
+			return ftp.send_file(p)
 		else:
 			abort(404)
 	return f()
