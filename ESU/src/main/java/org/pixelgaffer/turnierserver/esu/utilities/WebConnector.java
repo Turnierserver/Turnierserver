@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -43,11 +46,7 @@ public class WebConnector {
 		this.url = url;
 		this.cookieUrl = cookieUrl;
 		readFromFile();
-		try {
-			System.out.println(isLoggedIn());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		System.out.println(isLoggedIn());
 	}
 	
 	/**
@@ -86,20 +85,25 @@ public class WebConnector {
 	 * @return Ob die ESU momentan eingeloggt ist
 	 * @throws IOException
 	 */
-	public boolean isLoggedIn() throws IOException {
-		if(getSession() == null || getRememberToken() == null) {
+	public boolean isLoggedIn() {
+		try {
+			if(getSession() == null || getRememberToken() == null) {
+				return false;
+			}
+			boolean result = sendPost("loggedin") != null;
+			if(!result) {
+				setTokens(null, null);
+			}
+			return result;
+		} catch (IOException e) {
+			ErrorLog.write("Fehler bei der Abfrage des Loginstatus.");
 			return false;
 		}
-		boolean result = sendPost("loggedin") != null;
-		if(!result) {
-			setTokens(null, null);
-		}
-		return result;
 	}
 	
-	public List<Ai> getAis() throws IOException {
+	public ObservableList<Ai> getAis() throws IOException {
 		JSONArray ais = new JSONArray(sendGet("ais"));
-		List<Ai> result = new ArrayList<Ai>();
+		ObservableList<Ai> result = FXCollections.observableArrayList();
 		
 		for(int i = 0; i < ais.length(); i++) {
 			result.add(new Ai(ais.getJSONObject(i)));
@@ -218,6 +222,8 @@ public class WebConnector {
 		
 		if(response.getStatusLine().getStatusCode() != 200) {
 			ErrorLog.write("ERROR: Executing post request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + responseString);
+			System.out.println(command);
+			System.out.println(responseString);
 			Dialog.error(new JSONObject(responseString).getString("error"));
 			return null;
 		}
@@ -226,7 +232,7 @@ public class WebConnector {
 	}
 	
 	public String sendGet(String command) throws IOException {
-		return sendPost(command, new NameValuePair[0]);
+		return sendGet(command, new NameValuePair[0]);
 	}
 	
 	public String sendGet(String command, String...data) throws IOException {

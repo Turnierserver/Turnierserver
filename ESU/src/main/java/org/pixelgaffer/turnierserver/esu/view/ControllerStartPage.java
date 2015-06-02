@@ -10,6 +10,8 @@ import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
@@ -19,7 +21,7 @@ public class ControllerStartPage{
 	@FXML Button btInfo;
 	@FXML Button btDownload;
 	@FXML Button btRegister;
-	@FXML Button btSignIn;
+	@FXML Button btLogin;
 	@FXML Hyperlink hlForgotPassword;
 	@FXML TextField tbActualLogic;
 	@FXML TextField tbEmail;
@@ -27,6 +29,10 @@ public class ControllerStartPage{
 	@FXML TitledPane tpLogic;
 	@FXML TitledPane tpRegister;
 	@FXML WebView wfNews;
+	@FXML VBox vbLogin;
+	@FXML GridPane gpLogin;
+	@FXML Label lbLogin;
+	@FXML Button btLogout;
 	WebEngine webEngine;
 	
 
@@ -44,7 +50,23 @@ public class ControllerStartPage{
 		webEngine.setJavaScriptEnabled(true);
 		webEngine.load("http://www.bundeswettbewerb-informatik.de/");
 		wfNews.setZoom(0.9);
+		updateLoggedIn();
 	}
+	
+	
+	public void updateLoggedIn(){
+		if (mainApp.webConnector.isLoggedIn()){
+			vbLogin.getChildren().clear();
+			vbLogin.getChildren().add(lbLogin);
+			vbLogin.getChildren().add(btLogout);
+		}
+		else{
+			vbLogin.getChildren().clear();
+			vbLogin.getChildren().add(lbLogin);
+			vbLogin.getChildren().add(gpLogin);
+		}
+	}
+	
 	
 	@FXML
 	void clickInfo(){
@@ -62,19 +84,31 @@ public class ControllerStartPage{
 	}
 	
 	@FXML
-	void clickSignIn(){
+	void clickLogout(){
+		try {
+			mainApp.webConnector.logout();
+		} catch (IOException e) {
+			ErrorLog.write("Logout fehlgeschlagen");
+		}
+		updateLoggedIn();
+	}
+	
+	@FXML
+	void clickLogin(){
 		
 		try {
 			if (!mainApp.webConnector.login(tbEmail.getText(), tbPassword.getText())){
 				Dialog.error("Falsches Passwort oder Email", "Login fehlgeschlagen");
 			}
 			else{
+				updateLoggedIn();
 				Dialog.info("Login erfolgreich!");
 			}
 		} catch (IOException e) {
 			Dialog.error("Login fehlgeschlagen: ERROR", "Login fehlgeschlagen");
 			ErrorLog.write("Login fehlgeschlagen: " + e.getMessage());
 		}
+		updateLoggedIn();
 	}
 	
 }
