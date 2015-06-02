@@ -25,7 +25,7 @@ public class PropertyUtils
 	public static final String BACKEND_FRONTEND_SERVER_PORT = BACKEND_FRONTEND_SERVER_BASE + "port";
 	public static final String BACKEND_WORKER_SERVER_PORT = BACKEND_WORKER_SERVER_BASE + "port";
 	public static final String WORKER_HOST = WORKER_BASE + "host";
-	public static final String WORKER_SERVER_PORT = WORKER_SERVER_BASE + "port";
+	public static final String WORKER_SERVER_PORT = WORKER_SERVER_BASE + ".port";
 	public static final String WORKER_SERVER_AICHAR = WORKER_SERVER_BASE + "aichar";
 	public static final String DATASTORE_HOST = DATASTORE_BASE + "host";
 	public static final String DATASTORE_PORT = DATASTORE_BASE + "port";
