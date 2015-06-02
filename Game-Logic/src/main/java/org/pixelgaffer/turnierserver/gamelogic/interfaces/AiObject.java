@@ -1,5 +1,7 @@
 package org.pixelgaffer.turnierserver.gamelogic.interfaces;
 
+import java.io.IOException;
+
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 
 import lombok.Setter;
@@ -104,7 +106,11 @@ public class AiObject {
 		if(lost) {
 			return;
 		}
-		ai.disconnect();
+		try {
+			ai.disconnect();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		logic.lost(ai);
 		lost = true;
 		boolean finishGame = true;
