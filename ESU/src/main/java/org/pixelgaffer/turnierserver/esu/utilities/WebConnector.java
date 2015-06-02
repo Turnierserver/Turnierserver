@@ -243,7 +243,6 @@ public class WebConnector {
 		
 		for(int i = 0; i < gametypes.length(); i++) {
 			JSONObject gametype = gametypes.getJSONObject(i);
-			result.add(gametype.getString("name"));
 			String apparentLine = gametype.getString("name") + "->" + gametype.getLong("last_modified");
 			
 			if(!fileLines.contains(apparentLine)) {
@@ -267,6 +266,7 @@ public class WebConnector {
 			gametypesFile.createNewFile();
 			for(String line : lines) {
 				if(line != null) {
+					result.add(line.split("->")[0]);
 					FileUtils.write(gametypesFile, line + System.lineSeparator(), true);	
 				}
 			}
