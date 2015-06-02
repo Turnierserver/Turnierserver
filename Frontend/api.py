@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request, abort
+from flask import Blueprint, Response, request, abort, redirect
 from flask.ext.login import current_user, login_user, logout_user, LoginManager, UserMixin
 from functools import wraps
 from queue import Empty
@@ -193,6 +193,21 @@ def api_user_delete(id):
 	return {"error": False}
 
 
+@api.route("/activate/<int:id>/<string:uuid>", methods=["GET", "POST"])
+@json_out
+def activate(id, uuid):
+	user = User.query.get(id)
+
+	if not user:
+		return CommonErrors.INVALID_ID
+
+	if user.validate(uuid):
+		Activity(user.name + " hat sich erfolgreich validiert.")
+		login_user(user)
+		return redirect("/")
+
+	return CommonErrors.BAD_REQUEST
+
 
 @api.route("/login", methods=['POST'])
 @json_out
@@ -288,7 +303,9 @@ def api_user_create():
 	# es muss zur Datenbank geschrieben werden, um die Infos zu bekommen
 	db.session.commit()
 
-	login_user(user)
+	if not user.send_validation_mail():
+		db.session.rollback()
+		return {"error": "Invalid EMail."}, 400
 
 	return {'error': False, 'user': user.info()}, 200
 

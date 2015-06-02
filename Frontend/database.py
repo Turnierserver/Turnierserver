@@ -5,6 +5,7 @@ from activityfeed import Activity
 from io import BytesIO
 from functools import wraps
 from threading import Lock
+import mail
 import ftputil
 import socket
 import arrow
@@ -146,11 +147,15 @@ class User(db.Model):
 		if self.validation_code == uuid:
 			self.validation_code = None
 			print("sucessfully validated", self.name)
+			db.session.commit()
 		return self.validated
 
 	@property
 	def validated(self):
 		return self.validation_code == None
+
+	def send_validation_mail(self):
+		return mail.send_validation(self)
 
 
 	def info(self):

@@ -13,6 +13,12 @@ class LocalEnvironment:
 	ssl = False
 	env_supports_https = False
 
+	mail_server = "127.0.0.1"
+	mail_address = "turnier@serv.er"
+	mail_password = "foobar"
+
+	SERVER_URL = "127.0.0.1:5000"
+
 	#Flask cfg-obj
 	DEBUG = True
 	PROPAGATE_EXCEPTIONS=True
