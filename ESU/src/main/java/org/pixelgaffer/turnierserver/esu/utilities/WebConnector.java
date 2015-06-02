@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
