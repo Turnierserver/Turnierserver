@@ -32,7 +32,7 @@ class SyncedFTP:
 
 	def connect(self):
 		Activity("Verbinde zum FTP @ " + env.ftp_url)
-		self.ftp_host = ftputil.FTPHost(env.ftp_url, env.ftp_uname, env.ftp_pw, timeout=1)
+		self.ftp_host = ftputil.FTPHost(env.ftp_url, env.ftp_uname, env.ftp_pw, timeout=10)
 
 
 	def failsafe_locked(self, meth):
@@ -481,8 +481,8 @@ def populate(count=20):
 
 	py = Lang(id=1, name="Python", ace_name="python", url="https://www.python.org")
 	java = Lang(id=2, name="Java", ace_name="java", url="https://www.java.com/?isthaesslig=1")
-	brainfuck = Lang(id=3, name="Brainfuck", ace_name="brainfuck", url="https://esolangs.org/wiki/Brainfuck")
-	langs = [py, java, brainfuck]
+	cpp = Lang(id=3, name="C++", ace_name="cpp", url="http://en.wikipedia.org/wiki/C%2B%2B")
+	langs = [py, java, cpp]
 
 	minesweeper = GameType(id=1, name="Minesweeper", viz="vizs/minesweeper.html", roles=[
 		GameTypeRole(id=1, name="builder"), GameTypeRole(id=2, name="solver")

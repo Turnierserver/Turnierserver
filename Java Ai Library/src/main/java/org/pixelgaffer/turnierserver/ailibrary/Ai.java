@@ -52,7 +52,7 @@ public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 			con = new Socket(PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST), PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
 			out = new PrintWriter(con.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			out.println(PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR) + PropertyUtils.AI_UUID);
+			out.println(PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR) + PropertyUtils.getStringRequired(PropertyUtils.AI_UUID));
 			System.setOut(new PrintStream(new OutputStream() {
 				public void write(int b) throws IOException {
 					output.append((char) b);

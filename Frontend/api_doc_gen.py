@@ -61,8 +61,11 @@ class Endpoint:
 			r = s.get(requrl)
 
 		respbody = r.content.decode("utf-8")
-		if r.json():
-			respbody = pformat(r.json())
+		try:
+			if r.json():
+				respbody = pformat(r.json())
+		except ValueError:
+			pass
 
 		def headers(o):
 			return [h for h in sorted(o.headers.items()) if not h[0] == "date"]
@@ -86,6 +89,10 @@ with open("api_docs.md", "w") as f:
 		else:
 			f.write(o + "\n")
 
+
+	w("PingPongPingPong")
+	w(Endpoint("/api", ReqTypes.GET))
+
 	w("Anmeldung und so:")
 	w(Endpoint("/api/login", ReqTypes.POST, {"email": "admin@ad.min", "password": "admin"}))
 	w(Endpoint("/api/loggedin", ReqTypes.POST))
@@ -95,6 +102,8 @@ with open("api_docs.md", "w") as f:
 	w(Endpoint("/api/ais"))
 	w(Endpoint("/api/users"))
 	w(Endpoint("/api/games"))
+	w(Endpoint("/api/langs"))
+	w(Endpoint("/api/gametypes"))
 	w("Anonyme API Funktionen von bestimmten Objekten:")
 	w(Endpoint("/api/ai/1"))
 	w(Endpoint("/api/user/1"))

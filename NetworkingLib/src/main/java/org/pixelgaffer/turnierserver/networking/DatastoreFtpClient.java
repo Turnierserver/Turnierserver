@@ -219,7 +219,7 @@ public class DatastoreFtpClient
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
 			FTPListParseException
 	{
-		retrieveDir("Games/" + game + "/" + language, local);
+		retrieveDir("Games/" + game + "/" + language + "/ailib", local);
 	}
 	
 	/**

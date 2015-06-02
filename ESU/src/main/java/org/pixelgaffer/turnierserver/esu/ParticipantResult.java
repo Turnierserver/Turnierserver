@@ -1,17 +1,6 @@
 package org.pixelgaffer.turnierserver.esu;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Properties;
-
 import javafx.beans.property.SimpleStringProperty;
-
-import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 
 public class ParticipantResult {
 	

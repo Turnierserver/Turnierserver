@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.Properties;
 
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
@@ -24,8 +25,8 @@ public class JavaCompiler extends Compiler
 	}
 	
 	@Override
-	public boolean compile (File srcdir, File bindir, Properties p, PrintWriter output) throws IOException,
-			InterruptedException
+	public boolean compile (File srcdir, File bindir, Properties p, PrintWriter output, LibraryDownloader libs)
+			throws IOException, InterruptedException
 	{
 		String classpath = ".";
 		
@@ -35,7 +36,13 @@ public class JavaCompiler extends Compiler
 		libdir.mkdir();
 		try
 		{
-			DatastoreFtpClient.retrieveAiLibrary(getGame(), "Java", libdir);
+			if (libs == null)
+				DatastoreFtpClient.retrieveAiLibrary(getGame(), "Java", libdir);
+			else
+			{
+				for (File f : libs.getAiLibs("Java"))
+					Files.copy(f.toPath(), new File(libdir, f.getName()).toPath());
+			}
 			for (String jar : libdir.list( (dir, name) -> name.endsWith(".jar")))
 				classpath += ":AiLibrary/" + jar;
 			output.println("done");
@@ -62,7 +69,13 @@ public class JavaCompiler extends Compiler
 			libdir.mkdir();
 			try
 			{
-				DatastoreFtpClient.retrieveLibrary(line, "Java", libdir);
+				if (libs == null)
+					DatastoreFtpClient.retrieveLibrary(line, "Java", libdir);
+				else
+				{
+					for (File f : libs.getLib("Java", line))
+						Files.copy(f.toPath(), new File(libdir, f.getName()).toPath());
+				}
 				for (String jar : libdir.list( (dir, name) -> name.endsWith(".jar")))
 					classpath += ":" + line + "/" + jar;
 				output.println("done");
@@ -104,8 +117,11 @@ public class JavaCompiler extends Compiler
 			script.close();
 			return false;
 		}
-		script.println("java -classpath '" + classpath + "' -Xmx500M '"
-				+ mainclass.replace("'", "\\'") + "' ${@}");
+		String command = "java -classpath '" + classpath + "' -Xmx500M '"
+				+ mainclass.replace("'", "\\'") + "' ${@}";
+		setCommand(command);
+		script.println("echo \"" + command + "\"");
+		script.println(command);
 		script.close();
 		output.println("done");
 		

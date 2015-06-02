@@ -42,7 +42,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	/**
 	 * Schickt den Job an den Client, sollte eine Sandbox sein.
 	 */
-	public void sendJob (SandboxCommand job) throws IOException
+	public synchronized void sendJob (SandboxCommand job) throws IOException
 	{
 		if (type.getType() != SANDBOX)
 			WorkerMain.getLogger().warning("WorkerConnectionHandler: Submitting Job to " + type.getType()
@@ -54,7 +54,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	/**
 	 * Schickt die Message an den Client, sollte eine KI sein.
 	 */
-	public void sendMessage (MessageForward mf)
+	public synchronized void sendMessage (MessageForward mf)
 	{
 		if (type.getType() != AI)
 			WorkerMain.getLogger().warning("WorkerConnectionHandler: Submitting Message to " + type.getType()

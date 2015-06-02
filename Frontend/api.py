@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 import json
 import magic
 
-from database import AI, User, Game, Lang, db, populate, ftp
+from database import AI, User, Game, Lang, GameType, db, populate, ftp
 from backend import backend
 from commons import authenticated, cache, CommonErrors, bcrypt
 from _cfg import env
@@ -61,7 +61,7 @@ api = Blueprint("api", __name__, url_prefix="/api")
 
 @api.route("/", methods=["GET"])
 def api_index():
-	return "Ein API Skelett, damit anderes Zeugs implementiert werden kann."
+	return "PONG!"
 
 @api.route("/ais", methods=["GET"])
 @json_out
@@ -192,6 +192,15 @@ def api_user_delete(id):
 	user.delete()
 	return {"error": False}
 
+@api.route("/langs")
+@json_out
+def api_langs():
+	return [l.info() for l in Lang.query.all()]
+
+@api.route("/gametypes")
+@json_out
+def api_gametypes():
+	return [gt.info() for gt in GameType.query.all()]
 
 @api.route("/activate/<int:id>/<string:uuid>", methods=["GET", "POST"])
 @json_out
@@ -539,6 +548,24 @@ def api_ai_compile(id):
 				# Falls die Antwort vom Backend nicht verstanden wurde.
 				yield ("B: " + str(resp) + "\n", "log")
 
+
+@api.route("/ai/<int:id>/qualify", methods=["GET"])
+@authenticated
+@sse_stream
+def api_ai_qualify(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return (CommonErrors.INVALID_ID[0]["error"], "error")
+	if not current_user.can_access(ai):
+		return (CommonErrors.NO_ACCESS[0]["error"], "error")
+
+
+	if not ai.lastest_version().compiled:
+		return {"error": "AI_Version isnt compiled"}, 400
+
+	backend.request_qualify()
+
+
 @api.route("/ai/<int:id>/new_version", methods=["POST"])
 @json_out
 @authenticated
@@ -673,6 +700,28 @@ def ai_create_folder(id):
 		return CommonErrors.FTP_ERROR
 
 
+@api.route("/ai/<int:id>/upload_zip", methods=["POST"])
+@json_out
+@authenticated
+def ai_upload_zip(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+	return CommonErrors.NOT_IMPLEMENTED
+
+@api.route("/ai/<int:id>/<int:version_id>/download_zip")
+@authenticated
+def ai_download_zip(id, version_id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+	return CommonErrors.NOT_IMPLEMENTED
+
+
 @api.route("/games/start", methods=["POST"])
 @json_out
 @authenticated
@@ -791,9 +840,38 @@ def simple_players(id):
 			Python/example_ai
 	"""
 	@ftp.failsafe_locked
-	def f(self):
+	def f():
 		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/simple_players.zip"):
 			return ftp.send_file("Games/"+secure_filename(str(id))+"/simple_players.zip")
+		else:
+			abort(404)
+	return f()
+
+@api.route("/gamelogic/<int:id>")
+def game_logic(id):
+	@ftp.failsafe_locked
+	def f():
+		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/Java/ailib/gamelogic.jar"):
+			return ftp.send_file("Games/"+secure_filename(str(id))+"/Java/ailib/gamelogic.jar")
+		else:
+			abort(404)
+	return f()
+
+@api.route("/ai_library/<int:game_id>")
+def ai_library(game_id):
+	"""
+	in der ESU:
+	AILibrary/Java/
+				/Python/
+	im FTP:
+	Games/1/Java/AiLibrary.jar
+			Python/AiLibrary.jar
+	"""
+	p = "Games/{}/AiLibrary.zip".format(secure_filename(str(game_id)))
+	@ftp.failsafe_locked
+	def f():
+		if ftp.ftp_host.path.isfile(p):
+			return ftp.send_file(p)
 		else:
 			abort(404)
 	return f()
