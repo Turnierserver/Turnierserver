@@ -7,7 +7,7 @@
 {% else %}
 <h2>Einloggen oder Account erstellen um Features zu benutzen</h2>
 
-<form id="caform" class="ui form segment">
+<form id="caform" class="ui form segment" method="POST" action="/api/user/create">
 	<div class="required field">
 		<label>Nutzername</label>
 		<input id="username" placeholder="penis_cola69" type="text" name="username">

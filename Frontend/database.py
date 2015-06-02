@@ -243,7 +243,12 @@ class AI(db.Model):
 		db_obj_init_msg(self)
 
 	def info(self):
-		return {"id": self.id, "name": self.name, "author": self.user.name, "description": self.desc, "lang": self.lang.info(), "gametype": self.type.info()}
+		return {
+			"id": self.id, "name": self.name,
+			"author": self.user.name,
+			"author_id": self.user.id,
+			"description": self.desc, "lang": self.lang.info(),
+			"gametype": self.type.info(), "versions": [v.info() for v in self.version_list]}
 
 	@ftp.failsafe_locked
 	def icon(self):
@@ -357,7 +362,11 @@ class AI_Version(db.Model):
 		db_obj_init_msg(self)
 
 	def info(self):
-		return {"id": self.id, "version_id": self.version_id, "extras": self.extras()}
+		return {
+			"id": self.version_id, "extras": self.extras(),
+			"compiled": self.compiled, "qualified": self.qualified,
+			"frozen": self.frozen
+		}
 
 	def extras(self, e=False):
 		if e:
