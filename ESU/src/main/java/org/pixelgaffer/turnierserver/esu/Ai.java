@@ -32,6 +32,7 @@ public class Ai {
 	public int gametype;
 	public Language language;
 	public String description = "(keine Beschreibung)";
+	public String elo = "leere Elo";
 	private Image onlinePicture;
 	public ObservableList<Version> versions = FXCollections.observableArrayList();
 	

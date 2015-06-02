@@ -217,9 +217,6 @@ void AiExecutor::generateProps ()
 
 void AiExecutor::executeAi ()
 {
-	QString cmd = "sandboxd_helper -u " + QString::number(uid) + " -g " + QString::number(gid) + " -d \"" + binDir.absolutePath()
-			+ "\" -c \"./start.sh " + aiProp + "\"";
-	printf("$ %s\n", qPrintable(cmd));
 	pid = fork();
 	if (pid < 0)
 	{
@@ -228,8 +225,12 @@ void AiExecutor::executeAi ()
 		emit finished(uuid());
 		return;
 	}
-	else if (getpid() == pid)
+	else if (pid == 0)
 	{
+		QString cmd = "sandboxd_helper -u " + QString::number(uid) + " -g " + QString::number(gid) + " -d \"" + binDir.absolutePath()
+				+ "\" -c \"./start.sh " + aiProp + "\"";
+//				+ "\" -c id";
+		printf("$ %s\n", qPrintable(cmd));
 		int retval = system(qPrintable(cmd));
 		printf("Die KI hat sich mit dem Statuscode %d beendet.\n", retval);
 		worker->sendMessage(uuid(), 'F');

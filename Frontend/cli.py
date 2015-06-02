@@ -100,3 +100,47 @@ def manage(manager, app):
 			f()
 		except ftp.err:
 			print("Failed...")
+
+
+	@manager.command
+	def create_ai_library(game_id):
+		"Packt die Beispiel-KIs in eine AiLibrary.zip zusammen"
+		#in der ESU:
+		#AiLibrary/Java/
+		#			/Python/
+		#im FTP:
+		#Games/1/Java/ailib/*
+		#		Python/ailib/*
+		clean_tmp()
+		@ftp.safe
+		def f():
+			os.mkdir("tmp/AiLibrary")
+			for lang in ["Python", "Java"]:
+				path = "Games/{}/{}/ailib".format(game_id, lang)
+				os.mkdir("tmp/AiLibrary/"+lang)
+				for root, dirs, files in ftp.ftp_host.walk(path):
+					new_path = root.replace(path, "tmp/AiLibrary/"+lang)
+					#make dirs
+					for dir in dirs:
+						print("MKDIR:", new_path + "/" + dir)
+						os.mkdir(new_path + "/" + dir)
+
+					#load files
+					for file in files:
+						print(root+"/"+file, "->", new_path+"/"+file)
+						ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
+
+			zipf = zipfile.ZipFile('tmp/AiLibrary.zip', 'w')
+			os.chdir("tmp")
+			zipdir('AiLibrary', zipf)
+			os.chdir("..")
+			zipf.close()
+
+			ftp.ftp_host.upload("tmp/AiLibrary.zip", "Games/"+game_id+"/AiLibrary.zip")
+			print("Uploaded ZIP to 'Games/"+game_id+"/AiLibrary.zip'")
+
+
+		try:
+			f()
+		except ftp.err:
+			print("Failed...")

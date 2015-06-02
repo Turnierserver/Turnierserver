@@ -93,14 +93,14 @@ public class ControllerAiManagement{
 		infoTab = tpCode.getTabs().get(0);
 		newFileTab = tpCode.getTabs().get(1);
 		mainApp.aiManager.loadPlayers();
-		showPlayers();
+		showAis();
 	}
 	
 	
 	/**
 	 * Lädt alle KIs in die KI-Liste
 	 */
-	public void showPlayers(){
+	public void showAis(){
 		lvAis.setItems(mainApp.aiManager.ais);
 		try {
 			lvAis.getSelectionModel().selectFirst();
@@ -113,15 +113,15 @@ public class ControllerAiManagement{
 	 * @param p die KI
 	 * @param v die zugeh�rige Version
 	 */
-	public void showPlayer(Ai p, Version v){
+	public void showAi(Ai p, Version v){
 		ai = p;
 		version = v;
-		showPlayer();
+		showAi();
 	}
 	/**
 	 * Setzt alle Eigenschaften der Benutzeroberfläche, wie z.B. das KI-Namensfeld, das KI-Bild, die KI-Beschreibung, ...
 	 */
-	public void showPlayer(){
+	public void showAi(){
 		
 		// Ai-spezifisches
 		if (ai != null){
@@ -301,7 +301,7 @@ public class ControllerAiManagement{
 	@FXML void clickChangeAi(){
 		ai = lvAis.getSelectionModel().getSelectedItem();
 		version = ai.lastVersion();
-		showPlayer();
+		showAi();
 	}
 	
 	/**
@@ -336,7 +336,7 @@ public class ControllerAiManagement{
 	 */
 	@FXML void clickToActual(){
 		version = ai.lastVersion();
-		showPlayer();
+		showAi();
 	}
 	
 	/**
@@ -345,7 +345,7 @@ public class ControllerAiManagement{
 	@FXML void clickVersionChange(){
 		if (version != cbVersion.getValue() && cbVersion.getValue() != null){
 			version = cbVersion.getValue();
-			showPlayer();
+			showAi();
 		}
 	}
 	
@@ -388,13 +388,13 @@ public class ControllerAiManagement{
 	 */
 	@FXML void clickNewVersion(){
 		if (rbFromFile.isSelected()){
-			showPlayer(ai, ai.newVersion(NewVersionType.fromFile, tbFile.getText()));
+			showAi(ai, ai.newVersion(NewVersionType.fromFile, tbFile.getText()));
 		}
 		else if (rbContinue.isSelected()){
-			showPlayer(ai, ai.newVersion(NewVersionType.lastVersion));
+			showAi(ai, ai.newVersion(NewVersionType.lastVersion));
 		}
 		else{
-			showPlayer(ai, ai.newVersion(NewVersionType.simplePlayer));
+			showAi(ai, ai.newVersion(NewVersionType.simplePlayer));
 		}
 	}
 	
@@ -403,7 +403,7 @@ public class ControllerAiManagement{
 	 */
 	@FXML void clickCompile(){
 		version.compile();
-		showPlayer();
+		showAi();
 	}
 	
 	/**
@@ -411,7 +411,7 @@ public class ControllerAiManagement{
 	 */
 	@FXML void clickQualify(){
 		version.qualify();
-		showPlayer();
+		showAi();
 	}
 	
 	/**
@@ -421,7 +421,7 @@ public class ControllerAiManagement{
 		if (Dialog.okAbort("Wenn eine Version fertiggestellt wird, kann sie nicht mehr bearbeitet werden.\n\nFortfahren?", "Version einfrieren")){
 			version.finish();
 		}
-		showPlayer();
+		showAi();
 	}
 	
 	/**
@@ -447,7 +447,7 @@ public class ControllerAiManagement{
 		if (img != null){
 			ai.setPicture(Resources.imageFromFile(result));
 		}
-		showPlayer();
+		showAi();
 	}
 
 	/**
@@ -455,7 +455,7 @@ public class ControllerAiManagement{
 	 */
 	@FXML void clickDeleteImage(){
 		ai.setPicture(null);
-		showPlayer();
+		showAi();
 	}
 	
 }

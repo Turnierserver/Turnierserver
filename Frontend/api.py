@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 import json
 import magic
 
-from database import AI, User, Game, Lang, db, populate, ftp
+from database import AI, User, Game, Lang, GameType, db, populate, ftp
 from backend import backend
 from commons import authenticated, cache, CommonErrors, bcrypt
 from _cfg import env
@@ -197,6 +197,10 @@ def api_user_delete(id):
 def api_langs():
 	return [l.info() for l in Lang.query.all()]
 
+@api.route("/gametypes")
+@json_out
+def api_gametypes():
+	return [gt.info() for gt in GameType.query.all()]
 
 @api.route("/activate/<int:id>/<string:uuid>", methods=["GET", "POST"])
 @json_out
@@ -836,7 +840,7 @@ def simple_players(id):
 			Python/example_ai
 	"""
 	@ftp.failsafe_locked
-	def f(self):
+	def f():
 		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/simple_players.zip"):
 			return ftp.send_file("Games/"+secure_filename(str(id))+"/simple_players.zip")
 		else:
@@ -846,18 +850,26 @@ def simple_players(id):
 @api.route("/gamelogic/<int:id>")
 def game_logic(id):
 	@ftp.failsafe_locked
-	def f(self):
-		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/Java/gamelogic.jar"):
-			return ftp.send_file("Games/"+secure_filename(str(id))+"/Java/gamelogic.jar")
+	def f():
+		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/Java/ailib/gamelogic.jar"):
+			return ftp.send_file("Games/"+secure_filename(str(id))+"/Java/ailib/gamelogic.jar")
 		else:
 			abort(404)
 	return f()
 
-@api.route("/ai_library/<int:game_id>/<int:lang_name>")
-def ai_library(id):
-	p = "Games/{}/{}/ailibrary.zip".format(secure_filename(str(game_id)), lang_name)
+@api.route("/ai_library/<int:game_id>")
+def ai_library(game_id):
+	"""
+	in der ESU:
+	AILibrary/Java/
+				/Python/
+	im FTP:
+	Games/1/Java/AiLibrary.jar
+			Python/AiLibrary.jar
+	"""
+	p = "Games/{}/AiLibrary.zip".format(secure_filename(str(game_id)))
 	@ftp.failsafe_locked
-	def f(self):
+	def f():
 		if ftp.ftp_host.path.isfile(p):
 			return ftp.send_file(p)
 		else:
