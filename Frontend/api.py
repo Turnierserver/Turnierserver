@@ -524,6 +524,8 @@ def api_ai_compile(id):
 					ai.lastest_version().compiled = True
 					db.session.commit()
 				else:
+					ai.lastest_version().compiled = False
+					db.session.commit()
 					yield ("Anfrage beendet\n", "log")
 					if "exception" in resp:
 						yield (resp["exception"], "log")
@@ -737,7 +739,7 @@ def game_list_sse():
 	q = backend.subscribe_game_update()
 	while True:
 		try:
-			update = q.get(timeout=5)
+			update = q.get(timeout=15)
 			if "status" in update:
 				if update["status"] == "processed":
 					yield ("", "new_game")

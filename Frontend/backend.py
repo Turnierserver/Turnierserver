@@ -6,6 +6,7 @@ from activityfeed import Activity
 import threading
 from queue import Queue, Empty
 from weakref import WeakSet
+from database import db, AI
 
 class Backend(threading.Thread):
 	daemon=True
@@ -121,8 +122,8 @@ class Backend(threading.Thread):
 					if r["status"] == "processed":
 						games.append(dict(
 							id=r["requestid"],
-							ai0=AIs.query.first(),
-							ai1=AIs.query.first(),
+							ai0=AI.query.first(),
+							ai1=AI.query.first(),
 							status="1/8392"
 						))
 		return games
