@@ -10,17 +10,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PropertyUtils
 {
-	
+
 	private static final String TURNIERSERVER_BASE = "turnierserver.";
 	private static final String BACKEND_BASE = TURNIERSERVER_BASE + "backend.";
 	private static final String WORKER_BASE = TURNIERSERVER_BASE + "worker.";
-	private static final String WORKER_SERVER_BASE = WORKER_BASE + ".server.";
+	private static final String WORKER_SERVER_BASE = WORKER_BASE + "server.";
 	private static final String DATASTORE_BASE = TURNIERSERVER_BASE + "datastore.";
 	private static final String SERIALIZER_BASE = TURNIERSERVER_BASE + "serializer.";
 	private static final String AI_BASE = TURNIERSERVER_BASE + "ai.";
 	private static final String BACKEND_WORKER_SERVER_BASE = BACKEND_BASE + "workerserver.";
 	private static final String BACKEND_FRONTEND_SERVER_BASE = BACKEND_BASE + "frontendserver.";
-	
+
 	public static final String BACKEND_HOST = BACKEND_BASE + "host";
 	public static final String BACKEND_FRONTEND_SERVER_PORT = BACKEND_FRONTEND_SERVER_BASE + "port";
 	public static final String BACKEND_WORKER_SERVER_PORT = BACKEND_WORKER_SERVER_BASE + "port";
@@ -36,7 +36,7 @@ public class PropertyUtils
 	public static final String SERIALIZER_SANDBOX_COMPRESSING = SERIALIZER_COMPRESSING + ".sandbox";
 	public static final String SERIALIZER_FRONTEND_COMPRESSING = SERIALIZER_COMPRESSING + ".frontend";
 	public static final String AI_UUID = AI_BASE + "uuid";
-	
+
 	public static Properties loadProperties (String filename) throws IOException
 	{
 		Properties p = new Properties(System.getProperties());
@@ -44,12 +44,12 @@ public class PropertyUtils
 		System.setProperties(p);
 		return p;
 	}
-	
-	
+
+
 	public static boolean getBooleanRequired(String key)  {
 		return Boolean.parseBoolean(System.getProperty(key));
 	}
-	
+
 	public static boolean getBoolean(String key, boolean def) {
 		String prop = System.getProperty(key);
 		if(prop == null) {
@@ -61,15 +61,15 @@ public class PropertyUtils
 			return def;
 		}
 	}
-	
+
 	public static boolean getBoolean(String key) {
 		return getBoolean(key, false);
 	}
-	
+
 	public static int getIntRequired(String key)  {
 		return Integer.parseInt(System.getProperty(key));
 	}
-	
+
 	public static int getInt(String key, int def) {
 		String prop = System.getProperty(key);
 		if(prop == null) {
@@ -81,15 +81,15 @@ public class PropertyUtils
 			return def;
 		}
 	}
-	
+
 	public static int getInt(String key) {
 		return getInt(key, 0);
 	}
-	
+
 	public static double getDoubleRequired(String key)  {
 		return Double.parseDouble(System.getProperty(key));
 	}
-	
+
 	public static double getDouble(String key, double def) {
 		String prop = System.getProperty(key);
 		if(prop == null) {
@@ -101,15 +101,15 @@ public class PropertyUtils
 			return def;
 		}
 	}
-	
+
 	public static double getDouble(String key) {
 		return getDouble(key, 0);
 	}
-	
+
 	public static String getStringRequired(String key)  {
 		return System.getProperty(key).toString();
 	}
-	
+
 	public static String getString(String key, String def) {
 		String prop = System.getProperty(key);
 		if(prop == null) {
@@ -117,9 +117,9 @@ public class PropertyUtils
 		}
 		return prop;
 	}
-	
+
 	public static String getString(String key) {
 		return getString(key, "");
 	}
-	
+
 }
