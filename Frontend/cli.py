@@ -109,14 +109,14 @@ def manage(manager, app):
 		#AiLibrary/Java/
 		#			/Python/
 		#im FTP:
-		#Games/1/Java/example_ai
-		#		Python/example_ai
+		#Games/1/Java/ailib/*
+		#		Python/ailib/*
 		clean_tmp()
 		@ftp.safe
 		def f():
 			os.mkdir("tmp/AiLibrary")
 			for lang in ["Python", "Java"]:
-				path = "Games/{}/{}".format(game_id, lang)
+				path = "Games/{}/{}/ailib".format(game_id, lang)
 				os.mkdir("tmp/AiLibrary/"+lang)
 				for root, dirs, files in ftp.ftp_host.walk(path):
 					new_path = root.replace(path, "tmp/AiLibrary/"+lang)
