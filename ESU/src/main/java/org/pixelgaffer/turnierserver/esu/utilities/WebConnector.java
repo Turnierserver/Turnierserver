@@ -1,8 +1,11 @@
 package org.pixelgaffer.turnierserver.esu.utilities;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -110,7 +113,7 @@ public class WebConnector {
 		ObservableList<Ai> result = FXCollections.observableArrayList();
 		String json;
 		try {
-			json = sendGet("ais");
+			json = toString(sendGet("ais"));
 		} catch (IOException e) {
 			return result;
 		}
@@ -134,7 +137,7 @@ public class WebConnector {
 	 * @throws IOException
 	 */
 	public Image getImage(int id) throws IOException {
-		return new Image(sendGet("ai/" + id + "/icon"));
+		return new Image(new ByteArrayInputStream(sendGet("ai/" + id + "/icon")));
 	}
 	
 	public List<Game> getGames() {
@@ -152,7 +155,7 @@ public class WebConnector {
 	 */
 	public boolean ping() {
 		try {
-			String result = sendGet(null);
+			String result = toString(sendGet(null));
 			return result != null && result.equals("PONG!");
 		} catch (IOException e) {
 			return false;
@@ -168,7 +171,7 @@ public class WebConnector {
 		
 		String json = null;
 		try {
-			json = sendGet("langs");
+			json = toString(sendGet("langs"));
 		} catch (IOException e) {
 			ErrorLog.write("Die Sprachen konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
 		}
@@ -212,7 +215,7 @@ public class WebConnector {
 		
 		String json = null;
 		try {
-			json = sendGet("gametypes");
+			json = toString(sendGet("gametypes"));
 		} catch (IOException e) {
 			ErrorLog.write("Die Spieltypen konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
 		}
@@ -278,7 +281,7 @@ public class WebConnector {
 	}
 	
 	public boolean loadGamelogic(int game, String gameName) {
-		String logic;
+		byte[] logic;
 		try {
 			logic = sendGet("gamelogic/" + game);
 		} catch (IOException e) {
@@ -291,7 +294,7 @@ public class WebConnector {
 		}
 		
 		try {
-			FileUtils.write(new File(Paths.gameLogic("gameName")), logic);
+			FileUtils.writeByteArrayToFile(new File(Paths.gameLogic("gameName")), logic);
 		} catch (IOException e) {
 			ErrorLog.write("Spiellogik konnte nicht gespeichert werden: " + e.getLocalizedMessage());
 			return false;
@@ -300,7 +303,7 @@ public class WebConnector {
 	}
 	
 	public boolean loadDataContainer(int game, String gameName) {
-		String libraries;
+		byte[] libraries;
 		try {
 			libraries = sendGet("data_container/" + game);
 		} catch (IOException e) {
@@ -313,8 +316,8 @@ public class WebConnector {
 		}
 		
 		try {
-			File tempZip = File.createTempFile("datacontainer", System.currentTimeMillis() + "");
-			FileUtils.write(tempZip, libraries);
+			File tempZip = File.createTempFile("datacontainer", System.currentTimeMillis() + ".zip");
+			FileUtils.writeByteArrayToFile(tempZip, libraries);
 			ZipFile zipFile = new ZipFile(tempZip);
 			File zip;
 			zipFile.extractAll((zip = File.createTempFile("datacontainer-unzipped", System.currentTimeMillis() + "")).getAbsolutePath());
@@ -412,11 +415,11 @@ public class WebConnector {
 		}
 	}
 	
-	public String sendPost(String command) throws IOException {
+	public byte[] sendPost(String command) throws IOException {
 		return sendPost(command, new NameValuePair[0]);
 	}
 	
-	public String sendPost(String command, String...data) throws IOException {
+	public byte[] sendPost(String command, String...data) throws IOException {
 		if(data.length % 2 != 0) {
 			throw new IllegalArgumentException("Pöse pöse, data muss immer eine Länge % 2 = 0 haben!");
 		}
@@ -434,39 +437,32 @@ public class WebConnector {
 	 * 
 	 * @param command Das Kommando (z.B. login für http://www.thuermchen.com/api/login)
 	 * @param data Die Daten, die per POST übegeben werden sollen
-	 * @return Die Antwort als String
+	 * @return Die Antwort als byte[]
 	 * @throws IOException 
 	 */
-	public String sendPost(String command, NameValuePair...data) throws IOException{
+	public byte[] sendPost(String command, NameValuePair...data) throws IOException{
 		HttpPost post = new HttpPost(command == null || command.length() == 0 ? url.substring(0, url.length() - 1) : url + command);
 		if(data.length != 0) {
 			post.setEntity(new UrlEncodedFormEntity(Arrays.asList(data)));
 		}
 		
-		for(Cookie cookie : cookies.getCookies()) {
-			System.out.println(cookie);
-		}
-		
 		HttpResponse response = http.execute(post);
 		
-		String responseString = getString(response.getEntity().getContent());
+		byte[] responseArray = getOutput(response.getEntity().getContent());
 		
 		if(response.getStatusLine().getStatusCode() != 200) {
-			ErrorLog.write("ERROR: Executing post request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + responseString);
-			System.out.println(command);
-			System.out.println(responseString);
-			Dialog.error(new JSONObject(responseString).getString("error"));
+			ErrorLog.write("ERROR: Executing post request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + toString(responseArray));
 			return null;
 		}
 		
-		return responseString;
+		return responseArray;
 	}
 	
-	public String sendGet(String command) throws IOException {
+	public byte[] sendGet(String command) throws IOException {
 		return sendGet(command, new NameValuePair[0]);
 	}
 	
-	public String sendGet(String command, String...data) throws IOException {
+	public byte[] sendGet(String command, String...data) throws IOException {
 		if(data.length % 2 != 0) {
 			throw new IllegalArgumentException("Pöse pöse, data muss immer eine Länge % 2 = 0 haben!");
 		}
@@ -482,10 +478,10 @@ public class WebConnector {
 	 * 
 	 * @param command Das Kommando (z.B. logout für http://www.thuermchen.com/api/logout)
 	 * @param data Die Daten, die per GET übegeben werden sollen
-	 * @return Die Antwort als String
+	 * @return Die Antwort als byte[]
 	 * @throws IOException 
 	 */
-	public String sendGet(String command, NameValuePair...data) throws IOException {
+	public byte[] sendGet(String command, NameValuePair...data) throws IOException {
 		
 		String args = "";
 		for(NameValuePair pair : data) {
@@ -497,29 +493,38 @@ public class WebConnector {
 		
 		HttpResponse response = http.execute(get);
 		
-		String responseString = getString(response.getEntity().getContent());
+		byte[] responseArray = getOutput(response.getEntity().getContent());
 		
 		if(response.getStatusLine().getStatusCode() != 200) {
-			ErrorLog.write("ERROR: Executing get request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + response.getStatusLine().getReasonPhrase());
-			Dialog.error(new JSONObject(responseString).getString("error"));
+			ErrorLog.write("ERROR: Executing get request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + toString(responseArray));
 			return null;
 		}
 		
-		return responseString;
+		return responseArray;
 	}
 	
-	private String getString(InputStream in) throws IOException {
-		StringBuilder responseContent = new StringBuilder();
+	private String toString(byte[] bytes) {
+		try {
+			return new String(bytes, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			System.exit(1);
+			return null;
+		}
+	}
+	
+	private byte[] getOutput(InputStream in) throws IOException {
+		ByteArrayOutputStream responseContent = new ByteArrayOutputStream();
 		byte[] buffer = new byte[1024];
 		int read;
 		
 		while((read = in.read(buffer)) > 0) {
 			for(int i = 0; i < read; i++) {
-				responseContent.append((char) buffer[i]);
+				responseContent.write(buffer[i]);
 			}
 		}
 		
-		return responseContent.toString();
+		return responseContent.toByteArray();
 	}
 	
 	public Cookie createCookie(String key, String value) {
