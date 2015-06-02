@@ -239,7 +239,6 @@ def api_login():
 	if not email or not password:
 		return { 'error': 'Missing email or password' }, 400
 
-	## Auch EMails akzeptieren?
 	user = User.query.filter(User.email.ilike(email)).first()
 
 	if not user:
@@ -604,7 +603,6 @@ def ai_upload(id):
 		return ({"error": "Missing filename."}, 400)
 	data = request.form["data"]
 
-	## check version frozen
 	if ai.lastest_version().frozen:
 		return {"error": "AI is frozen, you need to create a new version."}, 400
 

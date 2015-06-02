@@ -237,9 +237,20 @@ class AI(db.Model):
 	def __init__(self, *args, **kwargs):
 		super(AI, self).__init__(*args, **kwargs)
 		self.lastest_version()
-		## FTP-Sync beim erstellen!
-		## Icon zurücksetzen
-		self.updated(False)
+		self.updated(True)
+
+		@ftp.safe
+		def f():
+			path = "AIs/"+str(self.id)+"/icon.png"
+			if not ftp.ftp_host.path.isfile(path):
+				return
+			ftp.ftp_host.remove(path)
+
+		try:
+			f()
+		except ftp.err:
+			print("Icon reset failed")
+
 		db_obj_init_msg(self)
 
 	def info(self):
