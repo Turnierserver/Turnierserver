@@ -3,7 +3,6 @@ package org.pixelgaffer.turnierserver.esu.utilities;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.esu.Ai;
 import org.pixelgaffer.turnierserver.esu.Game;
+import org.pixelgaffer.turnierserver.esu.Version;
 
 public class WebConnector {
 	
@@ -129,8 +129,22 @@ public class WebConnector {
 		throw new UnsupportedOperationException("Ich bin so pöse!");
 	}
 	
-	public void uploadVersion() {
+	public void uploadVersion(Version version) {
 		
+	}
+	
+	/**
+	 * Pingt den Server
+	 * 
+	 * @return Ob der Server erreichbar ist
+	 */
+	public boolean ping() {
+		try {
+			String result = sendGet(null);
+			return result != null && result.equals("PONG!");
+		} catch (IOException e) {
+			return false;
+		}
 	}
 	
 	/**
@@ -228,7 +242,7 @@ public class WebConnector {
 	 * @throws IOException 
 	 */
 	public String sendPost(String command, NameValuePair...data) throws IOException{
-		HttpPost post = new HttpPost(url + command);
+		HttpPost post = new HttpPost(command == null || command.length() == 0 ? url.substring(0, url.length() - 1) : url + command);
 		if(data.length != 0) {
 			post.setEntity(new UrlEncodedFormEntity(Arrays.asList(data)));
 		}
@@ -283,7 +297,7 @@ public class WebConnector {
 			args += pair.getName() + "=" + pair.getValue();
 		}
 		
-		HttpGet get = new HttpGet(url + command + args);
+		HttpGet get = new HttpGet(command == null || command.isEmpty() ? url.substring(0, url.length() - 1) + args : url + command + args);
 		
 		HttpResponse response = http.execute(get);
 		
