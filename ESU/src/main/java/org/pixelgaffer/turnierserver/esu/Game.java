@@ -123,7 +123,7 @@ public class Game {
 	
 	public void play(List<Version> opponents){
 		for (int i = 0; i < opponents.size(); i++){
-			participants.add(new ParticipantResult(this, "Lokal", opponents.get(i).player.title + "v" + opponents.get(i).number, "100ms", "5", "20", "Ja"));
+			participants.add(new ParticipantResult(this, "Lokal", opponents.get(i).ai.title + "v" + opponents.get(i).number, "100ms", "5", "20", "Ja"));
 		}
 		setDateNow();
 		duration = "500ms";

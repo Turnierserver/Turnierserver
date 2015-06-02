@@ -7,16 +7,16 @@ import java.sql.Savepoint;
 import java.util.*;
 
 import org.json.JSONObject;
-import org.pixelgaffer.turnierserver.esu.Player.PlayerMode;
+import org.pixelgaffer.turnierserver.esu.Ai.AiMode;
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 
 
 public class Version {
 	
-	public final Player player;
+	public final Ai ai;
 	public final int number;
-	public final PlayerMode mode;
+	public final AiMode mode;
 	
 	public boolean compiled = false;
 	public boolean qualified = false;
@@ -27,10 +27,10 @@ public class Version {
 	public List<CodeEditor> files = new ArrayList<CodeEditor>();
 	
 	
-	public Version(Player p, int n, JSONObject json){
-		player = p;
+	public Version(Ai p, int n, JSONObject json){
+		ai = p;
 		number = n;
-		mode = PlayerMode.online;
+		mode = AiMode.online;
 		////////////////////////Nico: hier kommt dein Code rein////////////////////////////////////////////
 	}
 	
@@ -40,14 +40,14 @@ public class Version {
 	 * @param p
 	 * @param n
 	 */
-	public Version(Player p, int n, PlayerMode mmode){
-		player = p;
+	public Version(Ai p, int n, AiMode mmode){
+		ai = p;
 		number = n;
 		mode = mmode;
 		
-		if (mode == PlayerMode.saved || mode == PlayerMode.simplePlayer){
+		if (mode == AiMode.saved || mode == AiMode.simplePlayer){
 			if (!exists()){
-				copyFromFile(Paths.simplePlayer(player.language));
+				copyFromFile(Paths.simplePlayer(ai.language));
 				storeProps();
 				findCode();
 			}
@@ -57,10 +57,12 @@ public class Version {
 			}
 		}
 	}
-	public Version(Player p, int n, String path){
-		player = p;
+	public Version(Ai p, int n, String path){
+		ai = p;
 		number = n;
-		mode = PlayerMode.saved;
+		mode = AiMode.saved;
+		
+		exists();
 		
 		copyFromFile(path);
 		storeProps();
@@ -148,7 +150,7 @@ public class Version {
 		
 		try {
 			Writer writer = new FileWriter(Paths.versionProperties(this));
-			prop.store(writer, player.title + " v" + number );
+			prop.store(writer, ai.title + " v" + number );
 			writer.close();
 		} catch (IOException e) {ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Version)");}
 	}

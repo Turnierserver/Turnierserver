@@ -3,6 +3,7 @@ package org.pixelgaffer.turnierserver.esu.utilities;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +22,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.pixelgaffer.turnierserver.esu.Ai;
 
 public class WebConnector {
 	
@@ -77,6 +80,12 @@ public class WebConnector {
 		return result;
 	}
 	
+	/**
+	 * Gibt zurück ob die ESU momentan eingeloggt ist
+	 * 
+	 * @return Ob die ESU momentan eingeloggt ist
+	 * @throws IOException
+	 */
 	public boolean isLoggedIn() throws IOException {
 		if(getSession() == null || getRememberToken() == null) {
 			return false;
@@ -87,7 +96,18 @@ public class WebConnector {
 		}
 		return result;
 	}
+	
+	public List<Ai> getAis() throws IOException {
+		JSONArray players = new JSONArray(sendGet("users"));
+		List<Ai> result = new ArrayList<Ai>();
 		
+		for(int i = 0; i < players.length(); i++) {
+			result.add(new Ai(players.getJSONObject(i)));
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * Setzt die Tokens einer Session
 	 * 

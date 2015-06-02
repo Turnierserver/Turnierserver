@@ -18,8 +18,8 @@ public class ControllerGameManagement {
 	@FXML public ToggleButton btOffline;
 	@FXML public ToggleButton btOnline;
 	@FXML public ChoiceBox<String> cbLogic;
-	@FXML public ListView<Player> lvPlayer1;
-	@FXML public ListView<Player> lvPlayer2;
+	@FXML public ListView<Ai> lvPlayer1;
+	@FXML public ListView<Ai> lvPlayer2;
 	@FXML public ProgressIndicator progress;
 	@FXML public Button btLoadOnline;
 	@FXML public TextArea tbOutput1;
@@ -104,8 +104,8 @@ public class ControllerGameManagement {
 
 	@FXML
 	void clickOffline(){
-		lvPlayer1.setItems(mainApp.playerManager.players);
-		lvPlayer2.setItems(mainApp.playerManager.players);
+		lvPlayer1.setItems(mainApp.aiManager.ais);
+		lvPlayer2.setItems(mainApp.aiManager.ais);
 //		btOnline.setSelected(true);
 //		btOffline.setSelected(false);
 	}

@@ -3,9 +3,9 @@ package org.pixelgaffer.turnierserver.esu.view;
 import java.io.File;
 
 import org.pixelgaffer.turnierserver.esu.*;
-import org.pixelgaffer.turnierserver.esu.Player.Language;
-import org.pixelgaffer.turnierserver.esu.Player.NewVersionType;
-import org.pixelgaffer.turnierserver.esu.Player.PlayerMode;
+import org.pixelgaffer.turnierserver.esu.Ai.Language;
+import org.pixelgaffer.turnierserver.esu.Ai.NewVersionType;
+import org.pixelgaffer.turnierserver.esu.Ai.AiMode;
 import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
 import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 import org.pixelgaffer.turnierserver.esu.utilities.Resources;
@@ -48,7 +48,7 @@ public class ControllerAiManagement{
 	@FXML public TextArea tbDescription;
 	@FXML public ChoiceBox<Version> cbVersion;
 	@FXML public ChoiceBox<Language> cbLanguage;
-	@FXML public ListView<Player> lvAis;
+	@FXML public ListView<Ai> lvAis;
 	@FXML public ImageView image;
 	@FXML public TabPane tpCode;
 	@FXML public Hyperlink hlShowQualified;
@@ -56,7 +56,7 @@ public class ControllerAiManagement{
 	public Tab newFileTab;
 	
 	public MainApp mainApp;
-	public Player player;
+	public Ai ai;
 	public Version version;
 
 	/**
@@ -73,9 +73,9 @@ public class ControllerAiManagement{
 		        clickVersionChange();
 		    }
 		});
-		lvAis.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Player>() {
+		lvAis.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Ai>() {
 		    @Override
-		    public void changed(ObservableValue<? extends Player> observable, Player oldValue, Player newValue) {
+		    public void changed(ObservableValue<? extends Ai> observable, Ai oldValue, Ai newValue) {
 		        clickChangeAi();
 		    }
 		});
@@ -91,7 +91,7 @@ public class ControllerAiManagement{
 		
 		infoTab = tpCode.getTabs().get(0);
 		newFileTab = tpCode.getTabs().get(1);
-		mainApp.playerManager.loadPlayers();
+		mainApp.aiManager.loadPlayers();
 		showPlayers();
 	}
 	
@@ -100,7 +100,7 @@ public class ControllerAiManagement{
 	 * Lädt alle KIs in die KI-Liste
 	 */
 	public void showPlayers(){
-		lvAis.setItems(mainApp.playerManager.players);
+		lvAis.setItems(mainApp.aiManager.ais);
 		try {
 			lvAis.getSelectionModel().selectFirst();
 		} catch (Exception e) {}
@@ -112,8 +112,8 @@ public class ControllerAiManagement{
 	 * @param p die KI
 	 * @param v die zugeh�rige Version
 	 */
-	public void showPlayer(Player p, Version v){
-		player = p;
+	public void showPlayer(Ai p, Version v){
+		ai = p;
 		version = v;
 		showPlayer();
 	}
@@ -122,14 +122,14 @@ public class ControllerAiManagement{
 	 */
 	public void showPlayer(){
 		
-		// Player-spezifisches
-		if (player != null){
-			lbName.setText(player.title);
-			lbLanguage.setText("Sprache: " + player.language.toString());
-			tbDescription.setText(player.description);
+		// Ai-spezifisches
+		if (ai != null){
+			lbName.setText(ai.title);
+			lbLanguage.setText("Sprache: " + ai.language.toString());
+			tbDescription.setText(ai.description);
 			cbVersion.getSelectionModel().clearSelection();
-			cbVersion.setItems(player.versions);
-			image.setImage(player.getPicture());
+			cbVersion.setItems(ai.versions);
+			image.setImage(ai.getPicture());
 			
 			btChangeImage.setDisable(false);
 			btDeleteImage.setDisable(false);
@@ -138,14 +138,14 @@ public class ControllerAiManagement{
 			btToActual.setDisable(false);
 			
 			if (version == null){  //versuchen, die Version zu setzen, wenn keine ausgew�hlt ist
-				version = player.lastVersion();
+				version = ai.lastVersion();
 			}
 			boolean containing = false;
-			for (int i = 0; i < player.versions.size(); i++)
-				if (version == player.versions.get(i))
+			for (int i = 0; i < ai.versions.size(); i++)
+				if (version == ai.versions.get(i))
 					containing = true;
 			if(!containing){  //oder eine nicht-zugeh�rige ausgew�hlt ist
-				version = player.lastVersion();
+				version = ai.lastVersion();
 			}
 		}
 		else{
@@ -171,7 +171,7 @@ public class ControllerAiManagement{
 		tbDescription.setEditable(false);
 		
 		//Version-spezifisches
-		if (version != null && player != null){
+		if (version != null && ai != null){
 			cbVersion.setValue(version);
 			tbOutput.setText("");
 			if (!version.compileOutput.equals("")){
@@ -214,8 +214,8 @@ public class ControllerAiManagement{
 			rbSimple.setSelected(true);
 		}
 		
-		if (player != null){
-			if (player.mode == PlayerMode.simplePlayer){
+		if (ai != null){
+			if (ai.mode == AiMode.simplePlayer){
 				btEdit.setDisable(true);
 				btNewVersion.setDisable(true);
 				btCompile.setDisable(true);
@@ -289,7 +289,7 @@ public class ControllerAiManagement{
 			}
 		}
 		
-		mainApp.playerManager.players.add(new Player(title, cbLanguage.getValue()));
+		mainApp.aiManager.ais.add(new Ai(title, cbLanguage.getValue()));
 		lvAis.getSelectionModel().selectLast();
 	}
 
@@ -297,8 +297,8 @@ public class ControllerAiManagement{
 	 * Listenselektions-Änderung: zeigt andere KI an
 	 */
 	@FXML void clickChangeAi(){
-		player = lvAis.getSelectionModel().getSelectedItem();
-		version = player.lastVersion();
+		ai = lvAis.getSelectionModel().getSelectedItem();
+		version = ai.lastVersion();
 		showPlayer();
 	}
 	
@@ -309,7 +309,7 @@ public class ControllerAiManagement{
 		btAbort.setVisible(false);
 		btEdit.setText("Bearbeiten");
 		tbDescription.setEditable(false);
-		tbDescription.setText(player.description);
+		tbDescription.setText(ai.description);
 	}
 	
 	/**
@@ -325,7 +325,7 @@ public class ControllerAiManagement{
 			btAbort.setVisible(false);
 			btEdit.setText("Bearbeiten");
 			tbDescription.setEditable(false);
-			player.setDescription(tbDescription.getText());
+			ai.setDescription(tbDescription.getText());
 		}
 	}
 	
@@ -333,7 +333,7 @@ public class ControllerAiManagement{
 	 * Button: aktuelle Version der KI wird ausgewählt
 	 */
 	@FXML void clickToActual(){
-		version = player.lastVersion();
+		version = ai.lastVersion();
 		showPlayer();
 	}
 	
@@ -386,13 +386,13 @@ public class ControllerAiManagement{
 	 */
 	@FXML void clickNewVersion(){
 		if (rbFromFile.isSelected()){
-			showPlayer(player, player.newVersion(NewVersionType.fromFile, tbFile.getText()));
+			showPlayer(ai, ai.newVersion(NewVersionType.fromFile, tbFile.getText()));
 		}
 		else if (rbContinue.isSelected()){
-			showPlayer(player, player.newVersion(NewVersionType.lastVersion));
+			showPlayer(ai, ai.newVersion(NewVersionType.lastVersion));
 		}
 		else{
-			showPlayer(player, player.newVersion(NewVersionType.simplePlayer));
+			showPlayer(ai, ai.newVersion(NewVersionType.simplePlayer));
 		}
 	}
 	
@@ -443,7 +443,7 @@ public class ControllerAiManagement{
 		File result = Dialog.fileChooser(mainApp.stage, "Bild ausw�hlen");
 		Image img = Resources.imageFromFile(result);
 		if (img != null){
-			player.setPicture(Resources.imageFromFile(result));
+			ai.setPicture(Resources.imageFromFile(result));
 		}
 		showPlayer();
 	}
@@ -452,7 +452,7 @@ public class ControllerAiManagement{
 	 * Button: Bild löschen
 	 */
 	@FXML void clickDeleteImage(){
-		player.setPicture(null);
+		ai.setPicture(null);
 		showPlayer();
 	}
 	
