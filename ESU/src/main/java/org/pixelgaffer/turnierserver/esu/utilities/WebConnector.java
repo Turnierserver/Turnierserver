@@ -269,7 +269,7 @@ public class WebConnector {
 		BasicClientCookie cookie = new BasicClientCookie(key, value);
 		cookie.setCreationDate(new Date(System.currentTimeMillis()));
 		cookie.setSecure(false);
-		cookie.setDomain("192.168.178.43");
+		cookie.setDomain(cookieUrl);
 		cookie.setPath("/");
 		return cookie;
 	}
