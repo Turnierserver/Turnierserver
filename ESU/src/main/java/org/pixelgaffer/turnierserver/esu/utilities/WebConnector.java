@@ -3,6 +3,7 @@ package org.pixelgaffer.turnierserver.esu.utilities;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
@@ -48,7 +51,6 @@ public class WebConnector {
 		this.url = url;
 		this.cookieUrl = cookieUrl;
 		readFromFile();
-		System.out.println(isLoggedIn());
 	}
 	
 	/**
@@ -98,14 +100,24 @@ public class WebConnector {
 			}
 			return result;
 		} catch (IOException e) {
-			ErrorLog.write("Fehler bei der Abfrage des Loginstatus.");
+			Dialog.error("Fehler bei der Abfrage des Loginstatuses.");
+			ErrorLog.write("Fehler bei der Abfrage des Loginstatuses: " + e.getLocalizedMessage());
 			return false;
 		}
 	}
 	
-	public ObservableList<Ai> getAis() throws IOException {
-		JSONArray ais = new JSONArray(sendGet("ais"));
+	public ObservableList<Ai> getAis() {
 		ObservableList<Ai> result = FXCollections.observableArrayList();
+		String json;
+		try {
+			json = sendGet("ais");
+		} catch (IOException e) {
+			return result;
+		}
+		if(json == null) {
+			return result;
+		}
+		JSONArray ais = new JSONArray(json);
 		
 		for(int i = 0; i < ais.length(); i++) {
 			result.add(new Ai(ais.getJSONObject(i), this));
@@ -145,6 +157,150 @@ public class WebConnector {
 		} catch (IOException e) {
 			return false;
 		}
+	}
+	
+	/**
+	 * Holt sich alle Sprachen. Es wird eine gespeicherte Liste zurückgegeben wenn keine Internetverbindung besteht. Falls keine Liste gespeichert ist, wird null zurückgegeben
+	 * 
+	 */
+	public List<String> getLanguages() {
+		List<String> result = new ArrayList<String>();
+		
+		String json = null;
+		try {
+			json = sendGet("langs");
+		} catch (IOException e) {
+			ErrorLog.write("Die Sprachen konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
+		}
+		if(json == null) {
+			try {
+				result.addAll(Arrays.asList(FileUtils.readFileToString(new File(Paths.langsFile())).split("\n")));
+			} catch (IOException e) {
+				ErrorLog.write("Die Sprachen konnten nicht aus der Datei werden: " + e.getLocalizedMessage());
+				return null;
+			}
+			return result;
+		}
+		
+		JSONArray langs = new JSONArray(json);
+		for(int i = 0; i < langs.length(); i++) {
+			result.add(langs.getJSONObject(i).getString("name"));
+		}
+		
+		File langsFile = new File(Paths.gameTypesFile());
+		langsFile.delete();
+		try {
+			langsFile.createNewFile();
+			for(int i = 0; i < result.size(); i++) {
+				FileUtils.write(langsFile, result.get(i) + "\n", true);
+			}
+		} catch (IOException e) {
+			ErrorLog.write("Die Sprachen konnten nicht in die Datei geschrieben werden!");
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Holt sich alle Spieltypen. Es wird eine gespeicherte Liste zurückgegeben wenn keine Internetverbindung besteht. Falls keine Liste gespeichert ist, wird null zurückgegeben
+	 * 
+	 */
+	public List<String> getGametypes() {
+		List<String> result = new ArrayList<String>();
+		
+		String json = null;
+		try {
+			json = sendGet("gametypes");
+		} catch (IOException e) {
+			ErrorLog.write("Die Spieltypen konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
+		}
+		
+		if(json == null) {
+			try {
+				result.addAll(Arrays.asList(FileUtils.readFileToString(new File(Paths.langsFile())).split("\n")));
+			} catch (IOException e) {
+				ErrorLog.write("Die Spieltypen konnten nicht aus der Datei geladen werden: " + e.getLocalizedMessage());
+				return null;
+			}
+			return result;
+		}
+		
+		JSONArray gametypes = new JSONArray(json);
+		
+		List<String> fileLines = new ArrayList<>();
+		
+		for(int i = 0; i < gametypes.length(); i++) {
+			result.add(gametypes.getJSONObject(i).getString("name"));
+		}
+		
+		File gametypesFile = new File(Paths.gameTypesFile());
+		gametypesFile.delete();
+		try {
+			gametypesFile.createNewFile();
+			for(int i = 0; i < gametypes.length(); i++) {
+				JSONObject gametype = gametypes.getJSONObject(i);
+				FileUtils.write(gametypesFile, gametype.getString("name") + "->" + "\n", true);
+			}
+		} catch (IOException e) {
+			ErrorLog.write("Die Sprachen konnten nicht in die Datei geschrieben werden!");
+		}
+		
+		return result;
+	}
+	
+	public boolean loadGamelogic(int game) {
+		String logic;
+		try {
+			logic = sendGet("gamelogic/" + game);
+		} catch (IOException e) {
+			ErrorLog.write("Spiellogik konnte nicht heruntergeladen werden: " + e.getLocalizedMessage());
+			return false;
+		}
+		
+		if(logic == null) {
+			return false;
+		}
+		
+		try {
+			FileUtils.write(new File(Paths.gameLogic(game + "")), logic);
+		} catch (IOException e) {
+			ErrorLog.write("Spiellogik konnte nicht gespeichert werden: " + e.getLocalizedMessage());
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean loadAiLibraries(int game) {
+		String libraries;
+		try {
+			libraries = sendGet("ai_library/" + game);
+		} catch (IOException e) {
+			ErrorLog.write("Ai Libraries konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
+			return false;
+		}
+		
+		if(libraries == null) {
+			return false;
+		}
+		
+		try {
+			File tempZip = File.createTempFile("ailibraries", System.currentTimeMillis() + "");
+			FileUtils.write(tempZip, libraries);
+			ZipFile zipFile = new ZipFile(tempZip);
+			File zip;
+			zipFile.extractAll((zip = File.createTempFile("ailibrariesunzipped", System.currentTimeMillis() + "")).getAbsolutePath());
+			for(File file : zip.listFiles()) {
+				if(file.isFile()) {
+					continue;
+				}
+				FileUtils.copyDirectory(file, new File(Paths.ailibrary(game + "", file.getName())));
+			}
+		} catch (IOException | ZipException e) {
+			ErrorLog.write("Ai Libraries konnte nicht entpackt werden: " + e.getLocalizedMessage());
+			return false;
+		}
+		
+		return true;
 	}
 	
 	/**

@@ -9,8 +9,36 @@ import org.pixelgaffer.turnierserver.esu.Version;
 
 public class Paths {
 	
+	public static String downloadFolder() {
+		return "Downloads";
+	}
+	
 	public static String sessionFile() {
 		return "session.conf";
+	}
+	
+	public static String langsFile() {
+		return downloadFolder() + "/langs.prop";
+	}
+	
+	public static String gameTypesFile() {
+		return downloadFolder() + "/gametypes.prop";
+	}
+	
+	public static String downloadGameType(String game) {
+		return downloadFolder() + "/" + game;
+	}
+	
+	public static String gameLogic(String game) {
+		return downloadGameType(game) + "/gamelogic.jar";
+	}
+	
+	public static String simplePlayer(String game, String language) {
+		return downloadGameType(game) + "/SimplePlayer/SimplePlayer" + language;
+	}
+	
+	public static String ailibrary(String game, String language) {
+		return downloadGameType(game) + "/ailib/" + language;
 	}
 	
 	/**
@@ -29,7 +57,7 @@ public class Paths {
 	 * Gibt den Pfad zum SimplePlayer-Ordner zurück
 	 */
 	public static String simplePlayerFolder(){
-		return "Downloads/SimplePlayer";
+		return downloadFolder() + "/SimplePlayer";
 	}
 	
 	/**
