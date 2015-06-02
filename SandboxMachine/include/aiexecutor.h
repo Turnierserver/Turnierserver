@@ -39,9 +39,9 @@ public:
 	QUuid uuid () const { return _uuid; }
 	
 public slots:
-	void run ();
-	void terminate ();
-	void kill ();
+	void runAi();
+	void terminateAi();
+	void killAi();
 	
 signals:
 	/// wird emittiert wenn die KI terminiert wurde ist
@@ -62,10 +62,10 @@ protected slots:
 	/// generiert die KI Properties
 	void generateProps();
 	/// führt die KI aus
-	void execute ();
+	void executeAi();
 	
 protected:
-	int uid, gid;
+	int uid, gid, pid;
 	
 	QDir dir, binDir;
 	QString binArchive;

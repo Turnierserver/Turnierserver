@@ -19,9 +19,11 @@
 
 #include "aiexecutor.h"
 #include "mirrorclient.h"
+#include "workerclient.h"
 
 #include <errno.h>
 #include <pwd.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -85,7 +87,7 @@ AiExecutor::AiExecutor (int id, int version, const QUuid &uuid)
 	}
 }
 
-void AiExecutor::run ()
+void AiExecutor::runAi ()
 {
 	if (abort)
 	{
@@ -95,7 +97,7 @@ void AiExecutor::run ()
 	}
 	connect(this, SIGNAL(startAi()), this, SLOT(download()));
 	connect(this, SIGNAL(downloaded()), this, SLOT(generateProps()));
-	connect(this, SIGNAL(propsGenerated()), this, SLOT(execute()));
+	connect(this, SIGNAL(propsGenerated()), this, SLOT(executeAi()));
 	emit startAi();
 }
 
@@ -213,21 +215,40 @@ void AiExecutor::generateProps ()
 	emit propsGenerated();
 }
 
-void AiExecutor::execute()
+void AiExecutor::executeAi ()
 {
 	QString cmd = "sandboxd_helper -u " + QString::number(uid) + " -g " + QString::number(gid) + " -d \"" + binDir.absolutePath()
 			+ "\" -c \"./start.sh " + aiProp + "\"";
 	printf("$ %s\n", qPrintable(cmd));
-	system(qPrintable(cmd));
+	pid = fork();
+	if (pid < 0)
+	{
+		perror("Fehler: Kann den aktuellen Prozess nicht spalten");
+		worker->sendMessage(uuid(), 'T'); // T weil interner Fehler
+		emit finished(uuid());
+		return;
+	}
+	else if (getpid() == pid)
+	{
+		int retval = system(qPrintable(cmd));
+		printf("Die KI hat sich mit dem Statuscode %d beendet.\n", retval);
+		worker->sendMessage(uuid(), 'F');
+		emit finished(uuid());
+		return;
+	}
+	worker->sendMessage(uuid(), 'S');
+}
+
+void AiExecutor::terminateAi ()
+{
+	kill(pid, SIGKILL);
+	worker->sendMessage(uuid(), 'T');
 	emit finished(uuid());
 }
 
-void AiExecutor::terminate ()
+void AiExecutor::killAi ()
 {
-	
-}
-
-void AiExecutor::kill ()
-{
-	
+	kill(pid, SIGKILL);
+	worker->sendMessage(uuid(), 'K');
+	emit finished(uuid());
 }

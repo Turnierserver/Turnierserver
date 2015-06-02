@@ -32,7 +32,7 @@ JobControl::~JobControl ()
 	mutex.lock();
 	if (current)
 	{
-		current->terminate();
+		current->terminateAi();
 		delete current;
 	}
 	// die Mutex muss nicht unlocked werden, es soll eh nichts mehr passieren
@@ -43,7 +43,7 @@ void JobControl::doJob (const Job &job)
 	current = new AiExecutor(job.id, job.version, job.uuid);
 	connect(current, SIGNAL(finished(QUuid)), this, SLOT(jobFinished(QUuid)));
 //	current->moveToThread(&aiThread);
-	connect(this, SIGNAL(startAi()), current, SLOT(run()));
+	connect(this, SIGNAL(startAi()), current, SLOT(runAi()));
 //	aiThread.start();
 	emit startAi();
 }
@@ -62,7 +62,7 @@ void JobControl::terminateJob (const QUuid &uuid)
 {
 	mutex.lock();
 	if (current && current->uuid() == uuid)
-		current->terminate(); // will emit finished() -> aiFinished()
+		current->terminateAi(); // will emit finished() -> aiFinished()
 	else
 		queue.removeAll(uuid);
 	mutex.unlock();
@@ -72,7 +72,7 @@ void JobControl::killJob (const QUuid &uuid)
 {
 	mutex.lock();
 	if (current && current->uuid() == uuid)
-		current->kill(); // will emit finished() -> aiFinished()
+		current->killAi(); // will emit finished() -> aiFinished()
 	else
 		queue.removeAll(uuid);
 	mutex.unlock();
