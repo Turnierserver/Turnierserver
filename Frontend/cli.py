@@ -56,8 +56,8 @@ def manage(manager, app):
 			print(admin)
 
 	@manager.command
-	def make_esu_container(game_id):
-		"Packt die Beispiel-KIs und AILibs in einen esu_container.zip zusammen"
+	def make_data_container(game_id):
+		"Packt die Beispiel-KIs und AILibs in einen data_container.zip zusammen"
 		clean_tmp()
 		@ftp.safe
 		def f():
@@ -98,15 +98,15 @@ def manage(manager, app):
 						print(root+"/"+file, "->", new_path+"/"+file)
 						ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
 
-			zipf = zipfile.ZipFile('tmp/esu_container.zip', 'w')
+			zipf = zipfile.ZipFile('tmp/data_container.zip', 'w')
 			os.chdir("tmp")
 			zipdir('AiLibraries', zipf)
 			zipdir('SimplePlayers', zipf)
 			os.chdir("..")
 			zipf.close()
 
-			ftp.ftp_host.upload("tmp/esu_container.zip", "Games/"+game_id+"/esu_container.zip")
-			print("Uploaded ZIP to 'Games/"+game_id+"/esu_container.zip'")
+			ftp.ftp_host.upload("tmp/data_container.zip", "Games/"+game_id+"/data_container.zip")
+			print("Uploaded ZIP to 'Games/"+game_id+"/data_container.zip'")
 
 
 		try:

@@ -836,9 +836,9 @@ def game_logic(id):
 			abort(404)
 	return f()
 
-@api.route("/esu_container/<int:game_id>")
+@api.route("/data_container/<int:game_id>")
 def esu_container(game_id):
-	p = "Games/{}/esu_container.zip".format(secure_filename(str(game_id)))
+	p = "Games/{}/data_container.zip".format(secure_filename(str(game_id)))
 	@ftp.failsafe_locked
 	def f():
 		if ftp.ftp_host.path.isfile(p):
