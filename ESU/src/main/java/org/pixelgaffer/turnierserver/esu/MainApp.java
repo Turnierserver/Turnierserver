@@ -1,19 +1,24 @@
 package org.pixelgaffer.turnierserver.esu;
 
-import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.esu.utilities.WebConnector;
-import org.pixelgaffer.turnierserver.esu.view.ControllerGameManagement;
-import org.pixelgaffer.turnierserver.esu.view.ControllerAiManagement;
-import org.pixelgaffer.turnierserver.esu.view.ControllerRanking;
-import org.pixelgaffer.turnierserver.esu.view.ControllerRoot;
-import org.pixelgaffer.turnierserver.esu.view.ControllerStartPage;
-import org.pixelgaffer.turnierserver.esu.view.ControllerSubmission;
+import java.nio.channels.Pipe;
+import java.util.List;
+
+import javax.jws.Oneway;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+
+import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.esu.utilities.WebConnector;
+import org.pixelgaffer.turnierserver.esu.view.ControllerAiManagement;
+import org.pixelgaffer.turnierserver.esu.view.ControllerGameManagement;
+import org.pixelgaffer.turnierserver.esu.view.ControllerRanking;
+import org.pixelgaffer.turnierserver.esu.view.ControllerRoot;
+import org.pixelgaffer.turnierserver.esu.view.ControllerStartPage;
+import org.pixelgaffer.turnierserver.esu.view.ControllerSubmission;
  
 public class MainApp extends Application{
 	
@@ -29,6 +34,11 @@ public class MainApp extends Application{
 	public WebConnector webConnector = new WebConnector("http://192.168.178.43:5000/api/", "192.168.178.43");//"http://thuermchen.com/api/");
 	public GameManager gameManager = new GameManager();
 	public AiManager aiManager = new AiManager();
+	
+	public List<String> gametypes;
+	public List<String> langs;
+	
+	public boolean isOnline;
 	
 	/**
 	 * Main-Methode
@@ -52,21 +62,33 @@ public class MainApp extends Application{
 		ErrorLog.clear();
 		ErrorLog.write("Programm gestartet", true);
 		
-		
 		////////////Test//////////////////////////////////
 		
 		//////////////////////////////////////////////////
 		
-		
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
+		
+		gametypes = webConnector.getGametypes();
+		langs = webConnector.getLanguages();
 	}
 	
 	public void stop(){
 		cAi.version.saveCode();
 		ErrorLog.write("\n");
 		ErrorLog.write("Programm beendet", true);
+	}
+	
+	public boolean checkOnline() {
+		if(webConnector.ping()) {
+			gametypes = webConnector.getGametypes();
+			langs = webConnector.getGametypes();
+			if(gametypes != null && langs != null) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	
