@@ -15,7 +15,7 @@ template = Template("""
 
 Headers:
 
-{% for header, content in response.request.headers.items() %} - {{header}}: {{content}}\n{% endfor %}
+{% for header, content in reqheaders %} - {{header}}: {{content}}\n{% endfor %}
 
 Body:
 ```
@@ -28,12 +28,13 @@ Statuscode:
 	{{response.status_code}}
 Headers:
 
-{% for header, content in response.headers.items() %} - {{header}}: {{content}}\n{% endfor %}
+{% for header, content in respheaders %} - {{header}}: {{content}}\n{% endfor %}
 
 Body:
 ```
 	{{response.content.decode("utf-8")}}
 ```
+
 """)
 
 s = requests.Session()
@@ -59,7 +60,12 @@ class Endpoint:
 		if self.type == ReqTypes.GET:
 			r = s.get(requrl)
 
-		return template.render(reqtype=self.type, url=self.url, response=r)
+		return template.render(
+			reqtype=self.type, url=self.url,
+			response=r,
+			reqheaders = sorted(r.request.headers.items()),
+			respheaders = sorted(r.headers.items())
+		)
 
 
 endpoints = [

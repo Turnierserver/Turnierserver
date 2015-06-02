@@ -9,17 +9,17 @@ Anmeldung und so:
 
 Headers:
 
- - Content-Length: 35
- - Connection: keep-alive
- - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
- - Content-Type: application/x-www-form-urlencoded
- - Accept-Encoding: gzip, deflate
  - Accept: */*
+ - Accept-Encoding: gzip, deflate
+ - Connection: keep-alive
+ - Content-Length: 35
+ - Content-Type: application/x-www-form-urlencoded
+ - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
 Body:
 ```
-	password=admin&email=admin%40ad.min
+	email=admin%40ad.min&password=admin
 ```
 
 #### Response:
@@ -29,16 +29,17 @@ Statuscode:
 Headers:
 
  - content-length: 16
- - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE8oEQ.dn1qme5XgNKSHcZV6oSvM6NeHZg; HttpOnly; Path=/
- - date: Tue, 02 Jun 2015 11:42:09 GMT
  - content-type: application/json
+ - date: Tue, 02 Jun 2015 11:51:38 GMT
+ - server: Werkzeug/0.10.4 Python/3.4.3
+ - set-cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE8qSg.evpKLU0Grh8xFRgZWVgle6moCsE; HttpOnly; Path=/
 
 
 Body:
 ```
 	{"error": false}
 ```
+
 
 
 ## POST: /api/loggedin
@@ -48,12 +49,12 @@ Body:
 
 Headers:
 
- - Content-Length: 0
- - Connection: keep-alive
- - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
- - Cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE8oEQ.dn1qme5XgNKSHcZV6oSvM6NeHZg
- - Accept-Encoding: gzip, deflate
  - Accept: */*
+ - Accept-Encoding: gzip, deflate
+ - Connection: keep-alive
+ - Content-Length: 0
+ - Cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE8qSg.evpKLU0Grh8xFRgZWVgle6moCsE
+ - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
 Body:
@@ -68,16 +69,17 @@ Statuscode:
 Headers:
 
  - content-length: 52
- - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE8oEQ.dn1qme5XgNKSHcZV6oSvM6NeHZg; HttpOnly; Path=/
- - date: Tue, 02 Jun 2015 11:42:09 GMT
  - content-type: application/json
+ - date: Tue, 02 Jun 2015 11:51:38 GMT
+ - server: Werkzeug/0.10.4 Python/3.4.3
+ - set-cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE8qSg.evpKLU0Grh8xFRgZWVgle6moCsE; HttpOnly; Path=/
 
 
 Body:
 ```
-	{"ais": [], "admin": true, "id": 6, "name": "admin"}
+	{"name": "admin", "id": 6, "admin": true, "ais": []}
 ```
+
 
 
 ## POST: /api/logout
@@ -87,12 +89,12 @@ Body:
 
 Headers:
 
- - Content-Length: 0
- - Connection: keep-alive
- - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
- - Cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE8oEQ.dn1qme5XgNKSHcZV6oSvM6NeHZg
- - Accept-Encoding: gzip, deflate
  - Accept: */*
+ - Accept-Encoding: gzip, deflate
+ - Connection: keep-alive
+ - Content-Length: 0
+ - Cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE8qSg.evpKLU0Grh8xFRgZWVgle6moCsE
+ - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
 Body:
@@ -107,16 +109,17 @@ Statuscode:
 Headers:
 
  - content-length: 16
- - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA; HttpOnly; Path=/
- - date: Tue, 02 Jun 2015 11:42:09 GMT
  - content-type: application/json
+ - date: Tue, 02 Jun 2015 11:51:38 GMT
+ - server: Werkzeug/0.10.4 Python/3.4.3
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw; HttpOnly; Path=/
 
 
 Body:
 ```
 	{"error": false}
 ```
+
 
 
 ## POST: /api/loggedin
@@ -126,12 +129,12 @@ Body:
 
 Headers:
 
- - Content-Length: 0
- - Connection: keep-alive
- - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA
- - Accept-Encoding: gzip, deflate
  - Accept: */*
+ - Accept-Encoding: gzip, deflate
+ - Connection: keep-alive
+ - Content-Length: 0
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw
+ - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
 Body:
@@ -146,16 +149,17 @@ Statuscode:
 Headers:
 
  - content-length: 38
- - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA; HttpOnly; Path=/
- - date: Tue, 02 Jun 2015 11:42:09 GMT
  - content-type: application/json
+ - date: Tue, 02 Jun 2015 11:51:38 GMT
+ - server: Werkzeug/0.10.4 Python/3.4.3
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw; HttpOnly; Path=/
 
 
 Body:
 ```
 	{"error": "Insufficient permissions."}
-```Anonyme API Funktionen (brauchen keine Authentifizierung):
+```
+Anonyme API Funktionen (brauchen keine Authentifizierung):
 
 
 
@@ -166,10 +170,10 @@ Body:
 
 Headers:
 
- - Accept-Encoding: gzip, deflate
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA
- - Connection: keep-alive
  - Accept: */*
+ - Accept-Encoding: gzip, deflate
+ - Connection: keep-alive
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -185,16 +189,17 @@ Statuscode:
 Headers:
 
  - content-length: 1770
- - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA; HttpOnly; Path=/
- - date: Tue, 02 Jun 2015 11:42:09 GMT
  - content-type: application/json
+ - date: Tue, 02 Jun 2015 11:51:38 GMT
+ - server: Werkzeug/0.10.4 Python/3.4.3
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw; HttpOnly; Path=/
 
 
 Body:
 ```
-	[{"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "ahermiston", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 1, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "magnam"}, {"lang": {"url": "https://esolangs.org/wiki/Brainfuck", "id": 3, "name": "Brainfuck"}, "author": "erasmo59", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 5, "id": 2, "description": "Quas tempore itaque commodi dolorem voluptatem.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "repudiandae"}, {"lang": {"url": "https://esolangs.org/wiki/Brainfuck", "id": 3, "name": "Brainfuck"}, "author": "gberge", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 3, "id": 3, "description": "Quae est itaque aliquid aut dicta qui et.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "quisquam"}, {"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "winford21", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 4, "id": 4, "description": "Velit magni quidem non totam quia ipsum.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "minus"}, {"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "bschuster", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 2, "id": 5, "description": "Et dolor recusandae delectus ut sapiente.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "perspiciatis"}]
+	[{"gametype": {"name": "Minesweeper", "id": 1}, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "name": "magnam", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "ahermiston", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 1}, {"gametype": {"name": "Minesweeper", "id": 1}, "id": 2, "description": "Quas tempore itaque commodi dolorem voluptatem.", "name": "repudiandae", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "erasmo59", "lang": {"name": "Brainfuck", "id": 3, "url": "https://esolangs.org/wiki/Brainfuck"}, "author_id": 5}, {"gametype": {"name": "Minesweeper", "id": 1}, "id": 3, "description": "Quae est itaque aliquid aut dicta qui et.", "name": "quisquam", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "gberge", "lang": {"name": "Brainfuck", "id": 3, "url": "https://esolangs.org/wiki/Brainfuck"}, "author_id": 3}, {"gametype": {"name": "Minesweeper", "id": 1}, "id": 4, "description": "Velit magni quidem non totam quia ipsum.", "name": "minus", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "winford21", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 4}, {"gametype": {"name": "Minesweeper", "id": 1}, "id": 5, "description": "Et dolor recusandae delectus ut sapiente.", "name": "perspiciatis", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "bschuster", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 2}]
 ```
+
 
 
 ## GET: /api/users
@@ -204,10 +209,10 @@ Body:
 
 Headers:
 
- - Accept-Encoding: gzip, deflate
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA
- - Connection: keep-alive
  - Accept: */*
+ - Accept-Encoding: gzip, deflate
+ - Connection: keep-alive
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -223,16 +228,17 @@ Statuscode:
 Headers:
 
  - content-length: 2106
- - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA; HttpOnly; Path=/
- - date: Tue, 02 Jun 2015 11:42:09 GMT
  - content-type: application/json
+ - date: Tue, 02 Jun 2015 11:51:38 GMT
+ - server: Werkzeug/0.10.4 Python/3.4.3
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw; HttpOnly; Path=/
 
 
 Body:
 ```
-	[{"ais": [{"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "ahermiston", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 1, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "magnam"}], "admin": false, "id": 1, "name": "ahermiston"}, {"ais": [{"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "bschuster", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 2, "id": 5, "description": "Et dolor recusandae delectus ut sapiente.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "perspiciatis"}], "admin": false, "id": 2, "name": "bschuster"}, {"ais": [{"lang": {"url": "https://esolangs.org/wiki/Brainfuck", "id": 3, "name": "Brainfuck"}, "author": "gberge", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 3, "id": 3, "description": "Quae est itaque aliquid aut dicta qui et.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "quisquam"}], "admin": false, "id": 3, "name": "gberge"}, {"ais": [{"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "winford21", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 4, "id": 4, "description": "Velit magni quidem non totam quia ipsum.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "minus"}], "admin": false, "id": 4, "name": "winford21"}, {"ais": [{"lang": {"url": "https://esolangs.org/wiki/Brainfuck", "id": 3, "name": "Brainfuck"}, "author": "erasmo59", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 5, "id": 2, "description": "Quas tempore itaque commodi dolorem voluptatem.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "repudiandae"}], "admin": false, "id": 5, "name": "erasmo59"}, {"ais": [], "admin": true, "id": 6, "name": "admin"}]
+	[{"name": "ahermiston", "id": 1, "admin": false, "ais": [{"gametype": {"name": "Minesweeper", "id": 1}, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "name": "magnam", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "ahermiston", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 1}]}, {"name": "bschuster", "id": 2, "admin": false, "ais": [{"gametype": {"name": "Minesweeper", "id": 1}, "id": 5, "description": "Et dolor recusandae delectus ut sapiente.", "name": "perspiciatis", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "bschuster", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 2}]}, {"name": "gberge", "id": 3, "admin": false, "ais": [{"gametype": {"name": "Minesweeper", "id": 1}, "id": 3, "description": "Quae est itaque aliquid aut dicta qui et.", "name": "quisquam", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "gberge", "lang": {"name": "Brainfuck", "id": 3, "url": "https://esolangs.org/wiki/Brainfuck"}, "author_id": 3}]}, {"name": "winford21", "id": 4, "admin": false, "ais": [{"gametype": {"name": "Minesweeper", "id": 1}, "id": 4, "description": "Velit magni quidem non totam quia ipsum.", "name": "minus", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "winford21", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 4}]}, {"name": "erasmo59", "id": 5, "admin": false, "ais": [{"gametype": {"name": "Minesweeper", "id": 1}, "id": 2, "description": "Quas tempore itaque commodi dolorem voluptatem.", "name": "repudiandae", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "erasmo59", "lang": {"name": "Brainfuck", "id": 3, "url": "https://esolangs.org/wiki/Brainfuck"}, "author_id": 5}]}, {"name": "admin", "id": 6, "admin": true, "ais": []}]
 ```
+
 
 
 ## GET: /api/games
@@ -242,10 +248,10 @@ Body:
 
 Headers:
 
- - Accept-Encoding: gzip, deflate
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA
- - Connection: keep-alive
  - Accept: */*
+ - Accept-Encoding: gzip, deflate
+ - Connection: keep-alive
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -261,16 +267,17 @@ Statuscode:
 Headers:
 
  - content-length: 3850
- - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA; HttpOnly; Path=/
- - date: Tue, 02 Jun 2015 11:42:09 GMT
  - content-type: application/json
+ - date: Tue, 02 Jun 2015 11:51:38 GMT
+ - server: Werkzeug/0.10.4 Python/3.4.3
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw; HttpOnly; Path=/
 
 
 Body:
 ```
-	[{"id": 1, "type": {"id": 1, "name": "Minesweeper"}, "ais": [{"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "ahermiston", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 1, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "magnam"}, {"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "bschuster", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 2, "id": 5, "description": "Et dolor recusandae delectus ut sapiente.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "perspiciatis"}]}, {"id": 2, "type": {"id": 1, "name": "Minesweeper"}, "ais": [{"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "ahermiston", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 1, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "magnam"}, {"lang": {"url": "https://esolangs.org/wiki/Brainfuck", "id": 3, "name": "Brainfuck"}, "author": "erasmo59", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 5, "id": 2, "description": "Quas tempore itaque commodi dolorem voluptatem.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "repudiandae"}]}, {"id": 3, "type": {"id": 1, "name": "Minesweeper"}, "ais": [{"lang": {"url": "https://esolangs.org/wiki/Brainfuck", "id": 3, "name": "Brainfuck"}, "author": "erasmo59", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 5, "id": 2, "description": "Quas tempore itaque commodi dolorem voluptatem.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "repudiandae"}, {"lang": {"url": "https://esolangs.org/wiki/Brainfuck", "id": 3, "name": "Brainfuck"}, "author": "gberge", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 3, "id": 3, "description": "Quae est itaque aliquid aut dicta qui et.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "quisquam"}]}, {"id": 4, "type": {"id": 1, "name": "Minesweeper"}, "ais": [{"lang": {"url": "https://esolangs.org/wiki/Brainfuck", "id": 3, "name": "Brainfuck"}, "author": "gberge", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 3, "id": 3, "description": "Quae est itaque aliquid aut dicta qui et.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "quisquam"}, {"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "winford21", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 4, "id": 4, "description": "Velit magni quidem non totam quia ipsum.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "minus"}]}, {"id": 5, "type": {"id": 1, "name": "Minesweeper"}, "ais": [{"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "winford21", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 4, "id": 4, "description": "Velit magni quidem non totam quia ipsum.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "minus"}, {"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "bschuster", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 2, "id": 5, "description": "Et dolor recusandae delectus ut sapiente.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "perspiciatis"}]}]
-```Anonyme API Funktionen von bestimmten Objekten:
+	[{"id": 1, "type": {"name": "Minesweeper", "id": 1}, "ais": [{"gametype": {"name": "Minesweeper", "id": 1}, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "name": "magnam", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "ahermiston", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 1}, {"gametype": {"name": "Minesweeper", "id": 1}, "id": 5, "description": "Et dolor recusandae delectus ut sapiente.", "name": "perspiciatis", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "bschuster", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 2}]}, {"id": 2, "type": {"name": "Minesweeper", "id": 1}, "ais": [{"gametype": {"name": "Minesweeper", "id": 1}, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "name": "magnam", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "ahermiston", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 1}, {"gametype": {"name": "Minesweeper", "id": 1}, "id": 2, "description": "Quas tempore itaque commodi dolorem voluptatem.", "name": "repudiandae", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "erasmo59", "lang": {"name": "Brainfuck", "id": 3, "url": "https://esolangs.org/wiki/Brainfuck"}, "author_id": 5}]}, {"id": 3, "type": {"name": "Minesweeper", "id": 1}, "ais": [{"gametype": {"name": "Minesweeper", "id": 1}, "id": 2, "description": "Quas tempore itaque commodi dolorem voluptatem.", "name": "repudiandae", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "erasmo59", "lang": {"name": "Brainfuck", "id": 3, "url": "https://esolangs.org/wiki/Brainfuck"}, "author_id": 5}, {"gametype": {"name": "Minesweeper", "id": 1}, "id": 3, "description": "Quae est itaque aliquid aut dicta qui et.", "name": "quisquam", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "gberge", "lang": {"name": "Brainfuck", "id": 3, "url": "https://esolangs.org/wiki/Brainfuck"}, "author_id": 3}]}, {"id": 4, "type": {"name": "Minesweeper", "id": 1}, "ais": [{"gametype": {"name": "Minesweeper", "id": 1}, "id": 3, "description": "Quae est itaque aliquid aut dicta qui et.", "name": "quisquam", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "gberge", "lang": {"name": "Brainfuck", "id": 3, "url": "https://esolangs.org/wiki/Brainfuck"}, "author_id": 3}, {"gametype": {"name": "Minesweeper", "id": 1}, "id": 4, "description": "Velit magni quidem non totam quia ipsum.", "name": "minus", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "winford21", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 4}]}, {"id": 5, "type": {"name": "Minesweeper", "id": 1}, "ais": [{"gametype": {"name": "Minesweeper", "id": 1}, "id": 4, "description": "Velit magni quidem non totam quia ipsum.", "name": "minus", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "winford21", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 4}, {"gametype": {"name": "Minesweeper", "id": 1}, "id": 5, "description": "Et dolor recusandae delectus ut sapiente.", "name": "perspiciatis", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "bschuster", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 2}]}]
+```
+Anonyme API Funktionen von bestimmten Objekten:
 
 
 
@@ -281,10 +288,10 @@ Body:
 
 Headers:
 
- - Accept-Encoding: gzip, deflate
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA
- - Connection: keep-alive
  - Accept: */*
+ - Accept-Encoding: gzip, deflate
+ - Connection: keep-alive
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -300,16 +307,17 @@ Statuscode:
 Headers:
 
  - content-length: 345
- - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA; HttpOnly; Path=/
- - date: Tue, 02 Jun 2015 11:42:09 GMT
  - content-type: application/json
+ - date: Tue, 02 Jun 2015 11:51:38 GMT
+ - server: Werkzeug/0.10.4 Python/3.4.3
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw; HttpOnly; Path=/
 
 
 Body:
 ```
-	{"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "ahermiston", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 1, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "magnam"}
+	{"gametype": {"name": "Minesweeper", "id": 1}, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "name": "magnam", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "ahermiston", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 1}
 ```
+
 
 
 ## GET: /api/user/1
@@ -319,10 +327,10 @@ Body:
 
 Headers:
 
- - Accept-Encoding: gzip, deflate
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA
- - Connection: keep-alive
  - Accept: */*
+ - Accept-Encoding: gzip, deflate
+ - Connection: keep-alive
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -338,16 +346,17 @@ Statuscode:
 Headers:
 
  - content-length: 403
- - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA; HttpOnly; Path=/
- - date: Tue, 02 Jun 2015 11:42:09 GMT
  - content-type: application/json
+ - date: Tue, 02 Jun 2015 11:51:38 GMT
+ - server: Werkzeug/0.10.4 Python/3.4.3
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw; HttpOnly; Path=/
 
 
 Body:
 ```
-	{"ais": [{"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "ahermiston", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 1, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "magnam"}], "admin": false, "id": 1, "name": "ahermiston"}
+	{"name": "ahermiston", "id": 1, "admin": false, "ais": [{"gametype": {"name": "Minesweeper", "id": 1}, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "name": "magnam", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "ahermiston", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 1}]}
 ```
+
 
 
 ## GET: /api/game/1
@@ -357,10 +366,10 @@ Body:
 
 Headers:
 
- - Accept-Encoding: gzip, deflate
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA
- - Connection: keep-alive
  - Accept: */*
+ - Accept-Encoding: gzip, deflate
+ - Connection: keep-alive
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -376,13 +385,13 @@ Statuscode:
 Headers:
 
  - content-length: 763
- - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8oEQ.vTbYYjoN4NLGoLgvXPeykrsO8kA; HttpOnly; Path=/
- - date: Tue, 02 Jun 2015 11:42:09 GMT
  - content-type: application/json
+ - date: Tue, 02 Jun 2015 11:51:38 GMT
+ - server: Werkzeug/0.10.4 Python/3.4.3
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE8qSg.ym094Ve5iqWV-WwhLmrR_A0p8Tw; HttpOnly; Path=/
 
 
 Body:
 ```
-	{"id": 1, "type": {"id": 1, "name": "Minesweeper"}, "ais": [{"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "ahermiston", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 1, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "magnam"}, {"lang": {"url": "https://www.java.com/?isthaesslig=1", "id": 2, "name": "Java"}, "author": "bschuster", "gametype": {"id": 1, "name": "Minesweeper"}, "author_id": 2, "id": 5, "description": "Et dolor recusandae delectus ut sapiente.", "versions": [{"compiled": false, "frozen": false, "qualified": false, "id": 1, "extras": []}], "name": "perspiciatis"}]}
+	{"id": 1, "type": {"name": "Minesweeper", "id": 1}, "ais": [{"gametype": {"name": "Minesweeper", "id": 1}, "id": 1, "description": "Ut et asperiores delectus nihil iste.", "name": "magnam", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "ahermiston", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 1}, {"gametype": {"name": "Minesweeper", "id": 1}, "id": 5, "description": "Et dolor recusandae delectus ut sapiente.", "name": "perspiciatis", "versions": [{"compiled": false, "id": 1, "extras": [], "qualified": false, "frozen": false}], "author": "bschuster", "lang": {"name": "Java", "id": 2, "url": "https://www.java.com/?isthaesslig=1"}, "author_id": 2}]}
 ```
