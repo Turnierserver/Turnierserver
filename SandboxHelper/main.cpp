@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 	parser.process(app);
 	
 	// uid rausfinden
-	__uid_t uid = parser.value(uidOption).toInt();
+	uid_t uid = parser.value(uidOption).toInt();
 	// keine Anmeldung als root zulassen
 	if (uid == 0)
 	{
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 	}
 	
 	// gid rausfinden
-	__gid_t gid = parser.value(gidOption).toInt();
+	gid_t gid = parser.value(gidOption).toInt();
 	// wenn die gid 0 ist, die standart-gid des Benutzers benutzen
 	if (gid == 0)
 	{
