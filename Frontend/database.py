@@ -454,13 +454,20 @@ class GameType(db.Model):
 	viz = db.Column(db.Text, nullable=False)
 	games = db.relationship("Game", order_by="Game.id", backref="GameType", cascade="all, delete, delete-orphan")
 	roles = db.relationship("GameTypeRole", backref="GameType", cascade="all, delete, delete-orphan")
+	last_modified = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
 	def __init__(self, *args, **kwargs):
 		super(GameType, self).__init__(*args, **kwargs)
 		db_obj_init_msg(self)
+		if not self.last_modified:
+			self.last_modified = timestamp()
+
+	def updated(self):
+		self.last_modified = timestamp()
+		db.session.commit()
 
 	def info(self):
-		return {"id": self.id, "name": self.name}
+		return {"id": self.id, "name": self.name, "last_modified": self.last_modified}
 
 	def __repr__(self):
 		return "<GameType(id={}, name={})>".format(self.id, self.name)

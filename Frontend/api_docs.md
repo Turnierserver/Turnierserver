@@ -68,7 +68,7 @@ Headers:
  - content-length: 16
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE90BA.odfC6wtTCJYf0tiW7pNb-VI9Gns; HttpOnly; Path=/
+ - set-cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE-Rqg.bbSShjfvjEkFq-y7F21DJZN2cCw; HttpOnly; Path=/
 
 
 Body:
@@ -89,7 +89,7 @@ Headers:
  - Accept-Encoding: gzip, deflate
  - Connection: keep-alive
  - Content-Length: 0
- - Cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE90BA.odfC6wtTCJYf0tiW7pNb-VI9Gns
+ - Cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE-Rqg.bbSShjfvjEkFq-y7F21DJZN2cCw
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -104,46 +104,15 @@ Statuscode:
 	200
 Headers:
 
- - content-length: 759
+ - content-length: 52
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE90BA.odfC6wtTCJYf0tiW7pNb-VI9Gns; HttpOnly; Path=/
+ - set-cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE-Rqg.bbSShjfvjEkFq-y7F21DJZN2cCw; HttpOnly; Path=/
 
 
 Body:
 ```
-{'admin': True,
- 'ais': [{'author': 'admin',
-          'author_id': 6,
-          'description': 'Unbeschriebene KI',
-          'gametype': {'id': 1, 'name': 'Minesweeper'},
-          'id': 6,
-          'lang': {'id': 1,
-                   'name': 'Python',
-                   'url': 'https://www.python.org'},
-          'name': 'Unbenannte KI',
-          'versions': [{'compiled': True,
-                        'extras': [],
-                        'frozen': False,
-                        'id': 1,
-                        'qualified': False}]},
-         {'author': 'admin',
-          'author_id': 6,
-          'description': 'Wehe jemand löscht die KI oder macht da Python '
-                         'draus … ',
-          'gametype': {'id': 1, 'name': 'Minesweeper'},
-          'id': 7,
-          'lang': {'id': 2,
-                   'name': 'Java',
-                   'url': 'https://www.java.com/?isthaesslig=1'},
-          'name': 'Java Test KI für Dominic',
-          'versions': [{'compiled': True,
-                        'extras': [],
-                        'frozen': False,
-                        'id': 1,
-                        'qualified': False}]}],
- 'id': 6,
- 'name': 'admin'}
+{'admin': True, 'ais': [], 'id': 6, 'name': 'admin'}
 ```
 
 
@@ -159,7 +128,7 @@ Headers:
  - Accept-Encoding: gzip, deflate
  - Connection: keep-alive
  - Content-Length: 0
- - Cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE90BA.odfC6wtTCJYf0tiW7pNb-VI9Gns
+ - Cookie: session=.eJwdjMsKwyAQRX9FZh1KsNUa1_2LEIKPqQ6EpjjaTci_R7q6HDjnHrC-N8cZGex8gKh94LszVfohDPBqIjuuIlLIAumTcNtTqjdYzmXobUHOYGtp2IkiWLg7NT6UM1rGSaIKT-mNjkqh9N6EaeynjbH8ZX1ekJQobA.CE-Rqg.bbSShjfvjEkFq-y7F21DJZN2cCw
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -177,7 +146,7 @@ Headers:
  - content-length: 16
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o; HttpOnly; Path=/
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU; HttpOnly; Path=/
 
 
 Body:
@@ -198,7 +167,7 @@ Headers:
  - Accept-Encoding: gzip, deflate
  - Connection: keep-alive
  - Content-Length: 0
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -216,7 +185,7 @@ Headers:
  - content-length: 38
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o; HttpOnly; Path=/
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU; HttpOnly; Path=/
 
 
 Body:
@@ -237,7 +206,7 @@ Headers:
  - Accept: */*
  - Accept-Encoding: gzip, deflate
  - Connection: keep-alive
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -252,46 +221,46 @@ Statuscode:
 	200
 Headers:
 
- - content-length: 2430
+ - content-length: 1824
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o; HttpOnly; Path=/
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU; HttpOnly; Path=/
 
 
 Body:
 ```
-[{'author': 'ahermiston',
-  'author_id': 1,
-  'description': 'Ut et asperiores delectus nihil iste.',
-  'gametype': {'id': 1, 'name': 'Minesweeper'},
+[{'author': 'rose.gutmann',
+  'author_id': 5,
+  'description': 'Et eos illo fugiat sit quis rerum voluptatem.',
+  'gametype': {'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'},
   'id': 1,
   'lang': {'id': 2,
            'name': 'Java',
            'url': 'https://www.java.com/?isthaesslig=1'},
-  'name': 'magnam',
+  'name': 'et',
   'versions': [{'compiled': False,
                 'extras': [],
                 'frozen': False,
                 'id': 1,
                 'qualified': False}]},
- {'author': 'erasmo59',
-  'author_id': 5,
-  'description': 'Quas tempore itaque commodi dolorem voluptatem.',
-  'gametype': {'id': 1, 'name': 'Minesweeper'},
+ {'author': 'skiles.jesenia',
+  'author_id': 2,
+  'description': 'Nesciunt modi qui quo animi facere accusantium.',
+  'gametype': {'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'},
   'id': 2,
-  'lang': {'id': 3,
-           'name': 'Brainfuck',
-           'url': 'https://esolangs.org/wiki/Brainfuck'},
-  'name': 'repudiandae',
+  'lang': {'id': 2,
+           'name': 'Java',
+           'url': 'https://www.java.com/?isthaesslig=1'},
+  'name': 'aut',
   'versions': [{'compiled': False,
                 'extras': [],
                 'frozen': False,
                 'id': 1,
                 'qualified': False}]},
- {'author': 'gberge',
+ {'author': 'aarav.bayer',
   'author_id': 3,
   'description': 'Top Keks',
-  'gametype': {'id': 1, 'name': 'Minesweeper'},
+  'gametype': {'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'},
   'id': 3,
   'lang': {'id': 1, 'name': 'Python', 'url': 'https://www.python.org'},
   'name': 'Top Keks',
@@ -300,56 +269,26 @@ Body:
                 'frozen': False,
                 'id': 1,
                 'qualified': False}]},
- {'author': 'winford21',
-  'author_id': 4,
-  'description': 'Velit magni quidem non totam quia ipsum.',
-  'gametype': {'id': 1, 'name': 'Minesweeper'},
+ {'author': 'owaelchi',
+  'author_id': 1,
+  'description': 'Ratione aut rem mollitia in.',
+  'gametype': {'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'},
   'id': 4,
-  'lang': {'id': 2,
-           'name': 'Java',
-           'url': 'https://www.java.com/?isthaesslig=1'},
-  'name': 'minus',
-  'versions': [{'compiled': False,
-                'extras': [],
-                'frozen': False,
-                'id': 1,
-                'qualified': False}]},
- {'author': 'bschuster',
-  'author_id': 2,
-  'description': 'Et dolor recusandae delectus ut sapiente.',
-  'gametype': {'id': 1, 'name': 'Minesweeper'},
-  'id': 5,
-  'lang': {'id': 2,
-           'name': 'Java',
-           'url': 'https://www.java.com/?isthaesslig=1'},
-  'name': 'perspiciatis',
-  'versions': [{'compiled': False,
-                'extras': [],
-                'frozen': False,
-                'id': 1,
-                'qualified': False}]},
- {'author': 'admin',
-  'author_id': 6,
-  'description': 'Unbeschriebene KI',
-  'gametype': {'id': 1, 'name': 'Minesweeper'},
-  'id': 6,
   'lang': {'id': 1, 'name': 'Python', 'url': 'https://www.python.org'},
-  'name': 'Unbenannte KI',
-  'versions': [{'compiled': True,
+  'name': 'aliquid',
+  'versions': [{'compiled': False,
                 'extras': [],
                 'frozen': False,
                 'id': 1,
                 'qualified': False}]},
- {'author': 'admin',
-  'author_id': 6,
-  'description': 'Wehe jemand löscht die KI oder macht da Python draus … ',
-  'gametype': {'id': 1, 'name': 'Minesweeper'},
-  'id': 7,
-  'lang': {'id': 2,
-           'name': 'Java',
-           'url': 'https://www.java.com/?isthaesslig=1'},
-  'name': 'Java Test KI für Dominic',
-  'versions': [{'compiled': True,
+ {'author': 'rita.stanton',
+  'author_id': 4,
+  'description': 'Est possimus quos repellendus quo.',
+  'gametype': {'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'},
+  'id': 5,
+  'lang': {'id': 1, 'name': 'Python', 'url': 'https://www.python.org'},
+  'name': 'vel',
+  'versions': [{'compiled': False,
                 'extras': [],
                 'frozen': False,
                 'id': 1,
@@ -368,7 +307,7 @@ Headers:
  - Accept: */*
  - Accept-Encoding: gzip, deflate
  - Connection: keep-alive
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -383,53 +322,59 @@ Statuscode:
 	200
 Headers:
 
- - content-length: 2764
+ - content-length: 2175
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o; HttpOnly; Path=/
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU; HttpOnly; Path=/
 
 
 Body:
 ```
 [{'admin': False,
-  'ais': [{'author': 'ahermiston',
+  'ais': [{'author': 'owaelchi',
            'author_id': 1,
-           'description': 'Ut et asperiores delectus nihil iste.',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
-           'id': 1,
-           'lang': {'id': 2,
-                    'name': 'Java',
-                    'url': 'https://www.java.com/?isthaesslig=1'},
-           'name': 'magnam',
+           'description': 'Ratione aut rem mollitia in.',
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
+           'id': 4,
+           'lang': {'id': 1,
+                    'name': 'Python',
+                    'url': 'https://www.python.org'},
+           'name': 'aliquid',
            'versions': [{'compiled': False,
                          'extras': [],
                          'frozen': False,
                          'id': 1,
                          'qualified': False}]}],
   'id': 1,
-  'name': 'ahermiston'},
+  'name': 'owaelchi'},
  {'admin': False,
-  'ais': [{'author': 'bschuster',
+  'ais': [{'author': 'skiles.jesenia',
            'author_id': 2,
-           'description': 'Et dolor recusandae delectus ut sapiente.',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
-           'id': 5,
+           'description': 'Nesciunt modi qui quo animi facere accusantium.',
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
+           'id': 2,
            'lang': {'id': 2,
                     'name': 'Java',
                     'url': 'https://www.java.com/?isthaesslig=1'},
-           'name': 'perspiciatis',
+           'name': 'aut',
            'versions': [{'compiled': False,
                          'extras': [],
                          'frozen': False,
                          'id': 1,
                          'qualified': False}]}],
   'id': 2,
-  'name': 'bschuster'},
+  'name': 'skiles.jesenia'},
  {'admin': False,
-  'ais': [{'author': 'gberge',
+  'ais': [{'author': 'aarav.bayer',
            'author_id': 3,
            'description': 'Top Keks',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
            'id': 3,
            'lang': {'id': 1,
                     'name': 'Python',
@@ -441,73 +386,46 @@ Body:
                          'id': 1,
                          'qualified': False}]}],
   'id': 3,
-  'name': 'gberge'},
+  'name': 'aarav.bayer'},
  {'admin': False,
-  'ais': [{'author': 'winford21',
+  'ais': [{'author': 'rita.stanton',
            'author_id': 4,
-           'description': 'Velit magni quidem non totam quia ipsum.',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
-           'id': 4,
-           'lang': {'id': 2,
-                    'name': 'Java',
-                    'url': 'https://www.java.com/?isthaesslig=1'},
-           'name': 'minus',
+           'description': 'Est possimus quos repellendus quo.',
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
+           'id': 5,
+           'lang': {'id': 1,
+                    'name': 'Python',
+                    'url': 'https://www.python.org'},
+           'name': 'vel',
            'versions': [{'compiled': False,
                          'extras': [],
                          'frozen': False,
                          'id': 1,
                          'qualified': False}]}],
   'id': 4,
-  'name': 'winford21'},
+  'name': 'rita.stanton'},
  {'admin': False,
-  'ais': [{'author': 'erasmo59',
+  'ais': [{'author': 'rose.gutmann',
            'author_id': 5,
-           'description': 'Quas tempore itaque commodi dolorem voluptatem.',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
-           'id': 2,
-           'lang': {'id': 3,
-                    'name': 'Brainfuck',
-                    'url': 'https://esolangs.org/wiki/Brainfuck'},
-           'name': 'repudiandae',
+           'description': 'Et eos illo fugiat sit quis rerum voluptatem.',
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
+           'id': 1,
+           'lang': {'id': 2,
+                    'name': 'Java',
+                    'url': 'https://www.java.com/?isthaesslig=1'},
+           'name': 'et',
            'versions': [{'compiled': False,
                          'extras': [],
                          'frozen': False,
                          'id': 1,
                          'qualified': False}]}],
   'id': 5,
-  'name': 'erasmo59'},
- {'admin': True,
-  'ais': [{'author': 'admin',
-           'author_id': 6,
-           'description': 'Unbeschriebene KI',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
-           'id': 6,
-           'lang': {'id': 1,
-                    'name': 'Python',
-                    'url': 'https://www.python.org'},
-           'name': 'Unbenannte KI',
-           'versions': [{'compiled': True,
-                         'extras': [],
-                         'frozen': False,
-                         'id': 1,
-                         'qualified': False}]},
-          {'author': 'admin',
-           'author_id': 6,
-           'description': 'Wehe jemand löscht die KI oder macht da Python '
-                          'draus … ',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
-           'id': 7,
-           'lang': {'id': 2,
-                    'name': 'Java',
-                    'url': 'https://www.java.com/?isthaesslig=1'},
-           'name': 'Java Test KI für Dominic',
-           'versions': [{'compiled': True,
-                         'extras': [],
-                         'frozen': False,
-                         'id': 1,
-                         'qualified': False}]}],
-  'id': 6,
-  'name': 'admin'}]
+  'name': 'rose.gutmann'},
+ {'admin': True, 'ais': [], 'id': 6, 'name': 'admin'}]
 ```
 
 
@@ -522,7 +440,7 @@ Headers:
  - Accept: */*
  - Accept-Encoding: gzip, deflate
  - Connection: keep-alive
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -537,92 +455,104 @@ Statuscode:
 	200
 Headers:
 
- - content-length: 3752
+ - content-length: 4103
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o; HttpOnly; Path=/
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU; HttpOnly; Path=/
 
 
 Body:
 ```
-[{'ais': [{'author': 'ahermiston',
-           'author_id': 1,
-           'description': 'Ut et asperiores delectus nihil iste.',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
+[{'ais': [{'author': 'rose.gutmann',
+           'author_id': 5,
+           'description': 'Et eos illo fugiat sit quis rerum voluptatem.',
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
            'id': 1,
            'lang': {'id': 2,
                     'name': 'Java',
                     'url': 'https://www.java.com/?isthaesslig=1'},
-           'name': 'magnam',
+           'name': 'et',
            'versions': [{'compiled': False,
                          'extras': [],
                          'frozen': False,
                          'id': 1,
                          'qualified': False}]},
-          {'author': 'bschuster',
-           'author_id': 2,
-           'description': 'Et dolor recusandae delectus ut sapiente.',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
+          {'author': 'rita.stanton',
+           'author_id': 4,
+           'description': 'Est possimus quos repellendus quo.',
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
            'id': 5,
-           'lang': {'id': 2,
-                    'name': 'Java',
-                    'url': 'https://www.java.com/?isthaesslig=1'},
-           'name': 'perspiciatis',
+           'lang': {'id': 1,
+                    'name': 'Python',
+                    'url': 'https://www.python.org'},
+           'name': 'vel',
            'versions': [{'compiled': False,
                          'extras': [],
                          'frozen': False,
                          'id': 1,
                          'qualified': False}]}],
   'id': 1,
-  'type': {'id': 1, 'name': 'Minesweeper'}},
- {'ais': [{'author': 'ahermiston',
-           'author_id': 1,
-           'description': 'Ut et asperiores delectus nihil iste.',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
+  'type': {'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'}},
+ {'ais': [{'author': 'rose.gutmann',
+           'author_id': 5,
+           'description': 'Et eos illo fugiat sit quis rerum voluptatem.',
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
            'id': 1,
            'lang': {'id': 2,
                     'name': 'Java',
                     'url': 'https://www.java.com/?isthaesslig=1'},
-           'name': 'magnam',
+           'name': 'et',
            'versions': [{'compiled': False,
                          'extras': [],
                          'frozen': False,
                          'id': 1,
                          'qualified': False}]},
-          {'author': 'erasmo59',
-           'author_id': 5,
-           'description': 'Quas tempore itaque commodi dolorem voluptatem.',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
+          {'author': 'skiles.jesenia',
+           'author_id': 2,
+           'description': 'Nesciunt modi qui quo animi facere accusantium.',
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
            'id': 2,
-           'lang': {'id': 3,
-                    'name': 'Brainfuck',
-                    'url': 'https://esolangs.org/wiki/Brainfuck'},
-           'name': 'repudiandae',
+           'lang': {'id': 2,
+                    'name': 'Java',
+                    'url': 'https://www.java.com/?isthaesslig=1'},
+           'name': 'aut',
            'versions': [{'compiled': False,
                          'extras': [],
                          'frozen': False,
                          'id': 1,
                          'qualified': False}]}],
   'id': 2,
-  'type': {'id': 1, 'name': 'Minesweeper'}},
- {'ais': [{'author': 'erasmo59',
-           'author_id': 5,
-           'description': 'Quas tempore itaque commodi dolorem voluptatem.',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
+  'type': {'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'}},
+ {'ais': [{'author': 'skiles.jesenia',
+           'author_id': 2,
+           'description': 'Nesciunt modi qui quo animi facere accusantium.',
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
            'id': 2,
-           'lang': {'id': 3,
-                    'name': 'Brainfuck',
-                    'url': 'https://esolangs.org/wiki/Brainfuck'},
-           'name': 'repudiandae',
+           'lang': {'id': 2,
+                    'name': 'Java',
+                    'url': 'https://www.java.com/?isthaesslig=1'},
+           'name': 'aut',
            'versions': [{'compiled': False,
                          'extras': [],
                          'frozen': False,
                          'id': 1,
                          'qualified': False}]},
-          {'author': 'gberge',
+          {'author': 'aarav.bayer',
            'author_id': 3,
            'description': 'Top Keks',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
            'id': 3,
            'lang': {'id': 1,
                     'name': 'Python',
@@ -634,11 +564,13 @@ Body:
                          'id': 1,
                          'qualified': False}]}],
   'id': 3,
-  'type': {'id': 1, 'name': 'Minesweeper'}},
- {'ais': [{'author': 'gberge',
+  'type': {'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'}},
+ {'ais': [{'author': 'aarav.bayer',
            'author_id': 3,
            'description': 'Top Keks',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
            'id': 3,
            'lang': {'id': 1,
                     'name': 'Python',
@@ -649,52 +581,58 @@ Body:
                          'frozen': False,
                          'id': 1,
                          'qualified': False}]},
-          {'author': 'winford21',
-           'author_id': 4,
-           'description': 'Velit magni quidem non totam quia ipsum.',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
+          {'author': 'owaelchi',
+           'author_id': 1,
+           'description': 'Ratione aut rem mollitia in.',
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
            'id': 4,
-           'lang': {'id': 2,
-                    'name': 'Java',
-                    'url': 'https://www.java.com/?isthaesslig=1'},
-           'name': 'minus',
+           'lang': {'id': 1,
+                    'name': 'Python',
+                    'url': 'https://www.python.org'},
+           'name': 'aliquid',
            'versions': [{'compiled': False,
                          'extras': [],
                          'frozen': False,
                          'id': 1,
                          'qualified': False}]}],
   'id': 4,
-  'type': {'id': 1, 'name': 'Minesweeper'}},
- {'ais': [{'author': 'winford21',
-           'author_id': 4,
-           'description': 'Velit magni quidem non totam quia ipsum.',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
+  'type': {'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'}},
+ {'ais': [{'author': 'owaelchi',
+           'author_id': 1,
+           'description': 'Ratione aut rem mollitia in.',
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
            'id': 4,
-           'lang': {'id': 2,
-                    'name': 'Java',
-                    'url': 'https://www.java.com/?isthaesslig=1'},
-           'name': 'minus',
+           'lang': {'id': 1,
+                    'name': 'Python',
+                    'url': 'https://www.python.org'},
+           'name': 'aliquid',
            'versions': [{'compiled': False,
                          'extras': [],
                          'frozen': False,
                          'id': 1,
                          'qualified': False}]},
-          {'author': 'bschuster',
-           'author_id': 2,
-           'description': 'Et dolor recusandae delectus ut sapiente.',
-           'gametype': {'id': 1, 'name': 'Minesweeper'},
+          {'author': 'rita.stanton',
+           'author_id': 4,
+           'description': 'Est possimus quos repellendus quo.',
+           'gametype': {'id': 1,
+                        'last_modified': 1433272242,
+                        'name': 'Minesweeper'},
            'id': 5,
-           'lang': {'id': 2,
-                    'name': 'Java',
-                    'url': 'https://www.java.com/?isthaesslig=1'},
-           'name': 'perspiciatis',
+           'lang': {'id': 1,
+                    'name': 'Python',
+                    'url': 'https://www.python.org'},
+           'name': 'vel',
            'versions': [{'compiled': False,
                          'extras': [],
                          'frozen': False,
                          'id': 1,
                          'qualified': False}]}],
   'id': 5,
-  'type': {'id': 1, 'name': 'Minesweeper'}}]
+  'type': {'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'}}]
 ```
 
 
@@ -709,7 +647,7 @@ Headers:
  - Accept: */*
  - Accept-Encoding: gzip, deflate
  - Connection: keep-alive
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -724,17 +662,17 @@ Statuscode:
 	200
 Headers:
 
- - content-length: 213
+ - content-length: 208
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o; HttpOnly; Path=/
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU; HttpOnly; Path=/
 
 
 Body:
 ```
 [{'id': 1, 'name': 'Python', 'url': 'https://www.python.org'},
  {'id': 2, 'name': 'Java', 'url': 'https://www.java.com/?isthaesslig=1'},
- {'id': 3, 'name': 'Brainfuck', 'url': 'https://esolangs.org/wiki/Brainfuck'}]
+ {'id': 3, 'name': 'C++', 'url': 'http://en.wikipedia.org/wiki/C%2B%2B'}]
 ```
 
 
@@ -749,7 +687,7 @@ Headers:
  - Accept: */*
  - Accept-Encoding: gzip, deflate
  - Connection: keep-alive
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -764,15 +702,15 @@ Statuscode:
 	200
 Headers:
 
- - content-length: 34
+ - content-length: 63
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o; HttpOnly; Path=/
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU; HttpOnly; Path=/
 
 
 Body:
 ```
-[{'id': 1, 'name': 'Minesweeper'}]
+[{'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'}]
 ```
 Anonyme API Funktionen von bestimmten Objekten:
 
@@ -788,7 +726,7 @@ Headers:
  - Accept: */*
  - Accept-Encoding: gzip, deflate
  - Connection: keep-alive
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -803,23 +741,23 @@ Statuscode:
 	200
 Headers:
 
- - content-length: 345
+ - content-length: 380
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o; HttpOnly; Path=/
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU; HttpOnly; Path=/
 
 
 Body:
 ```
-{'author': 'ahermiston',
- 'author_id': 1,
- 'description': 'Ut et asperiores delectus nihil iste.',
- 'gametype': {'id': 1, 'name': 'Minesweeper'},
+{'author': 'rose.gutmann',
+ 'author_id': 5,
+ 'description': 'Et eos illo fugiat sit quis rerum voluptatem.',
+ 'gametype': {'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'},
  'id': 1,
  'lang': {'id': 2,
           'name': 'Java',
           'url': 'https://www.java.com/?isthaesslig=1'},
- 'name': 'magnam',
+ 'name': 'et',
  'versions': [{'compiled': False,
                'extras': [],
                'frozen': False,
@@ -839,7 +777,7 @@ Headers:
  - Accept: */*
  - Accept-Encoding: gzip, deflate
  - Connection: keep-alive
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -854,31 +792,33 @@ Statuscode:
 	200
 Headers:
 
- - content-length: 403
+ - content-length: 409
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o; HttpOnly; Path=/
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU; HttpOnly; Path=/
 
 
 Body:
 ```
 {'admin': False,
- 'ais': [{'author': 'ahermiston',
+ 'ais': [{'author': 'owaelchi',
           'author_id': 1,
-          'description': 'Ut et asperiores delectus nihil iste.',
-          'gametype': {'id': 1, 'name': 'Minesweeper'},
-          'id': 1,
-          'lang': {'id': 2,
-                   'name': 'Java',
-                   'url': 'https://www.java.com/?isthaesslig=1'},
-          'name': 'magnam',
+          'description': 'Ratione aut rem mollitia in.',
+          'gametype': {'id': 1,
+                       'last_modified': 1433272242,
+                       'name': 'Minesweeper'},
+          'id': 4,
+          'lang': {'id': 1,
+                   'name': 'Python',
+                   'url': 'https://www.python.org'},
+          'name': 'aliquid',
           'versions': [{'compiled': False,
                         'extras': [],
                         'frozen': False,
                         'id': 1,
                         'qualified': False}]}],
  'id': 1,
- 'name': 'ahermiston'}
+ 'name': 'owaelchi'}
 ```
 
 
@@ -893,7 +833,7 @@ Headers:
  - Accept: */*
  - Accept-Encoding: gzip, deflate
  - Connection: keep-alive
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -908,44 +848,48 @@ Statuscode:
 	200
 Headers:
 
- - content-length: 763
+ - content-length: 832
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o; HttpOnly; Path=/
+ - set-cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU; HttpOnly; Path=/
 
 
 Body:
 ```
-{'ais': [{'author': 'ahermiston',
-          'author_id': 1,
-          'description': 'Ut et asperiores delectus nihil iste.',
-          'gametype': {'id': 1, 'name': 'Minesweeper'},
+{'ais': [{'author': 'rose.gutmann',
+          'author_id': 5,
+          'description': 'Et eos illo fugiat sit quis rerum voluptatem.',
+          'gametype': {'id': 1,
+                       'last_modified': 1433272242,
+                       'name': 'Minesweeper'},
           'id': 1,
           'lang': {'id': 2,
                    'name': 'Java',
                    'url': 'https://www.java.com/?isthaesslig=1'},
-          'name': 'magnam',
+          'name': 'et',
           'versions': [{'compiled': False,
                         'extras': [],
                         'frozen': False,
                         'id': 1,
                         'qualified': False}]},
-         {'author': 'bschuster',
-          'author_id': 2,
-          'description': 'Et dolor recusandae delectus ut sapiente.',
-          'gametype': {'id': 1, 'name': 'Minesweeper'},
+         {'author': 'rita.stanton',
+          'author_id': 4,
+          'description': 'Est possimus quos repellendus quo.',
+          'gametype': {'id': 1,
+                       'last_modified': 1433272242,
+                       'name': 'Minesweeper'},
           'id': 5,
-          'lang': {'id': 2,
-                   'name': 'Java',
-                   'url': 'https://www.java.com/?isthaesslig=1'},
-          'name': 'perspiciatis',
+          'lang': {'id': 1,
+                   'name': 'Python',
+                   'url': 'https://www.python.org'},
+          'name': 'vel',
           'versions': [{'compiled': False,
                         'extras': [],
                         'frozen': False,
                         'id': 1,
                         'qualified': False}]}],
  'id': 1,
- 'type': {'id': 1, 'name': 'Minesweeper'}}
+ 'type': {'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'}}
 ```
 Funkionen mit Authentifizierung
 
@@ -963,7 +907,7 @@ Headers:
  - Connection: keep-alive
  - Content-Length: 35
  - Content-Type: application/x-www-form-urlencoded
- - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE90BA.biYs_ylaS7g3S6HV2gZ_9b58H4o
+ - Cookie: session=eyJfZmxhc2hlcyI6W3siIHQiOlsicG9zaXRpdmUiLCJEdSBoYXN0IGRpY2ggZWluZ2Vsb2dndC4iXX1dLCJfaWQiOiIzYTUwNDVhODYyZDkyZTVjNzJiODZkNTVlMmJiOGM5MCJ9.CE-Rqg.mql2Lbs2eJxaiXTp3ixiK5LIdHU
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
@@ -981,7 +925,7 @@ Headers:
  - content-length: 16
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=.eJyVjU0KwjAQRq8SZh2kRBPTrL2FFMnPmASKlczETendDd7A1eODx_d2eDxXTwUJ3H0HwQPw3qhy_SBIuHVRPLFINRaB9ZVx3XLmEyyH_E9f5Eg1pAKOW8exagIHZ6-ni_bWqDQr1PGqgjVJa1Qh2DhP47QTtp9sji_xXTg1.CE90BA.OJYArKpzeLK0g5SsLYqq3FOq2v4; HttpOnly; Path=/
+ - set-cookie: session=.eJyVjU0KwjAQRq8SZh2kRBPTrL2FFMnPmASKlczETendDd7A1eODx_d2eDxXTwUJ3H0HwQPw3qhy_SBIuHVRPLFINRaB9ZVx3XLmEyyH_E9f5Eg1pAKOW8exagIHZ6-ni_bWqDQr1PGqgjVJa1Qh2DhP47QTtp9sji_xXTg1.CE-Rqg.ZU5MRMd6AUcVaglpUvoPFYzKFqY; HttpOnly; Path=/
 
 
 Body:
@@ -1003,13 +947,13 @@ Headers:
  - Connection: keep-alive
  - Content-Length: 41
  - Content-Type: application/x-www-form-urlencoded
- - Cookie: session=.eJyVjU0KwjAQRq8SZh2kRBPTrL2FFMnPmASKlczETendDd7A1eODx_d2eDxXTwUJ3H0HwQPw3qhy_SBIuHVRPLFINRaB9ZVx3XLmEyyH_E9f5Eg1pAKOW8exagIHZ6-ni_bWqDQr1PGqgjVJa1Qh2DhP47QTtp9sji_xXTg1.CE90BA.OJYArKpzeLK0g5SsLYqq3FOq2v4
+ - Cookie: session=.eJyVjU0KwjAQRq8SZh2kRBPTrL2FFMnPmASKlczETendDd7A1eODx_d2eDxXTwUJ3H0HwQPw3qhy_SBIuHVRPLFINRaB9ZVx3XLmEyyH_E9f5Eg1pAKOW8exagIHZ6-ni_bWqDQr1PGqgjVJa1Qh2DhP47QTtp9sji_xXTg1.CE-Rqg.ZU5MRMd6AUcVaglpUvoPFYzKFqY
  - User-Agent: python-requests/2.7.0 CPython/3.4.3 Darwin/14.4.0
 
 
 Body:
 ```
-	lang=1&description=Top+Keks&name=Top+Keks
+	lang=1&name=Top+Keks&description=Top+Keks
 ```
 
 #### Response:
@@ -1018,18 +962,18 @@ Statuscode:
 	200
 Headers:
 
- - content-length: 303
+ - content-length: 337
  - content-type: application/json
  - server: Werkzeug/0.10.4 Python/3.4.3
- - set-cookie: session=.eJyVjU0KwjAQRq8SZh2kRBPTrL2FFMnPmASKlczETendDd7A1eODx_d2eDxXTwUJ3H0HwQPw3qhy_SBIuHVRPLFINRaB9ZVx3XLmEyyH_E9f5Eg1pAKOW8exagIHZ6-ni_bWqDQr1PGqgjVJa1Qh2DhP47QTtp9sji_xXTg1.CE90BQ.WRg6r57YZzBOxXxw_PujZfS9eaw; HttpOnly; Path=/
+ - set-cookie: session=.eJyVjU0KwjAQRq8SZh2kRBPTrL2FFMnPmASKlczETendDd7A1eODx_d2eDxXTwUJ3H0HwQPw3qhy_SBIuHVRPLFINRaB9ZVx3XLmEyyH_E9f5Eg1pAKOW8exagIHZ6-ni_bWqDQr1PGqgjVJa1Qh2DhP47QTtp9sji_xXTg1.CE-Rqg.ZU5MRMd6AUcVaglpUvoPFYzKFqY; HttpOnly; Path=/
 
 
 Body:
 ```
-{'author': 'gberge',
+{'author': 'aarav.bayer',
  'author_id': 3,
  'description': 'Top Keks',
- 'gametype': {'id': 1, 'name': 'Minesweeper'},
+ 'gametype': {'id': 1, 'last_modified': 1433272242, 'name': 'Minesweeper'},
  'id': 3,
  'lang': {'id': 1, 'name': 'Python', 'url': 'https://www.python.org'},
  'name': 'Top Keks',

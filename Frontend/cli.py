@@ -1,5 +1,5 @@
 from flask.ext.script import prompt_bool, prompt, prompt_pass
-from database import db, populate, AI, User, ftp
+from database import db, populate, AI, User, GameType, ftp
 
 import os
 import shutil
@@ -56,26 +56,38 @@ def manage(manager, app):
 			print(admin)
 
 	@manager.command
-	def create_simple_players(game_id):
-		"Packt die Beispiel-KIs in eine SimplePlayers.zip zusammen"
-		#in der ESU:
-		#SimplePlayer/Java/
-		#			/Python/
-		#im FTP:
-		#Games/1/Java/example_ai
-		#		Python/example_ai
+	def make_esu_container(game_id):
+		"Packt die Beispiel-KIs und AILibs in einen esu_container.zip zusammen"
 		clean_tmp()
 		@ftp.safe
 		def f():
-			os.mkdir("tmp/SimplePlayer")
-			for lang in ["Python", "Java"]:
+			langs = ["Python", "Java"]
+
+			os.mkdir("tmp/AiLibraries")
+			for lang in langs:
+				path = "Games/{}/{}/ailib".format(game_id, lang)
+				os.mkdir("tmp/AiLibraries/"+lang)
+				for root, dirs, files in ftp.ftp_host.walk(path):
+					new_path = root.replace(path, "tmp/AiLibraries/"+lang)
+					#make dirs
+					for dir in dirs:
+						print("MKDIR:", new_path + "/" + dir)
+						os.mkdir(new_path + "/" + dir)
+
+					#load files
+					for file in files:
+						print(root+"/"+file, "->", new_path+"/"+file)
+						ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
+
+			os.mkdir("tmp/SimplePlayers")
+			for lang in langs:
 				path = "Games/{}/{}/example_ai".format(game_id, lang)
-				os.mkdir("tmp/SimplePlayer/"+lang)
+				os.mkdir("tmp/SimplePlayers/"+lang)
 				for root, dirs, files in ftp.ftp_host.walk(path):
 					if root.endswith("/example_ai"):
-						new_path = root.replace(path, "tmp/SimplePlayer/"+lang+"/")
+						new_path = root.replace(path, "tmp/SimplePlayers/"+lang+"/")
 					else:
-						new_path = root.replace(path, "tmp/SimplePlayer/"+lang)
+						new_path = root.replace(path, "tmp/SimplePlayers/"+lang)
 					#make dirs
 					for dir in dirs:
 						print("MKDIR:", new_path + "/" + dir)
@@ -86,14 +98,15 @@ def manage(manager, app):
 						print(root+"/"+file, "->", new_path+"/"+file)
 						ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
 
-			zipf = zipfile.ZipFile('tmp/simple_players.zip', 'w')
+			zipf = zipfile.ZipFile('tmp/esu_container.zip', 'w')
 			os.chdir("tmp")
-			zipdir('SimplePlayer', zipf)
+			zipdir('AiLibraries', zipf)
+			zipdir('SimplePlayers', zipf)
 			os.chdir("..")
 			zipf.close()
 
-			ftp.ftp_host.upload("tmp/simple_players.zip", "Games/"+game_id+"/simple_players.zip")
-			print("Uploaded ZIP to 'Games/"+game_id+"/simple_players.zip'")
+			ftp.ftp_host.upload("tmp/esu_container.zip", "Games/"+game_id+"/esu_container.zip")
+			print("Uploaded ZIP to 'Games/"+game_id+"/esu_container.zip'")
 
 
 		try:
@@ -101,46 +114,8 @@ def manage(manager, app):
 		except ftp.err:
 			print("Failed...")
 
+		gt = GameType.query.get(game_id)
+		if not gt:
+			print("Invalid ID.")
 
-	@manager.command
-	def create_ai_library(game_id):
-		"Packt die Beispiel-KIs in eine AiLibrary.zip zusammen"
-		#in der ESU:
-		#AiLibrary/Java/
-		#			/Python/
-		#im FTP:
-		#Games/1/Java/ailib/*
-		#		Python/ailib/*
-		clean_tmp()
-		@ftp.safe
-		def f():
-			os.mkdir("tmp/AiLibrary")
-			for lang in ["Python", "Java"]:
-				path = "Games/{}/{}/ailib".format(game_id, lang)
-				os.mkdir("tmp/AiLibrary/"+lang)
-				for root, dirs, files in ftp.ftp_host.walk(path):
-					new_path = root.replace(path, "tmp/AiLibrary/"+lang)
-					#make dirs
-					for dir in dirs:
-						print("MKDIR:", new_path + "/" + dir)
-						os.mkdir(new_path + "/" + dir)
-
-					#load files
-					for file in files:
-						print(root+"/"+file, "->", new_path+"/"+file)
-						ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
-
-			zipf = zipfile.ZipFile('tmp/AiLibrary.zip', 'w')
-			os.chdir("tmp")
-			zipdir('AiLibrary', zipf)
-			os.chdir("..")
-			zipf.close()
-
-			ftp.ftp_host.upload("tmp/AiLibrary.zip", "Games/"+game_id+"/AiLibrary.zip")
-			print("Uploaded ZIP to 'Games/"+game_id+"/AiLibrary.zip'")
-
-
-		try:
-			f()
-		except ftp.err:
-			print("Failed...")
+		gt.updated()

@@ -828,25 +828,6 @@ def upload_game_libs(id, lang):
 def upload_game_logic(id):
 	return upload_single_file(request, "Games/"+secure_filename(str(id))+"/Logic.jar")
 
-
-@api.route("/simple_players/<int:id>")
-def simple_players(id):
-	"""
-	in der ESU:
-	SimplePlayer/Java/
-				/Python/
-	im FTP:
-	Games/1/Java/example_ai
-			Python/example_ai
-	"""
-	@ftp.failsafe_locked
-	def f():
-		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/simple_players.zip"):
-			return ftp.send_file("Games/"+secure_filename(str(id))+"/simple_players.zip")
-		else:
-			abort(404)
-	return f()
-
 @api.route("/gamelogic/<int:id>")
 def game_logic(id):
 	@ftp.failsafe_locked
@@ -857,17 +838,9 @@ def game_logic(id):
 			abort(404)
 	return f()
 
-@api.route("/ai_library/<int:game_id>")
-def ai_library(game_id):
-	"""
-	in der ESU:
-	AILibrary/Java/
-				/Python/
-	im FTP:
-	Games/1/Java/AiLibrary.jar
-			Python/AiLibrary.jar
-	"""
-	p = "Games/{}/AiLibrary.zip".format(secure_filename(str(game_id)))
+@api.route("/esu_container/<int:game_id>")
+def esu_container(game_id):
+	p = "Games/{}/esu_container.zip".format(secure_filename(str(game_id)))
 	@ftp.failsafe_locked
 	def f():
 		if ftp.ftp_host.path.isfile(p):
