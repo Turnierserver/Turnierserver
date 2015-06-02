@@ -35,8 +35,9 @@ public class MainApp extends Application{
 	public GameManager gameManager = new GameManager();
 	public AiManager aiManager = new AiManager();
 	
-	public List<String> gametypes;
-	public List<String> langs;
+	public static String actualGameType;
+	public static List<String> gametypes;
+	public static List<String> languages;
 	
 	public boolean isOnline;
 	
@@ -53,6 +54,16 @@ public class MainApp extends Application{
 	 * start-Methode (wegen: extends Application)
 	 */
 	public void start(Stage _stage) throws Exception {
+
+		ErrorLog.write("Programm startet...", true);
+		
+		languages = webConnector.getLanguages();
+		gametypes = webConnector.getGametypes();
+		if (gametypes.size() > 0){
+			actualGameType = gametypes.get(gametypes.size()-1);
+		}
+		
+		
 		stage = _stage;
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("view/RootLayout.fxml"));
@@ -70,21 +81,19 @@ public class MainApp extends Application{
 		stage.setScene(scene);
 		stage.show();
 		
-		gametypes = webConnector.getGametypes();
-		langs = webConnector.getLanguages();
+
 	}
 	
 	public void stop(){
 		cAi.version.saveCode();
-		ErrorLog.write("\n");
 		ErrorLog.write("Programm beendet", true);
 	}
 	
 	public boolean checkOnline() {
 		if(webConnector.ping()) {
 			gametypes = webConnector.getGametypes();
-			langs = webConnector.getGametypes();
-			if(gametypes != null && langs != null) {
+			languages = webConnector.getGametypes();
+			if(gametypes != null && languages != null) {
 				return true;
 			}
 		}

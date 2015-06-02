@@ -28,9 +28,9 @@ public class Ai {
 	
 	public final String title;
 	public final AiMode mode;
+	public String gametype;
 	public String userName;
-	public int gametype;
-	public Language language;
+	public String language;
 	public String description = "(keine Beschreibung)";
 	public String elo = "leere Elo";
 	private Image onlinePicture;
@@ -38,10 +38,6 @@ public class Ai {
 	
 	public static enum AiMode{
 		saved, online, simplePlayer
-	}
-	
-	public static enum Language{
-		Java, Python
 	}
 	
 	public static enum NewVersionType{
@@ -59,15 +55,8 @@ public class Ai {
 		mode = AiMode.online;
 		userName = json.getString("author");
 		description = json.getString("description");
-		gametype = json.getJSONObject("gametype").getInt("id");
-		switch(json.getJSONObject("lang").getInt("id")) {
-			case 1:
-				language = Language.Python;
-				break;
-			case 2:
-				language = Language.Java;
-				break;
-		}
+		gametype = json.getJSONObject("gametype").getInt("id") + "";
+		language = MainApp.languages.get(json.getJSONObject("lang").getInt("id") - 1);
 		JSONArray versions = json.getJSONArray("versions");
 		for(int i = 0; i < versions.length(); i++) {
 			newVersion(versions.getJSONObject(i));
@@ -104,7 +93,7 @@ public class Ai {
 	 * @param tit der übergebene Titel
 	 * @param lang die übergebene Sprache
 	 */
-	public Ai(String tit, Language lang){
+	public Ai(String tit, String lang){
 		title = tit;
 		language = lang;
 		mode = AiMode.saved;
@@ -202,9 +191,9 @@ public class Ai {
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
-			gametype = Integer.parseInt(prop.getProperty("gametype"));
+			gametype = prop.getProperty("gametype");
 			description = prop.getProperty("description");
-			language = Language.valueOf(prop.getProperty("language"));
+			language = prop.getProperty("language");
 		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt");}
 	}
 	/**

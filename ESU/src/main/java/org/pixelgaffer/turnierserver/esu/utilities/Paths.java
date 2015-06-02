@@ -3,7 +3,6 @@ package org.pixelgaffer.turnierserver.esu.utilities;
 import org.pixelgaffer.turnierserver.esu.Game;
 import org.pixelgaffer.turnierserver.esu.ParticipantResult;
 import org.pixelgaffer.turnierserver.esu.Ai;
-import org.pixelgaffer.turnierserver.esu.Ai.Language;
 import org.pixelgaffer.turnierserver.esu.Ai.AiMode;
 import org.pixelgaffer.turnierserver.esu.Version;
 
@@ -33,6 +32,13 @@ public class Paths {
 		return downloadGameType(game) + "/gamelogic.jar";
 	}
 	
+	/**
+	 * Gibt den Pfad zum SimplePlayer-Ordner zurück
+	 */
+	public static String simplePlayerFolder(String game){
+		return downloadGameType(game) + "/SimplePlayer";
+	}
+	
 	public static String simplePlayer(String game, String language) {
 		return downloadGameType(game) + "/SimplePlayer/SimplePlayer" + language;
 	}
@@ -52,12 +58,6 @@ public class Paths {
 	 */
 	public static String gameFolder(){
 		return "Games";
-	}
-	/**
-	 * Gibt den Pfad zum SimplePlayer-Ordner zurück
-	 */
-	public static String simplePlayerFolder(){
-		return downloadFolder() + "/SimplePlayer";
 	}
 	
 	/**
@@ -91,7 +91,7 @@ public class Paths {
 			return aiFolder() + "/" + ai.title;
 		}
 		else if (ai.mode == AiMode.simplePlayer){
-			return simplePlayerFolder() + "/" + ai.title;
+			return simplePlayerFolder(ai.gametype) + "/" + ai.title;
 		}
 		else{
 			ErrorLog.write("Es wurde ein Pfad zu einem nicht gespeicherten Ai angefordert");
@@ -134,13 +134,6 @@ public class Paths {
 	 */
 	public static String versionProperties(Ai ai, int number){
 		return version(ai, number) + "/properties.txt";
-	}
-
-	/**
-	 * Gibt den Pfad zum SimplePlayer einer Sprache zurück
-	 */
-	public static String simplePlayer(Language language){
-		return simplePlayerFolder() + "/SimplePlayer" + language.toString() + "/v0";
 	}
 
 	
