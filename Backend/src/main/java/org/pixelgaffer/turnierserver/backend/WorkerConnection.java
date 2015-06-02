@@ -102,6 +102,24 @@ public class WorkerConnection
 	}
 	
 	/**
+	 * Schickt einen TerminiereKI-Befehl an den Worker.
+	 */
+	public void terminateJob (AiWrapper ai) throws IOException
+	{
+		connection.sendCommand(new WorkerCommand(WorkerCommand.TERMAI,
+				ai.getId(), ai.getVersion(), -1, ai.getUuid()));
+	}
+	
+	/**
+	 * Schickt einen TerminiereKI-Befehl an den Worker.
+	 */
+	public void killJob (AiWrapper ai) throws IOException
+	{
+		connection.sendCommand(new WorkerCommand(WorkerCommand.KILLAI,
+				ai.getId(), ai.getVersion(), -1, ai.getUuid()));
+	}
+	
+	/**
 	 * Schickt den MessageForward an den Worker weiter.
 	 */
 	public void sendMessage (MessageForward mf) throws IOException

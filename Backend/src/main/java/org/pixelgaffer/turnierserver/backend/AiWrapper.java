@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import org.pixelgaffer.turnierserver.backend.Games.GameImpl;
-import org.pixelgaffer.turnierserver.backend.server.BackendWorkerConnectionHandler;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
@@ -45,10 +44,10 @@ public class AiWrapper implements Ai
 	@Setter
 	private int index;
 	
-	/** Der {@link BackendWorkerConnectionHandler} dieser KI. */
+	/** Die {@link WorkerConnection} dieser KI. */
 	@Setter
 	@Getter
-	private BackendWorkerConnectionHandler connectionHandler;
+	private WorkerConnection connection;
 	
 	/** Empfängt eine Nachricht und leitet sie an die Speillogik weiter. */
 	public void receiveMessage (byte message[])
@@ -59,10 +58,10 @@ public class AiWrapper implements Ai
 	/** Sendet eine Nachricht an die KI. */
 	public void sendMessage (byte message[]) throws IOException
 	{
-		if (connectionHandler == null)
+		if (connection == null)
 			throw new IOException("Not connected");
 		MessageForward mf = new MessageForward(uuid, message);
-		connectionHandler.sendMessage(mf);
+		connection.sendMessage(mf);
 	}
 	
 	/** Hier kann die Spiellogik Informationen über die KI abspeichern. */
@@ -71,8 +70,8 @@ public class AiWrapper implements Ai
 	private AiObject object;
 	
 	@Override
-	public void disconnect ()
+	public void disconnect () throws IOException
 	{
-		throw new UnsupportedOperationException();
+		connection.killJob(this);
 	}
 }

@@ -129,6 +129,7 @@ public class Games
 				// einen Worker mit der KI beauftragen
 				WorkerConnection w = Workers.getAvailableWorker();
 				w.addJob(aiw, gameId);
+				aiw.setConnection(w);
 			}
 		}
 		
