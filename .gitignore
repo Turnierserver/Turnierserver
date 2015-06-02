@@ -1,9 +1,9 @@
-﻿.directory
+.directory
 ESU/errorLog.txt
 ESU/session.conf
 __pycache__
 *.log
-Players/
+AIs/
 Downloads/
 
 .settings/

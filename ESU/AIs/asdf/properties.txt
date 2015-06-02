@@ -1,5 +1,0 @@
-#asdf
-#Tue Jun 02 15:24:22 CEST 2015
-versionAmount=1
-description=(keine Beschreibung)
-language=Java
