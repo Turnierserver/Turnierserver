@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, abort
+from flask import Blueprint, render_template, abort, flash
 from flask.ext.login import current_user
 from database import AI, User, Game, GameType
 from activityfeed import Activity

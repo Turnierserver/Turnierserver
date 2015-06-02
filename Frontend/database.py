@@ -493,6 +493,7 @@ def populate(count=20):
 
 	admin = User(name="admin", admin=True, email="admin@ad.min")
 	admin.set_pw("admin")
+	admin.validate(admin.validation_code)
 	users.append(admin)
 
 	db.session.add_all(users + ais + games + assocs + langs + gametypes)

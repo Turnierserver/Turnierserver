@@ -93,20 +93,27 @@
 	</nav>
 	{% block rawbody %}
 	<div class="ui page grid">
-		<div id="msg" class="row">
+		{% with messages = get_flashed_messages(with_categories=true) %}
+		{% if messages %}
+		<div id="flashes" class="row">
 			<div class="column">
-				<div class="ui basic message page grid center aligned">
-					<h1 class="ui basic header">#Yolo Swag Yolonese</h1>
-					<p>Weit hinten, hinter den Wortbergen, fern der Länder Vokalien und Konsonantien leben die Blindtexte. Abgeschieden wohnen sie in Buchstabhausen an der Küste des Semantik, eines großen Sprachozeans. Ein kleines Bächlein namens Duden fließt durch ihren Ort und versorgt sie mit den nötigen Regelialien. Es ist ein paradiesmatisches Land, in dem einem gebratene Satzteile in den Mund fliegen.</p>
-					<a id="msgbutton" class="ui basic green button">Verstanden</a>
-					<script>
-					$("#msgbutton").on("click", function() {
-						$("#msg").fadeOut();
-					})
-					</script>
-				</div>
+				{% for category, message in messages %}
+					<div class="ui {{category}} message">
+						<i class="close icon"></i>
+						<div class="header">
+							{{message}}
+						</div>
+					</div>
+				{% endfor %}
 			</div>
 		</div>
+		<script>
+		$('.message .close').on('click', function() {
+			$(this).closest('.message').transition('fade');
+		});
+		</script>
+		{% endif %}
+		{% endwith %}
 		<div class="one column row">
 			<div class="column">
 			{% block body %}

@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request, abort, redirect
+from flask import Blueprint, Response, request, abort, redirect, flash
 from flask.ext.login import current_user, login_user, logout_user, LoginManager, UserMixin
 from functools import wraps
 from queue import Empty
@@ -203,6 +203,7 @@ def activate(id, uuid):
 
 	if user.validate(uuid):
 		Activity(user.name + " hat sich erfolgreich validiert.")
+		flash("Dein Account ist jetzt aktiviert.")
 		login_user(user)
 		return redirect("/")
 
@@ -242,6 +243,7 @@ def api_login():
 		return {'error': 'Wrong password.'}, 400
 
 	login_user(user, remember=remember)
+	flash("Du hast dich eingeloggt.", "positive")
 
 	Activity(user.name + " hat sich erfolgreich eingeloggt.")
 
@@ -255,7 +257,7 @@ def api_logout():
 	logout_user()
 	return { 'error': False }
 
-@api.route("/loggedin", methods=['GET'])
+@api.route("/loggedin", methods=['GET', 'POST'])
 @json_out
 @authenticated
 def api_logged_in():
