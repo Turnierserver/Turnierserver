@@ -24,6 +24,7 @@ public class Ai {
 	public String userName;
 	public Language language;
 	public String description = "(keine Beschreibung)";
+	public String elo = "leere Elo";
 	private Image onlinePicture;
 	public ObservableList<Version> versions = FXCollections.observableArrayList();
 	
