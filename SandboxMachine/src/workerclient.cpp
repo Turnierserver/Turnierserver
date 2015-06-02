@@ -81,6 +81,18 @@ void WorkerClient::readyRead ()
 				
 				jobControl.addJob(id, version, uuid);
 			}
+			else if (cmd == "T")
+			{
+				QUuid uuid = json.value("uuid").toVariant().toUuid();
+				printf("Auftrag erhalten: Terminate AI %s\n", qPrintable(uuid.toString()));
+				jobControl.terminateJob(uuid);
+			}
+			else if (cmd == "K")
+			{
+				QUuid uuid = json.value("uuid").toVariant().toUuid();
+				printf("Auftrag erhalten: Kill AI %s\n", qPrintable(uuid.toString()));
+				jobControl.killJob(uuid);
+			}
 			else
 			{
 				fprintf(stderr, "Also es wäre schön wenn ich den Befehl %s verstehen würde\n", qPrintable(cmd));
