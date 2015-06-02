@@ -146,8 +146,15 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					break;
 				
 				case SANDBOX:
-					System.out.println("WorkerConnectionHandler:133: " + new String(line, UTF_8).trim());
-					// TODO die Sandbox meldet wenn eine KI fertig ist
+					try
+					{
+						SandboxMessage msg = Parsers.getSandbox().parse(line, SandboxMessage.class);
+						System.out.println("WorkerConnectionHandler:133: " + msg);
+					}
+					catch (Exception e)
+					{
+						WorkerMain.getLogger().severe("WorkerConnectionHandler: Failed to parse message from Sandbox: " + e);
+					}
 					break;
 			}
 		}

@@ -25,17 +25,25 @@
 #include <QObject>
 #include <QTcpSocket>
 
+/// Diese Klasse definiert slots um mit dem auf dem Worker laufenden Server zu kommunizieren
 class WorkerClient : public QObject
 {
 	Q_OBJECT
 	
 public:
+	/// Initialisiert den Clienten mit dem schon offenen QTcpSocket
 	explicit WorkerClient (QTcpSocket *client, QObject *parent = 0);
 	
 public slots:
+	// die Slots des QTcpSockets
 	void connected ();
 	void disconnected ();
 	void readyRead ();
+	
+	/// schickt eine Nachricht an den Worker. uuid ist die UUID des Auftrags, event ist das char des Events,
+	/// nämlich 'S'tarted Ai (KI gestartet), 'F'inished Ai (KI hat sich selbst beendet), 'T'erminated Ai (KI
+	/// auf Auftrag des Backends/Workers/SIGKILL beendet) und 'K'illed Ai (KI auf Auftrag der Logik beendet).
+	void sendMessage (QUuid uuid, char event);
 	
 private:
 	QTcpSocket *socket;

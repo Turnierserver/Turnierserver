@@ -26,6 +26,7 @@
 #include <QBuffer>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QRegularExpression>
 #include <QUuid>
 
 #ifndef MAX_BUF_SIZE
@@ -80,6 +81,21 @@ void WorkerClient::readyRead ()
 				
 				jobControl.addJob(id, version, uuid);
 			}
+			else
+			{
+				fprintf(stderr, "Also es wäre schön wenn ich den Befehl %s verstehen würde\n", qPrintable(cmd));
+			}
 		}
 	}
+}
+
+void WorkerClient::sendMessage(QUuid uuid, char event)
+{
+	QJsonObject json;
+	json.insert("uuid", uuid.toString().replace(QRegularExpression("[\\{\\}]"), ""));
+	json.insert("event", QString(event));
+	QJsonDocument jsondoc(json);
+	socket->write(jsondoc.toJson(QJsonDocument::Compact));
+	socket->write("\n");
+	socket->flush();
 }
