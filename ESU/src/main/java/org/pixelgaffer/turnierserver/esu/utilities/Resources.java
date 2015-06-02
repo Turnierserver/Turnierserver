@@ -12,7 +12,7 @@ public class Resources {
 	 */
 	public static Image defaultPicture(){
 		try {
-			return new Image(Paths.class.getResourceAsStream("default_ai.png"));
+			return new Image(Paths.class.getResourceAsStream("../default_ai.png"));
 		} catch (Exception ex) {
 			ErrorLog.write("Default-Bild konnte nicht geladen werden.");
 			return null;

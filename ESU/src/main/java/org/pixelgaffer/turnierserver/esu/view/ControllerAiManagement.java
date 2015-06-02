@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.esu.view;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.pixelgaffer.turnierserver.esu.*;
 import org.pixelgaffer.turnierserver.esu.Ai.Language;
@@ -231,6 +232,7 @@ public class ControllerAiManagement{
 				btDeleteImage.setDisable(true);
 			}
 		}
+		
 	}
 	
 	/**
