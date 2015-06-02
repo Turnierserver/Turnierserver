@@ -84,7 +84,7 @@ private:
 	void doJob (const Job &job);
 	
 	QQueue<Job> queue;
-	AiExecutor *current;
+	AiExecutor *current = 0;
 	QThread aiThread;
 	
 	QMutex mutex;
