@@ -29,6 +29,7 @@ public class Ai {
 	public final String title;
 	public final AiMode mode;
 	public String userName;
+	public int gametype;
 	public Language language;
 	public String description = "(keine Beschreibung)";
 	private Image onlinePicture;
@@ -56,6 +57,8 @@ public class Ai {
 		title = json.getString("name");
 		mode = AiMode.online;
 		userName = json.getString("author");
+		description = json.getString("description");
+		gametype = json.getJSONObject("gametype").getInt("id");
 		switch(json.getJSONObject("lang").getInt("id")) {
 			case 1:
 				language = Language.Python;
@@ -198,6 +201,7 @@ public class Ai {
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
+			gametype = Integer.parseInt(prop.getProperty("gametype"));
 			description = prop.getProperty("description");
 			language = Language.valueOf(prop.getProperty("language"));
 		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt");}
@@ -215,6 +219,7 @@ public class Ai {
 		prop.setProperty("description", description);
 		prop.setProperty("versionAmount", "" + versions.size());
 		prop.setProperty("language", language.toString());
+		prop.setProperty("gametype", gametype + "");
 		
 		try {
 			Writer writer = new FileWriter(Paths.aiProperties(this));
