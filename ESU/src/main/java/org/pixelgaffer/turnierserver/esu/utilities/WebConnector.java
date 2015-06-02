@@ -172,9 +172,10 @@ public class WebConnector {
 		} catch (IOException e) {
 			ErrorLog.write("Die Sprachen konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
 		}
+		
 		if(json == null) {
 			try {
-				result.addAll(Arrays.asList(FileUtils.readFileToString(new File(Paths.langsFile())).split("\n")));
+				result.addAll(FileUtils.readLines(new File(Paths.langsFile())));
 			} catch (IOException e) {
 				ErrorLog.write("Die Sprachen konnten nicht aus der Datei werden: " + e.getLocalizedMessage());
 				return null;
@@ -190,6 +191,7 @@ public class WebConnector {
 		File langsFile = new File(Paths.gameTypesFile());
 		langsFile.delete();
 		try {
+			langsFile.getParentFile().mkdirs();
 			langsFile.createNewFile();
 			for(int i = 0; i < result.size(); i++) {
 				FileUtils.write(langsFile, result.get(i) + "\n", true);
@@ -217,7 +219,9 @@ public class WebConnector {
 		
 		if(json == null) {
 			try {
-				result.addAll(Arrays.asList(FileUtils.readFileToString(new File(Paths.langsFile())).split("\n")));
+				for(String line : FileUtils.readLines(new File(Paths.gameTypesFile()))) {
+					result.add(line.split("->")[0]);
+				}
 			} catch (IOException e) {
 				ErrorLog.write("Die Spieltypen konnten nicht aus der Datei geladen werden: " + e.getLocalizedMessage());
 				return null;
@@ -228,18 +232,43 @@ public class WebConnector {
 		JSONArray gametypes = new JSONArray(json);
 		
 		List<String> fileLines = new ArrayList<>();
-		
-		for(int i = 0; i < gametypes.length(); i++) {
-			result.add(gametypes.getJSONObject(i).getString("name"));
+		try {
+			fileLines = FileUtils.readLines(new File(Paths.langsFile()));
+		} catch (IOException e) {
+			ErrorLog.write("Die Spieltypen konnten nicht aus der Datei gelesen werden: " + e.getLocalizedMessage());
+			ErrorLog.write("Es werden nun alle Spieltypen geladen werden!");
 		}
 		
-		File gametypesFile = new File(Paths.gameTypesFile());
-		gametypesFile.delete();
+		String[] lines = new String[gametypes.length()];
+		
+		for(int i = 0; i < gametypes.length(); i++) {
+			JSONObject gametype = gametypes.getJSONObject(i);
+			result.add(gametype.getString("name"));
+			String apparentLine = gametype.getString("name") + "->" + gametype.getLong("last_modified");
+			
+			if(!fileLines.contains(apparentLine)) {
+				if(!loadGamelogic(gametype.getInt("id")) || !loadEsuContainer(gametype.getInt("id"))) {
+					ErrorLog.write("Konnte Spiel " + gametype.getInt("id") + " nicht aktualisieren!");
+				}
+				else {
+					lines[gametype.getInt("id") - 1] = apparentLine;
+				}
+			}
+			else {
+				lines[gametype.getInt("id") - 1] = apparentLine;
+			}
+		}
+				
+		//Speichern in der Datei
 		try {
+			File gametypesFile = new File(Paths.gameTypesFile());
+			gametypesFile.delete();
+			gametypesFile.getParentFile().mkdirs();
 			gametypesFile.createNewFile();
-			for(int i = 0; i < gametypes.length(); i++) {
-				JSONObject gametype = gametypes.getJSONObject(i);
-				FileUtils.write(gametypesFile, gametype.getString("name") + "->" + "\n", true);
+			for(String line : lines) {
+				if(line != null) {
+					FileUtils.write(gametypesFile, line + System.lineSeparator(), true);	
+				}
 			}
 		} catch (IOException e) {
 			ErrorLog.write("Die Sprachen konnten nicht in die Datei geschrieben werden!");
@@ -270,12 +299,12 @@ public class WebConnector {
 		return true;
 	}
 	
-	public boolean loadAiLibraries(int game) {
+	public boolean loadEsuContainer(int game) {
 		String libraries;
 		try {
-			libraries = sendGet("ai_library/" + game);
+			libraries = sendGet("data_container/" + game);
 		} catch (IOException e) {
-			ErrorLog.write("Ai Libraries konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
+			ErrorLog.write("Der Data Container konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
 			return false;
 		}
 		
