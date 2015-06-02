@@ -60,7 +60,6 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
                               <Label text="Modus:" />
@@ -71,10 +70,8 @@
                               <Label fx:id="lbDuration" text="500 ms" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                               <Label text="Spiellogik:" GridPane.rowIndex="3" />
                               <Label fx:id="lbLogic" text="Standard-Logik" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                              <Label text="Startzustand:" GridPane.rowIndex="4" />
-                              <Label fx:id="lbStartState" text="Standard-Zustand" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                              <Label text="Gewertet?:" GridPane.rowIndex="5" />
-                              <Label fx:id="lbJudged" text="Ja" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                              <Label text="Gewertet?:" GridPane.rowIndex="4" />
+                              <Label fx:id="lbJudged" text="Ja" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                            </children>
                         </GridPane>
                      </content>
@@ -83,14 +80,12 @@
                      <content>
                         <BorderPane maxWidth="-Infinity" prefHeight="300.0" prefWidth="297.0">
                            <top>
-                              <AnchorPane prefHeight="103.0" prefWidth="273.0" BorderPane.alignment="CENTER">
+                              <AnchorPane prefHeight="68.0" prefWidth="273.0" BorderPane.alignment="CENTER">
                                  <children>
-                                    <ToggleButton fx:id="btOffline" layoutX="108.0" mnemonicParsing="false" onAction="#clickOnline" prefHeight="31.0" prefWidth="80.0" text="Offline" />
+                                    <ToggleButton fx:id="btOffline" layoutX="108.0" mnemonicParsing="false" onAction="#clickOffline" prefHeight="31.0" prefWidth="80.0" text="Offline" />
                                     <ChoiceBox fx:id="cbLogic" layoutX="108.0" layoutY="36.0" prefHeight="31.0" prefWidth="165.0" />
-                                    <ToggleButton fx:id="btOnline" layoutX="193.0" mnemonicParsing="false" onAction="#clickOffline" prefHeight="31.0" prefWidth="80.0" text="Online" />
+                                    <ToggleButton fx:id="btOnline" layoutX="193.0" mnemonicParsing="false" onAction="#clickOnline" prefHeight="31.0" prefWidth="80.0" text="Online" />
                                     <Label layoutX="2.0" layoutY="41.0" text="Logik:" />
-                                    <Label layoutX="2.0" layoutY="77.0" text="Startzustand:" />
-                                    <ChoiceBox fx:id="cbStartState" layoutX="108.0" layoutY="72.0" prefHeight="31.0" prefWidth="165.0" />
                                     <Label layoutX="2.0" layoutY="3.0" text="Modus:" />
                                  </children>
                               </AnchorPane>

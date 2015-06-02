@@ -1,6 +1,8 @@
 package org.pixelgaffer.turnierserver.esu;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.pixelgaffer.turnierserver.esu.utilities.*;
 
@@ -10,20 +12,22 @@ public class GameManager {
 
 	public ObservableList<Game> games = FXCollections.observableArrayList();
 	
+	
 	/**
-	 * L�dt alle Spieler aus dem Dateisystem in die Liste
+	 * Lädt alle Spieler aus dem Dateisystem in die Liste
 	 */
-	public void loadPlayers(){
+	public void loadGames(){
 		games.clear();
 		File dir = new File(Paths.gameFolder());
 		dir.mkdirs();
-		File[] gameDirs = dir.listFiles();
-		if (gameDirs == null){
+		File[] dirs = dir.listFiles();
+		if (dirs == null){
 			ErrorLog.write("keine Spieler vorhanden");
 			return;
 		}
-		for (int i = 0; i < gameDirs.length; i++){
-			games.add(new Game(gameDirs[i].getName()));
+		for (int i = 0; i < dirs.length; i++){
+			games.add(new Game(dirs[i].getName()));
 		}
+		
 	}
 }

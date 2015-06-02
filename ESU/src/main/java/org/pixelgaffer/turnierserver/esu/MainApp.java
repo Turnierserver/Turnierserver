@@ -26,7 +26,9 @@ public class MainApp extends Application{
 	public ControllerRanking cRanking;
 	public ControllerSubmission cSubmission;
 	
-	public WebConnector webConnector = new WebConnector("http://192.168.178.43:5000/api/");//"http://thuermchen.com/api/");
+	public WebConnector webConnector = new WebConnector("http://192.168.178.43:5000/api/", "192.168.178.43");//"http://thuermchen.com/api/");
+	public GameManager gameManager = new GameManager();
+	public PlayerManager playerManager = new PlayerManager();
 	
 	/**
 	 * Main-Methode
