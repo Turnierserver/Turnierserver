@@ -192,7 +192,7 @@ public class WebConnector {
 			result.add(langs.getJSONObject(i).getString("name"));
 		}
 		
-		File langsFile = new File(Paths.gameTypesFile());
+		File langsFile = new File(Paths.langsFile());
 		langsFile.delete();
 		try {
 			langsFile.getParentFile().mkdirs();
