@@ -4,16 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.logging.ErrorManager;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -23,10 +21,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
 
 public class WebConnector {
 	
 	private final String url;
+	private final String cookieUrl;
 	
 	private CookieStore cookies = new BasicCookieStore();
 	private CloseableHttpClient http = HttpClients.custom().setDefaultCookieStore(cookies).build();
@@ -36,9 +36,15 @@ public class WebConnector {
 	 * 
 	 * @param url Die URL der API (z.B. http://www.thuermchen.com/api/ <- Der '/' muss da sein)
 	 */
-	public WebConnector(final String url){
+	public WebConnector(final String url, final String cookieUrl){
 		this.url = url;
+		this.cookieUrl = cookieUrl;
 		readFromFile();
+		try {
+			System.out.println(isLoggedIn());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -50,9 +56,13 @@ public class WebConnector {
 	 * @throws IOException 
 	 */
 	public boolean login(String username, String password) throws IOException{
-		boolean result = sendPost("login", new BasicNameValuePair("email", username), new BasicNameValuePair("password", password)) != null;
+		boolean result = sendPost("login", "email", username, "password", password, "remember", "true") != null;
 		saveToFile();
 		return result;
+	}
+	
+	public boolean register(String username, String firstname, String lastname, String email, String password) throws IOException {
+		return sendPost("register", "username", username, "email", email, "password", password, "firstname", firstname, "lastname", lastname) != null;
 	}
 	
 	/**
@@ -67,6 +77,17 @@ public class WebConnector {
 		return result;
 	}
 	
+	public boolean isLoggedIn() throws IOException {
+		if(getSession() == null || getRememberToken() == null) {
+			return false;
+		}
+		boolean result = sendPost("loggedin") != null;
+		if(!result) {
+			setTokens(null, null);
+		}
+		return result;
+	}
+		
 	/**
 	 * Setzt die Tokens einer Session
 	 * 
@@ -78,8 +99,8 @@ public class WebConnector {
 			cookies.clear();
 			return;
 		}
-		cookies.addCookie(new BasicClientCookie("remember_token", rememberToken));
-		cookies.addCookie(new BasicClientCookie("session", sessionToken));
+		cookies.addCookie(createCookie("remember_token", rememberToken));
+		cookies.addCookie(createCookie("session", sessionToken));
 	}
 	
 	/**
@@ -136,6 +157,23 @@ public class WebConnector {
 		}
 	}
 	
+	public String sendPost(String command) throws IOException {
+		return sendPost(command, new NameValuePair[0]);
+	}
+	
+	public String sendPost(String command, String...data) throws IOException {
+		if(data.length % 2 != 0) {
+			throw new IllegalArgumentException("Pöse pöse, data muss immer eine Länge % 2 = 0 haben!");
+		}
+		NameValuePair[] nvpData = new BasicNameValuePair[data.length / 2];
+		for(int i = 0; i < nvpData.length; i++) {
+			if(data[i * 2] != null && data[i * 2 + 1] != null) {
+				nvpData[i] = new BasicNameValuePair(data[i * 2], data[i * 2 + 1]);
+			}
+		}
+		return sendPost(command, nvpData);
+	}
+	
 	/**
 	 * Sendet einen PostRequest
 	 * 
@@ -150,16 +188,46 @@ public class WebConnector {
 			post.setEntity(new UrlEncodedFormEntity(Arrays.asList(data)));
 		}
 		
+		for(Cookie cookie : cookies.getCookies()) {
+			System.out.println(cookie);
+		}
+		
 		HttpResponse response = http.execute(post);
 		
+		String responseString = getString(response.getEntity().getContent());
+		
 		if(response.getStatusLine().getStatusCode() != 200) {
-			ErrorLog.write("ERROR: Executing post request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + getString(response.getEntity().getContent()));
+			ErrorLog.write("ERROR: Executing post request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + responseString);
+			Dialog.error(new JSONObject(responseString).getString("error"));
 			return null;
 		}
 		
-		return getString(response.getEntity().getContent());
+		return responseString;
 	}
 	
+	public String sendGet(String command) throws IOException {
+		return sendPost(command, new NameValuePair[0]);
+	}
+	
+	public String sendGet(String command, String...data) throws IOException {
+		if(data.length % 2 != 0) {
+			throw new IllegalArgumentException("Pöse pöse, data muss immer eine Länge % 2 = 0 haben!");
+		}
+		NameValuePair[] nvpData = new BasicNameValuePair[data.length / 2];
+		for(int i = 0; i < nvpData.length; i++) {
+			nvpData[i] = new BasicNameValuePair(data[i * 2], data[i * 2 + 1]);
+		}
+		return sendGet(command, nvpData);
+	}
+	
+	/**
+	 * Sendet einen GetRequest
+	 * 
+	 * @param command Das Kommando (z.B. logout für http://www.thuermchen.com/api/logout)
+	 * @param data Die Daten, die per GET übegeben werden sollen
+	 * @return Die Antwort als String
+	 * @throws IOException 
+	 */
 	public String sendGet(String command, NameValuePair...data) throws IOException {
 		
 		String args = "";
@@ -172,12 +240,15 @@ public class WebConnector {
 		
 		HttpResponse response = http.execute(get);
 		
+		String responseString = getString(response.getEntity().getContent());
+		
 		if(response.getStatusLine().getStatusCode() != 200) {
 			ErrorLog.write("ERROR: Executing get request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + response.getStatusLine().getReasonPhrase());
+			Dialog.error(new JSONObject(responseString).getString("error"));
 			return null;
 		}
 		
-		return getString(response.getEntity().getContent());
+		return responseString;
 	}
 	
 	private String getString(InputStream in) throws IOException {
@@ -194,5 +265,13 @@ public class WebConnector {
 		return responseContent.toString();
 	}
 	
+	public Cookie createCookie(String key, String value) {
+		BasicClientCookie cookie = new BasicClientCookie(key, value);
+		cookie.setCreationDate(new Date(System.currentTimeMillis()));
+		cookie.setSecure(false);
+		cookie.setDomain("192.168.178.43");
+		cookie.setPath("/");
+		return cookie;
+	}
 	
 }
