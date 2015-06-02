@@ -103,6 +103,7 @@ with open("api_docs.md", "w") as f:
 	w(Endpoint("/api/users"))
 	w(Endpoint("/api/games"))
 	w(Endpoint("/api/langs"))
+	w(Endpoint("/api/gametypes"))
 	w("Anonyme API Funktionen von bestimmten Objekten:")
 	w(Endpoint("/api/ai/1"))
 	w(Endpoint("/api/user/1"))

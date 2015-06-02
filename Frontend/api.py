@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 import json
 import magic
 
-from database import AI, User, Game, Lang, db, populate, ftp
+from database import AI, User, Game, Lang, GameType, db, populate, ftp
 from backend import backend
 from commons import authenticated, cache, CommonErrors, bcrypt
 from _cfg import env
@@ -197,6 +197,10 @@ def api_user_delete(id):
 def api_langs():
 	return [l.info() for l in Lang.query.all()]
 
+@api.route("/gametypes")
+@json_out
+def api_gametypes():
+	return [gt.info() for gt in GameType.query.all()]
 
 @api.route("/activate/<int:id>/<string:uuid>", methods=["GET", "POST"])
 @json_out
