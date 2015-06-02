@@ -14,12 +14,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 import java.util.UUID;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +43,11 @@ public abstract class Compiler
 		this.ai = ai;
 		this.version = version;
 		this.game = game;
+	}
+	
+	public static Compiler getCompiler (String language) throws ReflectiveOperationException
+	{
+		return getCompiler(-1, -1, -1, language);
 	}
 	
 	public static Compiler getCompiler (int ai, int version, int game, String language)
@@ -114,6 +121,10 @@ public abstract class Compiler
 	@Setter
 	private UUID uuid;
 	
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
+	private String command;
+	
 	public CompileResult compileAndUpload (@NonNull Backend backend)
 			throws IOException, InterruptedException, FTPIllegalReplyException, FTPException, FTPDataTransferException,
 			FTPAbortedException, FTPListParseException
@@ -133,7 +144,7 @@ public abstract class Compiler
 		p.load(new FileInputStream(new File(srcdir, "settings.prop")));
 		
 		// compilieren
-		boolean success = compile(srcdir, bindir, p, pw);
+		boolean success = compile(srcdir, bindir, p, pw, null);
 		
 		// aufräumen
 		srcdir.delete();
@@ -165,7 +176,30 @@ public abstract class Compiler
 		return new CompileResult(success, output);
 	}
 	
-	public abstract boolean compile (File srcdir, File bindir, Properties p, PrintWriter output)
+	/**
+	 * Diese Methode kompiliert den Quelltext einer KI aus srcdir nach bindir.
+	 * In der Datei properties stehen die zur KI gehörenden Eigenschaften wie
+	 * z.B. die Main-Klasse in Java. 
+	 */
+	public String compile (File srcdir, File bindir, File properties, LibraryDownloader libs)
+			throws IOException, InterruptedException
+	{
+		// den output in einen String ausgeben
+		StringWriter sw = new StringWriter();
+		PrintWriter output = new PrintWriter(sw);
+		
+		Properties p = new Properties();
+		p.load(new FileReader(properties));
+		
+		boolean success = compile(srcdir, bindir, p, output, libs);
+		
+		if (success)
+			return sw.toString();
+		else
+			return null;
+	}
+	
+	public abstract boolean compile (File srcdir, File bindir, Properties p, PrintWriter output, LibraryDownloader libs)
 			throws IOException, InterruptedException;
 	
 	protected String relativePath (File absolute, File base)
