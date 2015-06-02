@@ -61,8 +61,11 @@ class Endpoint:
 			r = s.get(requrl)
 
 		respbody = r.content.decode("utf-8")
-		if r.json():
-			respbody = pformat(r.json())
+		try:
+			if r.json():
+				respbody = pformat(r.json())
+		except ValueError:
+			pass
 
 		def headers(o):
 			return [h for h in sorted(o.headers.items()) if not h[0] == "date"]
@@ -85,6 +88,10 @@ with open("api_docs.md", "w") as f:
 			f.write(o.start())
 		else:
 			f.write(o + "\n")
+
+
+	w("PingPongPingPong")
+	w(Endpoint("/api", ReqTypes.GET))
 
 	w("Anmeldung und so:")
 	w(Endpoint("/api/login", ReqTypes.POST, {"email": "admin@ad.min", "password": "admin"}))
