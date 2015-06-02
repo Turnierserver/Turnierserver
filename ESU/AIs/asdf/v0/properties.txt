@@ -1,0 +1,8 @@
+#asdf v0
+#Tue Jun 02 15:24:22 CEST 2015
+uploaded=false
+compileOutput=
+qualifyOutput=
+qualified=false
+compiled=false
+finished=false

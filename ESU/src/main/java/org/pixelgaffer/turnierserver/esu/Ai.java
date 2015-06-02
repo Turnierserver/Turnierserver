@@ -20,6 +20,7 @@ public class Ai {
 	
 	public final String title;
 	public final AiMode mode;
+	public String userName;
 	public Language language;
 	public String description = "(keine Beschreibung)";
 	private Image onlinePicture;
@@ -155,6 +156,10 @@ public class Ai {
 	 * Lädt aus dem Dateiverzeichnis die Eigenschaften des Players.
 	 */
 	public void loadProps(){
+		if (mode != AiMode.saved && mode != AiMode.simplePlayer){
+			ErrorLog.write("dies ist kein lesbares Objekt (AI.loadProps)");
+			return;
+		}
 		try {
 			Reader reader = new FileReader(Paths.aiProperties(this));
 			Properties prop = new Properties();
@@ -168,6 +173,10 @@ public class Ai {
 	 * Speichert die Eigenschaften des Players in das Dateiverzeichnis.
 	 */
 	public void storeProps(){
+		if (mode != AiMode.saved){
+			ErrorLog.write("dies ist kein speicherbares Objekt (AI.storeProps)");
+			return;
+		}
 		
 		Properties prop = new Properties();
 		prop.setProperty("description", description);

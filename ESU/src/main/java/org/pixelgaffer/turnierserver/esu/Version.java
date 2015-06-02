@@ -37,8 +37,8 @@ public class Version {
 	/**
 	 * Erstellt eine neue Version und lädt automatisch den Quellcode
 	 * 
-	 * @param p
-	 * @param n
+	 * @param p der Spieler
+	 * @param n die Nummer
 	 */
 	public Version(Ai p, int n, AiMode mmode){
 		ai = p;
@@ -75,6 +75,10 @@ public class Version {
 	 * @return true, wenn die Version bereits existiert
 	 */
 	public boolean exists(){
+		if (mode != AiMode.saved){
+			ErrorLog.write("dies ist kein speicherbares Objekt (exists)");
+			return false;
+		}
 		File dir = new File(Paths.version(this));
 		return !dir.mkdirs();
 	}
@@ -85,6 +89,10 @@ public class Version {
 	 * @param path der Pfad, von dem kopiert werden soll
 	 */
 	public void copyFromFile(String path){
+		if (mode != AiMode.saved){
+			ErrorLog.write("dies ist kein speicherbares Objekt (copyFromFile)");
+			return;
+		}
 		Path srcPath = new File(path).toPath();
 		Path destPath = new File(Paths.version(this)).toPath();
 		try {
@@ -98,6 +106,10 @@ public class Version {
 	 * Sucht alle Dateien innerhalb des Versionsordners und speichert sie in files
 	 */
 	public void findCode(){
+		if (mode != AiMode.saved && mode != AiMode.simplePlayer) {
+			ErrorLog.write("dies ist kein lesbares Objekt (findCode)");
+			return;
+		}
 		Path path = new File(Paths.version(this)).toPath();
 		VersionVisitor visitor = new VersionVisitor(path);
 		try {
@@ -112,6 +124,10 @@ public class Version {
 	 * Speichert alle Dateien aus den CodeEditoren in files im Dateisystem ab
 	 */
 	public void saveCode(){
+		if (mode != AiMode.saved){
+			ErrorLog.write("dies ist kein speicherbares Objekt (saveCode)");
+			return;
+		}
 		for (int i = 0; i < files.size(); i++){
 			files.get(i).save();
 		}
@@ -123,6 +139,10 @@ public class Version {
 	 * Lädt aus dem Dateiverzeichnis die Eigenschaften des Players.
 	 */
 	public void loadProps(){
+		if (mode != AiMode.saved && mode != AiMode.simplePlayer) {
+			ErrorLog.write("dies ist kein lesbares Objekt (Version.loadProps)");
+			return;
+		}
 		try {
 			Reader reader = new FileReader(Paths.versionProperties(this));
 			Properties prop = new Properties();
@@ -140,6 +160,10 @@ public class Version {
 	 * Speichert die Eigenschaften des Players in das Dateiverzeichnis.
 	 */
 	public void storeProps(){
+		if (mode != AiMode.saved){
+			ErrorLog.write("dies ist kein speicherbares Objekt (Version.storeProps)");
+			return;
+		}
 		Properties prop = new Properties();
 		prop.setProperty("compiled", "" + compiled);
 		prop.setProperty("qualified", "" + qualified);
@@ -162,6 +186,10 @@ public class Version {
 	 * @return false, wenn die Kompilierung fehlgeschlagen ist
 	 */
 	public boolean compile(){
+		if (mode != AiMode.saved){
+			ErrorLog.write("dies ist kein speicherbares Objekt (compile)");
+			return false;
+		}
 		saveCode();
 		compiled = true;
 		compileOutput = "Kompilierung fertig!";
@@ -175,6 +203,10 @@ public class Version {
 	 * @return false, wenn die Qualifikation fehlgeschlagen ist
 	 */
 	public boolean qualify(){
+		if (mode != AiMode.saved){
+			ErrorLog.write("dies ist kein speicherbares Objekt (qualify)");
+			return false;
+		}
 		if (!compiled)
 			if (!compile())
 				return false;
@@ -189,6 +221,10 @@ public class Version {
 	 * Stellt die Ki fertig, was bedeutet, dass sie nicht mehr bearbeitet werden kann.
 	 */
 	public void finish(){
+		if (mode != AiMode.saved){
+			ErrorLog.write("dies ist kein speicherbares Objekt (finish)");
+			return;
+		}
 		finished = true;
 		storeProps();
 	}
