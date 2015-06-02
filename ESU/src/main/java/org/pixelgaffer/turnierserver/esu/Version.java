@@ -1,10 +1,21 @@
 package org.pixelgaffer.turnierserver.esu;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.file.CopyOption;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.sql.Savepoint;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.esu.Ai.AiMode;
@@ -31,7 +42,9 @@ public class Version {
 		ai = p;
 		number = n;
 		mode = AiMode.online;
-		////////////////////////Nico: hier kommt dein Code rein////////////////////////////////////////////
+		compiled = json.getBoolean("compiled");
+		qualified = json.getBoolean("qualified");
+		finished = json.getBoolean("frozen");
 	}
 	
 	/**

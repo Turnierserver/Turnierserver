@@ -98,11 +98,11 @@ public class WebConnector {
 	}
 	
 	public List<Ai> getAis() throws IOException {
-		JSONArray players = new JSONArray(sendGet("users"));
+		JSONArray ais = new JSONArray(sendGet("ais"));
 		List<Ai> result = new ArrayList<Ai>();
 		
-		for(int i = 0; i < players.length(); i++) {
-			result.add(new Ai(players.getJSONObject(i)));
+		for(int i = 0; i < ais.length(); i++) {
+			result.add(new Ai(ais.getJSONObject(i)));
 		}
 		
 		return result;

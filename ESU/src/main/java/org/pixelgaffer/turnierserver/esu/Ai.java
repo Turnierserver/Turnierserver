@@ -5,6 +5,7 @@ import java.util.*;
 
 import javax.imageio.ImageIO;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.esu.utilities.Paths;
@@ -46,7 +47,19 @@ public class Ai {
 	public Ai(JSONObject json){
 		title = json.getString("name");
 		mode = AiMode.online;
-		//////////////Nico: hier kommt dein Code rein!//////////////////////////////////////////////////////////
+		userName = json.getString("author");
+		switch(json.getJSONObject("lang").getInt("id")) {
+			case 1:
+				language = Language.Python;
+				break;
+			case 2:
+				language = Language.Java;
+				break;
+		}
+		JSONArray versions = json.getJSONArray("versions");
+		for(int i = 0; i < versions.length(); i++) {
+			newVersion(versions.getJSONObject(i));
+		}
 	}
 	
 	/**
@@ -119,7 +132,9 @@ public class Ai {
 	 * @return die Version, die erstellt wurde
 	 */
 	public Version newVersion(JSONObject json){
-		return new Version(this, versions.size(), json);
+		Version version = new Version(this, json.getInt("id") - 1, json);
+		versions.add(version);
+		return version;
 	}
 	
 	/**
