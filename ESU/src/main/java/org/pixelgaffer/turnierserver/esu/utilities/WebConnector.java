@@ -409,7 +409,7 @@ public class WebConnector {
 				if(file.isFile()) {
 					continue;
 				}
-				File target = new File(Paths.simplePlayer(gameName, file.getName()) + "/v0/src");
+				File target = new File(Paths.simplePlayer(gameName, file.getName()) + "/src");
 				FileUtils.deleteDirectory(new File(Paths.simplePlayer(gameName, file.getName())));
 				target.mkdirs();
 				File property = new File(Paths.simplePlayer(gameName, file.getName()), "properties.txt");

@@ -41,7 +41,7 @@ public class Paths {
 	}
 	
 	public static String simplePlayer(String game, String language) {
-		return downloadGameType(game) + "/SimplePlayer/SimplePlayer" + language;
+		return downloadGameType(game) + "/SimplePlayer/SimplePlayer" + language + "/v0";
 	}
 	
 	public static String ailibrary(String game, String language) {
@@ -130,11 +130,9 @@ public class Paths {
 	public static String versionProperties(Version version){
 		return version(version) + "/properties.txt";
 	}
-	/**
-	 * Gibt den Pfad zu den Properties einer Version zurück
-	 */
-	public static String versionProperties(Ai ai, int number){
-		return version(ai, number) + "/properties.txt";
+	
+	public static String versionSrc(Version version){
+		return version(version) + "/src";
 	}
 
 	

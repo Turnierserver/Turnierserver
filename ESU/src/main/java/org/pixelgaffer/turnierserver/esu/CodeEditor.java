@@ -28,7 +28,7 @@ public class CodeEditor {
 	}
 	
 	/**
-	 * Überprüft, ob der angezeigte Text mit seiner gespeicherten Datei übereinstimmt
+	 * Ã¼berprÃ¼ft, ob der angezeigte Text mit seiner gespeicherten Datei Ã¼bereinstimmt
 	 * 
 	 * @return true, wenn savedText != text
 	 */
@@ -40,7 +40,7 @@ public class CodeEditor {
 	}
 	
 	/**
-	 * Erstellt ein Tab, das in die Tab-Leiste eingefügt werden kann
+	 * Erstellt ein Tab, das in die Tab-Leiste eingefÃ¼gt werden kann
 	 * 
 	 * @return das erstellte Tab
 	 */
@@ -59,7 +59,7 @@ public class CodeEditor {
 	
 	
 	/**
-	 * Lädt den Inhalt der Datei in die StringProperty text
+	 * LÃ¤dt den Inhalt der Datei in die StringProperty text
 	 */
 	public void load(){
 		try {
@@ -97,7 +97,7 @@ public class CodeEditor {
 	
 	/**
 	 * Speichert den Inhalt der StringProperty text in eine Datei.
-	 * Dabei wird nicht überprüft, ob sich der Inhalt verändert hat.
+	 * Dabei wird nicht ï¿½berprï¿½ft, ob sich der Inhalt verï¿½ndert hat.
 	 */
 	public void forceSave(){
 		try {

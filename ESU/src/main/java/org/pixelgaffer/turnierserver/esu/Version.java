@@ -127,10 +127,11 @@ public class Version {
 			ErrorLog.write("dies ist kein lesbares Objekt (findCode)");
 			return;
 		}
-		Path path = new File(Paths.version(this)).toPath();
-		VersionVisitor visitor = new VersionVisitor(path);
+		File srcDir = new File(Paths.versionSrc(this));
+		
+		VersionVisitor visitor = new VersionVisitor(srcDir.toPath());
 		try {
-			Files.walkFileTree(path, visitor);
+			Files.walkFileTree(srcDir.toPath(), visitor);
 			files = visitor.files;
 		} catch (IOException e) {
 			ErrorLog.write("Dateien der Version konnten nicht geladen werden.");
