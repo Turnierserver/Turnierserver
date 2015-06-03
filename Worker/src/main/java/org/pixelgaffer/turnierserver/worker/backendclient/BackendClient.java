@@ -46,7 +46,6 @@ public class BackendClient implements SocketObserver, Backend
 	
 	public void sendAnswer (WorkerCommandAnswer answer) throws IOException
 	{
-		System.out.println("BackendClient:39: sending success: " + answer);
 		client.write(new ProtocolLine(ANSWER, answer).serialize());
 		client.write("\n".getBytes(UTF_8));
 	}
