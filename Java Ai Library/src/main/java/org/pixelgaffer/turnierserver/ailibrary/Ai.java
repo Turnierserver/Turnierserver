@@ -11,7 +11,6 @@ import java.util.Map;
 
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.PropertyUtils;
-import org.pixelgaffer.turnierserver.gamelogic.interfaces.GameState;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -19,7 +18,7 @@ import com.google.gson.reflect.TypeToken;
  * @param <E> Der GameState
  * @param <R> Die Antwort der Spiellogik
  */
-public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
+public abstract class Ai<E, R> implements Runnable {
 	
 	/**
 	 * Die Connection zum Worker
