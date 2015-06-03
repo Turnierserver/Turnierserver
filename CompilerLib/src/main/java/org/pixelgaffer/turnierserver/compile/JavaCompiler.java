@@ -44,7 +44,7 @@ public class JavaCompiler extends Compiler
 					FileUtils.copyFile(f, new File(libdir, f.getName()));
 			}
 			for (String jar : libdir.list( (dir, name) -> name.endsWith(".jar")))
-				classpath += ":AiLibrary/" + jar;
+				classpath += File.pathSeparator + "AiLibrary" + File.separator + jar;
 			output.println("done");
 		}
 		catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
@@ -77,7 +77,7 @@ public class JavaCompiler extends Compiler
 						FileUtils.copyFile(f, new File(libdir, f.getName()));
 				}
 				for (String jar : libdir.list( (dir, name) -> name.endsWith(".jar")))
-					classpath += ":" + line + "/" + jar;
+					classpath += ":" + line + File.separator + jar;
 				output.println("done");
 			}
 			catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
