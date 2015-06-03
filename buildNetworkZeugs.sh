@@ -35,6 +35,6 @@ ln -s SandboxMachine/sandboxd ../sandboxd
 cd ..
 cd ..
 
-echo -e "#!/bin/sh\nif [ \$UID != 0 ]; then\n  echo Die Sandbox benötigt root-Rechte\n  echo su -c \"\$0 \${@}\"\n  exit \$?\nfi\nPATH=\`dirname \$0\`:$PATH\nsandboxd \${@}" > build/sandbox.sh
+echo -e "#!/bin/sh\nif [ \$UID != 0 ]; then\n  echo Die Sandbox benötigt root-Rechte\n  echo \"su -c '\$0 \${@}'\"\n  su -c \"\$0 \${@}\"\n  exit \$?\nfi\nPATH=\`dirname \$0\`:\$PATH\nsandboxd \${@}" > build/sandbox.sh
 
 chmod +x build/*.sh
