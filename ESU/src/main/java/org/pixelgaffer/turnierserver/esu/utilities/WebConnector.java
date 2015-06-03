@@ -115,11 +115,11 @@ public class WebConnector {
 		}
 	}
 	
-	public ObservableList<Ai> getAis() {
+	public ObservableList<Ai> getAis(int game) {
 		ObservableList<Ai> result = FXCollections.observableArrayList();
 		String json;
 		try {
-			json = toString(sendGet("ais"));
+			json = toString(sendGet("ais/" + game));
 		} catch (IOException e) {
 			return result;
 		}
@@ -275,6 +275,7 @@ public class WebConnector {
 		
 	}
 	
+
 	public void updateGametypes() throws NewException, UpdateException, NothingDoneException, DeletedException {
 		ObservableList<String> result = FXCollections.emptyObservableList();
 		
@@ -371,6 +372,7 @@ public class WebConnector {
 	}
 	
 	
+
 	public boolean loadGamelogic(int game, String gameName) {
 		byte[] logic;
 		try {
@@ -394,6 +396,7 @@ public class WebConnector {
 	}
 	
 	
+
 	public boolean loadDataContainer(int game, String gameName) {
 		byte[] libraries;
 		try {
