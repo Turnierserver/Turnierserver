@@ -1,7 +1,7 @@
 package org.pixelgaffer.turnierserver.worker.backendclient;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.ANSWER;
+import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.*;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.INFO;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.COMPILE;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.STARTAI;
@@ -15,6 +15,7 @@ import naga.SocketObserver;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.compile.Backend;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
+import org.pixelgaffer.turnierserver.networking.bwprotocol.AiConnected;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
@@ -53,6 +54,12 @@ public class BackendClient implements SocketObserver, Backend
 	public void sendInfo (WorkerInfo info) throws IOException
 	{
 		client.write(new ProtocolLine(INFO, info).serialize());
+		client.write("\n".getBytes(UTF_8));
+	}
+	
+	public void sendAiConnected (AiConnected aiConnected) throws IOException
+	{
+		client.write(new ProtocolLine(AICONNECTED, aiConnected).serialize());
 		client.write("\n".getBytes(UTF_8));
 	}
 	

@@ -49,6 +49,20 @@ public class AiWrapper implements Ai
 	@Getter
 	private WorkerConnection connection;
 	
+	/** Gibt an, ob die KI mit dem Worker verbunden ist. */
+	@Getter
+	private boolean connected;
+	
+	/**
+	 * Wird aufgerufen wenn die KI mit dem Worker verbunden wurde. Wenn alle KIs
+	 * verbunden sind, wird das Spiel endgültig gestartet.
+	 */
+	public void connected ()
+	{
+		connected = true;
+		getGame().aiConnected();
+	}
+	
 	/** Empfängt eine Nachricht und leitet sie an die Speillogik weiter. */
 	public void receiveMessage (byte message[])
 	{

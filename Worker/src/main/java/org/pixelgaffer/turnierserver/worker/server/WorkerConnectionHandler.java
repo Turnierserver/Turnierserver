@@ -12,6 +12,7 @@ import naga.NIOSocket;
 
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
+import org.pixelgaffer.turnierserver.networking.bwprotocol.AiConnected;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
@@ -106,6 +107,14 @@ public class WorkerConnectionHandler extends ConnectionHandler
 				{
 					case AI:
 						WorkerServer.aiConnections.put(type.getUuid(), this);
+						try
+						{
+							WorkerMain.getBackendClient().sendAiConnected(new AiConnected(type.getUuid()));
+						}
+						catch (IOException e)
+						{
+							e.printStackTrace();
+						}
 						break;
 					case BACKEND:
 						WorkerServer.backendConnection = this;

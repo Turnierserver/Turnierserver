@@ -26,8 +26,8 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import org.pixelgaffer.turnierserver.Parsers;
-import org.pixelgaffer.turnierserver.backend.server.BackendFrontendResult;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
+import org.pixelgaffer.turnierserver.backend.server.BackendFrontendResult;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
@@ -117,6 +117,10 @@ public class Games
 		@Getter
 		private GameLogic<?, ?> logic;
 		
+		/** Gibt an ob das Spiel schon gestartet wurde. */
+		@Getter
+		private boolean started;
+		
 		private GameImpl (int gameId, @NonNull UUID uuid, int requestId, String ... ais) throws IOException
 		{
 			this.gameId = gameId;
@@ -133,6 +137,7 @@ public class Games
 				aiw.setVersion(Integer.valueOf(s[1]));
 				// die KI zur Liste hinzufügen
 				this.ais.add(aiw);
+				aiWrappers.put(aiw.getUuid(), aiw);
 				
 				// einen Worker mit der KI beauftragen
 				WorkerConnection w = Workers.getStartableWorker();
@@ -154,6 +159,21 @@ public class Games
 				ai.disconnect();
 			BackendFrontendConnectionHandler.getFrontend().sendMessage(
 					Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), true)));
+		}
+		
+		/**
+		 * Diese Methode wird aufgerufen wenn eine KI sich mit dem Worker
+		 * verbunden hat. Wenn alle KIs verbunden sind wird das Spiel gestartet.
+		 */
+		public synchronized void aiConnected ()
+		{
+			if (isStarted())
+				return;
+			for (AiWrapper ai : ais)
+				if (!ai.isConnected())
+					return;
+			getLogic().startGame(this);
+			started = true;
 		}
 	}
 	
@@ -193,9 +213,8 @@ public class Games
 		GameLogic<?, ?> logic = loadGameLogic(gameId);
 		UUID uuid = randomUuid();
 		GameImpl game = new GameImpl(gameId, uuid, requestId, ais);
+		game.logic = logic;
 		games.put(uuid, game);
-		System.out.println("Games:190: Hier muss gewartet werden bis die Sandbox meldet dass die KIs gestartet sind");
-		logic.startGame(game);
 		return game;
 	}
 }

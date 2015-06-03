@@ -18,6 +18,8 @@ public class ProtocolLine
 	public static final byte ANSWER = 'A';
 	/** Enthält ein {@link WorkerInfo}-Objekt. */
 	public static final byte INFO = 'I';
+	/** Enthält ein {@link AiConnected}-Objekt. */
+	public static final byte AICONNECTED = 'C';
 	
 	/** Der Inhalt der Zeile. */
 	@Getter
@@ -41,6 +43,9 @@ public class ProtocolLine
 				break;
 			case INFO:
 				object = Parsers.getWorker().parse(line, WorkerInfo.class);
+				break;
+			case AICONNECTED:
+				object = Parsers.getWorker().parse(line, AiConnected.class);
 				break;
 			default:
 				System.err.println("ProtocolLine: Fehler: Unbekannter mode: " + ((char)mode));

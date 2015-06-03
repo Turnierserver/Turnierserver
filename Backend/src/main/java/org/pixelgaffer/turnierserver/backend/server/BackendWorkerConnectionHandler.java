@@ -9,11 +9,14 @@ import lombok.NonNull;
 import naga.NIOSocket;
 
 import org.pixelgaffer.turnierserver.Parsers;
+import org.pixelgaffer.turnierserver.backend.AiWrapper;
 import org.pixelgaffer.turnierserver.backend.BackendMain;
+import org.pixelgaffer.turnierserver.backend.Games;
 import org.pixelgaffer.turnierserver.backend.Jobs;
 import org.pixelgaffer.turnierserver.backend.WorkerConnection;
 import org.pixelgaffer.turnierserver.backend.Workers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
+import org.pixelgaffer.turnierserver.networking.bwprotocol.AiConnected;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
@@ -106,6 +109,17 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 						WorkerInfo info = (WorkerInfo) l.getObject();
 						workerConnection.update(info);
 					}
+					else if (l.getMode() == AICONNECTED)
+					{
+						AiConnected aicon = (AiConnected) l.getObject();
+						AiWrapper ai = Games.getAiWrapper(aicon.getUuid());
+						if (ai == null)
+							BackendMain.getLogger().severe("Unknown AI with UUID " + aicon.getUuid() + " connected");
+						else
+							ai.connected();
+					}
+					else
+						BackendMain.getLogger().severe("Unknown ProtocolLine Mode " + ((char)l.getMode()));
 				}
 				catch (Exception e)
 				{
