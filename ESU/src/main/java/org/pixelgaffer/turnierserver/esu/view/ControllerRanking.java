@@ -3,6 +3,7 @@ package org.pixelgaffer.turnierserver.esu.view;
 import org.pixelgaffer.turnierserver.esu.Ai;
 import org.pixelgaffer.turnierserver.esu.MainApp;
 import org.pixelgaffer.turnierserver.esu.ParticipantResult;
+import org.pixelgaffer.turnierserver.esu.Version;
 import org.pixelgaffer.turnierserver.esu.utilities.Resources;
 
 import javafx.beans.property.StringProperty;
@@ -31,7 +32,7 @@ public class ControllerRanking {
 	@FXML Button btChallenge;
 	@FXML TextArea tbDescription;
 	@FXML TableView<Ai> tvAis;
-	@FXML TableView<Ai> tvVersions;
+	@FXML TableView<Version> tvVersions;
 	@FXML ImageView imageView;
 	
 	MainApp mainApp;
@@ -59,13 +60,25 @@ public class ControllerRanking {
 		TableColumn col2 = new TableColumn("Besitzer");
 		TableColumn col3 = new TableColumn("ELO");
 
-		col0.setCellValueFactory(new PropertyValueFactory<ParticipantResult, Image>("onlinePicture"));
-		col1.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("title"));
-		col2.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("userName"));
-		col3.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("elo"));
-
+		col0.setCellValueFactory(new PropertyValueFactory<Ai, Image>("onlinePicture"));
+		col1.setCellValueFactory(new PropertyValueFactory<Ai, String>("title"));
+		col2.setCellValueFactory(new PropertyValueFactory<Ai, StringProperty>("userName"));
+		col3.setCellValueFactory(new PropertyValueFactory<Ai, String>("elo"));
+		
 		loadOnlineAis();
 		tvAis.getColumns().addAll(col0, col1, col2, col3);
+
+		TableColumn colV0 = new TableColumn("Version");
+		TableColumn colV1 = new TableColumn("Kompiliert");
+		TableColumn colV2 = new TableColumn("Qualifiziert");
+		TableColumn colV3 = new TableColumn("Fertiggestellt");
+
+		colV0.setCellValueFactory(new PropertyValueFactory<Version, String>("number"));
+		colV1.setCellValueFactory(new PropertyValueFactory<Version, String>("compiled"));
+		colV2.setCellValueFactory(new PropertyValueFactory<Version, String>("qualified"));
+		colV3.setCellValueFactory(new PropertyValueFactory<Version, String>("finished"));
+
+		tvVersions.getColumns().addAll(colV0, colV1, colV2, colV3);
 		
 	}
 	
@@ -87,6 +100,7 @@ public class ControllerRanking {
 			lbElo.setText(ai.elo);
 			lbLanguage.setText(ai.language.toString());
 			imageView.imageProperty().bindBidirectional(ai.getPicture());
+			tvVersions.setItems(ai.versions);
 		}
 		else{
 			lbName.setText("Null");
@@ -95,6 +109,7 @@ public class ControllerRanking {
 			lbElo.setText("1000");
 			lbLanguage.setText("Java");
 			imageView.imageProperty().set(Resources.defaultPicture());
+			tvVersions.setItems(null);
 		}
 	}
 	
