@@ -78,7 +78,7 @@ public class Workers
 			synchronized (workerConnections)
 			{
 				for (WorkerConnection worker : workerConnections)
-					if (worker.isCompiling())
+					if (!worker.isCompiling())
 						return worker;
 				try
 				{
