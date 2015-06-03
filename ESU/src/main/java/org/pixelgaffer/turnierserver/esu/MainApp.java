@@ -241,6 +241,8 @@ public class MainApp extends Application{
 			e.printStackTrace();
 		}
 		
+		stage.setTitle("Codr");
+		stage.getIcons().add(Resources.codrIcon());
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();

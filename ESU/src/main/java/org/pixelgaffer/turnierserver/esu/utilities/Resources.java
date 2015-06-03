@@ -18,6 +18,15 @@ public class Resources {
 			return null;
 		}
 	}
+
+	public static Image codrIcon(){
+		try {
+			return new Image(Paths.class.getResourceAsStream("../Codr64.png"));
+		} catch (Exception ex) {
+			ErrorLog.write("Default-Bild konnte nicht geladen werden.");
+			return null;
+		}
+	}
 	
 	public static Image codr(){
 		try {
