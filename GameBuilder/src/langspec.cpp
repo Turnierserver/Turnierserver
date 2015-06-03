@@ -90,6 +90,8 @@ bool LangSpec::read(bool verbose, const QString &childLang)
 
 bool LangSpec::evalLine(QString line, uint linenum, const QString &childLang)
 {
+	//qDebug() << "evalLine(" << line << "," << linenum << "," << childLang << ")";
+	
 	static QRegularExpression varAssignment("^\\s*(?P<name>[a-zA-Z_]+)\\s*(?P<operator>.?=)(?P<value>[^\n\r]*)\\s*$");
 	static QRegularExpression absolutePath ("^\\s*absolute\\s+(?P<name>[a-zA-Z_]+)\\s*$");
 	static QRegularExpression buildCommand ("^\\s*(?P<name>[a-zA-Z]+):(?P<command>[^\n\r]*)\\s*$");
@@ -153,6 +155,7 @@ bool LangSpec::evalLine(QString line, uint linenum, const QString &childLang)
 	{
 		QString name = match.captured("name");
 		QString command = match.captured("command").trimmed();
+		qDebug() << name << ":" << command; // ohne dieses sysout ist der command iwi komisch
 		commands.insert(name, QStringList(commands.value(name)) << command);
 		
 		return true;
@@ -170,6 +173,7 @@ bool LangSpec::evalLine(QString line, uint linenum, const QString &childLang)
 			fprintf(stderr, "Warnung: Die Variable %s wird durch eine for-Schleife überschrieben.\n", qPrintable(as));
 		for (QString val : string(var, childLang).split(' ', QString::SkipEmptyParts)) // todo: "" beachten
 		{
+			//qDebug() << "val in for:" << val;
 			evalLine(QString(code).replace("${" + as + "}", val), linenum);
 		}
 		
@@ -181,7 +185,7 @@ bool LangSpec::evalLine(QString line, uint linenum, const QString &childLang)
 	return false;
 }
 
-QString LangSpec::string(const QString &name, const QString &language) const
+QString LangSpec::string(const QString &name, const QString &language, bool allowTernary) const
 {
 	QString key = name;
 	//qDebug() << "Searching for" << key << "in lang" << language << "(own language:" << lang() << ")";
@@ -192,12 +196,14 @@ QString LangSpec::string(const QString &name, const QString &language) const
 	if (match.hasMatch())
 		key = match.captured("name");
 	
+	//qDebug() << "key: " << key;
+	
 	// den Wert der Variable herausfinden
 	QString value = variables.value(key);
 	if (value.isEmpty())
 	{
 		if (_parent)
-			value = _parent->string(name, language.isEmpty() ? lang() : language);
+			value = _parent->string(name, language.isEmpty() ? lang() : language, false);
 		if (value.isEmpty())
 		{
 			if (language.isEmpty())
@@ -211,8 +217,10 @@ QString LangSpec::string(const QString &name, const QString &language) const
 		}
 	}
 	
+	//qDebug() << "value: " << value;
+	
 	// Wert zurückgeben
-	if (match.hasMatch())
+	if (match.hasMatch() && allowTernary)
 		return (value == "true" ? match.captured("then") : match.captured("else"));
 	return value;
 }
