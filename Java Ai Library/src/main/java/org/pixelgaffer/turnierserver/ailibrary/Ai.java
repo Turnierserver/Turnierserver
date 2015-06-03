@@ -36,7 +36,7 @@ public abstract class Ai<E, R> implements Runnable {
 	/**
 	 * Der kummulierte String von System.out 
 	 */
-	protected StringBuilder output;
+	protected StringBuilder output = new StringBuilder();
 	/**
 	 * Der momentane Gamestate des Servers
 	 */

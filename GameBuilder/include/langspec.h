@@ -39,7 +39,7 @@ private:
 	bool evalLine (QString line, uint linenum, const QString &childLang = QString());
 	
 public:
-	QString string (const QString &name, const QString &language = QString()) const;
+	QString string (const QString &name, const QString &language = QString(), bool allowTernary = true) const;
 	QString fillVars (const QString &str, const QString &childLang = QString(), uint linenum = 0) const;
 	
 	QStringList targetCommands (const QString &target);
