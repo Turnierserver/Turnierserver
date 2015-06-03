@@ -18,12 +18,12 @@ import java.util.List;
 import java.util.Properties;
 
 import org.json.JSONObject;
+import org.pixelgaffer.turnierserver.compile.CompileFailureException;
+import org.pixelgaffer.turnierserver.compile.Compiler;
 import org.pixelgaffer.turnierserver.esu.Ai.AiMode;
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.esu.utilities.Libraries;
 import org.pixelgaffer.turnierserver.esu.utilities.Paths;
-import org.pixelgaffer.turnierserver.compile.CompileFailureException;
-import org.pixelgaffer.turnierserver.compile.Compiler;
 
 public class Version {
 
@@ -31,6 +31,7 @@ public class Version {
 	public final int number;
 	public final AiMode mode;
 
+	public String executeCommand = "";
 	public boolean compiled = false;
 	public boolean qualified = false;
 	public boolean finished = false;
@@ -172,6 +173,7 @@ public class Version {
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
+			executeCommand = prop.getProperty("executeCommand");
 			compiled = Boolean.parseBoolean(prop.getProperty("compiled"));
 			qualified = Boolean.parseBoolean(prop.getProperty("qualified"));
 			finished = Boolean.parseBoolean(prop.getProperty("finished"));
@@ -192,6 +194,7 @@ public class Version {
 			return;
 		}
 		Properties prop = new Properties();
+		prop.setProperty("executeCommand", executeCommand);
 		prop.setProperty("compiled", "" + compiled);
 		prop.setProperty("qualified", "" + qualified);
 		prop.setProperty("finished", "" + finished);
@@ -226,6 +229,8 @@ public class Version {
 							new File(Paths.versionBin(this)),
 							new File(Paths.versionSrcStartClass(this)),
 							new Libraries());
+			executeCommand = c.getCommand();
+			compileOutput += "\nKompilierung erfolgreich\n";
 			compiled = true;
 		} catch (ReflectiveOperationException roe) {
 			ErrorLog.write("Fehler beim Laden des Compilers: " + roe);
