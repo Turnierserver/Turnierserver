@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 if [ -d build ]
 then
@@ -20,20 +20,23 @@ done
 echo -e "#!/bin/sh\ncd \`dirname \$0\`\njava -cp '*' org.pixelgaffer.turnierserver.backend.BackendMain \${@}" > build/backend.sh
 echo -e "#!/bin/sh\ncd \`dirname \$0\`\njava -cp '*' org.pixelgaffer.turnierserver.worker.WorkerMain \${@}" > build/worker.sh
 
-cd build
-mkdir -p SandboxHelper
-cd SandboxHelper
-qmake -makefile ../../SandboxHelper/SandboxHelper.pro CONFIG+=debug
-make
-ln -s SandboxHelper/sandboxd_helper ../sandboxd_helper
-cd ..
-mkdir -p SandboxMachine
-cd SandboxMachine
-qmake -makefile ../../SandboxMachine/SandboxMachine.pro CONFIG+=debug
-make
-ln -s SandboxMachine/sandboxd ../sandboxd
-cd ..
-cd ..
+projects="SandboxHelper SandboxMachine"
+for project in $projects
+do
+	cd $project
+	mkdir -p build
+	cd build
+	qmake ../$project.pro CONFIG+=debug
+	make
+	for file in *
+	do
+		if [ -x $file -a -r $file -a ! -d $file ]
+		then
+			cp $file ../../build
+		fi
+	done
+	cd ../..
+done
 
 echo -e "#!/bin/sh\nif [ \$UID != 0 ]; then\n  echo Die Sandbox benötigt root-Rechte\n  echo \"su -c '\$0 \${@}'\"\n  su -c \"\$0 \${@}\"\n  exit \$?\nfi\nPATH=\`dirname \$0\`:\$PATH\nsandboxd \${@}" > build/sandbox.sh
 
