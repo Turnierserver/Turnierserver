@@ -50,7 +50,7 @@ public abstract class Ai<E, R> implements Runnable {
 			PropertyUtils.loadProperties(args.length > 0 ? args[0] : "ai.prop");
 			System.out.println("Connecting to " + PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST) + ":" + PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
 			con = new Socket(PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST), PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
-			out = new PrintWriter(con.getOutputStream());
+			out = new PrintWriter(con.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			System.out.println(PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR));
 			System.out.println(PropertyUtils.getStringRequired(PropertyUtils.AI_UUID));
