@@ -1,9 +1,6 @@
 package org.pixelgaffer.turnierserver.compile;
 
-import it.sauronsoftware.ftp4j.FTPAbortedException;
-import it.sauronsoftware.ftp4j.FTPDataTransferException;
-import it.sauronsoftware.ftp4j.FTPException;
-import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
+import it.sauronsoftware.ftp4j.*;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 
 import java.io.File;
@@ -28,12 +25,12 @@ public class PythonCompiler extends Compiler
 		if (libraryDownloader == null) {
 			try {
 				output.println("> downloading game_wrapper.py");
-				DatastoreFtpClient.retrieveFile("Games/" + getGame() + "/Python/ailib/game_wrapper.py", game_wrapper);
+				DatastoreFtpClient.retrieveAiLibrary(getGame(), "Python", bindir);
 				output.println("> downloading wrapper.py");
-				DatastoreFtpClient.retrieveFile("Libraries/Python/wrapper/wrapper.py", wrapper);
+				DatastoreFtpClient.retrieveLibrary("wrapper", "Python", bindir);
 				output.println("done");
 			} catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
-					| FTPAbortedException ioe) {
+					| FTPAbortedException | FTPListParseException ioe) {
 				output.println(ioe.getMessage());
 				return false;
 			}
