@@ -65,13 +65,6 @@ public class CodeEditor {
 	}
 
 	public void setCode(String tanga) {
-		System.out.println("editor.setValue(\"" + StringEscapeUtils.escapeJavaScript(tanga) + "\");");
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
 		codeView.getEngine().executeScript("editor.setValue(\"" + StringEscapeUtils.escapeJavaScript(tanga) + "\");");
 	}
 
