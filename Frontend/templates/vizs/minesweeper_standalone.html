@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>Minesweeper</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 	<script type="text/javascript">
 
 var CELL_TYPE = {
@@ -10,7 +11,7 @@ var CELL_TYPE = {
 	COVERED: 2,
 	COVERED_BOMB: 3
 }
-var FIELD_SIZE = 5;
+var FIELD_SIZE = 3;
 
 var data = [
 	{
@@ -115,6 +116,39 @@ function draw() {
 	};
 
 }
+
+
+
+
+
+var evtSrc = new EventSource("http://localhost:5000/api/game/1/log");
+
+evtSrc.onerror = function () {
+	console.log("SSE Err")
+	evtSrc.close()
+};
+
+evtSrc.addEventListener("state", function(e) {
+	console.log(e.data)
+	d = JSON.parse(e.data)
+	console.log(d)
+	console.log(d.status)
+	data.push(d.data)
+	step++;
+	draw();
+})
+
+evtSrc.addEventListener("stream_stopped", function (e) {
+	console.log(e);
+	console.log("stream_stopped")
+	evtSrc.close()
+})
+
+
+
+
+
+
 </script>
 </head>
 <body onload="draw()">

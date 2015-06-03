@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, abort, flash
 from flask.ext.login import current_user
-from database import AI, User, Game, GameType
+from database import AI, User, Game, GameType, Game_inprogress
 from activityfeed import Activity
 from backend import backend
 import json
@@ -51,4 +51,5 @@ def game(id):
 def inprogress_game(id):
 	## inpgrogress type
 	t = GameType.query.first()
+	game = Game_inprogress()
 	return render_template(game.type.viz, game=game, inprogress=True)

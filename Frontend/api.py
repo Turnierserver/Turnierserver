@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from sqlalchemy.orm.exc import NoResultFound
 import json
 import magic
+import time
 
 from database import AI, User, Game, Lang, GameType, db, populate, ftp
 from backend import backend
@@ -64,12 +65,18 @@ def api_index():
 
 @api.route("/ais", methods=["GET"])
 @api.route("/ais/<int:gametype>", methods=["GET"])
+@api.route("/ais/<string:gametype>", methods=["GET"])
 @json_out
 def api_ais(gametype=None):
 	if not gametype:
 		gametype = GameType.lastest()
 	else:
-		gametype = GameType.query.get(gametype)
+		if isinstance(gametype, int):
+			gametype = GameType.query.get(gametype)
+		elif isinstance(gametype, str):
+			gametype = GameType.query.filter(GameType.name == gametype).first()
+		else:
+			return CommonErrors.BAD_REQUEST
 		if not gametype:
 			return CommonErrors.BAD_REQUEST
 
@@ -95,12 +102,18 @@ def api_ai_games(id):
 
 @api.route("/games")
 @api.route("/games/<int:gametype>")
+@api.route("/games/<string:gametype>")
 @json_out
 def api_games(gametype=None):
 	if not gametype:
 		gametype = GameType.lastest()
 	else:
-		gametype = GameType.query.get(gametype)
+		if isinstance(gametype, int):
+			gametype = GameType.query.get(gametype)
+		elif isinstance(gametype, str):
+			gametype = GameType.query.filter(GameType.name == gametype).first()
+		else:
+			return CommonErrors.BAD_REQUEST
 		if not gametype:
 			return CommonErrors.BAD_REQUEST
 	return [game.info() for game in Game.query.filter(Game.type == gametype).all()]
@@ -120,8 +133,23 @@ def api_game(id):
 def api_game_log(id):
 	game = Game.query.get(id)
 	if game:
-		for chunk in []:
-			yield chunk
+		#for chunk in []:
+		#	yield chunk
+		for i in range(20):
+			size = 5
+			m = [[0 for y in range(size)] for x in range(size)]
+			info = dict(
+				data = dict(cells=m, id=i),
+				ai_logs = [
+					"huehuehuehuehue",
+					"ehuehuehuehueeu"
+				],
+				status=str(i)+"/100",
+				progress=i/100
+			)
+			yield json.dumps(info), "state"
+			time.sleep(1)
+
 	else:
 		return CommonErrors.INVALID_ID
 
