@@ -14,8 +14,8 @@ import lombok.NonNull;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCommand;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCommandProcessed;
-import org.pixelgaffer.turnierserver.backend.server.BackendFrontendResult;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
+import org.pixelgaffer.turnierserver.backend.server.BackendFrontendResult;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandAnswer;
 
