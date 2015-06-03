@@ -75,12 +75,23 @@ function draw() {
 			var c_y = y * c_sy
 			switch (d.cells[x][y]) {
 				case CELL_TYPE.BOMB:
-					ctx.fillStyle = "rgb(200, 0, 0)";
+					ctx.fillStyle = "rgb(200, 200, 200)";
 					ctx.fillRect(c_x, c_y, c_sx, c_sy);
+					ctx.fillStyle = "rgb(220, 220, 220)";
+					ctx.fillRect(c_x+10, c_y+10, c_sx-20, c_sy-20);
+					ctx.beginPath();
+					ctx.arc(c_x+c_sx/2, c_y+c_sy/2, c_sx/3, 0, 2 * Math.PI, false);
+					ctx.fillStyle = 'black';
+					ctx.fill();
+					ctx.lineWidth = 5;
+					ctx.strokeStyle = 'red';
+					ctx.stroke();
 					break;
 				case CELL_TYPE.EMPTY:
 					ctx.fillStyle = "rgb(200, 200, 200)";
 					ctx.fillRect(c_x, c_y, c_sx, c_sy);
+					ctx.fillStyle = "rgb(220, 220, 220)";
+					ctx.fillRect(c_x+10, c_y+10, c_sx-20, c_sy-20);
 					var nearby_bombs = getNear(d.cells, x, y);
 					if (nearby_bombs >= 1) {
 						ctx.fillStyle = "black";
@@ -94,8 +105,10 @@ function draw() {
 						break;
 					}
 				case CELL_TYPE.COVERED:
-					ctx.fillStyle = "black";
+					ctx.fillStyle = "rgb(200, 200, 200)";
 					ctx.fillRect(c_x, c_y, c_sx, c_sy);
+					ctx.fillStyle = "black";
+					ctx.fillRect(c_x+10, c_y+10, c_sx-20, c_sy-20);
 					break;
 			}
 		};
