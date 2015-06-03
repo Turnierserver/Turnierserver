@@ -20,24 +20,27 @@ public class PythonCompiler extends Compiler
 	}
 	
 	@Override
-	public boolean compile (File srcdir, File bindir, Properties p, PrintWriter output) throws IOException
+	public boolean compile (File srcdir, File bindir, Properties p, PrintWriter output, LibraryDownloader libraryDownloader) throws IOException
 	{
 		// den wrapper laden
 		File game_wrapper = new File(bindir.getPath(), "game_wrapper.py");
 		File wrapper = new File(bindir.getPath(), "wrapper.py");
-		try
-		{
-			output.println("> downloading game_wrapper.py");
-			DatastoreFtpClient.retrieveFile("Games/" + getGame() + "/Python/game_wrapper.py", game_wrapper);
-			output.println("> downloading wrapper.py");
-			DatastoreFtpClient.retrieveFile("Libraries/Python/wrapper.py", wrapper);
-			output.println("done");
-		}
-		catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
-				| FTPAbortedException ioe)
-		{
-			output.println(ioe.getMessage());
-			return false;
+		if (libraryDownloader == null) {
+			try {
+				output.println("> downloading game_wrapper.py");
+				DatastoreFtpClient.retrieveFile("Games/" + getGame() + "/Python/ailib/game_wrapper.py", game_wrapper);
+				output.println("> downloading wrapper.py");
+				DatastoreFtpClient.retrieveFile("Libraries/Python/wrapper/wrapper.py", wrapper);
+				output.println("done");
+			} catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
+					| FTPAbortedException ioe) {
+				output.println(ioe.getMessage());
+				return false;
+			}
+		} else {
+			output.println("> no connection to FTP");
+			libraryDownloader.getAiLibFile("Python", "game_wrapper.py");
+			libraryDownloader.getFile("Python", "wrapper", "wrapper.py");
 		}
 		
 		// das script zum starten erzeugen
@@ -55,6 +58,7 @@ public class PythonCompiler extends Compiler
 		// ## wenn libs pypy: pypy, p2k: python2
 		script.println("python3 wrapper.py \"" + p.getProperty("filename") + "\" ${@}");
 		script.close();
+		setCommand("python3 wrapper.py \"" + p.getProperty("filename"));
 		output.println("done");
 		
 		return true;

@@ -25,4 +25,16 @@ public interface LibraryDownloader
 	 * Gibt alle Dateien zurück, die zu der Bibliothek mit dem angegebenen Namen gehören.
 	 */
 	public File[] getLib (String language, String name);
+
+	/**
+	 * Gibt die Datei mit dem angegebenen Namen der Datei zurück.
+	 */
+	public default File getFile (String language, String foldername, String filename)
+	{
+		File[] files = getLib(language, foldername);
+		for (File file : files)
+			if (file.getName().equals(filename))
+				return file;
+		return null;
+	}
 }
