@@ -33,7 +33,7 @@ public class CodeEditor {
 		document = doc;
 		codeView = new WebView();
 		try {
-			codeView.getEngine().loadContent(IOUtils.toString(getClass().getResourceAsStream("view/editor.html"), "UTF-8").replace("${file}", doc.getAbsolutePath()).replace("${theme}", "eclipse"));
+			codeView.getEngine().loadContent(IOUtils.toString(getClass().getResourceAsStream("view/editor.html"), "UTF-8").replace("${file}", doc.getAbsolutePath()).replace("${theme}", "eclipse").replace("${ace}", IOUtils.toString(getClass().getResourceAsStream("view/ace.js"), "UTF-8") + System.lineSeparator() + IOUtils.toString(getClass().getResourceAsStream("view/ext-modelist.js"), "UTF-8")));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			System.exit(1);
