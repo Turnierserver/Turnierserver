@@ -805,12 +805,12 @@ def upload_game_libs(id, lang):
 
 	@ftp.safe
 	def f():
-		if not ftp.ftp_host.path.isdir("Games/{}/{}".format(id, lang)):
+		if not ftp.ftp_host.path.isdir("Games/{}/{}/ailib".format(id, lang)):
 			return {"error": "Invalid GameID or Lang"}, 400
 		if not "X-FileName" in request.headers:
 			return {"error": "Missing filename"}, 400
 		filename = request.headers.get("X-FileName")
-		with ftp.ftp_host.open("Games/{}/{}/{}".format(id, lang, filename), "wb") as f:
+		with ftp.ftp_host.open("Games/{}/{}/ailib/{}".format(id, lang, filename), "wb") as f:
 			f.write(request.data)
 		return {"error": False}, 200
 
@@ -833,7 +833,7 @@ def game_logic(id):
 		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/Java/ailib/gamelogic.jar"):
 			return ftp.send_file("Games/"+secure_filename(str(id))+"/Java/ailib/gamelogic.jar")
 		else:
-			abort(404)
+			abort(503)
 	return f()
 
 @api.route("/data_container/<int:game_id>")
@@ -844,5 +844,5 @@ def esu_container(game_id):
 		if ftp.ftp_host.path.isfile(p):
 			return ftp.send_file(p)
 		else:
-			abort(404)
+			abort(503)
 	return f()

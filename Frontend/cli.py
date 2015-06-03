@@ -79,6 +79,24 @@ def manage(manager, app):
 						print(root+"/"+file, "->", new_path+"/"+file)
 						ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
 
+
+			os.mkdir("tmp/Libraries")
+			for lang in langs:
+				path = "Libraries/{}".format(lang)
+				os.mkdir("tmp/Libraries/"+lang)
+				for root, dirs, files in ftp.ftp_host.walk(path):
+					new_path = root.replace(path, "tmp/Libraries/"+lang)
+					#make dirs
+					for dir in dirs:
+						print("MKDIR:", new_path + "/" + dir)
+						os.mkdir(new_path + "/" + dir)
+
+					#load files
+					for file in files:
+						print(root+"/"+file, "->", new_path+"/"+file)
+						ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
+
+
 			os.mkdir("tmp/SimplePlayers")
 			for lang in langs:
 				path = "Games/{}/{}/example_ai".format(game_id, lang)
@@ -102,6 +120,7 @@ def manage(manager, app):
 			os.chdir("tmp")
 			zipdir('AiLibraries', zipf)
 			zipdir('SimplePlayers', zipf)
+			zipdir('Libraries', zipf)
 			os.chdir("..")
 			zipf.close()
 
