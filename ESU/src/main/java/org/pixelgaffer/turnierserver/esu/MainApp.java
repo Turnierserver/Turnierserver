@@ -186,7 +186,7 @@ public class MainApp extends Application{
 		
 		
 		//Screen erstellen
-		ImageView img = new ImageView(Resources.defaultPicture());
+		ImageView img = new ImageView(Resources.codr());
 		ProgressBar loadProgress = new ProgressBar();
 		loadProgress.setPrefWidth(400 - 20);
 		Label progressText = new Label("Die Spiellogiken werden heruntergeladen . . .");

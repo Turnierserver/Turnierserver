@@ -18,7 +18,17 @@ public class Resources {
 			return null;
 		}
 	}
-
+	
+	public static Image codr(){
+		try {
+			return new Image(Paths.class.getResourceAsStream("../Codr.png"));
+		} catch (Exception ex) {
+			ErrorLog.write("Default-Bild konnte nicht geladen werden.");
+			return null;
+		}
+	}
+	
+	
 	/**
 	 * Gibt das Default-Bild für die KIs zurück
 	 */
