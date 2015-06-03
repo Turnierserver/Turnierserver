@@ -61,9 +61,8 @@ public class WorkerMain
 		
 		// Mirror starten
 		port = PropertyUtils.getInt("turnierserver.worker.mirror.port", MirrorServer.DEFAULT_PORT);
-		maxClients = PropertyUtils.getInt("turnierserver.worker.mirror.maxClients", -1);
-		MirrorServer mirror = new MirrorServer(port, maxClients);
-		mirror.setConnectionAcceptor(ConnectionAcceptor.ALLOW);
+		MirrorServer mirror = new MirrorServer(port);
+		mirror.start();
 		getLogger().info("MirrorServer started");
 	}
 }

@@ -43,12 +43,7 @@ bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 	if (!isConnected())
 		return false;
 	
-	QJsonObject json;
-	json.insert("id", id);
-	json.insert("version", version);
-	QJsonDocument jsondoc(json);
-	
-	socket.write(jsondoc.toJson(QJsonDocument::Compact) + "\n");
+	socket.write(QByteArray::number(id) + "\n" + QByteArray::number(version) + "\n");
 	if (!socket.waitForBytesWritten(timeout()))
 	{
 		printf("failed to write bytes to mirror\n");
