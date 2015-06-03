@@ -17,7 +17,7 @@ import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 /**
  * Diese Klasse speichert Informationen über einen verbundenen Worker.
  */
-@ToString(of = { "sandboxes", "usedSandboxes" })
+@ToString(exclude = { "connection", "client" })
 public class WorkerConnection
 {
 	/**
@@ -29,6 +29,10 @@ public class WorkerConnection
 	
 	/** Die Anzahl der benutzten Sandboxen. */
 	private int usedSandboxes = 0;
+	
+	/** Gibt an, ob gerade ein Kompilierungsauftrag läuft. */
+	@Getter
+	private boolean compiling;
 	
 	/** Die Connection vom Backend zum Worker. */
 	private BackendWorkerConnectionHandler connection;
@@ -53,21 +57,17 @@ public class WorkerConnection
 	}
 	
 	/**
-	 * Gibt an, ob der Worker gerade Aufträge annehmen kann oder ob er
-	 * ausgelastet ist.
+	 * Gibt an, ob der Worker gerade eine KI starten kann oder ob alle Worker
+	 * komplett ausgelastet sind.
 	 */
-	public boolean isAvailable ()
+	public synchronized boolean canStartAi ()
 	{
-		// return (usedSandboxes < sandboxes);
-		System.out.println(
-				"todo:WorkerConnection:51: die istavailable-method ist iwi net auf die sandboxen und den worker angepasst");
-		return true;
+		return (sandboxes > usedSandboxes);
 	}
 	
 	/**
 	 * Schickt einen Kompilieren-Befehl an den Worker, ai enthält
 	 * ${ai-id}v${ai-version}.
-	 * @return 
 	 */
 	public WorkerCommand compile (String ai, int game) throws IOException
 	{
@@ -79,10 +79,11 @@ public class WorkerConnection
 	
 	/**
 	 * Schickt einen Kompilieren-Befehl an den Worker.
-	 * @return 
 	 */
-	public WorkerCommand compile (int aiId, int version, int game) throws IOException
+	public synchronized WorkerCommand compile (int aiId, int version, int game) throws IOException
 	{
+		if (isCompiling())
+			BackendMain.getLogger().warning("WorkerConnection: Gebe Kompilierungsauftrag an beschägtigten Worker weiter.");
 		WorkerCommand cmd = new WorkerCommand(WorkerCommand.COMPILE, aiId, version, game, UUID.randomUUID());
 		connection.sendCommand(cmd);
 		return cmd;
@@ -92,9 +93,9 @@ public class WorkerConnection
 	 * Schickt einen StarteKI-Befehl an den Worker insofern dieser nicht
 	 * komplett beschäftigt ist.
 	 */
-	public boolean addJob (AiWrapper ai, int game) throws IOException
+	public synchronized boolean addJob (AiWrapper ai, int game) throws IOException
 	{
-		if (!isAvailable())
+		if (!canStartAi())
 			return false;
 		connection.sendCommand(new WorkerCommand(WorkerCommand.STARTAI,
 				ai.getId(), ai.getVersion(), game, ai.getUuid()));

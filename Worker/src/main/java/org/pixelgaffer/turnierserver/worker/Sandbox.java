@@ -1,14 +1,19 @@
 package org.pixelgaffer.turnierserver.worker;
 
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.SANDBOX;
+import static org.pixelgaffer.turnierserver.worker.server.SandboxMessage.FINISHED_AI;
+import static org.pixelgaffer.turnierserver.worker.server.SandboxMessage.KILLED_AI;
+import static org.pixelgaffer.turnierserver.worker.server.SandboxMessage.STARTED_AI;
+import static org.pixelgaffer.turnierserver.worker.server.SandboxMessage.TERMINATED_AI;
 
 import java.io.IOException;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
+import org.pixelgaffer.turnierserver.worker.server.SandboxMessage;
 import org.pixelgaffer.turnierserver.worker.server.WorkerConnectionHandler;
 
 /**
@@ -18,7 +23,7 @@ public class Sandbox
 {
 	/** Gibt an ob die Sandbox busy ist. */
 	@Getter
-	@Setter
+	@Setter(AccessLevel.PACKAGE)
 	private boolean busy = false;
 	
 	/** Die Connection von der Sandbox zum Worker. */
@@ -32,9 +37,42 @@ public class Sandbox
 		connection = connectionHandler;
 	}
 	
-	/** Schickt den Job an die Sandbox. */
-	public void sendJob (SandboxCommand job) throws IOException
+	/**
+	 * Schickt den Job an die Sandbox. Dabei wird vorrausgesetzt, dass die
+	 * Sandbox nicht beschäftigt ist. Gibt bei Erfolg true zurück, ansonsten
+	 * false.
+	 */
+	public synchronized boolean sendJob (SandboxCommand job) throws IOException
 	{
+		if (isBusy())
+			return false;
+		setBusy(true);
 		connection.sendJob(job);
+		return true;
+	}
+	
+	/**
+	 * Empfängt die Antwort der Sandbox.
+	 */
+	public synchronized void sandboxAnswer (SandboxMessage answer)
+	{
+		switch (answer.getEvent())
+		{
+			case TERMINATED_AI:
+				System.out.println("Sandbox:62: Hier sollte ich das Backend informieren");
+			case KILLED_AI:
+				System.out.println("Sandbox:64: Hier sollte ich mir überlegen ob das einen Unterschied macht");
+			case FINISHED_AI:
+				System.out.println("Sandbox:66: Hier sollte ich Backend und Spiellogik informieren");
+				setBusy(false);
+				break;
+			case STARTED_AI:
+				System.out.println("Sandbox:70: Hier sollte ich mir überlegen ob ich iwas notifien soll");
+				setBusy(true);
+				break;
+			default:
+				WorkerMain.getLogger().severe("Sandbox: Unknown event received:" + answer);
+				break;
+		}
 	}
 }

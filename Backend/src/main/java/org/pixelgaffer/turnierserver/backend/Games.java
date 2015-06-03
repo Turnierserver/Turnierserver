@@ -25,7 +25,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-import org.pixelgaffer.turnierserver.PropertyUtils;
+import org.pixelgaffer.turnierserver.Parsers;
+import org.pixelgaffer.turnierserver.backend.server.BackendFrontendResult;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
@@ -43,6 +44,9 @@ public class Games
 	
 	/** Die zur UUID gehörende KI. */
 	private static final Map<UUID, AiWrapper> aiWrappers = new HashMap<>();
+	
+	/** Das zur UUID gehörende Spiel. */
+	private static final Map<UUID, GameImpl> games = new HashMap<>();
 	
 	/**
 	 * Generiert eine aktuell freie UUID.
@@ -101,6 +105,10 @@ public class Games
 		@Getter
 		private int gameId;
 		
+		/** Die ID des Request vom Frontend. */
+		@Getter
+		private int requestId;
+		
 		/** Die Liste mit allen teilnehmenden KIs. */
 		@Getter
 		private List<AiWrapper> ais = new ArrayList<>();
@@ -109,7 +117,7 @@ public class Games
 		@Getter
 		private GameLogic<?, ?> logic;
 		
-		private GameImpl (int gameId, @NonNull UUID uuid, String ... ais) throws IOException
+		private GameImpl (int gameId, @NonNull UUID uuid, int requestId, String ... ais) throws IOException
 		{
 			this.gameId = gameId;
 			this.uuid = uuid;
@@ -127,7 +135,7 @@ public class Games
 				this.ais.add(aiw);
 				
 				// einen Worker mit der KI beauftragen
-				WorkerConnection w = Workers.getAvailableWorker();
+				WorkerConnection w = Workers.getStartableWorker();
 				w.addJob(aiw, gameId);
 				aiw.setConnection(w);
 			}
@@ -140,9 +148,12 @@ public class Games
 		}
 		
 		@Override
-		public void finishGame ()
+		public void finishGame () throws IOException
 		{
-			throw new UnsupportedOperationException();
+			for (AiWrapper ai : ais)
+				ai.disconnect();
+			BackendFrontendConnectionHandler.getFrontend().sendMessage(
+					Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), true)));
 		}
 	}
 	
@@ -175,20 +186,16 @@ public class Games
 	/**
 	 * Startet ein Spiel des angegebenen Typs mit den angegebenen KIs.
 	 */
-	public static Game startGame (int gameId, String ... ais)
+	public static Game startGame (int gameId, int requestId, String ... ais)
 			throws ReflectiveOperationException, IOException,
 			FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
 		GameLogic<?, ?> logic = loadGameLogic(gameId);
 		UUID uuid = randomUuid();
-		GameImpl game = new GameImpl(gameId, uuid, ais);
+		GameImpl game = new GameImpl(gameId, uuid, requestId, ais);
+		games.put(uuid, game);
+		System.out.println("Games:190: Hier muss gewartet werden bis die Sandbox meldet dass die KIs gestartet sind");
 		logic.startGame(game);
 		return game;
-	}
-	
-	public static void main (String args[]) throws Throwable
-	{
-		PropertyUtils.loadProperties("/etc/turnierserver/turnierserver.prop");
-		System.out.println(startGame(1, "6v1", "6v1"));
 	}
 }

@@ -14,7 +14,7 @@ import lombok.NonNull;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCommand;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCommandProcessed;
-import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCompileResult;
+import org.pixelgaffer.turnierserver.backend.server.BackendFrontendResult;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandAnswer;
@@ -57,7 +57,7 @@ public class Jobs
 		{
 			try
 			{
-				WorkerCommand wcmd = Workers.getAvailableWorker().compile(cmd.getId(), cmd.getGametype());
+				WorkerCommand wcmd = Workers.getCompilableWorker().compile(cmd.getId(), cmd.getGametype());
 				Job job = new Job(wcmd, cmd);
 				addJob(job);
 				BackendFrontendConnectionHandler.getFrontend().sendMessage(
@@ -66,7 +66,7 @@ public class Jobs
 			catch (Exception e)
 			{
 				e.printStackTrace();
-				BackendFrontendCompileResult result = new BackendFrontendCompileResult(cmd.getRequestid(), false, e);
+				BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
 				try
 				{
 					BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result));
@@ -81,14 +81,14 @@ public class Jobs
 		{
 			try
 			{
-				Games.startGame(cmd.getGametype(), cmd.getAis());
+				Games.startGame(cmd.getGametype(), cmd.getRequestid(), cmd.getAis());
 				BackendFrontendConnectionHandler.getFrontend().sendMessage(
 						Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(cmd.getRequestid())));
 			}
 			catch (Exception e)
 			{
 				e.printStackTrace();
-				BackendFrontendCompileResult result = new BackendFrontendCompileResult(cmd.getRequestid(), false, e);
+				BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
 				try
 				{
 					BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result));
@@ -114,7 +114,7 @@ public class Jobs
 			return;
 		}
 		int requestId = job.getRequestId();
-		BackendFrontendCompileResult result = new BackendFrontendCompileResult(requestId,
+		BackendFrontendResult result = new BackendFrontendResult(requestId,
 				answer.getWhat() == WorkerCommandAnswer.SUCCESS);
 		BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result));
 		jobs.remove(job);

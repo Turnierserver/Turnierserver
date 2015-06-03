@@ -164,7 +164,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					try
 					{
 						SandboxMessage msg = Parsers.getSandbox().parse(line, SandboxMessage.class);
-						System.out.println("WorkerConnectionHandler:133: " + msg);
+						sandbox.sandboxAnswer(msg);
 					}
 					catch (Exception e)
 					{

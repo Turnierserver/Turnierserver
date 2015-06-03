@@ -7,13 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-public class BackendFrontendCompileResult
+public class BackendFrontendResult
 {
 	/** Die request ID des Frontends. */
 	@Getter
 	public int requestid;
 	
-	/** Gibt an ob das Kompilieren erfolgreich war. */
+	/** Gibt an ob der Job erfolgreich war. */
 	@Getter
 	public boolean success;
 	
@@ -21,13 +21,13 @@ public class BackendFrontendCompileResult
 	@Getter
 	private String exception;
 	
-	public BackendFrontendCompileResult (int requestid, boolean success)
+	public BackendFrontendResult (int requestid, boolean success)
 	{
 		this.requestid = requestid;
 		this.success = success;
 	}
 	
-	public BackendFrontendCompileResult (int requestid, boolean success, Exception exception)
+	public BackendFrontendResult (int requestid, boolean success, Exception exception)
 	{
 		this.requestid = requestid;
 		this.success = success;

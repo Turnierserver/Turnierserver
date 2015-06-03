@@ -70,7 +70,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 				{
 					workerConnection = new WorkerConnection(this, socket.getIp(),
 							Parsers.getWorker().parse(line, WorkerInfo.class));
-					Workers.addWorker(workerConnection);
+					Workers.registerWorker(workerConnection);
 				}
 				catch (Exception e)
 				{
