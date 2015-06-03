@@ -1,20 +1,11 @@
 package org.pixelgaffer.turnierserver.esu;
 
 import java.io.IOException;
-import java.nio.channels.Pipe;
-import java.util.List;
-
-import javax.jws.Oneway;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -25,7 +16,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Tab;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -36,12 +26,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.DeletedException;
 import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.NothingDoneException;
 import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.UpdateException;
-import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
 import org.pixelgaffer.turnierserver.esu.utilities.Resources;
 import org.pixelgaffer.turnierserver.esu.utilities.WebConnector;
 import org.pixelgaffer.turnierserver.esu.view.ControllerAiManagement;
@@ -50,10 +39,9 @@ import org.pixelgaffer.turnierserver.esu.view.ControllerRanking;
 import org.pixelgaffer.turnierserver.esu.view.ControllerRoot;
 import org.pixelgaffer.turnierserver.esu.view.ControllerStartPage;
 import org.pixelgaffer.turnierserver.esu.view.ControllerSubmission;
- 
-public class MainApp extends Application{
-	
-	
+
+public class MainApp extends Application {
+
 	public Stage stage;
 	public ControllerRoot cRoot;
 	public ControllerStartPage cStart;
@@ -61,57 +49,57 @@ public class MainApp extends Application{
 	public ControllerGameManagement cGame;
 	public ControllerRanking cRanking;
 	public ControllerSubmission cSubmission;
-	
-	public WebConnector webConnector = new WebConnector("http://192.168.178.43:5000/api/", "192.168.178.43");//"http://thuermchen.com/api/");
+
+	public WebConnector webConnector = new WebConnector("http://192.168.178.43:5000/api/", "192.168.178.43");// "http://thuermchen.com/api/");
 	public GameManager gameManager = new GameManager();
 	public AiManager aiManager = new AiManager();
-	
+
 	public static StringProperty actualGameType = new SimpleStringProperty(null);
 	public static ObservableList<String> gametypes = FXCollections.observableArrayList();
 	public static ObservableList<String> languages = FXCollections.observableArrayList();
-	
-	
+
 	/**
 	 * Main-Methode
 	 * 
-	 * @param args Argumente
+	 * @param args
+	 *            Argumente
 	 */
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		launch(args);
 	}
-	
+
 	/**
 	 * start-Methode (wegen: extends Application)
 	 */
 	public void start(Stage _stage) throws Exception {
 		ErrorLog.clear();
 		ErrorLog.write("Programm startet...", true);
-		
+
 		stage = new Stage(StageStyle.DECORATED);
-		
+
 		gametypes = webConnector.loadGametypesFromFile();
 		languages = webConnector.loadLangsFromFile();
-		
-		if (gametypes == null || languages == null){
+
+		CodeEditor.writeAce();
+
+		if (gametypes == null || languages == null) {
 			showSplashStage(_stage);
-		}
-		else{
-			loadOnlineResources();	
+		} else {
+			loadOnlineResources();
 			showMainStage();
 		}
 
 		ErrorLog.write("Programm gestartet", true);
 
 	}
-	
-	public void stop(){
+
+	public void stop() {
 		if (cAi.version != null)
 			cAi.version.saveCode();
 		ErrorLog.write("Programm beendet", true);
 	}
-	
-	
-	public void loadOnlineResources(){
+
+	public void loadOnlineResources() {
 		final Task updateTask = new Task() {
 			@Override
 			protected Object call() throws InterruptedException {
@@ -121,11 +109,13 @@ public class MainApp extends Application{
 					webConnector.updateGametypes();
 				} catch (NewException e) {
 					gametypes = e.newValues;
-					if (Dialog.okAbort("Neue Spieltypen sind verfügbar. Wollen Sie zum aktuellen wechseln?")){
+					if (Dialog.okAbort("Neue Spieltypen sind verfügbar. Wollen Sie zum aktuellen wechseln?")) {
 						cStart.cbGameTypes.getSelectionModel().selectLast();
 					}
 				} catch (UpdateException e) {
-				}catch (NothingDoneException e) {}
+				} catch (NothingDoneException e) {
+				} catch (IOException e) {
+				}
 
 				updateMessage("Sprachen werden geladen");
 
@@ -134,16 +124,17 @@ public class MainApp extends Application{
 				} catch (NewException e) {
 					languages = e.newValues;
 					Dialog.info("Neue Sprachen sind verfügbar");
-				} catch (NothingDoneException e) {}
+				} catch (NothingDoneException e) {
+				} catch (IOException e) {
+				}
 				return null;
 			}
 		};
 
 		new Thread(updateTask).start();
 	}
-	
-	
-	public void showSplashStage(Stage splashStage){
+
+	public void showSplashStage(Stage splashStage) {
 
 		final Task updateTask = new Task() {
 			@Override
@@ -155,15 +146,15 @@ public class MainApp extends Application{
 				} catch (NewException e) {
 					gametypes = e.newValues;
 				} catch (UpdateException e) {
-				}catch (NothingDoneException e) {
+				} catch (NothingDoneException e) {
+				} catch (IOException e) {
 					ErrorLog.write("Bitte stellen Sie beim ersten Start eine Verbindung zum Internet her");
-					for (int i = 10; i >= 0; i--){
+					for (int i = 10; i >= 0; i--) {
 						updateMessage("Keine Internetverbindung (" + i + ")");
 						Thread.sleep(1000);
 					}
 					System.exit(1);
 				}
-
 				updateMessage("Sprachen werden geladen");
 
 				try {
@@ -172,8 +163,9 @@ public class MainApp extends Application{
 					languages = e.newValues;
 				} catch (UpdateException e) {
 				} catch (NothingDoneException e) {
+				} catch (IOException e) {
 					ErrorLog.write("Bitte stellen Sie beim ersten Start eine Verbindung zum Internet her");
-					for (int i = 10; i >= 0; i--){
+					for (int i = 10; i >= 0; i--) {
 						updateMessage("Keine Internetverbindung (" + i + ")");
 						Thread.sleep(1000);
 					}
@@ -182,10 +174,8 @@ public class MainApp extends Application{
 				return null;
 			}
 		};
-		
-		
-		
-		//Screen erstellen
+
+		// Screen erstellen
 		ImageView img = new ImageView(Resources.codr());
 		ProgressBar loadProgress = new ProgressBar();
 		loadProgress.setPrefWidth(400 - 20);
@@ -195,15 +185,10 @@ public class MainApp extends Application{
 		((VBox) splashLayout).setAlignment(Pos.CENTER);
 		splashLayout.getChildren().addAll(img, loadProgress, progressText);
 		progressText.setAlignment(Pos.CENTER);
-		splashLayout.setStyle(
-			"-fx-padding: 10; " +
-			"-fx-border-color: derive(black, 90%); " +
-			"-fx-border-width:1; " +
-			"-fx-background-color: white;"
-		);
+		splashLayout.setStyle("-fx-padding: 10; " + "-fx-border-color: derive(black, 90%); " + "-fx-border-width:1; " + "-fx-background-color: white;");
 		progressText.textProperty().bind(updateTask.messageProperty());
 		splashLayout.setEffect(new DropShadow());
-		
+
 		Scene splashScene = new Scene(splashLayout);
 		splashStage.initStyle(StageStyle.UNDECORATED);
 		final Rectangle2D bounds = Screen.getPrimary().getBounds();
@@ -219,17 +204,16 @@ public class MainApp extends Application{
 				fadeSplash.setToValue(0.5);
 				fadeSplash.setOnFinished(actionEvent -> splashStage.hide());
 				fadeSplash.play();
-				
+
 				showMainStage();
 			}
 		});
-		
+
 		new Thread(updateTask).start();
 	}
-	
-	
-	public void showMainStage(){
-		
+
+	public void showMainStage() {
+
 		BorderPane root = new BorderPane();
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -240,13 +224,13 @@ public class MainApp extends Application{
 			ErrorLog.write("RootLayout konnte nicht geladen werden (FXML-Fehler)");
 			e.printStackTrace();
 		}
-		
+
 		stage.setTitle("Codr");
 		stage.getIcons().add(Resources.codrIcon());
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
-		
+
 	}
-	
+
 }

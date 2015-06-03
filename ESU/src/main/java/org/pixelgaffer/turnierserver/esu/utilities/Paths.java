@@ -9,6 +9,10 @@ import org.pixelgaffer.turnierserver.esu.Version;
 
 public class Paths {
 	
+	public static String aceFolder() {
+		return "Ace";
+	}
+	
 	public static String downloadFolder() {
 		return "Downloads";
 	}

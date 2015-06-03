@@ -15,14 +15,11 @@
 </head>
 <body>
 <div id="editor"></div>
-<script type="text/javascript" charset="utf-8">${ace}</script>
+<script src="bundle.js" type="text/javascript" charset="utf-8"></script>
 
 <script>
 	modelist = ace.require("ace/ext/modelist");
 	editor = ace.edit("editor");
-	//editor.setTheme("${theme}");
-	console.log(modelist.getModeForPath("${file}").mode)
-	editor.getSession().setMode(modelist.getModeForPath("${file}").mode);
 </script>
 </body>
 </html>

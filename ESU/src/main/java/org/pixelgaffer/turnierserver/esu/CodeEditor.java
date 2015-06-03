@@ -7,14 +7,17 @@ import java.io.IOException;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 import org.w3c.dom.Document;
 
 public class CodeEditor {
@@ -24,6 +27,20 @@ public class CodeEditor {
 	public boolean loaded = false;
 	private WebView codeView;
 
+	public static void writeAce() {
+		File aceFolder = new File(Paths.aceFolder());
+		if(aceFolder.exists()) {
+			return;
+		}
+		try {
+			aceFolder.mkdirs();
+			FileUtils.write(new File(aceFolder, "bundle.js"), IOUtils.toString(CodeEditor.class.getResource("view/bundle.js")));
+			FileUtils.write(new File(aceFolder, "editor.html"), IOUtils.toString(CodeEditor.class.getResource("view/editor.html")));
+		} catch (IOException e) {
+			ErrorLog.write("Konnte Ace nicht schreiben!");
+		}
+	}
+	
 	/**
 	 * Initialisiert den CodeEditor mit der zu zeigenden Datei
 	 * 
@@ -33,15 +50,24 @@ public class CodeEditor {
 		document = doc;
 		codeView = new WebView();
 		try {
-			codeView.getEngine().loadContent(IOUtils.toString(getClass().getResourceAsStream("view/editor.html"), "UTF-8").replace("${file}", doc.getAbsolutePath()).replace("${theme}", "eclipse").replace("${ace}", IOUtils.toString(getClass().getResourceAsStream("view/ace.js"), "UTF-8") + System.lineSeparator() + IOUtils.toString(getClass().getResourceAsStream("view/ext-modelist.js"), "UTF-8")));
+			codeView.getEngine().load(new File(Paths.aceFolder() + "/editor.html").toURI().toURL().toString());
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			System.exit(1);
 		}
 
+		codeView.getEngine().setOnAlert(new EventHandler<WebEvent<String>>() {
+			@Override
+			public void handle(WebEvent<String> event) {
+				System.err.println("This is an alert: " + event);
+			}
+		});
+		
 		codeView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
 			public void changed(ObservableValue<? extends Document> prop, Document oldDoc, Document newDoc) {
-				codeView.getEngine().executeScript("if (!document.getElementById('FirebugLite')){E = document['createElement' + 'NS'] && document.documentElement.namespaceURI;E = E ? document['createElement' + 'NS'](E, 'script') : document['createElement']('script');E['setAttribute']('id', 'FirebugLite');E['setAttribute']('src', 'https://getfirebug.com/' + 'firebug-lite.js' + '#startOpened');E['setAttribute']('FirebugLite', '4');(document['getElementsByTagName']('head')[0] || document['getElementsByTagName']('body')[0]).appendChild(E);E = new Image;E['setAttribute']('src', 'https://getfirebug.com/' + '#startOpened');}");
+				codeView.getEngine().executeScript("editor.setTheme(\"ace/theme/eclipse\");");
+				codeView.getEngine().executeScript("editor.getSession().setMode(modelist.getModeForPath(\"" + doc.getName() + "\").mode);");
+//				codeView.getEngine().executeScript("if (!document.getElementById('FirebugLite')){E = document['createElement' + 'NS'] && document.documentElement.namespaceURI;E = E ? document['createElement' + 'NS'](E, 'script') : document['createElement']('script');E['setAttribute']('id', 'FirebugLite');E['setAttribute']('src', 'https://getfirebug.com/' + 'firebug-lite.js' + '#startOpened');E['setAttribute']('FirebugLite', '4');(document['getElementsByTagName']('head')[0] || document['getElementsByTagName']('body')[0]).appendChild(E);E = new Image;E['setAttribute']('src', 'https://getfirebug.com/' + '#startOpened');}");
 				load();
 			}
 		});

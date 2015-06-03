@@ -44,42 +44,46 @@ import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.NothingDoneExcepti
 import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.UpdateException;
 
 public class WebConnector {
-	
+
 	private final String url;
 	private final String cookieUrl;
-	
+
 	private CookieStore cookies = new BasicCookieStore();
 	private CloseableHttpClient http = HttpClients.custom().setDefaultCookieStore(cookies).build();
-	
+
 	/**
 	 * Erstellt einen neuen Web Connector
 	 * 
-	 * @param url Die URL der API (z.B. http://www.thuermchen.com/api/ <- Der '/' muss da sein)
+	 * @param url
+	 *            Die URL der API (z.B. http://www.thuermchen.com/api/ <- Der
+	 *            '/' muss da sein)
 	 */
-	public WebConnector(final String url, final String cookieUrl){
+	public WebConnector(final String url, final String cookieUrl) {
 		this.url = url;
 		this.cookieUrl = cookieUrl;
 		readFromFile();
 	}
-	
+
 	/**
 	 * Loggt den Benutzer ein
 	 * 
-	 * @param username Der Benutzername
-	 * @param password Der Passwort
+	 * @param username
+	 *            Der Benutzername
+	 * @param password
+	 *            Der Passwort
 	 * @return Gibt an ob das Login erfolgreich war
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public boolean login(String username, String password) throws IOException{
+	public boolean login(String username, String password) throws IOException {
 		boolean result = sendPost("login", "email", username, "password", password, "remember", "true") != null;
 		saveToFile();
 		return result;
 	}
-	
+
 	public boolean register(String username, String firstname, String lastname, String email, String password) throws IOException {
 		return sendPost("register", "username", username, "email", email, "password", password, "firstname", firstname, "lastname", lastname) != null;
 	}
-	
+
 	/**
 	 * Loggt den Benutzer aus
 	 * 
@@ -91,7 +95,7 @@ public class WebConnector {
 		saveToFile();
 		return result;
 	}
-	
+
 	/**
 	 * Gibt zurück ob die ESU momentan eingeloggt ist
 	 * 
@@ -100,11 +104,11 @@ public class WebConnector {
 	 */
 	public boolean isLoggedIn() {
 		try {
-			if(getSession() == null || getRememberToken() == null) {
+			if (getSession() == null || getRememberToken() == null) {
 				return false;
 			}
 			boolean result = sendPost("loggedin") != null;
-			if(!result) {
+			if (!result) {
 				setTokens(null, null);
 			}
 			return result;
@@ -113,7 +117,7 @@ public class WebConnector {
 			return false;
 		}
 	}
-	
+
 	public ObservableList<Ai> getAis(String game) {
 		ObservableList<Ai> result = FXCollections.observableArrayList();
 		String json;
@@ -122,45 +126,46 @@ public class WebConnector {
 		} catch (IOException e) {
 			return result;
 		}
-		if(json == null) {
+		if (json == null) {
 			return result;
 		}
 		JSONArray ais = new JSONArray(json);
-		
-		for(int i = 0; i < ais.length(); i++) {
+
+		for (int i = 0; i < ais.length(); i++) {
 			result.add(new Ai(ais.getJSONObject(i), this));
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Gibt das Bild einer AI zurück
 	 * 
-	 * @param id Die id der AI
+	 * @param id
+	 *            Die id der AI
 	 * @return Das Bild der AI
 	 * @throws IOException
 	 */
 	public Image getImage(int id) throws IOException {
 		return new Image(new ByteArrayInputStream(sendGet("ai/" + id + "/icon")));
 	}
-	
+
 	public List<Game> getGames() {
 		throw new UnsupportedOperationException("Ich bin so pöse!");
 	}
-	
+
 	public void uploadVersion(Version version) {
-		
+
 	}
-	
+
 	public void createAi(Ai ai) {
-		
+
 	}
-	
+
 	public ObservableList<Ai> getOwnAis(String game, String userName) {
 		return FXCollections.observableArrayList(getAis(game).stream().filter((Ai ai) -> ai.userName == userName).collect(Collectors.toList()));
 	}
-	
+
 	/**
 	 * Pingt den Server
 	 * 
@@ -174,25 +179,25 @@ public class WebConnector {
 			return false;
 		}
 	}
-	
+
 	public ObservableList<String> loadGametypesFromFile() {
 		ObservableList<String> result = FXCollections.observableArrayList();
-		
+
 		try {
-			for(String line : FileUtils.readLines(new File(Paths.gameTypesFile()))) {
+			for (String line : FileUtils.readLines(new File(Paths.gameTypesFile()))) {
 				result.add(line.split("->")[0]);
 			}
 		} catch (IOException e) {
 			ErrorLog.write("Konnte Spieltypen nicht aus Datei laden. Dies ist beim ersten Starten zu erwarten: " + e.getLocalizedMessage());
 			return null;
 		}
-		
+
 		return result;
 	}
-	
+
 	public ObservableList<String> loadLangsFromFile() {
 		ObservableList<String> result = FXCollections.observableArrayList();
-		
+
 		try {
 			result.addAll(FileUtils.readLines(new File(Paths.langsFile())));
 		} catch (IOException e) {
@@ -200,20 +205,20 @@ public class WebConnector {
 		}
 		return result;
 	}
-	
-	public void updateLanguages() throws DeletedException, NewException, NothingDoneException {
+
+	public void updateLanguages() throws DeletedException, NewException, NothingDoneException, IOException {
 		ObservableList<String> result = FXCollections.observableArrayList();
-		
+
 		String json = null;
 		try {
 			json = toString(sendGet("langs"));
 		} catch (IOException e) {
 			ErrorLog.write("Die Sprachen konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
 		}
-		if(json == null) {
-			throw new NothingDoneException();
+		if (json == null) {
+			throw new IOException("Keine oder böse Antwort vom Server");
 		}
-		
+
 		File langsFile = new File(Paths.langsFile());
 		List<String> langsInFile = new ArrayList<String>();
 		try {
@@ -221,62 +226,61 @@ public class WebConnector {
 		} catch (IOException e) {
 			ErrorLog.write("Konnte Sprachen nicht aus Datei lesen. Dies ist beim ersten Start zu erwarten: " + e.getLocalizedMessage());
 		}
-		
+
 		boolean newLangs = false;
 		boolean deleted = false;
-		
+
 		JSONArray langs = new JSONArray(json);
-		for(int i = 0; i < langs.length(); i++) {
+		for (int i = 0; i < langs.length(); i++) {
 			String lang = langs.getJSONObject(i).getString("name");
-			if(!langsInFile.contains(lang)) {
+			if (!langsInFile.contains(lang)) {
 				newLangs = true;
 			}
 			result.add(lang);
 		}
-		
+
 		langsFile.delete();
 		try {
 			langsFile.getParentFile().mkdirs();
 			langsFile.createNewFile();
-			for(int i = 0; i < result.size(); i++) {
+			for (int i = 0; i < result.size(); i++) {
 				FileUtils.write(langsFile, result.get(i) + "\n", true);
 			}
 		} catch (IOException e) {
 			ErrorLog.write("Die Sprachen konnten nicht in die Datei geschrieben werden!");
 		}
-		
-		for(String lang : langsInFile) {
-			if(!result.contains(lang)) {
+
+		for (String lang : langsInFile) {
+			if (!result.contains(lang)) {
 				deleted = true;
 			}
 		}
-		
-		if(newLangs) {
+
+		if (newLangs) {
 			throw new NewException(result);
 		}
-		if(deleted) {
+		if (deleted) {
 			throw new DeletedException(result);
 		}
 		throw new NothingDoneException();
-		
-	}
-	
 
-	public void updateGametypes() throws NewException, UpdateException, NothingDoneException, DeletedException {
+	}
+
+	public void updateGametypes() throws NewException, UpdateException, NothingDoneException, DeletedException, IOException {
 		ObservableList<String> result = FXCollections.observableArrayList();
-		
+
 		String json = null;
 		try {
 			json = toString(sendGet("gametypes"));
 		} catch (IOException e) {
 			ErrorLog.write("Die Spieltypen konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
 		}
-		if(json == null) {
-			throw new NothingDoneException();
+		if (json == null) {
+			throw new IOException("Keine oder böse Antwort vom Server");
 		}
-		
+
 		JSONArray gametypes = new JSONArray(json);
-		
+
 		List<String> fileLines = new ArrayList<>();
 		try {
 			fileLines = FileUtils.readLines(new File(Paths.gameTypesFile()));
@@ -284,58 +288,56 @@ public class WebConnector {
 			ErrorLog.write("Die Spieltypen konnten nicht aus der Datei gelesen werden: " + e.getLocalizedMessage());
 			ErrorLog.write("Es werden nun alle Spieltypen geladen!");
 		}
-		
+
 		List<String> gametypesInFile = new ArrayList<>();
 		List<String> gametypesFromFrontend = new ArrayList<>();
-		for(String fileLine : fileLines) {
+		for (String fileLine : fileLines) {
 			gametypesInFile.add(fileLine.split("->")[0]);
 		}
-		
+
 		boolean updated = false;
 		boolean somethingNew = false;
 		String[] lines = new String[gametypes.length()];
-		
-		for(int i = 0; i < gametypes.length(); i++) {
+
+		for (int i = 0; i < gametypes.length(); i++) {
 			JSONObject gametype = gametypes.getJSONObject(i);
 			String apparentLine = gametype.getString("name") + "->" + gametype.getLong("last_modified");
-			
+
 			gametypesFromFrontend.add(gametype.getString("name"));
-			
-			if(!fileLines.contains(apparentLine)) {
-				if(!loadGamelogic(gametype.getInt("id"), gametype.getString("name")) || !loadDataContainer(gametype.getInt("id"), gametype.getString("name"))) {
+
+			if (!fileLines.contains(apparentLine)) {
+				if (!loadGamelogic(gametype.getInt("id"), gametype.getString("name")) || !loadDataContainer(gametype.getInt("id"), gametype.getString("name"))) {
 					ErrorLog.write("Konnte Spiel " + gametype.getString("name") + " nicht aktualisieren!");
 					continue;
-				}
-				else {
+				} else {
 					updated = true;
-					if(!gametypesInFile.contains(gametype.getString("name"))) {
+					if (!gametypesInFile.contains(gametype.getString("name"))) {
 						somethingNew = true;
 					}
 				}
 			}
 			lines[gametype.getInt("id") - 1] = apparentLine;
 		}
-		
-		
-		//Speichern in der Datei
+
+		// Speichern in der Datei
 		try {
 			File gametypesFile = new File(Paths.gameTypesFile());
 			gametypesFile.delete();
 			gametypesFile.getParentFile().mkdirs();
 			gametypesFile.createNewFile();
-			for(String line : lines) {
-				if(line != null) {
+			for (String line : lines) {
+				if (line != null) {
 					result.add(line.split("->")[0]);
-					FileUtils.write(gametypesFile, line + System.lineSeparator(), true);	
+					FileUtils.write(gametypesFile, line + System.lineSeparator(), true);
 				}
 			}
 		} catch (IOException e) {
 			ErrorLog.write("Die Spieltypen konnten nicht in die Datei geschrieben werden!");
 		}
-		
+
 		boolean deleted = false;
-		for(String gametype : gametypesInFile) {
-			if(!gametypesFromFrontend.contains(gametype)) {
+		for (String gametype : gametypesInFile) {
+			if (!gametypesFromFrontend.contains(gametype)) {
 				deleted = true;
 				try {
 					FileUtils.deleteDirectory(new File(Paths.downloadGameType(gametype)));
@@ -345,20 +347,18 @@ public class WebConnector {
 				break;
 			}
 		}
-		
-		if(somethingNew) {
+
+		if (somethingNew) {
 			throw new NewException(result);
 		}
-		if(deleted) {
+		if (deleted) {
 			throw new DeletedException(result);
 		}
-		if(updated) {
+		if (updated) {
 			throw new UpdateException();
 		}
 		throw new NothingDoneException();
 	}
-	
-	
 
 	public boolean loadGamelogic(int game, String gameName) {
 		byte[] logic;
@@ -368,11 +368,11 @@ public class WebConnector {
 			ErrorLog.write("Spiellogik konnte nicht heruntergeladen werden: " + e.getLocalizedMessage());
 			return false;
 		}
-		
-		if(logic == null) {
+
+		if (logic == null) {
 			return false;
 		}
-		
+
 		try {
 			FileUtils.writeByteArrayToFile(new File(Paths.gameLogic(gameName)), logic);
 		} catch (IOException e) {
@@ -381,7 +381,6 @@ public class WebConnector {
 		}
 		return true;
 	}
-	
 
 	public boolean loadDataContainer(int game, String gameName) {
 		byte[] libraries;
@@ -391,11 +390,11 @@ public class WebConnector {
 			ErrorLog.write("Der Data Container konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
 			return false;
 		}
-		
-		if(libraries == null) {
+
+		if (libraries == null) {
 			return false;
 		}
-		
+
 		try {
 			File tempZip = File.createTempFile("datacontainer", System.currentTimeMillis() + ".zip");
 			FileUtils.writeByteArrayToFile(tempZip, libraries);
@@ -404,29 +403,27 @@ public class WebConnector {
 			File zip;
 			zipFile.extractAll((zip = Files.createTempDirectory("datacontainerUnzipped" + System.currentTimeMillis()).toFile()).getAbsolutePath());
 			zip.deleteOnExit();
-			for(File file : new File(zip, "AiLibraries").listFiles()) {
-				if(file.isFile()) {
+			for (File file : new File(zip, "AiLibraries").listFiles()) {
+				if (file.isFile()) {
 					continue;
 				}
 				File target = new File(Paths.ailibrary(gameName, file.getName()));
 				target.mkdirs();
 				FileUtils.copyDirectory(file, target);
 			}
-			for(File file : new File(zip, "SimplePlayers").listFiles()) {
-				if(file.isFile()) {
+			for (File file : new File(zip, "SimplePlayers").listFiles()) {
+				if (file.isFile()) {
 					continue;
 				}
 				File target = new File(Paths.simplePlayer(gameName, file.getName()) + "/src");
 				FileUtils.deleteDirectory(new File(Paths.simplePlayer(gameName, file.getName())).getParentFile());
 				target.mkdirs();
-				File property = new File(Paths.simplePlayer(gameName, file.getName())+ "/..", "properties.txt");
+				File property = new File(Paths.simplePlayer(gameName, file.getName()) + "/..", "properties.txt");
 				property.createNewFile();
-				FileUtils.write(property, "versionAmount=1" + System.lineSeparator() + "gametype=" + gameName + System.lineSeparator() + "description=Das ist der " + file.getName() + "-SimplePlayer" +
-						System.lineSeparator() + "language=" + file.getName());
+				FileUtils.write(property, "versionAmount=1" + System.lineSeparator() + "gametype=" + gameName + System.lineSeparator() + "description=Das ist der " + file.getName() + "-SimplePlayer" + System.lineSeparator() + "language=" + file.getName());
 				property = new File(property.getParent() + "/v0/properties.txt");
 				property.createNewFile();
-				FileUtils.write(property, "uploaded=false" + System.lineSeparator() + "compileOutput=" + System.lineSeparator() + "qualifyOutput=" + System.lineSeparator() +
-						"qualified=false" + System.lineSeparator() + "compiled=false" + System.lineSeparator() + "finished=false");
+				FileUtils.write(property, "uploaded=false" + System.lineSeparator() + "compileOutput=" + System.lineSeparator() + "qualifyOutput=" + System.lineSeparator() + "qualified=false" + System.lineSeparator() + "compiled=false" + System.lineSeparator() + "finished=false" + System.lineSeparator() + "executeCommand=");
 				FileUtils.copyDirectory(file, target);
 			}
 		} catch (IOException | ZipException e) {
@@ -434,25 +431,27 @@ public class WebConnector {
 			ErrorLog.write("Ai Libraries konnte nicht entpackt werden: " + e.getLocalizedMessage());
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Setzt die Tokens einer Session
 	 * 
-	 * @param rememberToken Den Remember Token
-	 * @param sessionToken Den Session Token
+	 * @param rememberToken
+	 *            Den Remember Token
+	 * @param sessionToken
+	 *            Den Session Token
 	 */
 	public void setTokens(String rememberToken, String sessionToken) {
-		if(rememberToken == null || sessionToken == null) {
+		if (rememberToken == null || sessionToken == null) {
 			cookies.clear();
 			return;
 		}
 		cookies.addCookie(createCookie("remember_token", rememberToken));
 		cookies.addCookie(createCookie("session", sessionToken));
 	}
-	
+
 	/**
 	 * Gibt den Session Token zurück
 	 * 
@@ -462,7 +461,7 @@ public class WebConnector {
 		List<Cookie> cookie = cookies.getCookies().stream().filter((Cookie o) -> o.getName().equals("session")).collect(Collectors.toList());
 		return cookie.isEmpty() ? null : cookie.get(0).getValue();
 	}
-	
+
 	/**
 	 * Gibt den Remember Token zurück
 	 * 
@@ -472,7 +471,7 @@ public class WebConnector {
 		List<Cookie> cookie = cookies.getCookies().stream().filter((Cookie o) -> o.getName().equals("remember_token")).collect(Collectors.toList());
 		return cookie.isEmpty() ? null : cookie.get(0).getValue();
 	}
-	
+
 	/**
 	 * Speichert die Session in eine Datei
 	 */
@@ -486,18 +485,18 @@ public class WebConnector {
 			return;
 		}
 	}
-	
+
 	/**
 	 * Holt die Session aus einer Datei
 	 */
 	public void readFromFile() {
 		File file = new File(Paths.sessionFile());
 		try {
-			if(!file.exists()) {
+			if (!file.exists()) {
 				return;
 			}
 			String[] tokens = FileUtils.readFileToString(file).split("\n");
-			if(tokens.length != 2) {
+			if (tokens.length != 2) {
 				return;
 			}
 			setTokens(tokens[1].isEmpty() ? null : tokens[1], tokens[0].isEmpty() ? null : tokens[0]);
@@ -506,97 +505,103 @@ public class WebConnector {
 			return;
 		}
 	}
-	
+
 	public byte[] sendPost(String command) throws IOException {
 		return sendPost(command, new NameValuePair[0]);
 	}
-	
-	public byte[] sendPost(String command, String...data) throws IOException {
-		if(data.length % 2 != 0) {
+
+	public byte[] sendPost(String command, String... data) throws IOException {
+		if (data.length % 2 != 0) {
 			throw new IllegalArgumentException("Pöse pöse, data muss immer eine Länge % 2 = 0 haben!");
 		}
 		NameValuePair[] nvpData = new BasicNameValuePair[data.length / 2];
-		for(int i = 0; i < nvpData.length; i++) {
-			if(data[i * 2] != null && data[i * 2 + 1] != null) {
+		for (int i = 0; i < nvpData.length; i++) {
+			if (data[i * 2] != null && data[i * 2 + 1] != null) {
 				nvpData[i] = new BasicNameValuePair(data[i * 2], data[i * 2 + 1]);
 			}
 		}
 		return sendPost(command, nvpData);
 	}
-	
+
 	/**
 	 * Sendet einen PostRequest
 	 * 
-	 * @param command Das Kommando (z.B. login für http://www.thuermchen.com/api/login)
-	 * @param data Die Daten, die per POST übegeben werden sollen
+	 * @param command
+	 *            Das Kommando (z.B. login für
+	 *            http://www.thuermchen.com/api/login)
+	 * @param data
+	 *            Die Daten, die per POST übegeben werden sollen
 	 * @return Die Antwort als byte[]
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public byte[] sendPost(String command, NameValuePair...data) throws IOException{
+	public byte[] sendPost(String command, NameValuePair... data) throws IOException {
 		HttpPost post = new HttpPost(command == null || command.length() == 0 ? url.substring(0, url.length() - 1) : url + command);
-		if(data.length != 0) {
+		if (data.length != 0) {
 			post.setEntity(new UrlEncodedFormEntity(Arrays.asList(data)));
 		}
-		
+
 		HttpResponse response = http.execute(post);
-		
+
 		byte[] responseArray = getOutput(response.getEntity().getContent());
-		
-		if(response.getStatusLine().getStatusCode() != 200) {
+
+		if (response.getStatusLine().getStatusCode() != 200) {
 			ErrorLog.write("ERROR: Executing post request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + toString(responseArray));
 			return null;
 		}
-		
+
 		return responseArray;
 	}
-	
+
 	public byte[] sendGet(String command) throws IOException {
 		return sendGet(command, new NameValuePair[0]);
 	}
-	
-	public byte[] sendGet(String command, String...data) throws IOException {
-		if(data.length % 2 != 0) {
+
+	public byte[] sendGet(String command, String... data) throws IOException {
+		if (data.length % 2 != 0) {
 			throw new IllegalArgumentException("Pöse pöse, data muss immer eine Länge % 2 = 0 haben!");
 		}
 		NameValuePair[] nvpData = new BasicNameValuePair[data.length / 2];
-		for(int i = 0; i < nvpData.length; i++) {
+		for (int i = 0; i < nvpData.length; i++) {
 			nvpData[i] = new BasicNameValuePair(data[i * 2], data[i * 2 + 1]);
 		}
 		return sendGet(command, nvpData);
 	}
-	
+
 	/**
 	 * Sendet einen GetRequest
 	 * 
-	 * @param command Das Kommando (z.B. logout für http://www.thuermchen.com/api/logout)
-	 * @param data Die Daten, die per GET übegeben werden sollen
+	 * @param command
+	 *            Das Kommando (z.B. logout für
+	 *            http://www.thuermchen.com/api/logout)
+	 * @param data
+	 *            Die Daten, die per GET übegeben werden sollen
 	 * @return Die Antwort als byte[]
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public byte[] sendGet(String command, NameValuePair...data) throws IOException {
-		
+	public byte[] sendGet(String command, NameValuePair... data) throws IOException {
+
 		String args = "";
-		for(NameValuePair pair : data) {
+		for (NameValuePair pair : data) {
 			args += args.isEmpty() ? "?" : "&";
 			args += pair.getName() + "=" + pair.getValue();
 		}
-		
+
 		HttpGet get = new HttpGet(command == null || command.isEmpty() ? url.substring(0, url.length() - 1) + args : url + command + args);
-		
+
 		HttpResponse response = http.execute(get);
-		
+
 		byte[] responseArray = getOutput(response.getEntity().getContent());
-		
-		if(response.getStatusLine().getStatusCode() != 200) {
+
+		if (response.getStatusLine().getStatusCode() != 200) {
 			ErrorLog.write("ERROR: Executing get request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + toString(responseArray));
 			return null;
 		}
-		
+
 		return responseArray;
 	}
-	
+
 	private String toString(byte[] bytes) throws IOException {
-		if(bytes == null) {
+		if (bytes == null) {
 			throw new IOException();
 		}
 		try {
@@ -607,21 +612,21 @@ public class WebConnector {
 			return null;
 		}
 	}
-	
+
 	private byte[] getOutput(InputStream in) throws IOException {
 		ByteArrayOutputStream responseContent = new ByteArrayOutputStream();
 		byte[] buffer = new byte[1024];
 		int read;
-		
-		while((read = in.read(buffer)) > 0) {
-			for(int i = 0; i < read; i++) {
+
+		while ((read = in.read(buffer)) > 0) {
+			for (int i = 0; i < read; i++) {
 				responseContent.write(buffer[i]);
 			}
 		}
-		
+
 		return responseContent.toByteArray();
 	}
-	
+
 	public Cookie createCookie(String key, String value) {
 		BasicClientCookie cookie = new BasicClientCookie(key, value);
 		cookie.setCreationDate(new Date(System.currentTimeMillis()));
@@ -630,5 +635,5 @@ public class WebConnector {
 		cookie.setPath("/");
 		return cookie;
 	}
-	
+
 }
