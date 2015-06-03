@@ -1,3 +1,4 @@
+# unnötiges generiertes zeugs
 .directory
 ESU/errorLog.txt
 ESU/session.conf
@@ -5,7 +6,9 @@ __pycache__
 *.log
 AIs/
 Downloads/
+test.db
 
+# java müll
 .settings/
 .metadata/
 .recommenders/
@@ -17,6 +20,7 @@ delombok/
 .project
 *.class
 
+# c++ müll
 build-*/
 *.pro.user
 *.o
@@ -27,3 +31,9 @@ build-*/
 META-INF
 Frontend/migrations
 Frontend/tmp
+
+# anderer müll
+GameBuilder/buildgame
+SandboxMachine/sandboxd
+SandboxMachine/sandboxd_helper
+SandboxMachine/startGdb.sh
