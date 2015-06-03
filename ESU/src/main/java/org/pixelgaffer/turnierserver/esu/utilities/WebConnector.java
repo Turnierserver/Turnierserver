@@ -115,7 +115,7 @@ public class WebConnector {
 		}
 	}
 	
-	public ObservableList<Ai> getAis(int game) {
+	public ObservableList<Ai> getAis(String game) {
 		ObservableList<Ai> result = FXCollections.observableArrayList();
 		String json;
 		try {
@@ -175,18 +175,7 @@ public class WebConnector {
 			result.addAll(FileUtils.readLines(new File(Paths.gameTypesFile())));
 		} catch (IOException e) {
 			ErrorLog.write("Konnte Spieltypen nicht aus Datei laden. Dies ist beim ersten Starten zu erwarten: " + e.getLocalizedMessage());
-			String json = null;
-			try {
-				json = toString(sendGet("gametypes"));
-			} catch (IOException e1) {}
-			if(json == null) {
-				ErrorLog.write("Konnte die Spieltypen nicht aus dem Internet laden. Dies ist ein schwerwiededer Fehler!");
-				return null;
-			}
-			JSONArray gametypes = new JSONArray(json);
-			for(int i = 0; i < gametypes.length(); i++) {
-				result.add(gametypes.getJSONObject(i).getString("name"));
-			}
+			return null;
 		}
 		
 		return result;
@@ -198,19 +187,7 @@ public class WebConnector {
 		try {
 			result.addAll(FileUtils.readLines(new File(Paths.langsFile())));
 		} catch (IOException e) {
-			ErrorLog.write("Konnte Sprachen nicht aus Datei laden. Dies ist beim ersten Starten zu erwarten: " + e.getLocalizedMessage());
-			String json = null;
-			try {
-				json = toString(sendGet("langs"));
-			} catch (IOException e1) {}
-			if(json == null) {
-				ErrorLog.write("Konnte die Sprachen nicht aus dem Internet laden. Dies ist ein schwerwiededer Fehler!");
-				return null;
-			}
-			JSONArray langs = new JSONArray(json);
-			for(int i = 0; i < langs.length(); i++) {
-				result.add(langs.getJSONObject(i).getString("name"));
-			}
+			return null;
 		}
 		return result;
 	}
