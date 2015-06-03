@@ -131,13 +131,14 @@ def api_game(id):
 @api.route("/game/<int:id>/log")
 @sse_stream
 def api_game_log(id):
+	import random
 	game = Game.query.get(id)
 	if game:
-		#for chunk in []:
-		#	yield chunk
-		for i in range(20):
-			size = 5
-			m = [[0 for y in range(size)] for x in range(size)]
+		for chunk in []:
+			yield chunk
+		for i in range(21):
+			size = 16
+			m = [[random.randrange(0, 3) for y in range(size)] for x in range(size)]
 			info = dict(
 				data = dict(cells=m, id=i),
 				ai_logs = [
@@ -145,10 +146,11 @@ def api_game_log(id):
 					"ehuehuehuehueeu"
 				],
 				status=str(i)+"/100",
-				progress=i/100
+				progress=i/21
 			)
 			yield json.dumps(info), "state"
-			time.sleep(1)
+			time.sleep(0.5)
+		yield "", "finished_transmitting"
 
 	else:
 		return CommonErrors.INVALID_ID

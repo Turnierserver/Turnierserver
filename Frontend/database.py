@@ -456,7 +456,23 @@ class Game(db.Model):
 	def __repr__(self):
 		return "<Game(id={}, type={})>".format(self.id, self.type.name)
 
+class Game_inprogress:
+	id = 0
+	ais = []
+	status = "1/2378"
 
+	def __init__(self):
+		self.type = GameType.lastest()
+		self.timestamp = timestamp()
+
+	def time(self, locale):
+		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
+
+	def delete(self):
+		pass
+
+	def __repr__(self):
+		return "<Game_inprogress(id={}, type={})>".format(self.id, self.type.name)
 
 class GameType(db.Model):
 	__tablename__ = 't_gametypes'
