@@ -49,6 +49,7 @@ public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 		this.token = token;
 		try {
 			PropertyUtils.loadProperties(args.length > 0 ? args[0] : "ai.prop");
+			System.out.println(PropertyUtils.WORKER_SERVER_PORT);
 			con = new Socket(PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST), PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
 			out = new PrintWriter(con.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
