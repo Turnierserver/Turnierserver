@@ -49,12 +49,12 @@ public class CodeEditor {
 	public CodeEditor(File doc) {
 		document = doc;
 		codeView = new WebView();
-		try {
-			codeView.getEngine().load(new File(Paths.aceFolder() + "/editor.html").toURI().toURL().toString());
-		} catch (IOException e1) {
-			e1.printStackTrace();
-			System.exit(1);
-		}
+//		try {
+//			codeView.getEngine().load(new File(Paths.aceFolder() + "/editor.html").toURI().toURL().toString());
+//		} catch (IOException e1) {
+//			e1.printStackTrace();
+//			System.exit(1);
+//		}
 
 		codeView.getEngine().setOnAlert(new EventHandler<WebEvent<String>>() {
 			@Override
