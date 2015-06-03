@@ -33,7 +33,7 @@ public class CodeEditor {
 		document = doc;
 		codeView = new WebView();
 		try {
-			codeView.getEngine().loadContent(IOUtils.toString(getClass().getResourceAsStream("view/editor.html"), "UTF-8").replace("${path}", doc.getAbsolutePath()).replace("${theme}", "eclipse"));
+			codeView.getEngine().loadContent(IOUtils.toString(getClass().getResourceAsStream("view/editor.html"), "UTF-8").replace("${file}", doc.getAbsolutePath()).replace("${theme}", "eclipse"));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			System.exit(1);
@@ -41,7 +41,7 @@ public class CodeEditor {
 
 		codeView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
 			public void changed(ObservableValue<? extends Document> prop, Document oldDoc, Document newDoc) {
-//				codeView.getEngine().executeScript("if (!document.getElementById('FirebugLite')){E = document['createElement' + 'NS'] && document.documentElement.namespaceURI;E = E ? document['createElement' + 'NS'](E, 'script') : document['createElement']('script');E['setAttribute']('id', 'FirebugLite');E['setAttribute']('src', 'https://getfirebug.com/' + 'firebug-lite.js' + '#startOpened');E['setAttribute']('FirebugLite', '4');(document['getElementsByTagName']('head')[0] || document['getElementsByTagName']('body')[0]).appendChild(E);E = new Image;E['setAttribute']('src', 'https://getfirebug.com/' + '#startOpened');}");
+				codeView.getEngine().executeScript("if (!document.getElementById('FirebugLite')){E = document['createElement' + 'NS'] && document.documentElement.namespaceURI;E = E ? document['createElement' + 'NS'](E, 'script') : document['createElement']('script');E['setAttribute']('id', 'FirebugLite');E['setAttribute']('src', 'https://getfirebug.com/' + 'firebug-lite.js' + '#startOpened');E['setAttribute']('FirebugLite', '4');(document['getElementsByTagName']('head')[0] || document['getElementsByTagName']('body')[0]).appendChild(E);E = new Image;E['setAttribute']('src', 'https://getfirebug.com/' + '#startOpened');}");
 				load();
 			}
 		});
