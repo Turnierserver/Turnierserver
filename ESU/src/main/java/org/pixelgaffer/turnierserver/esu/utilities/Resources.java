@@ -21,7 +21,7 @@ public class Resources {
 
 	public static Image codrIcon(){
 		try {
-			return new Image(Paths.class.getResourceAsStream("../Codr128.png"));
+			return new Image(Paths.class.getResourceAsStream("../CodrIcon200.png"));
 		} catch (Exception ex) {
 			ErrorLog.write("Default-Bild konnte nicht geladen werden.");
 			return null;

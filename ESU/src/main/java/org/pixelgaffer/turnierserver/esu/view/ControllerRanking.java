@@ -5,6 +5,8 @@ import org.pixelgaffer.turnierserver.esu.MainApp;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,6 +27,7 @@ public class ControllerRanking {
 	@FXML TableView<Ai> tvVersions;
 	
 	MainApp mainApp;
+	public ObservableList<Ai> ais = FXCollections.observableArrayList();
 	Ai ai;
 	
 	/**
@@ -43,6 +46,9 @@ public class ControllerRanking {
 		});
 	}
 	
+	public void loadOnlineAis(){
+		ais = mainApp.webConnector.getAis(MainApp.actualGameType.get());
+	}
 
 	public void showAi(Ai aai){
 		ai = aai;
