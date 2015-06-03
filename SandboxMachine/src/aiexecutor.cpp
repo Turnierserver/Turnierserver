@@ -103,9 +103,22 @@ void AiExecutor::runAi ()
 
 void AiExecutor::download ()
 {
+	if (abort)
+	{
+		fprintf(stderr, "Weigere mich aufgrund vorheriger Fehler die KI zu herunterzuladen.\n");
+		emit downloaded();
+		return;
+	}
+	
 	// das Archiv über den Mirror des Workers herunterladen
 	binArchive = dir.absoluteFilePath("bin.tar.bz2");
-	mirror->retrieveAi(id(), version(), binArchive);	
+	if (!mirror->retrieveAi(id(), version(), binArchive))
+	{
+		fprintf(stderr, "Fehler: Konnte KI nicht über den Mirror des Workers herunterladen.");
+		abort = true;
+		emit downloaded();
+		return;
+	}
 	
 	// die Privilegien der Archiv-Datei anpassen
 	if (chown(qPrintable(binArchive), 0, gid) != 0)
@@ -133,6 +146,7 @@ void AiExecutor::download ()
 		perror("Fehler: Kann den Benutzer vom KI Verzeichnis nicht ändern");
 		fprintf(stderr, "        Verzeichnis: %s\n", qPrintable(binDir.absolutePath()));
 		abort = true;
+		emit downloaded();
 		return;
 	}
 	if (chmod(qPrintable(binDir.absolutePath()), S_IRWXU | S_IRWXG) != 0)
@@ -171,6 +185,13 @@ void AiExecutor::download ()
 
 void AiExecutor::generateProps ()
 {
+	if (abort)
+	{
+		fprintf(stderr, "Weigere mich aufgrund vorheriger Fehler die KI-Properties zu erstellen.\n");
+		emit propsGenerated();
+		return;
+	}
+	
 	aiProp = dir.absoluteFilePath("ai.prop");
 	QFile file(aiProp);
 	if (!file.open(QIODevice::WriteOnly))
@@ -200,7 +221,7 @@ void AiExecutor::generateProps ()
 		perror("Fehler: Kann den Benutzer von der KI Properties-Datei nicht ändern");
 		fprintf(stderr, "        Datei: %s\n", qPrintable(aiProp));
 		abort = true;
-		emit downloaded();
+		emit propsGenerated();
 		return;
 	}
 	if (chmod(qPrintable(aiProp), S_IRUSR | S_IWUSR | S_IRGRP) != 0)
@@ -208,7 +229,7 @@ void AiExecutor::generateProps ()
 		perror("Fehler: Kann die Dateiprivilegien nicht auf drw-r----- setzen");
 		fprintf(stderr, "        Datei: %s\n", qPrintable(aiProp));
 		abort = true;
-		emit downloaded();
+		emit propsGenerated();
 		return;
 	}
 	
@@ -217,6 +238,13 @@ void AiExecutor::generateProps ()
 
 void AiExecutor::executeAi ()
 {
+	if (abort)
+	{
+		fprintf(stderr, "Weigere mich aufgrund vorheriger Fehler die KI zu starten.\n");
+		emit finished(uuid());
+		return;
+	}
+	
 	pid = fork();
 	if (pid < 0)
 	{
