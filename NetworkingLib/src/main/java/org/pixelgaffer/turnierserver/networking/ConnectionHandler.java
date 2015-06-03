@@ -92,9 +92,13 @@ public abstract class ConnectionHandler extends OutputStream implements SocketOb
 		write(new byte[] { (byte)b });
 	}
 	
+	int written;
+	
 	@Override
 	public void write (byte b[])
 	{
+		written += b.length;
+		System.out.println("ConnectionHandler:98: " + written);
 		client.write(b);
 	}
 }

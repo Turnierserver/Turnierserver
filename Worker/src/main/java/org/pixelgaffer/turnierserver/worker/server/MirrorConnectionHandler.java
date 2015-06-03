@@ -29,6 +29,7 @@ public class MirrorConnectionHandler extends ConnectionHandler
 			try
 			{
 				MirrorRequest req = Parsers.getSandbox().parse(line, MirrorRequest.class);
+				System.out.println("MirrorConnectionHandler:32: " + req);
 				// IO in neuem Thread wegen blockieren und so
 				new Thread( () -> {
 					try

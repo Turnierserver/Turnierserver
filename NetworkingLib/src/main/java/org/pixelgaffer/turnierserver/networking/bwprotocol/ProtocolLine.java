@@ -33,9 +33,7 @@ public class ProtocolLine
 	public ProtocolLine (byte line[]) throws IOException
 	{
 		mode = line[0];
-		System.out.println(new String(line));
 		line = Arrays.copyOfRange(line, 1, line.length);
-		System.out.println(new String(line));
 		switch (mode)
 		{
 			case ANSWER:

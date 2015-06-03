@@ -33,6 +33,7 @@ public class MirrorServer extends Server<MirrorConnectionPool>
 
 	public void newConnection (NIOSocket socket)
 	{
+		System.out.println("mirrorserver: " + socket);
 		getPool().add(socket);
 	}
 }

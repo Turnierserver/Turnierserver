@@ -27,58 +27,53 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DatastoreFtpClient
 {
-	private static final Object lock = new DatastoreFtpClient();
-	
-	private static FTPClient client;
+	private static FtpConnectionPool cons = new FtpConnectionPool();
 	
 	/**
 	 * Verbindet mit dem Server mithilfe der Systemproperties.
 	 */
-	private static void connect () throws IOException, FTPIllegalReplyException, FTPException
+	static void connect (FTPClient client) throws IOException, FTPIllegalReplyException, FTPException
 	{
-		synchronized (lock)
+		if (client != null)
 		{
-			if (client != null)
+			try
+			{
+				client.noop();
+			}
+			catch (FTPException e)
 			{
 				try
 				{
-					client.noop();
+					client.disconnect(true);
 				}
-				catch (FTPException e)
+				catch (Exception ex)
 				{
-					try
-					{
-						client.disconnect(true);
-					}
-					catch (Exception ex)
-					{
-					}
-					client = null;
 				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
+				client = null;
 			}
-			
-			if (client == null)
-				client = new FTPClient();
-			if (!client.isConnected())
+			catch (Exception e)
 			{
-				// zum Server verbinden
-				client.connect(System.getProperty("turnierserver.datastore.host"),
-						Integer.parseInt(System.getProperty("turnierserver.datastore.port")));
-				// beim Server anmelden
-				System.out.println("logging in …");
-				String username = System.getProperty("turnierserver.datastore.username");
-				String password = System.getProperty("turnierserver.datastore.password");
-				client.login(username, password);
-				System.out.println("logged in");
-				// passiven Modus benutzen (Firewall …)
-				client.setPassive(true);
+				e.printStackTrace();
 			}
-			
 		}
+		
+		if (client == null)
+			client = new FTPClient();
+		if (!client.isConnected())
+		{
+			// zum Server verbinden
+			client.connect(System.getProperty("turnierserver.datastore.host"),
+					Integer.parseInt(System.getProperty("turnierserver.datastore.port")));
+			// beim Server anmelden
+			System.out.println("logging in …");
+			String username = System.getProperty("turnierserver.datastore.username");
+			String password = System.getProperty("turnierserver.datastore.password");
+			client.login(username, password);
+			System.out.println("logged in");
+			// passiven Modus benutzen (Firewall …)
+			client.setPassive(true);
+		}
+		
 	}
 	
 	private static String aiPath (int id)
@@ -99,54 +94,67 @@ public class DatastoreFtpClient
 	/**
 	 * Speichert den Remote-File im OutputStream local.
 	 */
-	public static void retrieveFile (String remote, OutputStream local)
+	private static void retrieveFile (String remote, OutputStream local, FtpConnection con)
 			throws IOException, FTPIllegalReplyException, FTPException, IllegalStateException,
 			FTPDataTransferException, FTPAbortedException
 	{
-		connect();
-		synchronized (lock)
-		{
-			client.download(remote, local, 0, null);
-		}
+		boolean conWasNull = con == null;
+		if (conWasNull)
+			con = cons.getClient();
+		FTPClient client = con.getFtpClient();
+		
+		client.download(remote, local, 0, null);
+		
+		if (conWasNull)
+			con.setBusy(false);
+		
 		local.close();
 	}
 	
 	/**
 	 * Speichert den Remote-File in local.
 	 */
-	public static void retrieveFile (String remote, File local)
+	private static void retrieveFile (String remote, File local, FtpConnection con)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
-		connect();
-		synchronized (lock)
-		{
-			client.download(remote, local);
-		}
+		boolean conWasNull = con == null;
+		if (conWasNull)
+			con = cons.getClient();
+		FTPClient client = con.getFtpClient();
+		
+		client.download(remote, local);
+		
+		if (conWasNull)
+			con.setBusy(false);
 	}
 	
 	/**
 	 * Speichert alles im Remote-Directory im local-Verzeichnis.
 	 */
-	public static void retrieveDir (String remote, File local)
+	public static void retrieveDir (String remote, File local, FtpConnection con)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
 			FTPListParseException
 	{
-		connect();
-		synchronized (lock)
+		boolean conWasNull = con == null;
+		if (conWasNull)
+			con = cons.getClient();
+		FTPClient client = con.getFtpClient();
+		
+		System.out.println("retrieveDir: " + remote);
+		String cwd = client.currentDirectory();
+		client.changeDirectory(remote);
+		local.mkdirs();
+		for (FTPFile f : client.list())
 		{
-			System.out.println("retrieveDir: " + remote);
-			String cwd = client.currentDirectory();
-			client.changeDirectory(remote);
-			local.mkdirs();
-			for (FTPFile f : client.list())
-			{
-				if (f.getType() == FTPFile.TYPE_FILE)
-					retrieveFile(f.getName(), new File(local, f.getName()));
-				else if (f.getType() == FTPFile.TYPE_DIRECTORY)
-					retrieveDir(f.getName(), new File(local, f.getName()));
-			}
-			client.changeDirectory(cwd);
+			if (f.getType() == FTPFile.TYPE_FILE)
+				retrieveFile(f.getName(), new File(local, f.getName()), con);
+			else if (f.getType() == FTPFile.TYPE_DIRECTORY)
+				retrieveDir(f.getName(), new File(local, f.getName()), con);
 		}
+		client.changeDirectory(cwd);
+		
+		if (conWasNull)
+			con.setBusy(false);
 	}
 	
 	/**
@@ -157,7 +165,7 @@ public class DatastoreFtpClient
 			throws IllegalStateException, IOException, FTPIllegalReplyException, FTPException,
 			FTPDataTransferException, FTPAbortedException
 	{
-		retrieveFile(aiBinPath(id) + "/v" + version + ".tar.bz2", local);
+		retrieveFile(aiBinPath(id) + "/v" + version + ".tar.bz2", local, null);
 	}
 	
 	/**
@@ -167,7 +175,7 @@ public class DatastoreFtpClient
 	public static void retrieveAi (int id, int version, File local)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
-		retrieveFile(aiBinPath(id) + "/v" + version + ".tar.bz2", local);
+		retrieveFile(aiBinPath(id) + "/v" + version + ".tar.bz2", local, null);
 	}
 	
 	/**
@@ -179,7 +187,7 @@ public class DatastoreFtpClient
 			FTPListParseException
 	{
 		File tmp = Files.createTempDirectory("ai").toFile();
-		retrieveDir(aiSourcePath(id, version), tmp);
+		retrieveDir(aiSourcePath(id, version), tmp, null);
 		return tmp;
 	}
 	
@@ -190,7 +198,7 @@ public class DatastoreFtpClient
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
 		File tmp = Files.createTempFile("lang", ".txt").toFile();
-		retrieveFile(aiPath(id) + "/language.txt", tmp);
+		retrieveFile(aiPath(id) + "/language.txt", tmp, null);
 		
 		StringBuilder lang = new StringBuilder();
 		Reader in = new InputStreamReader(new FileInputStream(tmp));
@@ -209,7 +217,7 @@ public class DatastoreFtpClient
 	public static void retrieveGameLogic (int game, File local)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
-		retrieveFile("Games/" + game + "/Logic.jar", local);
+		retrieveFile("Games/" + game + "/Logic.jar", local, null);
 	}
 	
 	/**
@@ -219,7 +227,7 @@ public class DatastoreFtpClient
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
 			FTPListParseException
 	{
-		retrieveDir("Games/" + game + "/" + language + "/ailib", local);
+		retrieveDir("Games/" + game + "/" + language + "/ailib", local, null);
 	}
 	
 	/**
@@ -229,21 +237,26 @@ public class DatastoreFtpClient
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
 			FTPListParseException
 	{
-		retrieveDir("Libraries/" + language + "/" + lib, local);
+		retrieveDir("Libraries/" + language + "/" + lib, local, null);
 	}
 	
 	/**
 	 * Lädt den Inhalt des InputStreams local nach remote.
 	 */
-	public static void storeFile (String remote, InputStream local)
+	private static void storeFile (String remote, InputStream local, FtpConnection con)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
-		connect();
-		synchronized (lock)
-		{
-			System.out.println("storeFile: " + client.currentDirectory() + " / " + remote);
-			client.upload(remote, local, 0, 0, null);
-		}
+		boolean conWasNull = con == null;
+		if (conWasNull)
+			con = cons.getClient();
+		FTPClient client = con.getFtpClient();
+		
+		System.out.println("storeFile: " + client.currentDirectory() + " / " + remote);
+		client.upload(remote, local, 0, 0, null);
+		
+		if (conWasNull)
+			con.setBusy(false);
+		
 		local.close();
 	}
 	
@@ -254,7 +267,7 @@ public class DatastoreFtpClient
 	public static void storeAi (int ai, int version, InputStream local)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
-		storeFile(aiBinPath(ai) + "/v" + version + ".tar.bz2", local);
+		storeFile(aiBinPath(ai) + "/v" + version + ".tar.bz2", local, null);
 	}
 	
 	/**
@@ -263,20 +276,26 @@ public class DatastoreFtpClient
 	public static void storeAiCompileOutput (int aiId, int version, File local)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
-		storeFile(aiBinPath(aiId) + "/v1-compile.out", new FileInputStream(local));
+		storeFile(aiBinPath(aiId) + "/v1-compile.out", new FileInputStream(local), null);
 	}
 	
 	/**
 	 * Gibt die Größe der angegebenen Datei zurück.
 	 */
-	public static long fileSize (String remote)
+	private static long fileSize (String remote, FtpConnection con)
 			throws IOException, FTPIllegalReplyException, FTPException
 	{
-		connect();
-		synchronized (lock)
-		{
-			return client.fileSize(remote);
-		}
+		boolean conWasNull = con == null;
+		if (conWasNull)
+			con = cons.getClient();
+		FTPClient client = con.getFtpClient();
+		
+		long retval = client.fileSize(remote);
+		
+		if (conWasNull)
+			con.setBusy(false);
+		
+		return retval;
 	}
 	
 	/**
@@ -286,6 +305,6 @@ public class DatastoreFtpClient
 	public static long aiSize (int id, int version)
 			throws IOException, FTPIllegalReplyException, FTPException
 	{
-		return fileSize(aiBinPath(id) + "/v" + version + ".tar.bz2");
+		return fileSize(aiBinPath(id) + "/v" + version + ".tar.bz2", null);
 	}
 }
