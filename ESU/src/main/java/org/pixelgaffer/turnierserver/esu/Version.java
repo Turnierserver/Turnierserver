@@ -89,8 +89,9 @@ public class Version {
 	 */
 	public boolean exists(){
 		if (mode != AiMode.saved){
-			ErrorLog.write("dies ist kein speicherbares Objekt (exists)");
-			return false;
+			if (mode != AiMode.simplePlayer)
+				ErrorLog.write("dies ist kein speicherbares Objekt (exists)");
+			return true;
 		}
 		File dir = new File(Paths.version(this));
 		return !dir.mkdirs();
@@ -139,7 +140,8 @@ public class Version {
 	 */
 	public void saveCode(){
 		if (mode != AiMode.saved){
-			ErrorLog.write("dies ist kein speicherbares Objekt (saveCode)");
+			if (mode != AiMode.simplePlayer)
+				ErrorLog.write("dies ist kein speicherbares Objekt (saveCode)");
 			return;
 		}
 		for (int i = 0; i < files.size(); i++){

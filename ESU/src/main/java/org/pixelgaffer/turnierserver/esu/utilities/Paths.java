@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.esu.utilities;
 
 import org.pixelgaffer.turnierserver.esu.Game;
+import org.pixelgaffer.turnierserver.esu.MainApp;
 import org.pixelgaffer.turnierserver.esu.ParticipantResult;
 import org.pixelgaffer.turnierserver.esu.Ai;
 import org.pixelgaffer.turnierserver.esu.Ai.AiMode;
@@ -91,7 +92,7 @@ public class Paths {
 			return aiFolder() + "/" + ai.title;
 		}
 		else if (ai.mode == AiMode.simplePlayer){
-			return simplePlayerFolder(ai.gametype) + "/" + ai.title;
+			return simplePlayerFolder(MainApp.actualGameType.get()) + "/" + ai.title;
 		}
 		else{
 			ErrorLog.write("Es wurde ein Pfad zu einem nicht gespeicherten Ai angefordert");

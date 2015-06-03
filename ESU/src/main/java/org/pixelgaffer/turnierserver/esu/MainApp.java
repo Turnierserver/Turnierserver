@@ -6,8 +6,16 @@ import java.util.List;
 import javax.jws.Oneway;
 
 import javafx.application.Application;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Tab;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -35,9 +43,9 @@ public class MainApp extends Application{
 	public GameManager gameManager = new GameManager();
 	public AiManager aiManager = new AiManager();
 	
-	public static String actualGameType;
-	public static List<String> gametypes;
-	public static List<String> languages;
+	public static StringProperty actualGameType = new SimpleStringProperty(null);
+	public static ObservableList<String> gametypes = FXCollections.observableArrayList();
+	public static ObservableList<String> languages = FXCollections.observableArrayList();
 	
 	public boolean isOnline;
 	
@@ -57,12 +65,14 @@ public class MainApp extends Application{
 
 		ErrorLog.write("Programm startet...", true);
 		
-		languages = webConnector.getLanguages();
-		gametypes = webConnector.getGametypes();
-		if (gametypes.size() > 0){
-			actualGameType = gametypes.get(gametypes.size()-1);
-		}
-		
+		languages.addAll(webConnector.getLanguages());
+		gametypes.addAll(webConnector.getGametypes());
+		actualGameType.addListener(new ChangeListener<String>() {
+		    @Override
+		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+		    	aiManager.loadPlayers();
+		    }
+		});
 		
 		stage = _stage;
 		FXMLLoader loader = new FXMLLoader();
@@ -85,20 +95,11 @@ public class MainApp extends Application{
 	}
 	
 	public void stop(){
-		cAi.version.saveCode();
+		if (cAi.version != null)
+			cAi.version.saveCode();
 		ErrorLog.write("Programm beendet", true);
 	}
 	
-	public boolean checkOnline() {
-		if(webConnector.ping()) {
-			gametypes = webConnector.getGametypes();
-			languages = webConnector.getGametypes();
-			if(gametypes != null && languages != null) {
-				return true;
-			}
-		}
-		return false;
-	}
 	
 	
 }

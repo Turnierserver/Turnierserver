@@ -18,6 +18,7 @@ import javax.imageio.ImageIO;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.pixelgaffer.turnierserver.esu.Game.GameMode;
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 import org.pixelgaffer.turnierserver.esu.utilities.Resources;
@@ -65,14 +66,6 @@ public class Ai {
 		new Thread(() -> loadPicture(json, connector), "Image Loader").start();
 	}
 	
-	private void loadPicture(JSONObject json, WebConnector connector) {
-		try {
-			onlinePicture = connector.getImage(json.getInt("id"));
-		} catch (IOException e) {
-			ErrorLog.write("ERROR: Konnte das Bild der AI " + json.getString("name") + " nicht laden (" + e.getLocalizedMessage() + ")!");
-		}
-	}
-	
 	/**
 	 * Erstellt einen neuen Ai
 	 * 
@@ -81,6 +74,7 @@ public class Ai {
 	public Ai(String tit, AiMode mmode){
 		title = tit;
 		mode = mmode;
+		gametype = MainApp.actualGameType.get();
 		if (mode == AiMode.saved || mode == AiMode.simplePlayer){
 			loadProps();
 			loadVersions();
@@ -97,6 +91,7 @@ public class Ai {
 		title = tit;
 		language = lang;
 		mode = AiMode.saved;
+		gametype = MainApp.actualGameType.get();
 		
 		File dir = new File(Paths.ai(this));
 		if (!dir.mkdirs()){
@@ -108,6 +103,14 @@ public class Ai {
 		}
 	}
 	
+	
+	private void loadPicture(JSONObject json, WebConnector connector) {
+		try {
+			onlinePicture = connector.getImage(json.getInt("id"));
+		} catch (IOException e) {
+			ErrorLog.write("ERROR: Konnte das Bild der AI " + json.getString("name") + " nicht laden (" + e.getLocalizedMessage() + ")!");
+		}
+	}
 	
 	/**
 	 * gibt die neueste Version oder null zurück
@@ -194,7 +197,8 @@ public class Ai {
 			gametype = prop.getProperty("gametype");
 			description = prop.getProperty("description");
 			language = prop.getProperty("language");
-		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt");}
+		} catch (IOException e) {
+			ErrorLog.write("Fehler bei Laden aus der properties.txt");}
 	}
 	/**
 	 * Speichert die Eigenschaften des Players in das Dateiverzeichnis.
@@ -230,7 +234,8 @@ public class Ai {
 			prop.load(reader);
 			reader.close();
 			versionAmount = Integer.parseInt(prop.getProperty("versionAmount"));
-		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt (loadVerions)");}
+		} catch (IOException e) {
+			ErrorLog.write("Fehler bei Laden aus der properties.txt (loadVerions)");}
 		for (int i = 0; i < versionAmount; i++){
 			versions.add(new Version(this, i, mode));
 		}

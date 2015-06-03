@@ -85,27 +85,17 @@ public class ControllerAiManagement{
 		    	clickTabSelection(oldValue, newValue);
 		    }
 		});
-		for (int i = 0; i < MainApp.languages.size(); i++){
-			cbLanguage.getItems().add(MainApp.languages.get(i));
-		}
+		
+		cbLanguage.getItems().addAll(MainApp.languages);
 		cbLanguage.getSelectionModel().selectFirst();
 		
 		infoTab = tpCode.getTabs().get(0);
 		newFileTab = tpCode.getTabs().get(1);
-		mainApp.aiManager.loadPlayers();
-		showAis();
-	}
-	
-	
-	/**
-	 * Lädt alle KIs in die KI-Liste
-	 */
-	public void showAis(){
+		
 		lvAis.setItems(mainApp.aiManager.ais);
-		try {
-			lvAis.getSelectionModel().selectFirst();
-		} catch (Exception e) {}
+		lvAis.getSelectionModel().selectFirst();
 	}
+	
 	
 	/**
 	 * Zeigt eine KI und eine ihrer Versionen an
@@ -126,8 +116,6 @@ public class ControllerAiManagement{
 		// Ai-spezifisches
 		if (ai != null){
 			lbName.setText(ai.title);
-			System.out.println(ai);
-			System.out.println(ai.language);
 			lbLanguage.setText("Sprache: " + ai.language.toString());
 			tbDescription.setText(ai.description);
 			cbVersion.getSelectionModel().clearSelection();
@@ -140,14 +128,14 @@ public class ControllerAiManagement{
 			btEdit.setDisable(false);
 			btToActual.setDisable(false);
 			
-			if (version == null){  //versuchen, die Version zu setzen, wenn keine ausgew�hlt ist
+			if (version == null){  //versuchen, die Version zu setzen, wenn keine ausgewählt ist
 				version = ai.lastVersion();
 			}
 			boolean containing = false;
 			for (int i = 0; i < ai.versions.size(); i++)
 				if (version == ai.versions.get(i))
 					containing = true;
-			if(!containing){  //oder eine nicht-zugeh�rige ausgew�hlt ist
+			if(!containing){  //oder eine nicht-zugehörige ausgewählt ist
 				version = ai.lastVersion();
 			}
 		}
@@ -302,8 +290,10 @@ public class ControllerAiManagement{
 	 */
 	@FXML void clickChangeAi(){
 		ai = lvAis.getSelectionModel().getSelectedItem();
-		version = ai.lastVersion();
-		showAi();
+		if (ai != null){
+			version = ai.lastVersion();
+			showAi();
+		}
 	}
 	
 	/**

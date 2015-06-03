@@ -5,9 +5,14 @@ import java.io.IOException;
 import javax.xml.transform.ErrorListener;
 
 import org.pixelgaffer.turnierserver.esu.MainApp;
+import org.pixelgaffer.turnierserver.esu.Version;
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
 
+import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -19,7 +24,6 @@ public class ControllerStartPage{
 	
 	MainApp mainApp;
 	@FXML Button btInfo;
-	@FXML Button btDownload;
 	@FXML Button btRegister;
 	@FXML Button btLogin;
 	@FXML Hyperlink hlForgotPassword;
@@ -33,6 +37,7 @@ public class ControllerStartPage{
 	@FXML GridPane gpLogin;
 	@FXML Label lbLogin;
 	@FXML Button btLogout;
+	@FXML ChoiceBox<String> cbGameTypes;
 	WebEngine webEngine;
 	
 
@@ -50,7 +55,19 @@ public class ControllerStartPage{
 		webEngine.setJavaScriptEnabled(true);
 		webEngine.load("http://www.bundeswettbewerb-informatik.de/");
 		wfNews.setZoom(0.9);
+		
 		updateLoggedIn();
+		
+		cbGameTypes.setItems(MainApp.gametypes);
+		cbGameTypes.getSelectionModel().selectLast();
+		//MainApp.actualGameType.bind((ReadOnlyStringProperty) cbGameTypes.getSelectionModel().selectedItemProperty());
+		
+		cbGameTypes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+		    @Override
+		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+		        MainApp.actualGameType.set(newValue);
+		    }
+		});
 	}
 	
 	
@@ -71,11 +88,6 @@ public class ControllerStartPage{
 	@FXML
 	void clickInfo(){
 		tbActualLogic.setText("Info geklickt");
-	}
-	
-	@FXML
-	void clickDownload(){
-		tbActualLogic.setText("Download geklickt");
 	}
 	
 	@FXML
@@ -111,4 +123,8 @@ public class ControllerStartPage{
 		updateLoggedIn();
 	}
 	
+	@FXML
+	void clickForgotPassword(){
+		tbActualLogic.setText("Passwort vergessen geklickt");
+	}
 }
