@@ -233,7 +233,6 @@ public class ControllerAiManagement{
 		tpCode.getTabs().clear();
 		tpCode.getTabs().add(infoTab);
 		for (int i = 0; i < version.files.size(); i++){
-			version.files.get(i).load();
 			tpCode.getTabs().add(version.files.get(i).getView());
 		}
 		tpCode.getTabs().add(newFileTab);

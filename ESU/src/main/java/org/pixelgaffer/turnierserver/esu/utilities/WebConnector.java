@@ -417,9 +417,9 @@ public class WebConnector {
 					continue;
 				}
 				File target = new File(Paths.simplePlayer(gameName, file.getName()) + "/src");
-				FileUtils.deleteDirectory(new File(Paths.simplePlayer(gameName, file.getName()) + "/.."));
+				FileUtils.deleteDirectory(new File(Paths.simplePlayer(gameName, file.getName())).getParentFile());
 				target.mkdirs();
-				File property = new File(Paths.simplePlayer(gameName, file.getName()) + "/..", "properties.txt");
+				File property = new File(Paths.simplePlayer(gameName, file.getName())+ "/..", "properties.txt");
 				property.createNewFile();
 				FileUtils.write(property, "versionAmount=1" + System.lineSeparator() + "gametype=" + gameName + System.lineSeparator() + "description=Das ist der " + file.getName() + "-SimplePlayer" +
 						System.lineSeparator() + "language=" + file.getName());
