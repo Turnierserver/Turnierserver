@@ -8,7 +8,9 @@ import javax.jws.Oneway;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -68,7 +70,6 @@ public class MainApp extends Application{
 	public static ObservableList<String> gametypes = FXCollections.observableArrayList();
 	public static ObservableList<String> languages = FXCollections.observableArrayList();
 	
-	public boolean isOnline;
 	
 	/**
 	 * Main-Methode
@@ -87,7 +88,6 @@ public class MainApp extends Application{
 		ErrorLog.write("Programm startet...", true);
 		
 		stage = new Stage(StageStyle.DECORATED);
-
 		
 		gametypes = webConnector.loadGametypesFromFile();
 		languages = webConnector.loadLangsFromFile();
@@ -96,35 +96,7 @@ public class MainApp extends Application{
 			showSplashStage(_stage);
 		}
 		else{
-			final Task updateTask = new Task() {
-				@Override
-				protected Object call() throws InterruptedException {
-	
-					updateMessage("Gametypen werden geladen");
-					try {
-						webConnector.updateGametypes();
-					} catch (NewException e) {
-						gametypes = e.newValues;
-						if (Dialog.okAbort("Neue Spieltypen sind verfügbar. Wollen Sie zum aktuellen wechseln?")){
-							cStart.cbGameTypes.getSelectionModel().selectLast();
-						}
-					} catch (UpdateException e) {
-					}catch (NothingDoneException e) {}
-	
-					updateMessage("Sprachen werden geladen");
-	
-					try {
-						webConnector.updateLanguages();
-					} catch (NewException e) {
-						languages = e.newValues;
-						Dialog.info("Neue Sprachen sind verfügbar");
-					} catch (NothingDoneException e) {}
-					return null;
-				}
-			};
-	
-			new Thread(updateTask).start();
-			
+			loadOnlineResources();	
 			showMainStage();
 		}
 
@@ -137,6 +109,39 @@ public class MainApp extends Application{
 			cAi.version.saveCode();
 		ErrorLog.write("Programm beendet", true);
 	}
+	
+	
+	public void loadOnlineResources(){
+		final Task updateTask = new Task() {
+			@Override
+			protected Object call() throws InterruptedException {
+
+				updateMessage("Gametypen werden geladen");
+				try {
+					webConnector.updateGametypes();
+				} catch (NewException e) {
+					gametypes = e.newValues;
+					if (Dialog.okAbort("Neue Spieltypen sind verfügbar. Wollen Sie zum aktuellen wechseln?")){
+						cStart.cbGameTypes.getSelectionModel().selectLast();
+					}
+				} catch (UpdateException e) {
+				}catch (NothingDoneException e) {}
+
+				updateMessage("Sprachen werden geladen");
+
+				try {
+					webConnector.updateLanguages();
+				} catch (NewException e) {
+					languages = e.newValues;
+					Dialog.info("Neue Sprachen sind verfügbar");
+				} catch (NothingDoneException e) {}
+				return null;
+			}
+		};
+
+		new Thread(updateTask).start();
+	}
+	
 	
 	public void showSplashStage(Stage splashStage){
 

@@ -134,6 +134,12 @@ public class Paths {
 	public static String versionSrc(Version version){
 		return version(version) + "/src";
 	}
-
 	
+	public static String versionSrcStartClass(Version version){
+		return versionSrc(version) + "/settings.prop";
+	}
+
+	public static String versionBin(Version version){
+		return version(version) + "/bin";
+	}
 }

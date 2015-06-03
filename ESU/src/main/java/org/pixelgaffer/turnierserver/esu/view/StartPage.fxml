@@ -40,6 +40,16 @@
                                                 </Label>
                                                 <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="10.0">
                                                    <children>
+                                                      <Label fx:id="lbIsOnline" minWidth="-Infinity" text="Momentan besteht keine Internetverbindung">
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </Label>
+                                                      <Button fx:id="btTryOnline" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickTryOnline" text="Erneut versuchen" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="10.0">
+                                                   <children>
                                                       <Label minWidth="-Infinity" text="Aktuelle Spiellogik:">
                                                          <HBox.margin>
                                                             <Insets />

@@ -179,8 +179,11 @@ public abstract class Compiler
 	 * z.B. die Main-Klasse in Java. 
 	 */
 	public String compile (File srcdir, File bindir, File properties, LibraryDownloader libs)
-			throws IOException, InterruptedException
+			throws IOException, InterruptedException, CompileFailureException
 	{
+		if (!bindir.exists() && !bindir.mkdirs())
+			throw new CompileFailureException("Konnte das Verzeichnis " + bindir + " nicht anlegen!");
+		
 		// den output in einen String ausgeben
 		StringWriter sw = new StringWriter();
 		PrintWriter output = new PrintWriter(sw);
@@ -193,7 +196,7 @@ public abstract class Compiler
 		if (success)
 			return sw.toString();
 		else
-			return null;
+			throw new CompileFailureException(sw.toString());
 	}
 	
 	public abstract boolean compile (File srcdir, File bindir, Properties p, PrintWriter output, LibraryDownloader libs)
