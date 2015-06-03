@@ -12,9 +12,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 
 public class JavaCompiler extends Compiler
@@ -41,7 +41,7 @@ public class JavaCompiler extends Compiler
 			else
 			{
 				for (File f : libs.getAiLibs("Java"))
-					Files.copy(f.toPath(), new File(libdir, f.getName()).toPath());
+					FileUtils.copyFile(f, new File(libdir, f.getName()));
 			}
 			for (String jar : libdir.list( (dir, name) -> name.endsWith(".jar")))
 				classpath += ":AiLibrary/" + jar;
@@ -51,7 +51,7 @@ public class JavaCompiler extends Compiler
 				| FTPAbortedException | FTPListParseException ioe)
 		{
 			libdir.delete();
-			output.println(ioe.getMessage());
+			output.println(ioe);
 			return false;
 		}
 		
@@ -74,7 +74,7 @@ public class JavaCompiler extends Compiler
 				else
 				{
 					for (File f : libs.getLib("Java", line))
-						Files.copy(f.toPath(), new File(libdir, f.getName()).toPath());
+						FileUtils.copyFile(f, new File(libdir, f.getName()));
 				}
 				for (String jar : libdir.list( (dir, name) -> name.endsWith(".jar")))
 					classpath += ":" + line + "/" + jar;

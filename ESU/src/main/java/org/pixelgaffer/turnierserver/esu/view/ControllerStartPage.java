@@ -16,6 +16,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -38,6 +39,8 @@ public class ControllerStartPage{
 	@FXML Label lbLogin;
 	@FXML Button btLogout;
 	@FXML public ChoiceBox<String> cbGameTypes;
+	@FXML Button btTryOnline;
+	@FXML Label lbIsOnline;
 	WebEngine webEngine;
 	
 
@@ -57,7 +60,7 @@ public class ControllerStartPage{
 		wfNews.setZoom(0.9);
 		
 		updateLoggedIn();
-		
+		updateConnected();
 		
 		cbGameTypes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 		    @Override
@@ -71,6 +74,18 @@ public class ControllerStartPage{
 		cbGameTypes.getSelectionModel().selectLast();
 	}
 	
+	
+	public void updateConnected(){
+		if (mainApp.webConnector.ping()){
+			lbIsOnline.setText("Es besteht eine Internetverbindung");
+			btTryOnline.setText("nach Aktualisierungen suchen");
+			vbLogin.setDisable(false);
+		}else{
+			lbIsOnline.setText("Momentan besteht keine Internetverbindung");
+			btTryOnline.setText("Erneut versuchen");
+			vbLogin.setDisable(true);
+		}
+	}
 	
 	public void updateLoggedIn(){
 		if (mainApp.webConnector.isLoggedIn()){
@@ -127,5 +142,11 @@ public class ControllerStartPage{
 	@FXML
 	void clickForgotPassword(){
 		tbActualLogic.setText("Passwort vergessen geklickt");
+	}
+	
+	@FXML
+	void clickTryOnline(){
+		updateConnected();
+		mainApp.loadOnlineResources();
 	}
 }
