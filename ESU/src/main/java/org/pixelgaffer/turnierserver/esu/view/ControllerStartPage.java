@@ -66,7 +66,7 @@ public class ControllerStartPage{
 		    @Override
 		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 		        MainApp.actualGameType.set(newValue);
-		        mainApp.aiManager.loadPlayers();
+		        mainApp.aiManager.loadAis();
 		    }
 		});
 		

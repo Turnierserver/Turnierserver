@@ -17,7 +17,7 @@ public class AiManager {
 	/**
 	 * Lädt alle Spieler aus dem Dateisystem in die Liste
 	 */
-	public void loadPlayers(){
+	public void loadAis(){
 		ais.clear();
 		File dir = new File(Paths.aiFolder());
 		dir.mkdirs();
@@ -27,7 +27,8 @@ public class AiManager {
 			return;
 		}
 		for (int i = 0; i < playerDirs.length; i++){
-			ais.add(new Ai(playerDirs[i].getName(), AiMode.saved));
+			if (playerDirs[i].isDirectory())
+				ais.add(new Ai(playerDirs[i].getName(), AiMode.saved));
 		}
 
 		File simpleDir = new File(Paths.simplePlayerFolder(MainApp.actualGameType.get()));
@@ -38,7 +39,8 @@ public class AiManager {
 			return;
 		}
 		for (int i = 0; i < simpleDirs.length; i++){
-			ais.add(new Ai(simpleDirs[i].getName(), AiMode.simplePlayer));
+			if (simpleDirs[i].isDirectory())
+				ais.add(new Ai(simpleDirs[i].getName(), AiMode.simplePlayer));
 		}
 	}
 	

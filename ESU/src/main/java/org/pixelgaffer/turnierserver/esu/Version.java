@@ -345,6 +345,12 @@ public class Version {
 
 		@Override
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+			if (file.toFile().getName().startsWith(".")){
+				return FileVisitResult.CONTINUE;
+			}
+			if (file.toFile().getName().equals("libraries.txt")){
+				return FileVisitResult.CONTINUE;
+			}
 			files.add(new CodeEditor(file.toFile()));
 			return FileVisitResult.CONTINUE;
 		}

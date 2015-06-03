@@ -26,7 +26,8 @@ public class GameManager {
 			return;
 		}
 		for (int i = 0; i < dirs.length; i++){
-			games.add(new Game(dirs[i].getName()));
+			if (dirs[i].isDirectory())
+				games.add(new Game(dirs[i].getName()));
 		}
 		
 	}
