@@ -49,17 +49,20 @@ public abstract class Ai<E extends GameState<R, ?>, R> implements Runnable {
 		this.token = token;
 		try {
 			PropertyUtils.loadProperties(args.length > 0 ? args[0] : "ai.prop");
-			System.out.println(PropertyUtils.WORKER_SERVER_PORT);
+			System.out.println("Connecting to " + PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST) + ":" + PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
 			con = new Socket(PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST), PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
 			out = new PrintWriter(con.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			System.out.println(PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR));
+			System.out.println(PropertyUtils.getStringRequired(PropertyUtils.AI_UUID));
 			out.println(PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR) + PropertyUtils.getStringRequired(PropertyUtils.AI_UUID));
+			System.out.println("Output stream wird nun umgeleitet (RIP)");
 			System.setOut(new PrintStream(new OutputStream() {
 				public void write(int b) throws IOException {
 					output.append((char) b);
 				}
 			}));
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
