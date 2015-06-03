@@ -109,7 +109,6 @@ public class WebConnector {
 			}
 			return result;
 		} catch (IOException e) {
-			Dialog.error("Fehler bei der Abfrage des Loginstatuses.");
 			ErrorLog.write("Fehler bei der Abfrage des Loginstatuses: " + e.getLocalizedMessage());
 			return false;
 		}
@@ -304,7 +303,7 @@ public class WebConnector {
 			
 			if(!fileLines.contains(apparentLine)) {
 				if(!loadGamelogic(gametype.getInt("id"), gametype.getString("name")) || !loadDataContainer(gametype.getInt("id"), gametype.getString("name"))) {
-					ErrorLog.write("Konnte Spiel " + gametype.getInt("id") + " nicht aktualisieren!");
+					ErrorLog.write("Konnte Spiel " + gametype.getString("name") + " nicht aktualisieren!");
 					continue;
 				}
 				else {
@@ -316,7 +315,8 @@ public class WebConnector {
 			}
 			lines[gametype.getInt("id") - 1] = apparentLine;
 		}
-				
+		
+		
 		//Speichern in der Datei
 		try {
 			File gametypesFile = new File(Paths.gameTypesFile());
@@ -417,13 +417,13 @@ public class WebConnector {
 					continue;
 				}
 				File target = new File(Paths.simplePlayer(gameName, file.getName()) + "/src");
-				FileUtils.deleteDirectory(new File(Paths.simplePlayer(gameName, file.getName())));
+				FileUtils.deleteDirectory(new File(Paths.simplePlayer(gameName, file.getName()) + "/.."));
 				target.mkdirs();
-				File property = new File(Paths.simplePlayer(gameName, file.getName()), "properties.txt");
+				File property = new File(Paths.simplePlayer(gameName, file.getName()) + "/..", "properties.txt");
 				property.createNewFile();
 				FileUtils.write(property, "versionAmount=1" + System.lineSeparator() + "gametype=" + gameName + System.lineSeparator() + "description=Das ist der " + file.getName() + "-SimplePlayer" +
 						System.lineSeparator() + "language=" + file.getName());
-				property = new File(property.getParent(), "v0/properties.txt");
+				property = new File(property.getParent() + "/v0/properties.txt");
 				property.createNewFile();
 				FileUtils.write(property, "uploaded=false" + System.lineSeparator() + "compileOutput=" + System.lineSeparator() + "qualifyOutput=" + System.lineSeparator() +
 						"qualified=false" + System.lineSeparator() + "compiled=false" + System.lineSeparator() + "finished=false");

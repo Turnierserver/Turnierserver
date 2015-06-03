@@ -37,7 +37,7 @@ public class ControllerStartPage{
 	@FXML GridPane gpLogin;
 	@FXML Label lbLogin;
 	@FXML Button btLogout;
-	@FXML ChoiceBox<String> cbGameTypes;
+	@FXML public ChoiceBox<String> cbGameTypes;
 	WebEngine webEngine;
 	
 
