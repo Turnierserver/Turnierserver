@@ -61,6 +61,7 @@ def manage(manager, app):
 		clean_tmp()
 		@ftp.safe
 		def f():
+			## Hardgecodete Sprachen...
 			langs = ["Python", "Java"]
 
 			os.mkdir("tmp/AiLibraries")
@@ -69,23 +70,6 @@ def manage(manager, app):
 				os.mkdir("tmp/AiLibraries/"+lang)
 				for root, dirs, files in ftp.ftp_host.walk(path):
 					new_path = root.replace(path, "tmp/AiLibraries/"+lang)
-					#make dirs
-					for dir in dirs:
-						print("MKDIR:", new_path + "/" + dir)
-						os.mkdir(new_path + "/" + dir)
-
-					#load files
-					for file in files:
-						print(root+"/"+file, "->", new_path+"/"+file)
-						ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
-
-
-			os.mkdir("tmp/Libraries")
-			for lang in langs:
-				path = "Libraries/{}".format(lang)
-				os.mkdir("tmp/Libraries/"+lang)
-				for root, dirs, files in ftp.ftp_host.walk(path):
-					new_path = root.replace(path, "tmp/Libraries/"+lang)
 					#make dirs
 					for dir in dirs:
 						print("MKDIR:", new_path + "/" + dir)
@@ -116,11 +100,14 @@ def manage(manager, app):
 						print(root+"/"+file, "->", new_path+"/"+file)
 						ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
 
+			print("Games/"+game_id+"/info.pdf", "->", "tmp/info.pdf")
+			ftp.ftp_host.download("Games/"+game_id+"/info.pdf", "tmp/info.pdf")
+
 			zipf = zipfile.ZipFile('tmp/data_container.zip', 'w')
 			os.chdir("tmp")
 			zipdir('AiLibraries', zipf)
 			zipdir('SimplePlayers', zipf)
-			zipdir('Libraries', zipf)
+			zipf.write("info.pdf")
 			os.chdir("..")
 			zipf.close()
 

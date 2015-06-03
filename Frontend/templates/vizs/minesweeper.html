@@ -5,7 +5,7 @@
 {% macro render_rail(ai, side, desc) -%}
 	{% if logged_in %}
 	{% if current_user.can_access(ai) -%}
-		<div class="ui {{side}} rail">
+		<div class="ui {{side}} close rail">
 			<div class="ui segment">
 				Debugausgaben von "{{ai.name}}":
 				<textarea id="ai_{{desc}}_output" style="width: 100%; height: auto; min-height: 25em;"></textarea>
@@ -17,6 +17,14 @@
 
 
 <div class="ui segment">
+	<div class="ui right floated main menu">
+		<a id="play_button" class="play popup icon item" data-content="Spiel abspielen">
+			<i class="play icon"></i>
+		</a>
+		<a id="pause_button" class="pause popup icon item" data-content="Pausieren">
+			<i class="pause icon"></i>
+		</a>
+	</div>
 	{{render_rail(ai0, "left", "left")}}
 	<canvas id="canvas" style="width: 100%; height: 800px;">
 		<h1>Du musst Javascript aktiviert haben, um Spiele zu sehen.</h1>
@@ -27,6 +35,10 @@
 	</div>
 	{{render_rail(ai0, "right", "right")}}
 </div>
+
+<script>
+	$(".ui.popup").popup()
+</script>
 
 <script type="text/javascript" src="{{url_for('static', filename='minesweeper.js')}}"></script>
 

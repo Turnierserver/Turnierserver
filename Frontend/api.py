@@ -588,7 +588,7 @@ def api_ai_compile(id):
 				if resp["status"] == "processed":
 					yield ("Anfrage angefangen\n", "log")
 			elif "compilelog" in resp:
-				yield ("C: "+resp["compilelog"], "log")
+				yield (resp["compilelog"], "log")
 			else:
 				# Falls die Antwort vom Backend nicht verstanden wurde.
 				yield ("B: " + str(resp) + "\n", "log")

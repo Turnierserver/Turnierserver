@@ -492,7 +492,7 @@ class GameType(db.Model):
 
 	@classmethod
 	def lastest(cls):
-		return cls.query.order_by("-id").first()
+		return cls.query.order_by(cls.id.desc()).first()
 
 	def updated(self):
 		self.last_modified = timestamp()

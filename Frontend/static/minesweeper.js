@@ -11,6 +11,9 @@ var data = [
 
 var step = 0;
 var god_mode = false;
+var is_playing = false;
+var play_speed = 100;
+var play_timeout;
 
 function getNear(d, x, y) {
 	var count = 0;
@@ -116,6 +119,14 @@ function update() {
 	var d = data[step];
 	$("#ai_left_output").val(d.ai_logs[0])
 	$("#ai_right_output").val(d.ai_logs[1])
+
+	if (is_playing) {
+		$("#play_button").addClass("active")
+		$("#pause_button").removeClass("active")
+	} else {
+		$("#play_button").removeClass("active")
+		$("#pause_button").addClass("active")
+	}
 }
 
 
