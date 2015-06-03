@@ -57,8 +57,8 @@ public class MainApp extends Application{
 
 		ErrorLog.write("Programm startet...", true);
 		
-		languages = webConnector.updateLanguages();
-		gametypes = webConnector.updateGametypes();
+		languages = webConnector.getLanguages();
+		gametypes = webConnector.getGametypes();
 		if (gametypes.size() > 0){
 			actualGameType = gametypes.get(gametypes.size()-1);
 		}
@@ -91,8 +91,8 @@ public class MainApp extends Application{
 	
 	public boolean checkOnline() {
 		if(webConnector.ping()) {
-			gametypes = webConnector.updateGametypes();
-			languages = webConnector.updateGametypes();
+			gametypes = webConnector.getGametypes();
+			languages = webConnector.getGametypes();
 			if(gametypes != null && languages != null) {
 				return true;
 			}
