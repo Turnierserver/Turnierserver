@@ -176,7 +176,14 @@ public abstract class GameLogic<E extends AiObject, R> {
 		}
 		
 		sendToFronted(message);
-		game.finishGame();
+		try
+		{
+			game.finishGame();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	/**
