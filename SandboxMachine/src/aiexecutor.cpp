@@ -30,6 +30,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <QRegularExpression>
 #include <QTemporaryDir>
 
 AiExecutor::AiExecutor (int id, int version, const QUuid &uuid)
@@ -209,7 +210,7 @@ void AiExecutor::generateProps ()
 	file.write("turnierserver.worker.server.port=" + config->value("Port").toByteArray() + "\n");
 	file.write("turnierserver.worker.server.aichar=A\n"); // vlt sollte das in die config der sandbox
 	file.write("turnierserver.serializer.compress.worker=" + config->value("AiSerializerCompress").toByteArray() + "\n");
-	file.write("turnierserver.ai.uuid=" + uuid().toString().toUtf8() + "\n");
+	file.write("turnierserver.ai.uuid=" + uuid().toString().replace(QRegularExpression("[\\{\\}]"), "").toUtf8() + "\n");
 	config->endGroup();
 	configMutex->unlock();
 	

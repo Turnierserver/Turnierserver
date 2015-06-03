@@ -87,8 +87,6 @@ public abstract class Compiler
 			ftpFile.flush();
 			if (getUuid() != null)
 			{
-				System.out.println(new WorkerCommandAnswer(WorkerCommand.COMPILE, WorkerCommandAnswer.MESSAGE,
-						getUuid(), buf));
 				backend.sendAnswer(new WorkerCommandAnswer(WorkerCommand.COMPILE, WorkerCommandAnswer.MESSAGE,
 						getUuid(), buf));
 			}
@@ -104,7 +102,6 @@ public abstract class Compiler
 		@Override
 		public void write (@NonNull String s) throws IOException
 		{
-			System.out.println("writing " + s);
 			ftpFile.write(s);
 			buf += s;
 		}
@@ -256,27 +253,4 @@ public abstract class Compiler
 		output.flush();
 		return returncode;
 	}
-	
-	/*
-	 * public static void main (String args[])
-	 * throws IOException, InterruptedException, FTPIllegalReplyException,
-	 * FTPException, FTPDataTransferException,
-	 * FTPAbortedException, FTPListParseException
-	 * {
-	 * PropertyUtils.loadProperties(args.length > 0 ? args[0] :
-	 * "/etc/turnierserver/turnierserver.prop");
-	 * Compiler comp = new JavaCompiler(6, 1, 6);
-	 * CompileResult r = comp.compileAndUpload();
-	 * System.out.println(
-	 * "---------------------------------------------------------------------------------------"
-	 * );
-	 * FileInputStream fis = new FileInputStream(r.getOutput());
-	 * byte buf[] = new byte[8192];
-	 * int read;
-	 * while ((read = fis.read(buf)) != -1)
-	 * System.out.write(buf, 0, read);
-	 * fis.close();
-	 * System.out.println(r.isSuccessfull());
-	 * }
-	 */
 }

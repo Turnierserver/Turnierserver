@@ -1,6 +1,5 @@
 package org.pixelgaffer.turnierserver.networking;
 
-import java.io.IOException;
 import java.io.OutputStream;
 
 import lombok.AccessLevel;
@@ -92,13 +91,9 @@ public abstract class ConnectionHandler extends OutputStream implements SocketOb
 		write(new byte[] { (byte)b });
 	}
 	
-	int written;
-	
 	@Override
 	public void write (byte b[])
 	{
-		written += b.length;
-		System.out.println("ConnectionHandler:98: " + written);
 		client.write(b);
 	}
 }
