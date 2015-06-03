@@ -1,13 +1,18 @@
 package org.pixelgaffer.turnierserver.compile;
 
-import it.sauronsoftware.ftp4j.*;
-import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
+import it.sauronsoftware.ftp4j.FTPAbortedException;
+import it.sauronsoftware.ftp4j.FTPDataTransferException;
+import it.sauronsoftware.ftp4j.FTPException;
+import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
+import it.sauronsoftware.ftp4j.FTPListParseException;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Properties;
+
+import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 
 public class PythonCompiler extends Compiler
 {	
@@ -20,8 +25,6 @@ public class PythonCompiler extends Compiler
 	public boolean compile (File srcdir, File bindir, Properties p, PrintWriter output, LibraryDownloader libraryDownloader) throws IOException
 	{
 		// den wrapper laden
-		File game_wrapper = new File(bindir.getPath(), "game_wrapper.py");
-		File wrapper = new File(bindir.getPath(), "wrapper.py");
 		if (libraryDownloader == null) {
 			try {
 				output.println("> downloading game_wrapper.py");
