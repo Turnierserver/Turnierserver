@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.backend.server;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.*;
 
 import java.io.IOException;
 
@@ -13,9 +14,10 @@ import org.pixelgaffer.turnierserver.backend.Jobs;
 import org.pixelgaffer.turnierserver.backend.WorkerConnection;
 import org.pixelgaffer.turnierserver.backend.Workers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
+import org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine;
+import org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
-import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 
@@ -81,28 +83,35 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 			{
 				try
 				{
-					// WorkerCommandSuccess success =
-					// Parsers.getWorker().parse(line,
-					// WorkerCommandSuccess.class);
-					// Jobs.jobFinished(success);
-					
-					WorkerCommandAnswer answer = Parsers.getWorker().parse(line, WorkerCommandAnswer.class);
-					if (answer.getWhat() == WorkerCommandAnswer.MESSAGE)
+					ProtocolLine l = new ProtocolLine(line);
+					if (l.getMode() == ANSWER)
 					{
-						BackendFrontendCompileMessage msg = new BackendFrontendCompileMessage(answer.getMessage(), Jobs.findRequestId(answer.getUuid()));
-						System.out.println(msg);
-						BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(msg));
+						WorkerCommandAnswer answer = (WorkerCommandAnswer) l.getObject();
+						if (answer.getWhat() == WorkerCommandAnswer.MESSAGE)
+						{
+							BackendFrontendCompileMessage msg = new BackendFrontendCompileMessage(answer.getMessage(),
+									Jobs.findRequestId(answer.getUuid()));
+							System.out.println(msg);
+							BackendFrontendConnectionHandler.getFrontend()
+									.sendMessage(Parsers.getFrontend().parse(msg));
+						}
+						else if ((answer.getWhat() == WorkerCommandAnswer.CRASH)
+								|| (answer.getWhat() == WorkerCommandAnswer.SUCCESS))
+						{
+							Jobs.jobFinished(answer);
+						}
 					}
-					else if ((answer.getWhat() == WorkerCommandAnswer.CRASH)
-							|| (answer.getWhat() == WorkerCommandAnswer.SUCCESS))
+					else if (l.getMode() == INFO)
 					{
-						Jobs.jobFinished(answer);
+						WorkerInfo info = (WorkerInfo) l.getObject();
+						workerConnection.update(info);
 					}
 				}
 				catch (Exception e)
 				{
 					BackendMain.getLogger().severe(
 							"BackendWorkerConnectionHandler: Failed to parse answer from Worker: " + e);
+					e.printStackTrace();
 				}
 			}
 		}

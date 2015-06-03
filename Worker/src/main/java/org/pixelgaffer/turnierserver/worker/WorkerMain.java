@@ -17,6 +17,11 @@ public class WorkerMain
 {
 	public static final WorkerInfo workerInfo = new WorkerInfo();
 	
+	public static void notifyInfoUpdated () throws IOException
+	{
+		getBackendClient().sendInfo(workerInfo);
+	}
+	
 	@Getter
 	private static BackendClient backendClient;
 	

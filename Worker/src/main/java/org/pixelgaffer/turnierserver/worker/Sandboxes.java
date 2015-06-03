@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
 
 /**
  * Diese Klasse speichert alle verbundenen Sandboxen.
@@ -22,7 +22,17 @@ public class Sandboxes
 	 */
 	public static boolean addSandbox (Sandbox sandbox)
 	{
-		return sandboxes.add(sandbox);
+		boolean success = sandboxes.add(sandbox);
+		WorkerMain.workerInfo.setSandboxes(sandboxes.size());
+		try
+		{
+			WorkerMain.notifyInfoUpdated();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		return success;
 	}
 	
 	/**
@@ -30,7 +40,17 @@ public class Sandboxes
 	 */
 	public static boolean removeSandbox (Sandbox sandbox)
 	{
-		return sandboxes.remove(sandbox);
+		boolean success = sandboxes.remove(sandbox);
+		WorkerMain.workerInfo.setSandboxes(sandboxes.size());
+		try
+		{
+			WorkerMain.notifyInfoUpdated();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		return success;
 	}
 	
 	/**

@@ -28,8 +28,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
+import org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
-import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandAnswer;
 
 /**
  * Diese Klasse ist eine abstrakte Implementation eines Compilers, der die

@@ -16,8 +16,8 @@ import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCommand;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCommandProcessed;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendResult;
+import org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
-import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandAnswer;
 
 /**
  * Diese Klasse speichert Informationen zu den aktuell ausgeführten Jobs.
@@ -34,76 +34,104 @@ public class Jobs
 	/** Die Map mit den Request IDs und den zugehörigen Jobs. */
 	private static final Map<Integer, Job> jobRequestIds = new HashMap<>();
 	
+	/**
+	 * Gibt die RequestId des Jobs mit der angegebenen UUID zurück.
+	 * 
+	 * @throws NullPointerException Wenn kein solcher Job gefunden wurde.
+	 */
 	public static final int findRequestId (UUID uuid)
 	{
 		return jobUuids.get(uuid).getRequestId();
 	}
 	
+	/**
+	 * Gibt die UUID des Jobs mit der angegebenen RequestId zurück.
+	 * 
+	 * @throws NullPointerException Wenn kein solcher Job gefunden wurde.
+	 */
 	public static final UUID findUuid (int requestId)
 	{
 		return jobRequestIds.get(requestId).getUuid();
 	}
 	
-	public static void addJob (@NonNull Job job)
+	/**
+	 * Fügt den Job zur Liste der Jobs hinzu.
+	 */
+	private static void addJob (@NonNull Job job)
 	{
 		jobs.add(job);
 		jobUuids.put(job.getUuid(), job);
 		jobRequestIds.put(job.getRequestId(), job);
 	}
 	
-	public static void processJob (@NonNull BackendFrontendCommand cmd)
+	/**
+	 * Verarbeitet den angegebenen Command und startet dafür die nötigen Jobs.
+	 * Diese Methode startet dafür einen neuen Thread und arbeitet somit
+	 * asynchron.
+	 */
+	public static void processCommand (@NonNull BackendFrontendCommand cmd)
 	{
-		if (cmd.getAction().equals("compile"))
-		{
-			try
+		new Thread( () -> {
+			if (cmd.getAction().equals("compile"))
 			{
-				WorkerCommand wcmd = Workers.getCompilableWorker().compile(cmd.getId(), cmd.getGametype());
-				Job job = new Job(wcmd, cmd);
-				addJob(job);
-				BackendFrontendConnectionHandler.getFrontend().sendMessage(
-						Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(cmd.getRequestid())));
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
 				try
 				{
-					BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result));
+					WorkerCommand wcmd = Workers.getCompilableWorker().compile(cmd.getId(), cmd.getGametype());
+					Job job = new Job(wcmd, cmd);
+					addJob(job);
+					BackendFrontendConnectionHandler.getFrontend().sendMessage(
+							Parsers.getFrontend()
+									.parse(new BackendFrontendCommandProcessed(cmd.getRequestid())));
 				}
-				catch (IOException e1)
+				catch (Exception e)
 				{
-					e1.printStackTrace();
+					e.printStackTrace();
+					BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
+					try
+					{
+						BackendFrontendConnectionHandler.getFrontend().sendMessage(
+								Parsers.getFrontend().parse(result));
+					}
+					catch (IOException e1)
+					{
+						e1.printStackTrace();
+					}
 				}
 			}
-		}
-		else if (cmd.getAction().equals("start"))
-		{
-			try
-			{
-				Games.startGame(cmd.getGametype(), cmd.getRequestid(), cmd.getAis());
-				BackendFrontendConnectionHandler.getFrontend().sendMessage(
-						Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(cmd.getRequestid())));
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
-				try
+				else if (cmd.getAction().equals("start"))
 				{
-					BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result));
+					try
+					{
+						Games.startGame(cmd.getGametype(), cmd.getRequestid(), cmd.getAis());
+						BackendFrontendConnectionHandler.getFrontend().sendMessage(
+								Parsers.getFrontend().parse(
+										new BackendFrontendCommandProcessed(cmd.getRequestid())));
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+						BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
+						try
+						{
+							BackendFrontendConnectionHandler.getFrontend().sendMessage(
+									Parsers.getFrontend().parse(result));
+						}
+						catch (IOException e1)
+						{
+							e1.printStackTrace();
+						}
+					}
 				}
-				catch (IOException e1)
-				{
-					e1.printStackTrace();
-				}
-			}
-		}
-		else
-			BackendMain.getLogger().severe(
-					"Unknown action from Frontend: " + cmd.getAction());
+				else
+					BackendMain.getLogger().severe(
+							"Unknown action from Frontend: " + cmd.getAction());
+			}).start();
 	}
 	
+	/**
+	 * Muss aufgerufen werden, wenn ein Job fertig ist. Entfernt den Job aus der
+	 * Liste und benachrichtigt das Frontend.
+	 */
 	public static void jobFinished (@NonNull WorkerCommandAnswer answer) throws IOException
 	{
 		UUID uuid = answer.getUuid();

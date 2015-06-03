@@ -1,4 +1,4 @@
-package org.pixelgaffer.turnierserver.networking.messages;
+package org.pixelgaffer.turnierserver.networking.bwprotocol;
 
 import java.util.UUID;
 

@@ -2,7 +2,7 @@ package org.pixelgaffer.turnierserver.compile;
 
 import java.io.IOException;
 
-import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandAnswer;
+import org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer;
 
 public interface Backend
 {

@@ -127,4 +127,12 @@ public class WorkerConnection
 	{
 		client.sendMessage(mf);
 	}
+
+	/**
+	 * Aktualisiert die Daten dieses Workers.
+	 */
+	public void update (WorkerInfo info)
+	{
+		sandboxes = info.getSandboxes();
+	}
 }

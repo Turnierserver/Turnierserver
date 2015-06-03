@@ -12,8 +12,8 @@ import java.util.LinkedList;
 import org.pixelgaffer.turnierserver.compile.CompileResult;
 import org.pixelgaffer.turnierserver.compile.Compiler;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
+import org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
-import org.pixelgaffer.turnierserver.networking.messages.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
 
 /**
