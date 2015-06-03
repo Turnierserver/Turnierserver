@@ -31,7 +31,7 @@ Alle implementierten sind gehäkelt.
 
 #####GETs (offen zugänglich / ohne Authentifizierung)
 -------------
-- [x] /api/ais
+- [x] /api/ais[/gametype]
   * *gibt eine Liste von KIs zurück, die deren Punktzahl und deren Besitzer beinhaltet.*
 - [x] /api/ai/\<id\>
   * *gibt den Besitzer, die Punktzahl und ähnliches zurück.*
@@ -47,7 +47,7 @@ Alle implementierten sind gehäkelt.
   * *gibt alle KIs und andere Infos über den Nutzer zurück.*
 - [x] /api/user/\<id\>/icon
   * *gibt das Icon des Users zurück.*
-- [x] /api/games
+- [x] /api/games[/gametype]
   * *gibt alle Spielids (und mehr infos) zurück.*
 - [x] /api/game/\<id\>
   * *gibt Infos zurück.*

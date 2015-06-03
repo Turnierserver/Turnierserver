@@ -473,6 +473,10 @@ class GameType(db.Model):
 		if not self.last_modified:
 			self.last_modified = timestamp()
 
+	@classmethod
+	def lastest(cls):
+		return cls.query.order_by("-id").first()
+
 	def updated(self):
 		self.last_modified = timestamp()
 		db.session.commit()

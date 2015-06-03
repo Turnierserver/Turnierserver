@@ -17,7 +17,6 @@ from sse import sse_stream
 
 
 
-
 def json_out(f):
 	@wraps(f)
 	def wrapper(*args, **kwargs):
@@ -64,9 +63,17 @@ def api_index():
 	return "PONG!"
 
 @api.route("/ais", methods=["GET"])
+@api.route("/ais/<int:gametype>", methods=["GET"])
 @json_out
-def api_ais():
-	return [ai.info() for ai in AI.query.all()]
+def api_ais(gametype=None):
+	if not gametype:
+		gametype = GameType.lastest()
+	else:
+		gametype = GameType.query.get(gametype)
+		if not gametype:
+			return CommonErrors.BAD_REQUEST
+
+	return [ai.info() for ai in AI.query.filter(AI.type == gametype).all()]
 
 @api.route("/ai/<int:id>", methods=["GET"])
 @json_out
@@ -87,9 +94,16 @@ def api_ai_games(id):
 		return CommonErrors.INVALID_ID
 
 @api.route("/games")
+@api.route("/games/<int:gametype>")
 @json_out
-def api_games():
-	return [game.info() for game in Game.query.all()]
+def api_games(gametype=None):
+	if not gametype:
+		gametype = GameType.lastest()
+	else:
+		gametype = GameType.query.get(gametype)
+		if not gametype:
+			return CommonErrors.BAD_REQUEST
+	return [game.info() for game in Game.query.filter(Game.type == gametype).all()]
 
 @api.route("/game/<int:id>", methods=["GET"])
 @json_out
