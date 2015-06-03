@@ -37,3 +37,5 @@ GameBuilder/buildgame
 SandboxMachine/sandboxd
 SandboxMachine/sandboxd_helper
 SandboxMachine/startGdb.sh
+SandboxMachine/SandboxMachine.ini
+turnierserver.prop
