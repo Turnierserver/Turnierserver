@@ -154,6 +154,14 @@ public class WebConnector {
 		
 	}
 	
+	public void createAi(Ai ai) {
+		
+	}
+	
+	public ObservableList<Ai> getOwnAis(String game, String userName) {
+		return FXCollections.observableArrayList(getAis(game).stream().filter((Ai ai) -> ai.userName == userName).collect(Collectors.toList()));
+	}
+	
 	/**
 	 * Pingt den Server
 	 * 
@@ -373,7 +381,6 @@ public class WebConnector {
 		}
 		return true;
 	}
-	
 	
 
 	public boolean loadDataContainer(int game, String gameName) {
