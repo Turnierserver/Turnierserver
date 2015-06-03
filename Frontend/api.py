@@ -140,12 +140,14 @@ def api_game_log(id):
 			size = 16
 			m = [[random.randrange(0, 3) for y in range(size)] for x in range(size)]
 			info = dict(
-				data = dict(cells=m, id=i),
-				ai_logs = [
-					"huehuehuehuehue",
-					"ehuehuehuehueeu"
-				],
-				status=str(i)+"/100",
+				data = dict(
+					cells=m, id=i,
+					ai_logs = [
+						"log fuer zug" + str(i),
+						"log von ki 2 fuer zug " + str(i)
+					],
+					status=str(i)+"/100",
+				),
 				progress=i/21
 			)
 			yield json.dumps(info), "state"

@@ -464,6 +464,7 @@ class Game_inprogress:
 	def __init__(self):
 		self.type = GameType.lastest()
 		self.timestamp = timestamp()
+		self.ais = [AI.query.first(), AI.query.first()]
 
 	def time(self, locale):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)

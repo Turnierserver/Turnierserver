@@ -113,10 +113,9 @@ function draw() {
 
 
 function update() {
-	if (step >= data.length) {
-		step = data.length-1;
-		$(e.target).val(step)
-	}
+	var d = data[step];
+	$("#ai_left_output").val(d.ai_logs[0])
+	$("#ai_right_output").val(d.ai_logs[1])
 }
 
 
@@ -131,7 +130,6 @@ evtSrc.addEventListener("state", function(e) {
 	console.log(e.data)
 	d = JSON.parse(e.data)
 	console.log(d)
-	console.log(d.status)
 	data.push(d.data)
 	$('#download_progress').progress({
 		percent: d.progress*100

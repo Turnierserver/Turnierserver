@@ -52,4 +52,4 @@ def inprogress_game(id):
 	## inpgrogress type
 	t = GameType.query.first()
 	game = Game_inprogress()
-	return render_template(game.type.viz, game=game, inprogress=True)
+	return render_template(game.type.viz, game=game, inprogress=True, ai0=game.ais[0], ai1=game.ais[1])
