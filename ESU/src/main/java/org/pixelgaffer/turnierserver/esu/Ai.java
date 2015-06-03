@@ -8,6 +8,12 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Properties;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -34,7 +40,7 @@ public class Ai {
 	public String language;
 	public String description = "(keine Beschreibung)";
 	public String elo = "leere Elo";
-	private Image onlinePicture;
+	private ObjectProperty<Image> onlinePicture = new SimpleObjectProperty<Image>();
 	public ObservableList<Version> versions = FXCollections.observableArrayList();
 	
 	public static enum AiMode{
@@ -106,7 +112,7 @@ public class Ai {
 	
 	private void loadPicture(JSONObject json, WebConnector connector) {
 		try {
-			onlinePicture = connector.getImage(json.getInt("id"));
+			setPicture(connector.getImage(json.getInt("id")));
 		} catch (IOException e) {
 			ErrorLog.write("ERROR: Konnte das Bild der AI " + json.getString("name") + " nicht laden (" + e.getLocalizedMessage() + ")!");
 		}
@@ -256,18 +262,18 @@ public class Ai {
 	 * 
 	 * @return das gespeicherte Bild
 	 */
-	public Image getPicture(){
+	public ObjectProperty<Image> getPicture(){
 		if (mode == AiMode.online){
 			if (onlinePicture != null){
 				return onlinePicture;
 			}
 			else{
-				return Resources.defaultPicture();
+				return new SimpleObjectProperty<>(Resources.defaultPicture());
 			}
 		}
-		Image img = Resources.imageFromFile(Paths.aiPicture(this));
-		if (img == null){
-			img = Resources.defaultPicture();
+		ObjectProperty<Image> img = new SimpleObjectProperty<>(Resources.imageFromFile(Paths.aiPicture(this)));
+		if (img.get() == null){
+			img = new SimpleObjectProperty<>(Resources.defaultPicture());
 		}
 		return img;
 	}
@@ -278,7 +284,7 @@ public class Ai {
 	 */
 	public void setPicture(Image img){
 		if (mode == AiMode.online){
-			onlinePicture = img;
+			onlinePicture.set(img);
 		}
 		else{
 			try {

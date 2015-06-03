@@ -19,6 +19,7 @@ import java.util.Properties;
 
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.esu.Ai.AiMode;
+import org.pixelgaffer.turnierserver.esu.Game.GameMode;
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 
@@ -60,6 +61,7 @@ public class Version {
 		
 		if (mode == AiMode.saved || mode == AiMode.simplePlayer){
 			if (!exists()){
+				ai.gametype = MainApp.actualGameType.get();
 				copyFromFile(Paths.simplePlayer("" + ai.gametype, ai.language));
 				storeProps();
 				findCode();
@@ -170,7 +172,8 @@ public class Version {
 			uploaded = Boolean.parseBoolean(prop.getProperty("uploaded"));
 			compileOutput = prop.getProperty("compileOutput");
 			qualifyOutput = prop.getProperty("qualifyOutput");
-		} catch (IOException e) {ErrorLog.write("Fehler bei Laden aus der properties.txt (Version)");}
+		} catch (IOException e) {
+			ErrorLog.write("Fehler bei Laden aus der properties.txt (Version)");}
 	}
 	/**
 	 * Speichert die Eigenschaften des Players in das Dateiverzeichnis.

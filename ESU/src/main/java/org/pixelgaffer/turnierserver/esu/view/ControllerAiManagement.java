@@ -10,6 +10,7 @@ import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
 import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 import org.pixelgaffer.turnierserver.esu.utilities.Resources;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -120,7 +121,7 @@ public class ControllerAiManagement{
 			tbDescription.setText(ai.description);
 			cbVersion.getSelectionModel().clearSelection();
 			cbVersion.setItems(ai.versions);
-			image.setImage(ai.getPicture());
+			Bindings.bindBidirectional(image.imageProperty(), ai.getPicture());
 			
 			btChangeImage.setDisable(false);
 			btDeleteImage.setDisable(false);
@@ -369,10 +370,12 @@ public class ControllerAiManagement{
 	}
 	
 	/**
-	 * Button: Dateiauswahl wenn "Aus Datei" ausgew�hlt ist
+	 * Button: Dateiauswahl wenn "Aus Datei" ausgewählt ist
 	 */
 	@FXML void clickSelectFile(){
-		tbFile.setText(Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner ausw�hlen").getPath());
+		File result = Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner auswählen");
+		if (result != null)
+			tbFile.setText(result.getPath());
 	}
 	
 	/**

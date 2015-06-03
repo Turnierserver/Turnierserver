@@ -58,16 +58,17 @@ public class ControllerStartPage{
 		
 		updateLoggedIn();
 		
-		cbGameTypes.setItems(MainApp.gametypes);
-		cbGameTypes.getSelectionModel().selectLast();
-		//MainApp.actualGameType.bind((ReadOnlyStringProperty) cbGameTypes.getSelectionModel().selectedItemProperty());
 		
 		cbGameTypes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 		    @Override
 		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 		        MainApp.actualGameType.set(newValue);
+		        mainApp.aiManager.loadPlayers();
 		    }
 		});
+		
+		cbGameTypes.setItems(MainApp.gametypes);
+		cbGameTypes.getSelectionModel().selectLast();
 	}
 	
 	

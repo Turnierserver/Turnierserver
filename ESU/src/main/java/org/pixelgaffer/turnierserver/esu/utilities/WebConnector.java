@@ -169,10 +169,12 @@ public class WebConnector {
 	}
 	
 	public ObservableList<String> loadGametypesFromFile() {
-		ObservableList<String> result = FXCollections.emptyObservableList();
+		ObservableList<String> result = FXCollections.observableArrayList();
 		
 		try {
-			result.addAll(FileUtils.readLines(new File(Paths.gameTypesFile())));
+			for(String line : FileUtils.readLines(new File(Paths.gameTypesFile()))) {
+				result.add(line.split("->")[0]);
+			}
 		} catch (IOException e) {
 			ErrorLog.write("Konnte Spieltypen nicht aus Datei laden. Dies ist beim ersten Starten zu erwarten: " + e.getLocalizedMessage());
 			return null;
@@ -182,7 +184,7 @@ public class WebConnector {
 	}
 	
 	public ObservableList<String> loadLangsFromFile() {
-		ObservableList<String> result = FXCollections.emptyObservableList();
+		ObservableList<String> result = FXCollections.observableArrayList();
 		
 		try {
 			result.addAll(FileUtils.readLines(new File(Paths.langsFile())));
@@ -193,7 +195,7 @@ public class WebConnector {
 	}
 	
 	public void updateLanguages() throws DeletedException, NewException, NothingDoneException {
-		ObservableList<String> result = FXCollections.emptyObservableList();
+		ObservableList<String> result = FXCollections.observableArrayList();
 		
 		String json = null;
 		try {
@@ -254,7 +256,7 @@ public class WebConnector {
 	
 
 	public void updateGametypes() throws NewException, UpdateException, NothingDoneException, DeletedException {
-		ObservableList<String> result = FXCollections.emptyObservableList();
+		ObservableList<String> result = FXCollections.observableArrayList();
 		
 		String json = null;
 		try {

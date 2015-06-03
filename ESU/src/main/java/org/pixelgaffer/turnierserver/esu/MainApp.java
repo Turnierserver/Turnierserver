@@ -62,19 +62,14 @@ public class MainApp extends Application{
 	 * start-Methode (wegen: extends Application)
 	 */
 	public void start(Stage _stage) throws Exception {
+		stage = _stage;
 
 		ErrorLog.write("Programm startet...", true);
+
+		gametypes = webConnector.loadGametypesFromFile();
+		languages = webConnector.loadLangsFromFile();
 		
-		languages.addAll(webConnector.getLanguages());
-		gametypes.addAll(webConnector.getGametypes());
-		actualGameType.addListener(new ChangeListener<String>() {
-		    @Override
-		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-		    	aiManager.loadPlayers();
-		    }
-		});
 		
-		stage = _stage;
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("view/RootLayout.fxml"));
 		BorderPane root = (BorderPane) loader.load();
