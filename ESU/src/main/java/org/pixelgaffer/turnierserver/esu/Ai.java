@@ -12,6 +12,8 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -36,7 +38,7 @@ public class Ai {
 	public final String title;
 	public final AiMode mode;
 	public String gametype;
-	public String userName;
+	public SimpleStringProperty userName = new SimpleStringProperty();
 	public String language;
 	public String description = "(keine Beschreibung)";
 	public String elo = "leere Elo";
@@ -60,7 +62,7 @@ public class Ai {
 	public Ai(JSONObject json, WebConnector connector) {
 		title = json.getString("name");
 		mode = AiMode.online;
-		userName = json.getString("author");
+		userName.set(json.getString("author"));
 		description = json.getString("description");
 		gametype = json.getJSONObject("gametype").getInt("id") + "";
 		language = json.getJSONObject("lang").getString("name");

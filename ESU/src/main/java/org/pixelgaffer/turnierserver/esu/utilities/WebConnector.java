@@ -163,7 +163,7 @@ public class WebConnector {
 	}
 
 	public ObservableList<Ai> getOwnAis(String game, String userName) {
-		return FXCollections.observableArrayList(getAis(game).stream().filter((Ai ai) -> ai.userName == userName).collect(Collectors.toList()));
+		return FXCollections.observableArrayList(getAis(game).stream().filter((Ai ai) -> ai.userName.get() == userName).collect(Collectors.toList()));
 	}
 
 	/**
