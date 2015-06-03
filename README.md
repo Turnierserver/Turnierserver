@@ -18,6 +18,8 @@ FTP-Server:
 ftp://msrd0.duckdns.org/
 
 Beispiels-Implementation eines Spieles:
+https://github.com/msrd0/Minesweeper <br>
+Und hier das alte Repo mit dem Beispiel-KI:
 https://github.com/nicosio2/Minesweeper
 
 Privates Config-Repo:
