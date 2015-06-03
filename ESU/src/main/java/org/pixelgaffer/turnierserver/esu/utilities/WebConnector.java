@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Observable;
 import java.util.stream.Collectors;
 
 import javafx.collections.FXCollections;
@@ -37,6 +38,10 @@ import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.esu.Ai;
 import org.pixelgaffer.turnierserver.esu.Game;
 import org.pixelgaffer.turnierserver.esu.Version;
+import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.DeletedException;
+import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.NewException;
+import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.NothingDoneException;
+import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.UpdateException;
 
 public class WebConnector {
 	
@@ -163,12 +168,55 @@ public class WebConnector {
 		}
 	}
 	
-	/**
-	 * Holt sich alle Sprachen. Es wird eine gespeicherte Liste zurückgegeben wenn keine Internetverbindung besteht. Falls keine Liste gespeichert ist, wird null zurückgegeben
-	 * 
-	 */
-	public List<String> getLanguages() {
-		List<String> result = new ArrayList<String>();
+	public ObservableList<String> loadGametypesFromFile() {
+		ObservableList<String> result = FXCollections.emptyObservableList();
+		
+		try {
+			result.addAll(FileUtils.readLines(new File(Paths.gameTypesFile())));
+		} catch (IOException e) {
+			ErrorLog.write("Konnte Spieltypen nicht aus Datei laden. Dies ist beim ersten Starten zu erwarten: " + e.getLocalizedMessage());
+			String json = null;
+			try {
+				json = toString(sendGet("gametypes"));
+			} catch (IOException e1) {}
+			if(json == null) {
+				ErrorLog.write("Konnte die Spieltypen nicht aus dem Internet laden. Dies ist ein schwerwiededer Fehler!");
+				return null;
+			}
+			JSONArray gametypes = new JSONArray(json);
+			for(int i = 0; i < gametypes.length(); i++) {
+				result.add(gametypes.getJSONObject(i).getString("name"));
+			}
+		}
+		
+		return result;
+	}
+	
+	public ObservableList<String> loadLangsFromFile() {
+		ObservableList<String> result = FXCollections.emptyObservableList();
+		
+		try {
+			result.addAll(FileUtils.readLines(new File(Paths.langsFile())));
+		} catch (IOException e) {
+			ErrorLog.write("Konnte Sprachen nicht aus Datei laden. Dies ist beim ersten Starten zu erwarten: " + e.getLocalizedMessage());
+			String json = null;
+			try {
+				json = toString(sendGet("langs"));
+			} catch (IOException e1) {}
+			if(json == null) {
+				ErrorLog.write("Konnte die Sprachen nicht aus dem Internet laden. Dies ist ein schwerwiededer Fehler!");
+				return null;
+			}
+			JSONArray langs = new JSONArray(json);
+			for(int i = 0; i < langs.length(); i++) {
+				result.add(langs.getJSONObject(i).getString("name"));
+			}
+		}
+		return result;
+	}
+	
+	public void updateLanguages() throws DeletedException, NewException, NothingDoneException {
+		ObservableList<String> result = FXCollections.emptyObservableList();
 		
 		String json = null;
 		try {
@@ -176,23 +224,30 @@ public class WebConnector {
 		} catch (IOException e) {
 			ErrorLog.write("Die Sprachen konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
 		}
-		
 		if(json == null) {
-			try {
-				result.addAll(FileUtils.readLines(new File(Paths.langsFile())));
-			} catch (IOException e) {
-				ErrorLog.write("Die Sprachen konnten nicht aus der Datei werden: " + e.getLocalizedMessage());
-				return null;
-			}
-			return result;
-		}
-		
-		JSONArray langs = new JSONArray(json);
-		for(int i = 0; i < langs.length(); i++) {
-			result.add(langs.getJSONObject(i).getString("name"));
+			throw new NothingDoneException();
 		}
 		
 		File langsFile = new File(Paths.langsFile());
+		List<String> langsInFile = new ArrayList<String>();
+		try {
+			langsInFile = FileUtils.readLines(langsFile);
+		} catch (IOException e) {
+			ErrorLog.write("Konnte Sprachen nicht aus Datei lesen. Dies ist beim ersten Start zu erwarten: " + e.getLocalizedMessage());
+		}
+		
+		boolean newLangs = false;
+		boolean deleted = false;
+		
+		JSONArray langs = new JSONArray(json);
+		for(int i = 0; i < langs.length(); i++) {
+			String lang = langs.getJSONObject(i).getString("name");
+			if(!langsInFile.contains(lang)) {
+				newLangs = true;
+			}
+			result.add(lang);
+		}
+		
 		langsFile.delete();
 		try {
 			langsFile.getParentFile().mkdirs();
@@ -204,15 +259,24 @@ public class WebConnector {
 			ErrorLog.write("Die Sprachen konnten nicht in die Datei geschrieben werden!");
 		}
 		
-		return result;
+		for(String lang : langsInFile) {
+			if(!result.contains(lang)) {
+				deleted = true;
+			}
+		}
+		
+		if(newLangs) {
+			throw new NewException(result);
+		}
+		if(deleted) {
+			throw new DeletedException(result);
+		}
+		throw new NothingDoneException();
+		
 	}
 	
-	/**
-	 * Holt sich alle Spieltypen. Es wird eine gespeicherte Liste zurückgegeben wenn keine Internetverbindung besteht. Falls keine Liste gespeichert ist, wird null zurückgegeben
-	 * 
-	 */
-	public List<String> getGametypes() {
-		List<String> result = new ArrayList<String>();
+	public void updateGametypes() throws NewException, UpdateException, NothingDoneException, DeletedException {
+		ObservableList<String> result = FXCollections.emptyObservableList();
 		
 		String json = null;
 		try {
@@ -220,46 +284,49 @@ public class WebConnector {
 		} catch (IOException e) {
 			ErrorLog.write("Die Spieltypen konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
 		}
-		
 		if(json == null) {
-			try {
-				for(String line : FileUtils.readLines(new File(Paths.gameTypesFile()))) {
-					result.add(line.split("->")[0]);
-				}
-			} catch (IOException e) {
-				ErrorLog.write("Die Spieltypen konnten nicht aus der Datei geladen werden: " + e.getLocalizedMessage());
-				return null;
-			}
-			return result;
+			throw new NothingDoneException();
 		}
 		
 		JSONArray gametypes = new JSONArray(json);
 		
 		List<String> fileLines = new ArrayList<>();
 		try {
-			fileLines = FileUtils.readLines(new File(Paths.langsFile()));
+			fileLines = FileUtils.readLines(new File(Paths.gameTypesFile()));
 		} catch (IOException e) {
 			ErrorLog.write("Die Spieltypen konnten nicht aus der Datei gelesen werden: " + e.getLocalizedMessage());
-			ErrorLog.write("Es werden nun alle Spieltypen geladen werden!");
+			ErrorLog.write("Es werden nun alle Spieltypen geladen!");
 		}
 		
+		List<String> gametypesInFile = new ArrayList<>();
+		List<String> gametypesFromFrontend = new ArrayList<>();
+		for(String fileLine : fileLines) {
+			gametypesInFile.add(fileLine.split("->")[0]);
+		}
+		
+		boolean updated = false;
+		boolean somethingNew = false;
 		String[] lines = new String[gametypes.length()];
 		
 		for(int i = 0; i < gametypes.length(); i++) {
 			JSONObject gametype = gametypes.getJSONObject(i);
 			String apparentLine = gametype.getString("name") + "->" + gametype.getLong("last_modified");
 			
+			gametypesFromFrontend.add(gametype.getString("name"));
+			
 			if(!fileLines.contains(apparentLine)) {
 				if(!loadGamelogic(gametype.getInt("id"), gametype.getString("name")) || !loadDataContainer(gametype.getInt("id"), gametype.getString("name"))) {
 					ErrorLog.write("Konnte Spiel " + gametype.getInt("id") + " nicht aktualisieren!");
+					continue;
 				}
 				else {
-					lines[gametype.getInt("id") - 1] = apparentLine;
+					updated = true;
+					if(!gametypesInFile.contains(gametype.getString("name"))) {
+						somethingNew = true;
+					}
 				}
 			}
-			else {
-				lines[gametype.getInt("id") - 1] = apparentLine;
-			}
+			lines[gametype.getInt("id") - 1] = apparentLine;
 		}
 				
 		//Speichern in der Datei
@@ -275,11 +342,34 @@ public class WebConnector {
 				}
 			}
 		} catch (IOException e) {
-			ErrorLog.write("Die Sprachen konnten nicht in die Datei geschrieben werden!");
+			ErrorLog.write("Die Spieltypen konnten nicht in die Datei geschrieben werden!");
 		}
 		
-		return result;
+		boolean deleted = false;
+		for(String gametype : gametypesInFile) {
+			if(!gametypesFromFrontend.contains(gametype)) {
+				deleted = true;
+				try {
+					FileUtils.deleteDirectory(new File(Paths.downloadGameType(gametype)));
+				} catch (IOException e) {
+					ErrorLog.write("Konnte Spieltyp " + gametype + " nicht löschen: " + e.getLocalizedMessage());
+				}
+				break;
+			}
+		}
+		
+		if(somethingNew) {
+			throw new NewException(result);
+		}
+		if(deleted) {
+			throw new DeletedException(result);
+		}
+		if(updated) {
+			throw new UpdateException();
+		}
+		throw new NothingDoneException();
 	}
+	
 	
 	public boolean loadGamelogic(int game, String gameName) {
 		byte[] logic;
@@ -302,6 +392,7 @@ public class WebConnector {
 		}
 		return true;
 	}
+	
 	
 	public boolean loadDataContainer(int game, String gameName) {
 		byte[] libraries;
@@ -337,7 +428,7 @@ public class WebConnector {
 					continue;
 				}
 				File target = new File(Paths.simplePlayer(gameName, file.getName()) + "/v0/src");
-				target.delete();
+				FileUtils.deleteDirectory(new File(Paths.simplePlayer(gameName, file.getName())));
 				target.mkdirs();
 				File property = new File(Paths.simplePlayer(gameName, file.getName()), "properties.txt");
 				property.createNewFile();
@@ -515,7 +606,10 @@ public class WebConnector {
 		return responseArray;
 	}
 	
-	private String toString(byte[] bytes) {
+	private String toString(byte[] bytes) throws IOException {
+		if(bytes == null) {
+			throw new IOException();
+		}
 		try {
 			return new String(bytes, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
