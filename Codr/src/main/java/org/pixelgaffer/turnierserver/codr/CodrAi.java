@@ -9,14 +9,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Properties;
 
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -25,9 +19,7 @@ import javafx.scene.image.Image;
 import javax.imageio.ImageIO;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.pixelgaffer.turnierserver.codr.CodrGame.GameMode;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
@@ -44,6 +36,7 @@ public class CodrAi {
 	public String language;
 	public String description = "(keine Beschreibung)";
 	public String elo = "leere Elo";
+	public int id;
 	public ObjectProperty<Image> onlinePicture = new SimpleObjectProperty<Image>();
 	public ObservableList<Version> versions = FXCollections.observableArrayList();
 	
@@ -68,14 +61,20 @@ public class CodrAi {
 		mode = AiMode.online;
 		userName = json.getString("author");
 		description = json.getString("description");
-		gametype = json.getJSONObject("gametype").getInt("id") + "";
+		gametype = json.getJSONObject("gametype").getString("name");
 		language = json.getJSONObject("lang").getString("name");
+		id = json.getInt("id");
 		JSONArray versions = json.getJSONArray("versions");
 		for (int i = 0; i < versions.length(); i++) {
 			newVersion(versions.getJSONObject(i));
 		}
 		
 		new Thread(() -> loadPicture(json, connector), "Image Loader").start();
+	}
+	
+	public CodrAi() {
+		title = "<Neue KI>";
+		mode = AiMode.online;
 	}
 	
 	

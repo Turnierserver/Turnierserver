@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Observable;
 import java.util.stream.Collectors;
 
 import javafx.collections.FXCollections;
@@ -39,6 +38,7 @@ import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.codr.CodrAi;
 import org.pixelgaffer.turnierserver.codr.CodrGame;
 import org.pixelgaffer.turnierserver.codr.Version;
+import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.DeletedException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NothingDoneException;
@@ -88,10 +88,67 @@ public class WebConnector {
 	
 	public String getUserName() {
 		try {
-			return sendPost("loggedin").toString();
+			String json = toString(sendPost("loggedin"));
+			if(json == null) {
+				throw new IOException();
+			}
+			return new JSONObject(json).getString("username");
 		} catch (IOException e) {
 			ErrorLog.write("Abfrage des Nutzernamens nicht möglich");
 			return null;
+		}
+	}
+	
+	public int getUserID() {
+		try {
+			String json = toString(sendPost("loggedin"));
+			if(json == null) {
+				throw new IOException();
+			}
+			return new JSONObject(json).getInt("id");
+		} catch (IOException e) {
+			ErrorLog.write("Abfrage der Nutzer ID nicht möglich");
+			return -1;
+		}
+	}
+	
+	public int getLangID(String langName) {
+		try {
+			String json = toString(sendPost("langs"));
+			if(json == null) {
+				throw new IOException();
+			}
+			JSONArray array = new JSONArray(json);
+			for(int i = 0; i < array.length(); i++) {
+				if(array.getJSONObject(i).getString("name").equals(langName)) {
+					return array.getJSONObject(i).getInt("id");
+				}
+			}
+			ErrorLog.write("Es gibt keine Sprache mit dem Namen " + langName);
+			return -1;
+		} catch (IOException e) {
+			ErrorLog.write("Abfrage der Sprachen nicht möglich");
+			return -1;
+		}
+	}
+	
+	public int getGametypeID(String gametypeName) {
+		try {
+			String json = toString(sendPost("gametypes"));
+			if(json == null) {
+				throw new IOException();
+			}
+			JSONArray array = new JSONArray(json);
+			for(int i = 0; i < array.length(); i++) {
+				if(array.getJSONObject(i).getString("name").equals(gametypeName)) {
+					return array.getJSONObject(i).getInt("id");
+				}
+			}
+			ErrorLog.write("Es gibt keinen Spieltyp mit dem Namen " + gametypeName);
+			return -1;
+		} catch (IOException e) {
+			ErrorLog.write("Abfrage der Spieltypen nicht möglich");
+			return -1;
 		}
 	}
 	
@@ -141,7 +198,7 @@ public class WebConnector {
 		ObservableList<CodrAi> result = FXCollections.observableArrayList();
 		String json;
 		try {
-			json = toString(sendGet("ais/" + game));
+			json = toString(sendGet("ais/" + getGametypeID(game)));
 		} catch (IOException e) {
 			return result;
 		}
@@ -181,8 +238,26 @@ public class WebConnector {
 	}
 	
 	
-	public void createAi(CodrAi ai) {
-		
+	public boolean createAi(CodrAi ai) {
+		try {
+			sendGet("ai/create", "name", ai.title, "desc", ai.description, "lang", getLangID(ai.language) + "", "type", getGametypeID(ai.gametype) + "");
+			return true;
+		} catch (IOException e) {
+			ErrorLog.write("Konnte AI nicht erstellen: " + e.getLocalizedMessage());;
+			return false;
+		}
+	}
+	
+	public String compile(Version version) throws IOException, CompileException {
+		String json = toString(sendGet("ai/" + version.ai.id + "/compile_blocking"));
+		if(json == null) {
+			throw new IOException("Fehler bei der Verbindung mit dem Server");
+		}
+		JSONObject result = new JSONObject(json);
+		if(result.getString("error") != null) {
+			throw new CompileException(result.getString("compileoutput"), result.getString("error"));
+		}
+		return result.getString("compileoutput");
 	}
 	
 	

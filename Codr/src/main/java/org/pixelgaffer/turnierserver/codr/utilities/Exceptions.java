@@ -11,10 +11,10 @@ public final class Exceptions {
 	}
 	
 	
-	public static class NothingDoneException extends RuntimeException {
+	public static class NothingDoneException extends Exception {
 	}
 	
-	public static class NewException extends RuntimeException {
+	public static class NewException extends Exception {
 		
 		public ObservableList<String> newValues;
 		
@@ -31,7 +31,16 @@ public final class Exceptions {
 		}
 	}
 	
-	public static class UpdateException extends RuntimeException {
+	public static class UpdateException extends Exception {
+	}
+	
+	public static class CompileException extends Exception {
+		public String compileOutput;
+		public String errorMessage;
+		public CompileException(String compileOutput, String errorMesage) {
+			this.compileOutput = compileOutput;
+			this.errorMessage = errorMesage;
+		}
 	}
 	
 }
