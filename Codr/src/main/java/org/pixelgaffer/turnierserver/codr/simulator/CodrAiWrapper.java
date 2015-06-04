@@ -1,15 +1,21 @@
 package org.pixelgaffer.turnierserver.codr.simulator;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import org.pixelgaffer.turnierserver.codr.Version;
+import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
 
+@RequiredArgsConstructor
 public class CodrAiWrapper implements Ai
 {
 	/** Das zugrundeliegende Spiel, enthält die Spiellogik. */
@@ -27,6 +33,11 @@ public class CodrAiWrapper implements Ai
 	@Setter
 	private boolean connected = false;
 	
+	/** Die Version der KI. */
+	@Getter
+	@Setter
+	private Version version;
+	
 	/** Der ID-String dieser KI. */
 	@Setter
 	@Getter
@@ -41,6 +52,18 @@ public class CodrAiWrapper implements Ai
 	@Getter
 	@Setter
 	private AiObject object;
+	
+	/** Der Process dieser KI. */
+	@Getter
+	private Process process;
+	
+	public void executeAi () throws IOException
+	{
+		ProcessBuilder pb = new ProcessBuilder(getVersion().executeCommand.split("\\s"));
+		pb.directory(new File(Paths.versionBin(getVersion())));
+		process = pb.start();
+		ErrorLog.write("Die KI " + id + " wurde aufgerufen.");
+	}
 	
 	@Override
 	public void sendMessage (byte[] message) throws IOException

@@ -1,27 +1,25 @@
 package org.pixelgaffer.turnierserver.codr.simulator;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.pixelgaffer.turnierserver.codr.CodrAi;
+import lombok.Getter;
+
 import org.pixelgaffer.turnierserver.codr.CodrGame;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
-import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 
@@ -51,18 +49,39 @@ public class CodrGameImpl implements Game, Frontend
 		return (GameLogic<?, ?>)clazz.newInstance();
 	}
 	
-	private SortedMap<UUID, CodrAiWrapper> ais = new TreeMap<>();
+	private Map<UUID, CodrAiWrapper> aiWrappers = new HashMap<>();
+	
+	@Getter
+	private List<CodrAiWrapper> ais;
+	
+	UUID randomUUID ()
+	{
+		UUID uuid;
+		do
+		{
+			uuid = UUID.randomUUID();
+		} while (!aiWrappers.containsKey(uuid));
+		return uuid;
+	}
+	
+	@Getter
+	private GameLogic<?, ?> logic;
 	
 	private OutputStream renderData;
 	
-	public CodrGameImpl (CodrGame game, Collection<Version> opponents) throws FileNotFoundException
+	public CodrGameImpl (CodrGame game, Collection<Version> opponents) throws IOException
 	{
 		renderData = new FileOutputStream(Paths.gameRenderData(game));
 		
 		for (Version v : opponents)
 		{
-			CodrAi ai = v.ai;
-			
+			CodrAiWrapper aiw = new CodrAiWrapper(this, randomUUID());
+			aiw.setIndex(ais.size());
+			aiw.setId(v.ai.title + "v" + v.number);
+			aiw.setVersion(v);
+			ais.add(aiw);
+			aiWrappers.put(aiw.getUuid(), aiw);
+			aiw.executeAi();
 		}
 	}
 	
@@ -98,11 +117,5 @@ public class CodrGameImpl implements Game, Frontend
 			renderData.write(message);
 			renderData.flush();
 		}
-	}
-
-	@Override
-	public List<? extends Ai> getAis ()
-	{
-		return new ArrayList<CodrAiWrapper>(ais.values());
 	}
 }
