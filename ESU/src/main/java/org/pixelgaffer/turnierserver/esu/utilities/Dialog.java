@@ -3,9 +3,14 @@ package org.pixelgaffer.turnierserver.esu.utilities;
 import java.io.File;
 import java.util.Optional;
 
+import org.pixelgaffer.turnierserver.esu.Ai;
+import org.pixelgaffer.turnierserver.esu.MainApp;
+
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -152,6 +157,24 @@ public class Dialog {
 		DirectoryChooser folderChooser = new DirectoryChooser();
 		folderChooser.setTitle(title);
 		return folderChooser.showDialog(stage);
+	}
+	
+	
+	public static String selectOwnVersion(){
+		ObservableList<Ai> ownAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+		
+		ChoiceDialog<Ai> dialog = new ChoiceDialog<Ai>();
+		dialog.getItems().addAll(ownAis);
+		dialog.setTitle("Choice Dialog");
+		dialog.setHeaderText("Look, a Choice Dialog");
+		dialog.setContentText("Choose your letter:");
+
+		// Traditional way to get the response value.
+		//Optional<String> result = dialog.showAndWait();
+//		if (result.isPresent()){
+//		    System.out.println("Your choice: " + result.get());
+//		}
+		return null;
 	}
 	
 }

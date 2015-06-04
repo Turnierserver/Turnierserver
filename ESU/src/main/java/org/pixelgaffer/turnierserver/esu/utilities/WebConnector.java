@@ -79,6 +79,15 @@ public class WebConnector {
 		saveToFile();
 		return result;
 	}
+	
+	public String getUserName(){
+		try {
+			return sendPost("loggedin").toString();
+		} catch (IOException e) {
+			ErrorLog.write("Abfrage des Nutzernamens nicht möglich");
+			return null;
+		}
+	}
 
 	public boolean register(String username, String firstname, String lastname, String email, String password) throws IOException {
 		return sendPost("register", "username", username, "email", email, "password", password, "firstname", firstname, "lastname", lastname) != null;
@@ -162,8 +171,8 @@ public class WebConnector {
 
 	}
 
-	public ObservableList<Ai> getOwnAis(String game, String userName) {
-		return FXCollections.observableArrayList(getAis(game).stream().filter((Ai ai) -> ai.userName == userName).collect(Collectors.toList()));
+	public ObservableList<Ai> getOwnAis(String game) {
+		return FXCollections.observableArrayList(getAis(game).stream().filter((Ai ai) -> ai.userName == getUserName()).collect(Collectors.toList()));
 	}
 
 	/**
