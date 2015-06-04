@@ -11,7 +11,10 @@ public class NetworkService
 	public static NIOService getService () throws IOException
 	{
 		if (service == null)
+		{
 			service = new NIOService();
+			service.setBufferSize(1*1024*1024); // 1 MiB
+		}
 		return service;
 	}
 	

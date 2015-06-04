@@ -10,6 +10,7 @@ import lombok.Setter;
 public class FtpConnection
 {
 	@Getter
+	@Setter
 	@NonNull
 	private FTPClient ftpClient;
 	

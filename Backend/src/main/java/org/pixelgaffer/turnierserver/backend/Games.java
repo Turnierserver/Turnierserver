@@ -56,6 +56,13 @@ public class Games
 	/** Die zur UUID gehörende KI. */
 	private static final Map<UUID, AiWrapper> aiWrappers = new HashMap<>();
 	
+	/** Die AI mit der angegebenen UUID hat sich disconnected. */
+	public static void aiDisconnected (UUID uuid)
+	{
+		aiWrappers.remove(uuid);
+		uuids.remove(uuid);
+	}
+	
 	/** Das zur UUID gehörende Spiel. */
 	private static final Map<UUID, GameImpl> games = new HashMap<>();
 	
@@ -170,6 +177,8 @@ public class Games
 				ai.disconnect();
 			BackendFrontendConnectionHandler.getFrontend().sendMessage(
 					Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), true)));
+			games.remove(getUuid());
+			uuids.remove(getUuid());
 		}
 		
 		/**

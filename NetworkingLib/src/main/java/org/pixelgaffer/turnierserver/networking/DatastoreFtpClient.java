@@ -32,7 +32,7 @@ public class DatastoreFtpClient
 	/**
 	 * Verbindet mit dem Server mithilfe der Systemproperties.
 	 */
-	static void connect (FTPClient client) throws IOException, FTPIllegalReplyException, FTPException
+	static FTPClient connect (FTPClient client) throws IOException, FTPIllegalReplyException, FTPException
 	{
 		if (client != null)
 		{
@@ -40,7 +40,7 @@ public class DatastoreFtpClient
 			{
 				client.noop();
 			}
-			catch (FTPException e)
+			catch (IllegalStateException | IOException | FTPIllegalReplyException | FTPException e)
 			{
 				try
 				{
@@ -53,7 +53,6 @@ public class DatastoreFtpClient
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
 			}
 		}
 		
@@ -74,6 +73,7 @@ public class DatastoreFtpClient
 			client.setPassive(true);
 		}
 		
+		return client;
 	}
 	
 	private static String aiPath (int id)

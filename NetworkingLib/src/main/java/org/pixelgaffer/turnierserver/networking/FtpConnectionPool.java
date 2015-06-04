@@ -46,7 +46,7 @@ public class FtpConnectionPool
 					if (cons[i] == null)
 					{
 						FTPClient c = new FTPClient();
-						DatastoreFtpClient.connect(c);
+						c = DatastoreFtpClient.connect(c);
 						cons[i] = new FtpConnection(c);
 						cons[i].setBusy(true);
 						return cons[i];
@@ -55,6 +55,7 @@ public class FtpConnectionPool
 					if (!cons[i].isBusy())
 					{
 						cons[i].setBusy(true);
+						cons[i].setFtpClient(DatastoreFtpClient.connect(cons[i].getFtpClient()));
 						return cons[i];
 					}
 				}
