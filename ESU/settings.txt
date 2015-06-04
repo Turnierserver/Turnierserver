@@ -1,5 +1,5 @@
 #Settings
-#Thu Jun 04 18:08:39 CEST 2015
+#Thu Jun 04 18:39:34 CEST 2015
 cplusplusCompiler=c++
 pythonInterpreter=python
 scrollSpeed=20.0
