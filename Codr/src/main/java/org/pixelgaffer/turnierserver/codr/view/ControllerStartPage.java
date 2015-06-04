@@ -2,29 +2,35 @@ package org.pixelgaffer.turnierserver.codr.view;
 
 
 import java.awt.Desktop;
+import java.awt.event.InputEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 
-import javax.xml.transform.ErrorListener;
-
-import org.pixelgaffer.turnierserver.codr.MainApp;
-import org.pixelgaffer.turnierserver.codr.Version;
-import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
-import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
-
-import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+
+import org.pixelgaffer.turnierserver.codr.MainApp;
+import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
+import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 
 
 
@@ -92,6 +98,16 @@ public class ControllerStartPage {
 		
 		cbGameTypes.setItems(MainApp.gametypes);
 		cbGameTypes.getSelectionModel().selectLast();
+		
+		tbPassword.addEventHandler(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
+			
+			@Override public void handle(KeyEvent event) {
+				if (event.getCode() == KeyCode.ENTER) {
+					clickLogin();
+				}
+				
+			}
+		});
 	}
 	
 	
@@ -181,6 +197,7 @@ public class ControllerStartPage {
 		if (result != null)
 			tbCplusplusCompiler.setText(result.getPath());
 	}
+	
 	
 	
 	void clickTheme(Boolean isSelected) {

@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,20 +93,21 @@ public class WebConnector {
 	public String getUserName() {
 		try {
 			String json = toString(sendPost("loggedin"));
-			if(json == null) {
+			if (json == null) {
 				throw new IOException();
 			}
-			return new JSONObject(json).getString("username");
+			return new JSONObject(json).getString("name");
 		} catch (IOException e) {
 			ErrorLog.write("Abfrage des Nutzernamens nicht möglich");
 			return null;
 		}
 	}
 	
+	
 	public int getUserID() {
 		try {
 			String json = toString(sendPost("loggedin"));
-			if(json == null) {
+			if (json == null) {
 				throw new IOException();
 			}
 			return new JSONObject(json).getInt("id");
@@ -114,15 +117,16 @@ public class WebConnector {
 		}
 	}
 	
+	
 	public int getLangID(String langName) {
 		try {
-			String json = toString(sendPost("langs"));
-			if(json == null) {
+			String json = toString(sendGet("langs"));
+			if (json == null) {
 				throw new IOException();
 			}
 			JSONArray array = new JSONArray(json);
-			for(int i = 0; i < array.length(); i++) {
-				if(array.getJSONObject(i).getString("name").equals(langName)) {
+			for (int i = 0; i < array.length(); i++) {
+				if (array.getJSONObject(i).getString("name").equals(langName)) {
 					return array.getJSONObject(i).getInt("id");
 				}
 			}
@@ -134,15 +138,16 @@ public class WebConnector {
 		}
 	}
 	
+	
 	public int getGametypeID(String gametypeName) {
 		try {
-			String json = toString(sendPost("gametypes"));
-			if(json == null) {
+			String json = toString(sendGet("gametypes"));
+			if (json == null) {
 				throw new IOException();
 			}
 			JSONArray array = new JSONArray(json);
-			for(int i = 0; i < array.length(); i++) {
-				if(array.getJSONObject(i).getString("name").equals(gametypeName)) {
+			for (int i = 0; i < array.length(); i++) {
+				if (array.getJSONObject(i).getString("name").equals(gametypeName)) {
 					return array.getJSONObject(i).getInt("id");
 				}
 			}
@@ -235,37 +240,43 @@ public class WebConnector {
 	}
 	
 	
-	public void uploadVersion(Version version) throws ZipException, IOException {
-		HttpPost post = new HttpPost("ai/id/new_version_from_zip");
+	public void uploadVersion(Version version, int id) throws ZipException, IOException {
+		HttpPost post = new HttpPost("ai/" + id + "/new_version_from_zip");
 		ZipFile zip = new ZipFile(Files.createTempFile(version.ai.title + "v" + version.number + System.currentTimeMillis(), ".zip").toFile());
 		ZipParameters params = new ZipParameters();
 		params.setIncludeRootFolder(false);
-		zip.addFolder(new File(Paths.version(version)), params);
+		zip.addFolder(new File(Paths.version(version)), params);  //TODO: propablyNotAZipFile
 		post.setEntity(new ByteArrayEntity(FileUtils.readFileToByteArray(zip.getFile())));
 		HttpResponse response = http.execute(post);
-		if(getOutput(response.getEntity().getContent()) == null) {
+		if (getOutput(response.getEntity().getContent()) == null) {
 			throw new IOException("Konnte nicht zum Server verbinden");
 		}
 	}
 	
 	
-	public boolean createAi(CodrAi ai, String name) {
+	public int createAi(CodrAi ai, String name) {
 		try {
-			sendGet("ai/create", "name", name, "desc", ai.description, "lang", getLangID(ai.language) + "", "type", getGametypeID(ai.gametype) + "");
-			return true;
+			byte response[] = sendGet("ai/create", "name", name, "desc", ai.description, "lang", getLangID(ai.language) + "", "type", getGametypeID(ai.gametype) + "");
+			if (response == null)
+				throw new IOException();
+			JSONObject json = new JSONObject(new String(response, StandardCharsets.UTF_8));
+			json = json.getJSONObject("ai");
+			return json.getInt("id");
 		} catch (IOException e) {
-			ErrorLog.write("Konnte AI nicht erstellen: " + e.getLocalizedMessage());;
-			return false;
+			ErrorLog.write("Konnte AI nicht erstellen: " + e.getLocalizedMessage());
+			;
+			return -1;
 		}
 	}
 	
+	
 	public String compile(Version version) throws IOException, CompileException {
 		String json = toString(sendGet("ai/" + version.ai.id + "/compile_blocking"));
-		if(json == null) {
+		if (json == null) {
 			throw new IOException("Fehler bei der Verbindung mit dem Server");
 		}
 		JSONObject result = new JSONObject(json);
-		if(result.getString("error") != null) {
+		if (result.getString("error") != null) {
 			throw new CompileException(result.getString("compileoutput"), result.getString("error"));
 		}
 		return result.getString("compileoutput");
@@ -273,7 +284,8 @@ public class WebConnector {
 	
 	
 	public ObservableList<CodrAi> getOwnAis(String game) {
-		return FXCollections.observableArrayList(getAis(game).stream().filter((CodrAi ai) -> ai.userName == getUserName()).collect(Collectors.toList()));
+		String user = getUserName();
+		return FXCollections.observableArrayList(getAis(game).stream().filter((CodrAi ai) -> ai.userName.equals(user)).collect(Collectors.toList()));
 	}
 	
 	
@@ -687,7 +699,7 @@ public class WebConnector {
 	
 	public byte[] sendGet(String command, String... data) throws IOException {
 		if (data.length % 2 != 0) {
-			throw new IllegalArgumentException("Pöse pöse, data muss immer eine Länge % 2 = 0 haben!");
+			throw new IllegalArgumentException("Data muss immer eine Länge % 2 = 0 haben!");
 		}
 		NameValuePair[] nvpData = new BasicNameValuePair[data.length / 2];
 		for (int i = 0; i < nvpData.length; i++) {
@@ -713,8 +725,9 @@ public class WebConnector {
 		String args = "";
 		for (NameValuePair pair : data) {
 			args += args.isEmpty() ? "?" : "&";
-			args += pair.getName() + "=" + pair.getValue();
+			args += URLEncoder.encode(pair.getName(), "UTF8") + "=" + URLEncoder.encode(pair.getValue(), "UTF8");
 		}
+		
 		
 		HttpGet get = new HttpGet(command == null || command.isEmpty() ? url.substring(0, url.length() - 1) + args : url + command + args);
 		

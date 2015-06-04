@@ -72,6 +72,7 @@ public class CodrAi {
 		new Thread(() -> loadPicture(json, connector), "Image Loader").start();
 	}
 	
+	
 	public CodrAi() {
 		title = "<Neue KI>";
 		mode = AiMode.online;

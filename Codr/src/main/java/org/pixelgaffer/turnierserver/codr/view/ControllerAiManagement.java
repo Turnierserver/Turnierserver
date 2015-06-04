@@ -4,10 +4,13 @@ package org.pixelgaffer.turnierserver.codr.view;
 import java.io.File;
 import java.io.IOException;
 
+import net.lingala.zip4j.exception.ZipException;
+
 import org.pixelgaffer.turnierserver.codr.*;
 import org.pixelgaffer.turnierserver.codr.CodrAi.AiMode;
 import org.pixelgaffer.turnierserver.codr.CodrAi.NewVersionType;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
+import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
 
@@ -451,10 +454,27 @@ public class ControllerAiManagement {
 		String result = Dialog.selectOwnVersion();
 		if (result == null)
 			return;
-		if (result.equals("<neue KI>")){
-			//MainApp.webConnector.createAi(version);
-		} else{
-			//MainApp.webConnector.uploadVersion(version, result);
+		if (result.equals("<neue KI>")) {
+			String name = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
+			if (name == null)
+				return;
+			int id = MainApp.webConnector.createAi(ai, name);
+			if (id == -1) {
+				ErrorLog.write("Konnte keine neue ID erstellen");
+				Dialog.error("Konnte keine neue ID erstellen");
+				return;
+			}
+			
+			try {
+				MainApp.webConnector.uploadVersion(version, id);
+			} catch (IOException | ZipException e) {
+				ErrorLog.write("Fehler beim Kompilieren: " + e);
+				Dialog.error("Fehler beim Kompilieren: " + e);
+				e.printStackTrace();
+				return;
+			}
+		} else {
+			// MainApp.webConnector.uploadVersion(version, result);
 		}
 	}
 	
