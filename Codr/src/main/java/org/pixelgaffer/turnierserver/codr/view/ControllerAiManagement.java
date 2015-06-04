@@ -448,7 +448,14 @@ public class ControllerAiManagement {
 	 * Button: Hochladen
 	 */
 	@FXML void clickUpload() {
-		tbFile.setText("Info14 geklickt");
+		String result = Dialog.selectOwnVersion();
+		if (result == null)
+			return;
+		if (result.equals("<neue KI>")){
+			MainApp.webConnector.createAi(version);
+		} else{
+			//MainApp.webConnector.uploadVersion(version, result);
+		}
 	}
 	
 	

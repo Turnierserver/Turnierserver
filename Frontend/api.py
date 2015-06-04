@@ -420,7 +420,10 @@ def api_user_create():
 def api_ai_create():
 	name = request.args.get('name', 'unbenannte ki')
 	desc = request.args.get('desc', 'unbeschriebene ki')
+	## lang fix setzen
 	lang = Lang.query.get(request.args.get('lang', -1))
+	type = Lang.query.get(request.args.get('type', -1))
+	##
 	if not lang:
 		return {'error', 'Invalid Language'}, 404
 	ai = AI(name=name, user=current_user, desc=desc, lang=lang)
@@ -628,7 +631,7 @@ def api_ai_compile(id):
 				else:
 					ai.lastest_version().compiled = False
 					db.session.commit()
-					yield ("Anfrage beendet\n", "log")
+					yield ("Kompilierung fehlgeschlagen\n", "log")
 					if "exception" in resp:
 						yield (resp["exception"], "log")
 				return
@@ -640,6 +643,61 @@ def api_ai_compile(id):
 			else:
 				# Falls die Antwort vom Backend nicht verstanden wurde.
 				yield ("B: " + str(resp) + "\n", "log")
+
+
+
+@api.route("/ai/<int:id>/compile_blocking", methods=["GET"])
+@authenticated
+@json_out
+def api_ai_compile_blocking(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return (CommonErrors.INVALID_ID[0]["error"], "error")
+	if not current_user.can_access(ai):
+		return (CommonErrors.NO_ACCESS[0]["error"], "error")
+
+	if ai.lastest_version().frozen:
+		return {"error": "AI_Version is frozen"}, 400
+	ai.lastest_version().compiled = True
+	db.session.commit()
+
+	reqid = backend.request_compile(ai)
+
+	compile_log = ""
+
+	error = False
+	while True:
+		resp = backend.lock_for_req(reqid, timeout=5*20)
+		b_req = backend.request(reqid)
+		if not resp:
+			compile_log += "\nDas Backend sendet nichts."
+			compile_log += "\nVersuch es nochmal."
+			error = "Das Backend sendet nichts."
+			break
+		else:
+			if "success" in resp:
+				if resp["success"]:
+					compile_log += "Anfrage erfolgreich beendet\n"
+					ai.lastest_version().compiled = True
+					db.session.commit()
+				else:
+					ai.lastest_version().compiled = False
+					db.session.commit()
+					compile_log += "Kompilierung fehlgeschlagen\n"
+					if "exception" in resp:
+						compile_log += resp["exception"]
+					error = "Kompilierung fehlgeschlagen"
+				break
+			elif "status" in resp:
+				if resp["status"] == "processed":
+					compile_log += "Anfrage angefangen\n"
+			elif "compilelog" in resp:
+				compile_log += resp["compilelog"]
+			else:
+				# Falls die Antwort vom Backend nicht verstanden wurde.
+				compile_log += "B: " + str(resp) + "\n"
+
+	return {"error": error, "compilelog": compile_log}, 200
 
 
 @api.route("/ai/<int:id>/qualify", methods=["GET"])
@@ -823,6 +881,12 @@ def start_game():
 
 	ais = request.form.getlist("ai[]")
 	print(ais)
+	for i1, ai1 in enumerate(ai):
+		for i2, ai2 in enumerate(ai):
+			if i1 != i2 and ai1 == ai2:
+				print("Nen Gegen die selben KIs")
+				print(ais)
+				return {"error": "No duplicate AIs allowed."}, 400
 	ais = [AI.query.get(ai) for ai in ais]
 	print(ais)
 	if not all(ais):

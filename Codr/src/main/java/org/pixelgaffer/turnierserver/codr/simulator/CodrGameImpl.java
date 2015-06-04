@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.pixelgaffer.turnierserver.codr.CodrAi;
 import org.pixelgaffer.turnierserver.codr.CodrGame;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
@@ -24,7 +25,7 @@ import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 
-public class GameImpl implements Game, Frontend
+public class CodrGameImpl implements Game, Frontend
 {
 	/**
 	 * Lädt die GameLogic und gibt eine Instanz davon zurück.
@@ -50,16 +51,17 @@ public class GameImpl implements Game, Frontend
 		return (GameLogic<?, ?>)clazz.newInstance();
 	}
 	
-	private SortedMap<UUID, AiWrapper> ais = new TreeMap<>();
+	private SortedMap<UUID, CodrAiWrapper> ais = new TreeMap<>();
 	
 	private OutputStream renderData;
 	
-	public GameImpl (CodrGame game, Collection<Version> opponents) throws FileNotFoundException
+	public CodrGameImpl (CodrGame game, Collection<Version> opponents) throws FileNotFoundException
 	{
 		renderData = new FileOutputStream(Paths.gameRenderData(game));
 		
 		for (Version v : opponents)
 		{
+			CodrAi ai = v.ai;
 			
 		}
 	}
@@ -101,6 +103,6 @@ public class GameImpl implements Game, Frontend
 	@Override
 	public List<? extends Ai> getAis ()
 	{
-		return new ArrayList<AiWrapper>(ais.values());
+		return new ArrayList<CodrAiWrapper>(ais.values());
 	}
 }

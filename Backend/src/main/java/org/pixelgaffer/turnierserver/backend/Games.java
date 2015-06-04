@@ -152,7 +152,8 @@ public class Games
 				aiw.setIndex(this.ais.size());
 				// den String ai parsen (<ai-id>v<version>)
 				String s[] = ai.split("v");
-				aiw.setId(Integer.valueOf(s[0]));
+				aiw.setId(ai);
+				aiw.setAiId(Integer.valueOf(s[0]));
 				aiw.setVersion(Integer.valueOf(s[1]));
 				// die KI zur Liste hinzufügen
 				this.ais.add(aiw);
