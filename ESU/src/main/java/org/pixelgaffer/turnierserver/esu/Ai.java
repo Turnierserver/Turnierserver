@@ -42,7 +42,7 @@ public class Ai {
 	public String language;
 	public String description = "(keine Beschreibung)";
 	public String elo = "leere Elo";
-	private ObjectProperty<Image> onlinePicture = new SimpleObjectProperty<Image>();
+	public ObjectProperty<Image> onlinePicture = new SimpleObjectProperty<Image>();
 	public ObservableList<Version> versions = FXCollections.observableArrayList();
 	
 	public static enum AiMode{
