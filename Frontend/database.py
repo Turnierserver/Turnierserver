@@ -474,6 +474,7 @@ class Game(db.Model):
 	status = db.Column(db.Text)
 	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
 	type = db.relationship("GameType", backref=db.backref('t_games', order_by=id))
+	_log = db.Column(db.Text)
 
 	def __init__(self, *args, **kwargs):
 		super(Game, self).__init__(*args, **kwargs)
@@ -483,6 +484,10 @@ class Game(db.Model):
 	@property
 	def ais(self):
 		return [assoc.ai for assoc in self.ai_assocs]
+
+	@property
+	def log(self):
+		return json.loads(self._log)
 
 	def time(self, locale):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
@@ -500,6 +505,7 @@ class Game(db.Model):
 		print(ais)
 		print(ais[0] == ais[1])
 		g = Game(type=ais[0].type)
+		g._log = json.dumps(d["states"])
 		db.session.add(g)
 		db.session.commit()
 		g.ai_assocs = [AI_Game_Assoc(game_id=g.id, ai_id=ai.id) for ai in ais]

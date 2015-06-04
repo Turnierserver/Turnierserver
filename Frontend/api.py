@@ -137,29 +137,13 @@ def api_game_log(id):
 	import random
 	game = Game.query.get(id)
 	if game:
-		for i in range(21):
-			field = [[{'bombsAround': -1, 'flagged': True, 'type': 'COVERED'},
-                      {'bombsAround': 3, 'flagged': False, 'type': 'EMPTY'},
-                      {'bombsAround': -1, 'flagged': True, 'type': 'COVERED'}],
-                     [{'bombsAround': -1, 'flagged': False, 'type': 'COVERED'},
-                      {'bombsAround': 3, 'flagged': False, 'type': 'EMPTY'},
-                      {'bombsAround': -1, 'flagged': True, 'type': 'COVERED'}],
-                     [{'bombsAround': -1, 'flagged': True, 'type': 'COVERED'},
-                      {'bombsAround': 3, 'flagged': False, 'type': 'EMPTY'},
-                      {'bombsAround': -1, 'flagged': True, 'type': 'COVERED'}]]
+		for i, chunk in enumerate(game.log):
 			info = dict(
-				data = dict(
-					field=field, id=i,
-					ai_logs = [
-						"log fuer zug" + str(i),
-						"log von ki 2 fuer zug " + str(i)
-					],
-					status=str(i)+"/100",
-				),
-				progress=i/21
+				data = chunk,
+				progress=i/len(game.log)
 			)
 			yield json.dumps(info), "state"
-			time.sleep(0.5)
+			time.sleep(2.5)
 		yield "", "finished_transmitting"
 
 	else:
@@ -431,16 +415,16 @@ def api_ai_create():
 
 	lang = Lang.query.get(lang)
 
+	if not lang:
+		return {'error', 'Invalid Language'}, 404
+
 	type = request.args.get('type')
 	if type:
-		type = Lang.query.get(type)
+		type = GameType.query.get(type)
 		if not type:
 			return {"error": "Invalid type."}, 400
 	else:
 		type = GameType.lastest()
-
-	if not lang:
-		return {'error', 'Invalid Language'}, 404
 
 	ai = AI(name=name, user=current_user, desc=desc, lang=lang, type=type)
 	db.session.add(ai)
@@ -927,8 +911,8 @@ def start_game():
 
 	ais = request.form.getlist("ai[]")
 	print(ais)
-	for i1, ai1 in enumerate(ai):
-		for i2, ai2 in enumerate(ai):
+	for i1, ai1 in enumerate(ais):
+		for i2, ai2 in enumerate(ais):
 			if i1 != i2 and ai1 == ai2:
 				print("Nen Gegen die selben KIs")
 				print(ais)

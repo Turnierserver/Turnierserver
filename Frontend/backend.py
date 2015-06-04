@@ -69,6 +69,7 @@ class Backend(threading.Thread):
 		self.requests[reqid]["queue"] = Queue()
 		self.requests[reqid]["ai0"] = ais[0]
 		self.requests[reqid]["ai1"] = ais[1]
+		self.requests[reqid]["states"] = []
 		Activity("Backend[{}]: Spiel mit {} gestartet".format(reqid, [ai.name for ai in ais]))
 		return reqid
 
@@ -111,13 +112,18 @@ class Backend(threading.Thread):
 		self.requests[reqid]["queue"].put(d)
 
 		if self.requests[reqid]["action"] == "start":
-			#for q in self.game_update_queues:
-			#	q.put(d)
+			for q in self.game_update_queues:
+				q.put(d)
 			if "success" in d:
 				if not self.app:
-					raise RuntimeError("Spiel, vor verbindung mit App")
+					raise RuntimeError("Spiel vor verbindung mit App")
 				with self.app.app_context():
 					Game.from_inprogress(self.requests[reqid])
+					return
+
+			if "data" in d:
+				self.requests[reqid]["states"].append(d["data"])
+
 
 	def request(self, reqid):
 		return self.requests[reqid]

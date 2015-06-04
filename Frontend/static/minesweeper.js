@@ -111,8 +111,8 @@ function draw() {
 
 function update() {
 	var d = data[step];
-	$("#ai_left_output").val(d.ai_logs[0])
-	$("#ai_right_output").val(d.ai_logs[1])
+	//$("#ai_left_output").val(d.ai_logs[0])
+	//$("#ai_right_output").val(d.ai_logs[1])
 
 	if (is_playing) {
 		$("#play_button").addClass("active")
