@@ -36,7 +36,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.esu.Ai;
-import org.pixelgaffer.turnierserver.esu.Game;
+import org.pixelgaffer.turnierserver.esu.CodrGame;
 import org.pixelgaffer.turnierserver.esu.Version;
 import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.DeletedException;
 import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.NewException;
@@ -150,7 +150,7 @@ public class WebConnector {
 		return new Image(new ByteArrayInputStream(sendGet("ai/" + id + "/icon")));
 	}
 
-	public List<Game> getGames() {
+	public List<CodrGame> getGames() {
 		throw new UnsupportedOperationException("Ich bin so pöse!");
 	}
 

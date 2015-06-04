@@ -10,7 +10,7 @@ import javafx.collections.*;
 
 public class GameManager {
 
-	public ObservableList<Game> games = FXCollections.observableArrayList();
+	public ObservableList<CodrGame> games = FXCollections.observableArrayList();
 	
 	
 	/**
@@ -27,7 +27,7 @@ public class GameManager {
 		}
 		for (int i = 0; i < dirs.length; i++){
 			if (dirs[i].isDirectory())
-				games.add(new Game(dirs[i].getName()));
+				games.add(new CodrGame(dirs[i].getName()));
 		}
 		
 	}

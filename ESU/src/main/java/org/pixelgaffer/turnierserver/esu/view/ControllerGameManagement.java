@@ -1,7 +1,7 @@
 package org.pixelgaffer.turnierserver.esu.view;
 
 import org.pixelgaffer.turnierserver.esu.*;
-import org.pixelgaffer.turnierserver.esu.Game.GameMode;
+import org.pixelgaffer.turnierserver.esu.CodrGame.GameMode;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -29,7 +29,7 @@ public class ControllerGameManagement {
 	
 	MainApp mainApp;
 	
-	Game game = null;
+	CodrGame game = null;
 	
 	/**
 	 * Initialisiert den Controller
@@ -66,7 +66,7 @@ public class ControllerGameManagement {
 	}
 	
 	
-	public void showGame(Game ggame){
+	public void showGame(CodrGame ggame){
 		
 	}
 	
