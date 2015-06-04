@@ -9,6 +9,7 @@ Downloads/
 Ace/
 test.db
 gen/
+GameBuilder/Makefile
 
 # java müll
 .settings/
