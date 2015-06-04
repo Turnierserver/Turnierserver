@@ -109,7 +109,6 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 		}
 		for(Ai aiWrapper : game.getAis()) {
 			if(!getUserObject(aiWrapper).lost) {
-				logger.info("AI " + aiWrapper + " hat noch nicht verloren!");
 				return;
 			}
 		}
@@ -118,28 +117,29 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	}
 	
 	@Override
-	protected void receive(BuilderSolverResponse<B, S> response, Ai ai) {
-		logger.info("Antwort erhalten: " + response);
-		
+	protected void receive(BuilderSolverResponse<B, S> response, Ai ai) {		
 		if(finished.contains(ai)) {
-			logger.warning("Eine AI hat 2 mal hintereinander ein antwort geschickt!");
+			logger.warning("Eine Ai hat 2 mal hintereinander ein Antwort geschickt!");
 			getUserObject(ai).loose();
 			return;
 		}
 		
 		if(getUserObject(ai).stopCalculationTimer()) {
-			logger.warning("Der AI ist die Zeit ausgegangen");
+			logger.warning("Der Ai ist die Zeit ausgegangen");
 			return;
 		}
 		
 		Response<?> result = null;
 		if(building) {
 			if(response.build == null) {
-				logger.warning("Die AI hat kein builder Objekt gesendet, obwohl sie eins hätte senden sollen!");
+				logger.warning("Die Ai hat kein builder Objekt gesendet, obwohl sie eins hätte senden sollen!");
 				getUserObject(ai).loose();
 				return;
 			}
+			
 			result = getUserObject(ai).building.build(response.build);
+			System.out.println(getUserObject(ai).building.getClass().getName());
+			logger.info("Wurde das Feld erfolgreich gebaut?: " + result.valid);
 		}
 		else {
 			if(response.solve == null) {
