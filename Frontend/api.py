@@ -223,6 +223,45 @@ def api_user_update(id):
 	return {"error": False, "user": user.info()}, 200
 
 
+@api.route("/user/password_reset", methods=["GET", "POST"])
+@json_out
+def api_user_password_reset():
+	username = request.form.get('username')
+	email = request.form.get('email')
+	user = User.query.filter(User.email.ilike(email)).filter(User.name.ilike(username)).first()
+	if not user:
+		return {"error": "Invalid email or username."}, 400
+	if not user.validated:
+		return {"error": "User not validated"}, 400
+
+	if not user.send_password_reset():
+		return {"error": "Password reset failed."}, 500
+
+	flash("Guck in deinen Mails nach...")
+
+	return {"error": False}, 200
+
+@api.route("/user/password_reset/<int:id>/<string:token>", methods=["GET", "POST"])
+def api_user_password_reset_with_token(id, token):
+	user = User.query.get(id)
+	if not user:
+		return CommonErrors.INVALID_ID
+
+	if not user.pw_reset_token:
+		flash("Du kannst diesen Link nicht mehr benutzen.", "warning")
+		return redirect("/")
+
+	if token == user.pw_reset_token:
+		user.pw_reset_token = None
+		db.session.commit()
+		login_user(user)
+		flash("Du kannst dein Passwort jetzt in deinen Profil-Einstellungen ändern.", "info")
+		return redirect("/")
+
+	flash("Dieser Link ist nicht gültig.", "warning")
+	return redirect("/")
+
+
 @api.route("/user/<int:id>/delete", methods=["GET", "POST"])
 @json_out
 @authenticated
@@ -258,7 +297,7 @@ def activate(id, uuid):
 
 	if user.validate(uuid):
 		Activity(user.name + " hat sich erfolgreich validiert.")
-		flash("Dein Account ist jetzt aktiviert.")
+		flash("Dein Account ist jetzt aktiviert.", "info")
 		login_user(user)
 		return redirect("/")
 
@@ -362,6 +401,8 @@ def api_user_create():
 	if not user.send_validation_mail():
 		db.session.rollback()
 		return {"error": "Invalid EMail."}, 400
+
+	flash("Guck in deinen E-Mails nach einer Aktivierungsmail.", "info")
 
 	return {'error': False, 'user': user.info()}, 200
 
@@ -813,17 +854,17 @@ def admin_clear_db():
 	return {"error": False}
 
 
-#github-bequemlichkeit
-@api.route("/gh-webhook", methods=["POST"])
-@json_out
-def gh_webhook(*args, **kwargs):
-	print("gh-webhook triggered")
-	print(*args, **kwargs)
-	func = request.environ.get('werkzeug.server.shutdown')
-	if func is None:
-		raise RuntimeError('Not running with the Werkzeug Server')
-	func()
-	return {"error": False}, 200
+# #github-bequemlichkeit
+# @api.route("/gh-webhook", methods=["POST"])
+# @json_out
+# def gh_webhook(*args, **kwargs):
+# 	print("gh-webhook triggered")
+# 	print(*args, **kwargs)
+# 	func = request.environ.get('werkzeug.server.shutdown')
+# 	if func is None:
+# 		raise RuntimeError('Not running with the Werkzeug Server')
+# 	func()
+# 	return {"error": False}, 200
 
 @api.route("/game_list_sse", methods=["GET"])
 @sse_stream
@@ -833,6 +874,7 @@ def game_list_sse():
 	while True:
 		try:
 			update = q.get(timeout=15)
+			print("SSE:", update)
 			if "status" in update:
 				if update["status"] == "processed":
 					yield ("", "new_game")

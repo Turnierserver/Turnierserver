@@ -137,6 +137,7 @@ class User(db.Model):
 	ai_list = db.relationship("AI", order_by="AI.id", backref="User", cascade="all, delete, delete-orphan")
 	admin = db.Column(db.Boolean, default=False)
 	validation_code = db.Column(db.String(36), nullable=True)
+	pw_reset_token = db.Column(db.String(36), nullable=True)
 
 	def __init__(self, *args, **kwargs):
 		super(User, self).__init__(*args, **kwargs)
@@ -156,6 +157,11 @@ class User(db.Model):
 
 	def send_validation_mail(self):
 		return mail.send_validation(self)
+
+	def send_password_reset(self):
+		self.pw_reset_token = str(uuid.uuid4())
+		db.session.commit()
+		return mail.reset_password(self)
 
 
 	def info(self):

@@ -79,7 +79,11 @@ $('#caform').form({
 			rules: [
 				{
 					type   : 'empty',
-					prompt : 'Du brauchst einen Nutzernamen!'
+					prompt : 'Du brauchts einen Nutzernamen'
+				},
+				{
+					type   : 'maxLength[24]',
+					prompt : 'Dein Nutzername sollte nicht länger als 24 Zeichen sein.'
 				}
 			]
 		},
@@ -122,7 +126,34 @@ $("#create-account").on("click", function () {
 })
 </script>
 
-{% endif %}
+<h2>Passwort zurücksetzen:</h2>
+<form id="pw_reset_form" class="ui form segment" method="POST" action="/api/user/password_reset">
+	<div class="required field">
+		<label>Nutzername</label>
+		<input id="username" placeholder="penis_cola69" type="text" name="username">
+	</div>
+	<div class="required field">
+		<label>Email-Adresse</label>
+		<input id="email" placeholder="max@mustermann.de" type="email" name="email">
+	</div>
+	<div id="reset-pw" class="ui button">Passwort zurücksetzen</div>
+</form>
+<script>
+$("#reset-pw").on("click", function() {
+	$("#pw_reset_form").addClass("loading")
+	$.post("/api/user/password_reset", {
+		username: $("#pw_reset_form #username").val(),
+		email: $("#pw_reset_form #email").val()
+	}).done(function(data) {
+		location.reload();
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error)
+		alert(JSON.parse(xhr.responseText).error)
+		$("#pw_reset_form").removeClass("loading")
+	})
+})
+</script>
 
+{% endif %}
 
 {% endblock %}

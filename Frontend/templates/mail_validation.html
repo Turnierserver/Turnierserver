@@ -1,7 +1,9 @@
-Hallo, {% if user.firstname %}{{user.firstname}}{% else %}{{user.username}}{% endif %}
+Hallo, {% if user.firstname %}{{user.firstname}}{% else %}{{user.name}}{% endif %}
+{% if html %}<br />{% endif %}
 um deinen Account zu benutzen musst du ihn erstmal aktivieren.
 Dies kannst du tun, in dem du auf diesen Link hier klickst:
 {% if html %}
+<br />
 <a href="http://{{env.SERVER_URL}}/api/activate/{{user.id}}/{{user.validation_code}}">Account aktivieren</a>
 {% else %}
 http://{{env.SERVER_URL}}/api/activate/{{user.id}}/{{user.validation_code}}   <- Account aktivieren
