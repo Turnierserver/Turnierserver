@@ -1,8 +1,10 @@
 package org.pixelgaffer.turnierserver.gamelogic;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +27,7 @@ import com.google.gson.reflect.TypeToken;
 @NoArgsConstructor
 public abstract class GameLogic<E extends AiObject, R> {
 	
+	public static final Logger logger = BuilderSolverLogic.logger;	
 	/**
 	 * Gibt an, wie viele Runden gespielt werden. -1 bei unbegrenzt vielen Runden.
 	 */
@@ -101,16 +104,22 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @param ai Die AI, von welcher die Nachricht kommt
 	 */
 	public void receiveMessage(byte[] message, Ai ai) {
+		logger.info("Eine Nachricht wurde von einer AI(" + ai.getIndex() + ") empfangen: " + new String(message, StandardCharsets.UTF_8));
 		if(getUserObject(ai).lost) {
+			logger.info("Die ai hat schon verloren");
 			return;
 		}
 		if(new String(message, StandardCharsets.UTF_8).equals("SURRENDER")) {
+			logger.info("Di ai hat aufgegeben");
 			getUserObject(ai).loose();
 			return;
 		}
 		try {
 			receive(Parsers.getWorker().parse(message, token.getType()), ai);
+			logger.finest("Nachricht erfolgreich empfangen");
 		} catch (IOException e) {
+			logger.severe("Eine Nachricht konnte nicht gelesen werden: " + e.getLocalizedMessage());
+			e.printStackTrace();
 			getUserObject(ai).loose();
 		}
 	}
