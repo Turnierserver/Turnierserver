@@ -1,18 +1,21 @@
 package org.pixelgaffer.turnierserver.codr.utilities;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 
 import javafx.scene.image.Image;
+
+
 
 public class Resources {
 
 	/**
 	 * Gibt das Default-Bild für die KIs zurück
 	 */
-	public static Image defaultPicture(){
+	public static Image defaultPicture() {
 		try {
-			//return new Image(Paths.class.getResourceAsStream("../default_ai.png"));
+			// return new Image(Paths.class.getResourceAsStream("../default_ai.png"));
 			return new Image(Paths.class.getResourceAsStream("../CodrIcon128.png"));
 		} catch (Exception ex) {
 			ErrorLog.write("Default-Bild konnte nicht geladen werden.");
@@ -20,7 +23,8 @@ public class Resources {
 		}
 	}
 
-	public static Image codrIcon(){
+
+	public static Image codrIcon() {
 		try {
 			return new Image(Paths.class.getResourceAsStream("../CodrIcon128.png"));
 		} catch (Exception ex) {
@@ -28,8 +32,9 @@ public class Resources {
 			return null;
 		}
 	}
-	
-	public static Image codr(){
+
+
+	public static Image codr() {
 		try {
 			return new Image(Paths.class.getResourceAsStream("../Codr200.png"));
 		} catch (Exception ex) {
@@ -37,22 +42,24 @@ public class Resources {
 			return null;
 		}
 	}
-	
-	
+
+
 	/**
 	 * Gibt das Default-Bild für die KIs zurück
 	 */
-	public static Image imageFromFile(File file){
+	public static Image imageFromFile(File file) {
 		try {
 			return imageFromFile(file.getPath());
 		} catch (Exception e) {
 			return null;
 		}
 	}
+
+
 	/**
 	 * Gibt das Bild, das an der übergebenen Stelle gespeichert ist, zurück
 	 */
-	public static Image imageFromFile(String path){
+	public static Image imageFromFile(String path) {
 		try {
 			FileInputStream fin = new FileInputStream(path);
 			Image img = new Image(fin);
@@ -62,5 +69,5 @@ public class Resources {
 			return null;
 		}
 	}
-	
+
 }

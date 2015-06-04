@@ -1,5 +1,6 @@
 package org.pixelgaffer.turnierserver.codr;
 
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -25,6 +26,8 @@ import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.compile.CompileFailureException;
 import org.pixelgaffer.turnierserver.compile.Compiler;
 
+
+
 public class Version {
 
 	public final Ai ai;
@@ -40,6 +43,7 @@ public class Version {
 	public String qualifyOutput = "";
 	public List<CodeEditor> files = new ArrayList<CodeEditor>();
 
+
 	public Version(Ai p, int n, JSONObject json) {
 		ai = p;
 		number = n;
@@ -48,6 +52,7 @@ public class Version {
 		qualified = json.getBoolean("qualified");
 		finished = json.getBoolean("frozen");
 	}
+
 
 	/**
 	 * Erstellt eine neue Version und lädt automatisch den Quellcode
@@ -75,6 +80,7 @@ public class Version {
 		}
 	}
 
+
 	public Version(Ai p, int n, String path) {
 		ai = p;
 		number = n;
@@ -86,6 +92,7 @@ public class Version {
 		storeProps();
 		findCode();
 	}
+
 
 	/**
 	 * Prüft, ob die Version bereits im Dateisystem existiert.
@@ -102,6 +109,7 @@ public class Version {
 		return !dir.mkdirs();
 	}
 
+
 	/**
 	 * Kopiert alle Dateien von einem bestimmten Pfad in das Verzeichnis der
 	 * Version.
@@ -117,14 +125,13 @@ public class Version {
 		Path srcPath = new File(path).toPath();
 		Path destPath = new File(Paths.version(this)).toPath();
 		try {
-			Files.walkFileTree(srcPath, new CopyVisitor(srcPath, destPath,
-					StandardCopyOption.REPLACE_EXISTING));
+			Files.walkFileTree(srcPath, new CopyVisitor(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING));
 		} catch (IOException e) {
 			e.printStackTrace();
-			ErrorLog.write("Version konnte nicht kopiert werden: "
-					+ e.getMessage());
+			ErrorLog.write("Version konnte nicht kopiert werden: " + e.getMessage());
 		}
 	}
+
 
 	/**
 	 * Sucht alle Dateien innerhalb des Versionsordners und speichert sie in
@@ -146,6 +153,7 @@ public class Version {
 		}
 	}
 
+
 	/**
 	 * Speichert alle Dateien aus den CodeEditoren in files im Dateisystem ab
 	 */
@@ -155,15 +163,16 @@ public class Version {
 				ErrorLog.write("dies ist kein speicherbares Objekt (saveCode)");
 			return;
 		}
-		if (finished == true){
+		if (finished == true) {
 			ErrorLog.write("Man kann den Code einer fertiggestellten Version nicht speichern");
 			return;
 		}
-		
+
 		for (int i = 0; i < files.size(); i++) {
 			files.get(i).save();
 		}
 	}
+
 
 	/**
 	 * Lädt aus dem Dateiverzeichnis die Eigenschaften des Players.
@@ -189,6 +198,7 @@ public class Version {
 			ErrorLog.write("Fehler bei Laden aus der properties.txt (Version)");
 		}
 	}
+
 
 	/**
 	 * Speichert die Eigenschaften des Players in das Dateiverzeichnis.
@@ -216,6 +226,7 @@ public class Version {
 		}
 	}
 
+
 	/**
 	 * Kompiliert die Quellcodedateien
 	 * 
@@ -230,10 +241,7 @@ public class Version {
 
 		try {
 			Compiler c = Compiler.getCompiler(ai.language);
-			compileOutput = c.compile(new File(Paths.versionSrc(this)),
-							new File(Paths.versionBin(this)),
-							new File(Paths.versionSrcStartClass(this)),
-							new Libraries());
+			compileOutput = c.compile(new File(Paths.versionSrc(this)), new File(Paths.versionBin(this)), new File(Paths.versionSrcStartClass(this)), new Libraries());
 			executeCommand = c.getCommand();
 			compileOutput += "\nKompilierung erfolgreich\n";
 			compiled = true;
@@ -244,9 +252,7 @@ public class Version {
 			ErrorLog.write("Fehler beim Kompilieren: " + e);
 			e.printStackTrace();
 			compiled = false;
-		}
-		catch (CompileFailureException cfe)
-		{
+		} catch (CompileFailureException cfe) {
 			compileOutput = cfe.getMessage();
 			compileOutput += "\nKompilierung fehlgeschlagen\n";
 			compiled = false;
@@ -255,6 +261,7 @@ public class Version {
 		storeProps();
 		return compiled;
 	}
+
 
 	/**
 	 * Qualifiziert die Ki
@@ -276,6 +283,7 @@ public class Version {
 		return true;
 	}
 
+
 	/**
 	 * Stellt die Ki fertig, was bedeutet, dass sie nicht mehr bearbeitet werden
 	 * kann.
@@ -289,6 +297,7 @@ public class Version {
 		storeProps();
 	}
 
+
 	/**
 	 * damit in der ChoiceBox die Nummer angezeigt wird
 	 */
@@ -296,15 +305,17 @@ public class Version {
 		return "" + number;
 	}
 
+
 	/**
 	 * Ein FileVisitor, der eine Datei bei ihrem Besuch kopiert
-	 * 
 	 * http://codingjunkie.net/java-7-copy-move/
 	 */
 	public static class CopyVisitor extends SimpleFileVisitor<Path> {
+
 		private final Path fromPath;
 		private final Path toPath;
 		private final CopyOption copyOption;
+
 
 		public CopyVisitor(Path _fromPath, Path _toPath, CopyOption _copyOption) {
 			fromPath = _fromPath;
@@ -312,9 +323,8 @@ public class Version {
 			copyOption = _copyOption;
 		}
 
-		@Override
-		public FileVisitResult preVisitDirectory(Path dir,
-				BasicFileAttributes attrs) throws IOException {
+
+		@Override public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 			Path targetPath = toPath.resolve(fromPath.relativize(dir));
 			if (!Files.exists(targetPath)) {
 				Files.createDirectory(targetPath);
@@ -322,11 +332,9 @@ public class Version {
 			return FileVisitResult.CONTINUE;
 		}
 
-		@Override
-		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-				throws IOException {
-			Files.copy(file, toPath.resolve(fromPath.relativize(file)),
-					copyOption);
+
+		@Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+			Files.copy(file, toPath.resolve(fromPath.relativize(file)), copyOption);
 			return FileVisitResult.CONTINUE;
 		}
 	}
@@ -335,25 +343,26 @@ public class Version {
 	 * Ein FileVisitor, der jede Datei als Version abspeichert
 	 */
 	public static class VersionVisitor extends SimpleFileVisitor<Path> {
+
 		private final Path path;
 		public List<CodeEditor> files = new ArrayList<CodeEditor>();
+
 
 		public VersionVisitor(Path _path) {
 			path = _path;
 		}
 
-		@Override
-		public FileVisitResult preVisitDirectory(Path dir,
-				BasicFileAttributes attrs) {
+
+		@Override public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
 			return FileVisitResult.CONTINUE;
 		}
 
-		@Override
-		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-			if (file.toFile().getName().startsWith(".")){
+
+		@Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+			if (file.toFile().getName().startsWith(".")) {
 				return FileVisitResult.CONTINUE;
 			}
-			if (file.toFile().getName().equals("libraries.txt")){
+			if (file.toFile().getName().equals("libraries.txt")) {
 				return FileVisitResult.CONTINUE;
 			}
 			files.add(new CodeEditor(file.toFile()));

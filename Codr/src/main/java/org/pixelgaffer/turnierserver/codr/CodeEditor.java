@@ -1,5 +1,6 @@
 package org.pixelgaffer.turnierserver.codr;
 
+
 import java.awt.TextField;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,6 +26,8 @@ import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.w3c.dom.Document;
 
+
+
 public class CodeEditor {
 
 	private TextArea ta; // TODO: nur Übergangslösung --> löschen
@@ -34,6 +37,7 @@ public class CodeEditor {
 	public boolean loaded = false;
 	private WebView codeView;
 
+
 	public static void writeAce() {
 		File aceFolder = new File(Paths.aceFolder());
 		if (aceFolder.exists()) {
@@ -41,16 +45,13 @@ public class CodeEditor {
 		}
 		try {
 			aceFolder.mkdirs();
-			FileUtils.write(new File(aceFolder, "bundle.js"), IOUtils
-					.toString(CodeEditor.class.getResource("view/bundle.js")));
-			FileUtils
-					.write(new File(aceFolder, "editor.html"), IOUtils
-							.toString(CodeEditor.class
-									.getResource("view/editor.html")));
+			FileUtils.write(new File(aceFolder, "bundle.js"), IOUtils.toString(CodeEditor.class.getResource("view/bundle.js")));
+			FileUtils.write(new File(aceFolder, "editor.html"), IOUtils.toString(CodeEditor.class.getResource("view/editor.html")));
 		} catch (IOException e) {
 			ErrorLog.write("Konnte Ace nicht schreiben!");
 		}
 	}
+
 
 	/**
 	 * Initialisiert den CodeEditor mit der zu zeigenden Datei
@@ -61,36 +62,30 @@ public class CodeEditor {
 		document = doc;
 		codeView = new WebView();
 		try {
-			codeView.getEngine().load(
-					new File(Paths.aceFolder() + "/editor.html").toURI()
-							.toURL().toString());
+			codeView.getEngine().load(new File(Paths.aceFolder() + "/editor.html").toURI().toURL().toString());
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			System.exit(1);
 		}
 
 		codeView.getEngine().setOnAlert(new EventHandler<WebEvent<String>>() {
-			@Override
-			public void handle(WebEvent<String> event) {
+
+			@Override public void handle(WebEvent<String> event) {
 				System.err.println("This is an alert: " + event);
 			}
 		});
 
-		codeView.getEngine().documentProperty()
-				.addListener(new ChangeListener<Document>() {
-					public void changed(
-							ObservableValue<? extends Document> prop,
-							Document oldDoc, Document newDoc) {
-						codeView.getEngine().executeScript(
-								"editor.setTheme(\"ace/theme/eclipse\");");
-						codeView.getEngine().executeScript(
-								"editor.getSession().setMode(modelist.getModeForPath(\""
-										+ doc.getName() + "\").mode);");
-						// codeView.getEngine().executeScript("if (!document.getElementById('FirebugLite')){E = document['createElement' + 'NS'] && document.documentElement.namespaceURI;E = E ? document['createElement' + 'NS'](E, 'script') : document['createElement']('script');E['setAttribute']('id', 'FirebugLite');E['setAttribute']('src', 'https://getfirebug.com/' + 'firebug-lite.js' + '#startOpened');E['setAttribute']('FirebugLite', '4');(document['getElementsByTagName']('head')[0] || document['getElementsByTagName']('body')[0]).appendChild(E);E = new Image;E['setAttribute']('src', 'https://getfirebug.com/' + '#startOpened');}");
-						load();
-					}
-				});
+		codeView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
+
+			public void changed(ObservableValue<? extends Document> prop, Document oldDoc, Document newDoc) {
+				codeView.getEngine().executeScript("editor.setTheme(\"ace/theme/eclipse\");");
+				codeView.getEngine().executeScript("editor.getSession().setMode(modelist.getModeForPath(\"" + doc.getName() + "\").mode);");
+				// codeView.getEngine().executeScript("if (!document.getElementById('FirebugLite')){E = document['createElement' + 'NS'] && document.documentElement.namespaceURI;E = E ? document['createElement' + 'NS'](E, 'script') : document['createElement']('script');E['setAttribute']('id', 'FirebugLite');E['setAttribute']('src', 'https://getfirebug.com/' + 'firebug-lite.js' + '#startOpened');E['setAttribute']('FirebugLite', '4');(document['getElementsByTagName']('head')[0] || document['getElementsByTagName']('body')[0]).appendChild(E);E = new Image;E['setAttribute']('src', 'https://getfirebug.com/' + '#startOpened');}");
+				load();
+			}
+		});
 	}
+
 
 	/**
 	 * überprüft, ob der angezeigte Text mit seiner gespeicherten Datei
@@ -105,10 +100,11 @@ public class CodeEditor {
 			return false;
 	}
 
+
 	public String getCode() {
-		return (String) codeView.getEngine()
-				.executeScript("editor.getValue();");
+		return (String) codeView.getEngine().executeScript("editor.getValue();");
 	}
+
 
 	public void setCode(String t) {
 //		codeView.getEngine().executeScript("editor.setValue('')");
@@ -127,6 +123,7 @@ public class CodeEditor {
 //		}).start();
 	}
 
+
 	/**
 	 * Erstellt ein Tab, das in die Tab-Leiste eingefügt werden kann
 	 * 
@@ -136,6 +133,7 @@ public class CodeEditor {
 		BorderPane pane = new BorderPane(codeView);
 		return new Tab(document.getName(), pane);
 	}
+
 
 	/**
 	 * Lädt den Inhalt der Datei in die StringProperty text
@@ -153,6 +151,7 @@ public class CodeEditor {
 		}
 	}
 
+
 	/**
 	 * Speichert den Inhalt der StringProperty text in die Datei
 	 */
@@ -161,6 +160,7 @@ public class CodeEditor {
 			return;
 		forceSave();
 	}
+
 
 	/**
 	 * Speichert den Inhalt der StringProperty text in eine Datei. Dabei wird

@@ -10,8 +10,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
-public class ControllerRoot{
-	
+
+
+public class ControllerRoot {
+
 	@FXML TabPane tabPane;
 	@FXML Tab tabStartPage;
 	@FXML Tab tabKiManagement;
@@ -23,18 +25,19 @@ public class ControllerRoot{
 	AnchorPane anchorGameManagement;
 	AnchorPane anchorRanking;
 	AnchorPane anchorSubmission;
-	
+
 	MainApp mainApp;
+
 
 	/**
 	 * Initialisiert den Controller
 	 * 
 	 * @param app eine Referenz auf die MainApp
 	 */
-	public void setMainApp(MainApp app){
+	public void setMainApp(MainApp app) {
 		mainApp = app;
 		mainApp.cRoot = this;
-		
+
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("StartPage.fxml"));
@@ -65,11 +68,11 @@ public class ControllerRoot{
 			anchorSubmission = (AnchorPane) loader.load();
 			tabSubmission.setContent(anchorSubmission);
 			((ControllerSubmission) loader.getController()).setMainApp(mainApp);
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 
 }

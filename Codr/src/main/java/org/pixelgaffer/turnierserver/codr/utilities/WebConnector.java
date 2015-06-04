@@ -1,5 +1,6 @@
 package org.pixelgaffer.turnierserver.codr.utilities;
 
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -43,6 +44,8 @@ import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NothingDoneException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
 
+
+
 public class WebConnector {
 
 	private final String url;
@@ -50,6 +53,7 @@ public class WebConnector {
 
 	private CookieStore cookies = new BasicCookieStore();
 	private CloseableHttpClient http = HttpClients.custom().setDefaultCookieStore(cookies).build();
+
 
 	/**
 	 * Erstellt einen neuen Web Connector
@@ -63,6 +67,7 @@ public class WebConnector {
 		this.cookieUrl = cookieUrl;
 		readFromFile();
 	}
+
 
 	/**
 	 * Loggt den Benutzer ein
@@ -79,8 +84,9 @@ public class WebConnector {
 		saveToFile();
 		return result;
 	}
-	
-	public String getUserName(){
+
+
+	public String getUserName() {
 		try {
 			return sendPost("loggedin").toString();
 		} catch (IOException e) {
@@ -89,9 +95,11 @@ public class WebConnector {
 		}
 	}
 
+
 	public boolean register(String username, String firstname, String lastname, String email, String password) throws IOException {
 		return sendPost("register", "username", username, "email", email, "password", password, "firstname", firstname, "lastname", lastname) != null;
 	}
+
 
 	/**
 	 * Loggt den Benutzer aus
@@ -104,6 +112,7 @@ public class WebConnector {
 		saveToFile();
 		return result;
 	}
+
 
 	/**
 	 * Gibt zurück ob die ESU momentan eingeloggt ist
@@ -127,6 +136,7 @@ public class WebConnector {
 		}
 	}
 
+
 	public ObservableList<Ai> getAis(String game) {
 		ObservableList<Ai> result = FXCollections.observableArrayList();
 		String json;
@@ -147,6 +157,7 @@ public class WebConnector {
 		return result;
 	}
 
+
 	/**
 	 * Gibt das Bild einer AI zurück
 	 * 
@@ -159,21 +170,26 @@ public class WebConnector {
 		return new Image(new ByteArrayInputStream(sendGet("ai/" + id + "/icon")));
 	}
 
+
 	public List<CodrGame> getGames() {
 		throw new UnsupportedOperationException("Ich bin so pöse!");
 	}
+
 
 	public void uploadVersion(Version version) {
 
 	}
 
+
 	public void createAi(Ai ai) {
 
 	}
 
+
 	public ObservableList<Ai> getOwnAis(String game) {
 		return FXCollections.observableArrayList(getAis(game).stream().filter((Ai ai) -> ai.userName == getUserName()).collect(Collectors.toList()));
 	}
+
 
 	/**
 	 * Pingt den Server
@@ -188,6 +204,7 @@ public class WebConnector {
 			return false;
 		}
 	}
+
 
 	public ObservableList<String> loadGametypesFromFile() {
 		ObservableList<String> result = FXCollections.observableArrayList();
@@ -204,6 +221,7 @@ public class WebConnector {
 		return result;
 	}
 
+
 	public ObservableList<String> loadLangsFromFile() {
 		ObservableList<String> result = FXCollections.observableArrayList();
 
@@ -214,6 +232,7 @@ public class WebConnector {
 		}
 		return result;
 	}
+
 
 	public void updateLanguages() throws DeletedException, NewException, NothingDoneException, IOException {
 		ObservableList<String> result = FXCollections.observableArrayList();
@@ -274,6 +293,7 @@ public class WebConnector {
 		throw new NothingDoneException();
 
 	}
+
 
 	public void updateGametypes() throws NewException, UpdateException, NothingDoneException, DeletedException, IOException {
 		ObservableList<String> result = FXCollections.observableArrayList();
@@ -369,6 +389,7 @@ public class WebConnector {
 		throw new NothingDoneException();
 	}
 
+
 	public boolean loadGamelogic(int game, String gameName) {
 		byte[] logic;
 		try {
@@ -390,6 +411,7 @@ public class WebConnector {
 		}
 		return true;
 	}
+
 
 	public boolean loadDataContainer(int game, String gameName) {
 		byte[] libraries;
@@ -429,10 +451,12 @@ public class WebConnector {
 				target.mkdirs();
 				File property = new File(Paths.simplePlayer(gameName, file.getName()) + "/..", "properties.txt");
 				property.createNewFile();
-				FileUtils.write(property, "versionAmount=1" + System.lineSeparator() + "gametype=" + gameName + System.lineSeparator() + "description=Das ist der " + file.getName() + "-SimplePlayer" + System.lineSeparator() + "language=" + file.getName());
+				FileUtils.write(property, "versionAmount=1" + System.lineSeparator() + "gametype=" + gameName + System.lineSeparator() + "description=Das ist der " + file.getName() + "-SimplePlayer"
+						+ System.lineSeparator() + "language=" + file.getName());
 				property = new File(property.getParent() + "/v0/properties.txt");
 				property.createNewFile();
-				FileUtils.write(property, "uploaded=false" + System.lineSeparator() + "compileOutput=" + System.lineSeparator() + "qualifyOutput=" + System.lineSeparator() + "qualified=false" + System.lineSeparator() + "compiled=false" + System.lineSeparator() + "finished=false" + System.lineSeparator() + "executeCommand=");
+				FileUtils.write(property, "uploaded=false" + System.lineSeparator() + "compileOutput=" + System.lineSeparator() + "qualifyOutput=" + System.lineSeparator() + "qualified=false"
+						+ System.lineSeparator() + "compiled=false" + System.lineSeparator() + "finished=false" + System.lineSeparator() + "executeCommand=");
 				FileUtils.copyDirectory(file, target);
 			}
 		} catch (IOException | ZipException e) {
@@ -443,6 +467,7 @@ public class WebConnector {
 
 		return true;
 	}
+
 
 	/**
 	 * Setzt die Tokens einer Session
@@ -461,6 +486,7 @@ public class WebConnector {
 		cookies.addCookie(createCookie("session", sessionToken));
 	}
 
+
 	/**
 	 * Gibt den Session Token zurück
 	 * 
@@ -471,6 +497,7 @@ public class WebConnector {
 		return cookie.isEmpty() ? null : cookie.get(0).getValue();
 	}
 
+
 	/**
 	 * Gibt den Remember Token zurück
 	 * 
@@ -480,6 +507,7 @@ public class WebConnector {
 		List<Cookie> cookie = cookies.getCookies().stream().filter((Cookie o) -> o.getName().equals("remember_token")).collect(Collectors.toList());
 		return cookie.isEmpty() ? null : cookie.get(0).getValue();
 	}
+
 
 	/**
 	 * Speichert die Session in eine Datei
@@ -494,6 +522,7 @@ public class WebConnector {
 			return;
 		}
 	}
+
 
 	/**
 	 * Holt die Session aus einer Datei
@@ -515,9 +544,11 @@ public class WebConnector {
 		}
 	}
 
+
 	public byte[] sendPost(String command) throws IOException {
 		return sendPost(command, new NameValuePair[0]);
 	}
+
 
 	public byte[] sendPost(String command, String... data) throws IOException {
 		if (data.length % 2 != 0) {
@@ -531,6 +562,7 @@ public class WebConnector {
 		}
 		return sendPost(command, nvpData);
 	}
+
 
 	/**
 	 * Sendet einen PostRequest
@@ -561,9 +593,11 @@ public class WebConnector {
 		return responseArray;
 	}
 
+
 	public byte[] sendGet(String command) throws IOException {
 		return sendGet(command, new NameValuePair[0]);
 	}
+
 
 	public byte[] sendGet(String command, String... data) throws IOException {
 		if (data.length % 2 != 0) {
@@ -575,6 +609,7 @@ public class WebConnector {
 		}
 		return sendGet(command, nvpData);
 	}
+
 
 	/**
 	 * Sendet einen GetRequest
@@ -609,6 +644,7 @@ public class WebConnector {
 		return responseArray;
 	}
 
+
 	private String toString(byte[] bytes) throws IOException {
 		if (bytes == null) {
 			throw new IOException();
@@ -621,6 +657,7 @@ public class WebConnector {
 			return null;
 		}
 	}
+
 
 	private byte[] getOutput(InputStream in) throws IOException {
 		ByteArrayOutputStream responseContent = new ByteArrayOutputStream();
@@ -635,6 +672,7 @@ public class WebConnector {
 
 		return responseContent.toByteArray();
 	}
+
 
 	public Cookie createCookie(String key, String value) {
 		BasicClientCookie cookie = new BasicClientCookie(key, value);

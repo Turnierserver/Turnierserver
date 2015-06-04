@@ -1,15 +1,21 @@
 package org.pixelgaffer.turnierserver.codr.view;
 
+
 import org.pixelgaffer.turnierserver.codr.*;
 import org.pixelgaffer.turnierserver.codr.CodrGame.GameMode;
+import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
+import org.pixelgaffer.turnierserver.codr.utilities.Paths;
+import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+
+
 public class ControllerGameManagement {
-	
-	
+
+
 	@FXML public Label lbMode;
 	@FXML public Label lbDate;
 	@FXML public Label lbDuration;
@@ -26,17 +32,18 @@ public class ControllerGameManagement {
 	@FXML public TextArea tbOutput1;
 	@FXML public TextArea tbOutput2;
 	@FXML public TableView<ParticipantResult> tableResult;
-	
+
 	MainApp mainApp;
-	
+
 	CodrGame game = null;
-	
+
+
 	/**
 	 * Initialisiert den Controller
 	 * 
 	 * @param app eine Referenz auf die MainApp
 	 */
-	public void setMainApp(MainApp app){
+	public void setMainApp(MainApp app) {
 		mainApp = app;
 		mainApp.cGame = this;
 
@@ -46,32 +53,33 @@ public class ControllerGameManagement {
 		TableColumn col3 = new TableColumn("Züge");
 		TableColumn col4 = new TableColumn("Punkte");
 		TableColumn col5 = new TableColumn("Gewonnen?");
-		
+
 		col0.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("playerName"));
 		col1.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("kiName"));
 		col2.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("duration"));
 		col3.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("moveCount"));
 		col4.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("points"));
 		col5.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("won"));
-		
+
 		tableResult.getColumns().addAll(col0, col1, col2, col3, col4, col5);
-		
+
 		final ToggleGroup group = new ToggleGroup();
 		btOffline.setToggleGroup(group);
 		btOffline.setSelected(true);
 		btOnline.setToggleGroup(group);
-		
+
 		mainApp.gameManager.loadGames();
 		showGame();
 	}
-	
-	
-	public void showGame(CodrGame ggame){
-		
+
+
+	public void showGame(CodrGame ggame) {
+
 	}
-	
-	public void showGame(){
-		if (game != null){
+
+
+	public void showGame() {
+		if (game != null) {
 			if (game.mode == GameMode.onlineLoaded)
 				lbMode.setText("Online");
 			else
@@ -80,8 +88,7 @@ public class ControllerGameManagement {
 			lbDuration.setText(game.duration);
 			lbLogic.setText(game.logic);
 			tableResult.setItems(game.participants);
-		}
-		else{
+		} else {
 			lbMode.setText("Offline");
 			lbDate.setText("Jetzt");
 			lbDuration.setText("555ms");
@@ -89,37 +96,38 @@ public class ControllerGameManagement {
 			tableResult.setItems(null);
 		}
 	}
-	
-	
 
-	@FXML
-	void clickChallenger(){
-		tbOutput1.setText("Info1 geklickt");
+
+
+	@FXML void clickOnline() {
+
 	}
 
-	@FXML
-	void clickOnline(){
-		
-	}
 
-	@FXML
-	void clickOffline(){
+	@FXML void clickOffline() {
 		lvPlayer1.setItems(mainApp.aiManager.ais);
 		lvPlayer2.setItems(mainApp.aiManager.ais);
 	}
 
-	@FXML
-	void clickStartGame(){
-		tbOutput1.setText("Info4 geklickt");
+
+	@FXML void clickStartGame() {
+		if (btOffline.isSelected()) {
+			if (lvPlayer1.getSelectionModel().getSelectedItem() != null && lvPlayer2.getSelectionModel().getSelectedItem() != null) {
+				CodrGame game = new CodrGame(Paths.gameLogic(MainApp.actualGameType.toString()), GameMode.playing);
+
+			}
+		} else {
+			Dialog.info("Onlinespiele werden noch nicht unterstützt");
+		}
 	}
 
-	@FXML
-	void clickLoadSaved(){
+
+	@FXML void clickLoadSaved() {
 		tbOutput1.setText("Info5 geklickt");
 	}
 
-	@FXML
-	void clickLoadOnline(){
+
+	@FXML void clickLoadOnline() {
 		tbOutput1.setText("Info6 geklickt");
 	}
 }

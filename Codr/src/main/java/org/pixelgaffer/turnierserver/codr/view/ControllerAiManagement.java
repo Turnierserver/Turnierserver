@@ -1,5 +1,6 @@
 package org.pixelgaffer.turnierserver.codr.view;
 
+
 import java.io.File;
 import java.io.IOException;
 
@@ -22,8 +23,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 
-public class ControllerAiManagement{
-	
+
+
+public class ControllerAiManagement {
+
 
 	@FXML public Button btAbort;
 	@FXML public Button btEdit;
@@ -55,92 +58,94 @@ public class ControllerAiManagement{
 	@FXML public Hyperlink hlShowQualified;
 	public Tab infoTab;
 	public Tab newFileTab;
-	
+
 	public MainApp mainApp;
 	public Ai ai;
 	public Version version;
+
 
 	/**
 	 * Initialisiert den Controller
 	 * 
 	 * @param app eine Referenz auf die MainApp
 	 */
-	public void setMainApp(MainApp app){
+	public void setMainApp(MainApp app) {
 		mainApp = app;
 		mainApp.cAi = this;
 		cbVersion.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Version>() {
-		    @Override
-		    public void changed(ObservableValue<? extends Version> observable, Version oldValue, Version newValue) {
-		        clickVersionChange();
-		    }
+
+			@Override public void changed(ObservableValue<? extends Version> observable, Version oldValue, Version newValue) {
+				clickVersionChange();
+			}
 		});
 		lvAis.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Ai>() {
-		    @Override
-		    public void changed(ObservableValue<? extends Ai> observable, Ai oldValue, Ai newValue) {
-		        clickChangeAi();
-		    }
+
+			@Override public void changed(ObservableValue<? extends Ai> observable, Ai oldValue, Ai newValue) {
+				clickChangeAi();
+			}
 		});
 		tpCode.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
-		    @Override
-		    public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
-		    	clickTabSelection(oldValue, newValue);
-		    }
+
+			@Override public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
+				clickTabSelection(oldValue, newValue);
+			}
 		});
-		
+
 		cbLanguage.getItems().addAll(MainApp.languages);
 		cbLanguage.getSelectionModel().selectFirst();
-		
+
 		infoTab = tpCode.getTabs().get(0);
 		newFileTab = tpCode.getTabs().get(1);
-		
+
 		lvAis.setItems(mainApp.aiManager.ais);
 		lvAis.getSelectionModel().selectFirst();
 	}
-	
-	
+
+
 	/**
 	 * Zeigt eine KI und eine ihrer Versionen an
 	 * 
 	 * @param p die KI
 	 * @param v die zugehörige Version
 	 */
-	public void showAi(Ai p, Version v){
+	public void showAi(Ai p, Version v) {
 		ai = p;
 		version = v;
 		showAi();
 	}
+
+
 	/**
 	 * Setzt alle Eigenschaften der Benutzeroberfläche, wie z.B. das KI-Namensfeld, das KI-Bild, die KI-Beschreibung, ...
 	 */
-	public void showAi(){
-		
+	public void showAi() {
+
 		// Ai-spezifisches
-		if (ai != null){
+		if (ai != null) {
 			lbName.setText(ai.title);
 			lbLanguage.setText("Sprache: " + ai.language.toString());
 			tbDescription.setText(ai.description);
 			cbVersion.getSelectionModel().clearSelection();
 			cbVersion.setItems(ai.versions);
 			Bindings.bindBidirectional(image.imageProperty(), ai.getPicture());
-			
+
 			btChangeImage.setDisable(false);
 			btDeleteImage.setDisable(false);
 			btNewVersion.setDisable(false);
 			btEdit.setDisable(false);
 			btToActual.setDisable(false);
-			
-			if (version == null){  //versuchen, die Version zu setzen, wenn keine ausgewählt ist
+
+			if (version == null) {  // versuchen, die Version zu setzen, wenn keine ausgewählt ist
 				version = ai.lastVersion();
 			}
 			boolean containing = false;
 			for (int i = 0; i < ai.versions.size(); i++)
 				if (version == ai.versions.get(i))
 					containing = true;
-			if(!containing){  //oder eine nicht-zugehörige ausgewählt ist
+			if (!containing) {  // oder eine nicht-zugehörige ausgewählt ist
 				version = ai.lastVersion();
 			}
-		}
-		else{
+		} else {
 			lbName.setText("Name");
 			lbLanguage.setText("Sprache: ");
 			tbDescription.setText("Momentan ist kein Spieler ausgew�hlt");
@@ -155,21 +160,21 @@ public class ControllerAiManagement{
 			btEdit.setDisable(true);
 			btToActual.setDisable(true);
 		}
-		
-		//Beschreibung setzen
+
+		// Beschreibung setzen
 		tbDescription.setEditable(false);
 		btAbort.setVisible(false);
 		btEdit.setText("Bearbeiten");
 		tbDescription.setEditable(false);
-		
-		//Version-spezifisches
-		if (version != null && ai != null){
+
+		// Version-spezifisches
+		if (version != null && ai != null) {
 			cbVersion.setValue(version);
 			tbOutput.setText("");
-			if (!version.compileOutput.equals("")){
+			if (!version.compileOutput.equals("")) {
 				tbOutput.setText(version.compileOutput);
 			}
-			if (!version.qualifyOutput.equals("")){
+			if (!version.qualifyOutput.equals("")) {
 				tbOutput.setText(version.qualifyOutput);
 			}
 			lbCompiled.setVisible(version.compiled);
@@ -185,10 +190,9 @@ public class ControllerAiManagement{
 			rbContinue.setSelected(true);
 			rbFromFile.setSelected(false);
 			rbSimple.setSelected(false);
-			
+
 			setVersionTabs();
-		}
-		else{
+		} else {
 			cbVersion.setValue(null);
 			tbOutput.setText("");
 			lbCompiled.setVisible(false);
@@ -200,14 +204,14 @@ public class ControllerAiManagement{
 			btFinish.setDisable(true);
 			btUpload.setDisable(true);
 			rbContinue.setDisable(true);
-			
+
 			rbContinue.setSelected(false);
 			rbFromFile.setSelected(false);
 			rbSimple.setSelected(true);
 		}
-		
-		if (ai != null){
-			if (ai.mode == AiMode.simplePlayer){
+
+		if (ai != null) {
+			if (ai.mode == AiMode.simplePlayer) {
 				btEdit.setDisable(true);
 				btNewVersion.setDisable(true);
 				btCompile.setDisable(true);
@@ -218,23 +222,24 @@ public class ControllerAiManagement{
 				hlShowQualified.setVisible(false);
 				lbFinished.setVisible(false);
 				lbUploaded.setVisible(false);
-				
+
 				btChangeImage.setDisable(true);
 				btDeleteImage.setDisable(true);
 			}
 		}
-		
+
 	}
-	
+
+
 	/**
 	 * Lädt mithilfe der CodeEditoren der anzuzeigenden Version alle Dateien der Version in die Tab-Leiste
 	 */
-	private void setVersionTabs(){
+	private void setVersionTabs() {
 		tpCode.getTabs().clear();
 		tpCode.getTabs().add(infoTab);
-		for (int i = 0; i < version.files.size(); i++){
+		for (int i = 0; i < version.files.size(); i++) {
 			Tab tab = version.files.get(i).getView();
-			if (version.finished){
+			if (version.finished) {
 				if (tab.getContent() != null)
 					tab.getContent().setDisable(true);
 				else
@@ -245,219 +250,235 @@ public class ControllerAiManagement{
 		if (!version.finished)
 			tpCode.getTabs().add(newFileTab);
 	}
-	
+
+
 	/**
 	 * Speichert und überprüft, ob auf das "neue Datei"-Tab geklickt wurde
 	 * 
 	 * @param oldTab der zuvor ausgewählte Tab
 	 * @param newTab der neu ausgewählte Tab
 	 */
-	void clickTabSelection(Tab oldTab, Tab newTab){
-    	if (version != null && !version.finished)
-    		version.saveCode();
-    	if (newTab == newFileTab && newTab != oldTab){
-    		tpCode.getSelectionModel().select(oldTab);
-    		if (version == null){
-    			Dialog.error("Bitte legen Sie zuerst eine Version an.", "Keine Version");
-    		}
-    		File result = Dialog.fileSaver(mainApp.stage, "Bitte einen Ort und Dateinamen auswählen", Paths.version(version));
-    		if (result != null){
-    			CodeEditor editor = new CodeEditor(result);
-    			editor.forceSave();
-    			version.files.add(editor);
-    			tpCode.getTabs().add(tpCode.getTabs().size()-1, editor.getView());
-    			tpCode.getSelectionModel().select(tpCode.getTabs().size()-2);
-    		}
-    	}
+	void clickTabSelection(Tab oldTab, Tab newTab) {
+		if (version != null && !version.finished)
+			version.saveCode();
+		if (newTab == newFileTab && newTab != oldTab) {
+			tpCode.getSelectionModel().select(oldTab);
+			if (version == null) {
+				Dialog.error("Bitte legen Sie zuerst eine Version an.", "Keine Version");
+			}
+			File result = Dialog.fileSaver(mainApp.stage, "Bitte einen Ort und Dateinamen auswählen", Paths.version(version));
+			if (result != null) {
+				CodeEditor editor = new CodeEditor(result);
+				editor.forceSave();
+				version.files.add(editor);
+				tpCode.getTabs().add(tpCode.getTabs().size() - 1, editor.getView());
+				tpCode.getSelectionModel().select(tpCode.getTabs().size() - 2);
+			}
+		}
 	}
-		
+
+
 	/**
 	 * Button: Neue KI anlegen
 	 */
-	@FXML void clickNewAi(){
+	@FXML void clickNewAi() {
 		String title = tbName.getText().replace(" ", "");
-		
-		if (title.equals("")){
+
+		if (title.equals("")) {
 			Dialog.error("Bitte einen Namen für die KI eingeben", "Kein Name");
 			return;
 		}
-		
-		for (int i = 0; i < lvAis.getItems().size(); i++){  //Testen, ob die KI schon existiert
-			if (title.equals(lvAis.getItems().get(i).title)){
+
+		for (int i = 0; i < lvAis.getItems().size(); i++) {  // Testen, ob die KI schon existiert
+			if (title.equals(lvAis.getItems().get(i).title)) {
 				Dialog.error("Es können keine zwei KIs mit dem gleichen Namen erstellt werden", "Doppelter Name");
 				return;
 			}
 		}
-		
+
 		mainApp.aiManager.ais.add(new Ai(title, cbLanguage.getValue()));
 		lvAis.getSelectionModel().selectLast();
 	}
 
+
 	/**
 	 * Listenselektions-Änderung: zeigt andere KI an
 	 */
-	@FXML void clickChangeAi(){
+	@FXML void clickChangeAi() {
 		ai = lvAis.getSelectionModel().getSelectedItem();
-		if (ai != null){
+		if (ai != null) {
 			version = ai.lastVersion();
 			showAi();
 		}
 	}
-	
+
+
 	/**
 	 * Button: Abbruch der Bearbeitung der Beschreibung der KI
 	 */
-	@FXML void clickAbort(){
+	@FXML void clickAbort() {
 		btAbort.setVisible(false);
 		btEdit.setText("Bearbeiten");
 		tbDescription.setEditable(false);
 		tbDescription.setText(ai.description);
 	}
-	
+
+
 	/**
 	 * Button: Bearbeitung der Beschreibung der KI
 	 */
-	@FXML void clickEdit(){
-		if (!btAbort.isVisible()){
+	@FXML void clickEdit() {
+		if (!btAbort.isVisible()) {
 			btAbort.setVisible(true);
 			btEdit.setText("Speichern");
 			tbDescription.setEditable(true);
-		}
-		else{
+		} else {
 			btAbort.setVisible(false);
 			btEdit.setText("Bearbeiten");
 			tbDescription.setEditable(false);
 			ai.setDescription(tbDescription.getText());
 		}
 	}
-	
+
+
 	/**
 	 * Button: aktuelle Version der KI wird ausgewählt
 	 */
-	@FXML void clickToActual(){
+	@FXML void clickToActual() {
 		version = ai.lastVersion();
 		showAi();
 	}
-	
+
+
 	/**
 	 * Listenselektions-Änderung: zeigt andere Version an
 	 */
-	@FXML void clickVersionChange(){
-		if (version != cbVersion.getValue() && cbVersion.getValue() != null){
+	@FXML void clickVersionChange() {
+		if (version != cbVersion.getValue() && cbVersion.getValue() != null) {
 			version = cbVersion.getValue();
 			showAi();
 		}
 	}
-	
+
+
 	/**
 	 * Radiobutton: "SimplePlayer" wurde ausgewählt
 	 */
-	@FXML void clickRbSimple(){
+	@FXML void clickRbSimple() {
 		rbSimple.setSelected(true);
 		rbContinue.setSelected(false);
 		rbFromFile.setSelected(false);
 	}
-	
+
+
 	/**
 	 * Radiobutton: "Weiterschreiben" wurde ausgewählt
 	 */
-	@FXML void clickRbContinue(){
+	@FXML void clickRbContinue() {
 		rbSimple.setSelected(false);
 		rbContinue.setSelected(true);
 		rbFromFile.setSelected(false);
 	}
-	
+
+
 	/**
 	 * Radiobutton: "Aus Datei" wurde ausgewählt
 	 */
-	@FXML void clickRbFromFile(){
+	@FXML void clickRbFromFile() {
 		rbSimple.setSelected(false);
 		rbContinue.setSelected(false);
 		rbFromFile.setSelected(true);
 	}
-	
+
+
 	/**
 	 * Button: Dateiauswahl wenn "Aus Datei" ausgewählt ist
 	 */
-	@FXML void clickSelectFile(){
+	@FXML void clickSelectFile() {
 		File result = Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner auswählen");
 		if (result != null)
 			tbFile.setText(result.getPath());
 	}
-	
+
+
 	/**
 	 * Button: neue Version erstellen
 	 */
-	@FXML void clickNewVersion(){
-		if (rbFromFile.isSelected()){
+	@FXML void clickNewVersion() {
+		if (rbFromFile.isSelected()) {
 			showAi(ai, ai.newVersion(NewVersionType.fromFile, tbFile.getText()));
-		}
-		else if (rbContinue.isSelected()){
+		} else if (rbContinue.isSelected()) {
 			showAi(ai, ai.newVersion(NewVersionType.lastVersion));
-		}
-		else{
+		} else {
 			showAi(ai, ai.newVersion(NewVersionType.simplePlayer));
 		}
 	}
-	
+
+
 	/**
 	 * Button: Kompilieren
 	 */
-	@FXML void clickCompile(){
+	@FXML void clickCompile() {
 		version.compile();
 		showAi();
 	}
-	
+
+
 	/**
 	 * Button: Qualifizieren
 	 */
-	@FXML void clickQualify(){
+	@FXML void clickQualify() {
 		version.qualify();
 		showAi();
 	}
-	
+
+
 	/**
 	 * Button: Fertigstellen
 	 */
-	@FXML void clickFinish(){
-		if (Dialog.okAbort("Wenn eine Version fertiggestellt wird, kann sie nicht mehr bearbeitet werden.\n\nFortfahren?", "Version einfrieren")){
+	@FXML void clickFinish() {
+		if (Dialog.okAbort("Wenn eine Version fertiggestellt wird, kann sie nicht mehr bearbeitet werden.\n\nFortfahren?", "Version einfrieren")) {
 			version.finish();
 		}
 		showAi();
 	}
-	
+
+
 	/**
 	 * Button: Hochladen
 	 */
-	@FXML void clickUpload(){
+	@FXML void clickUpload() {
 		tbFile.setText("Info14 geklickt");
 	}
+
 
 	/**
 	 * Hyperlink: zeigt das Qualifizier-Spiel an
 	 */
-	@FXML void clickShowQualified(){
+	@FXML void clickShowQualified() {
 		tbFile.setText("Info14 geklickt");
 	}
-	
+
+
 	/**
 	 * Button: Bild ändern
 	 */
-	@FXML void clickChangeImage(){
+	@FXML void clickChangeImage() {
 		File result = Dialog.fileChooser(mainApp.stage, "Bild ausw�hlen");
 		Image img = Resources.imageFromFile(result);
-		if (img != null){
+		if (img != null) {
 			ai.setPicture(Resources.imageFromFile(result));
 		}
 		showAi();
 	}
 
+
 	/**
 	 * Button: Bild löschen
 	 */
-	@FXML void clickDeleteImage(){
+	@FXML void clickDeleteImage() {
 		ai.setPicture(null);
 		showAi();
 	}
-	
+
 }

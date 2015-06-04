@@ -1,5 +1,6 @@
 package org.pixelgaffer.turnierserver.codr;
 
+
 import java.io.IOException;
 
 import javafx.animation.FadeTransition;
@@ -42,6 +43,8 @@ import org.pixelgaffer.turnierserver.codr.view.ControllerSettings;
 import org.pixelgaffer.turnierserver.codr.view.ControllerStartPage;
 import org.pixelgaffer.turnierserver.codr.view.ControllerSubmission;
 
+
+
 public class MainApp extends Application {
 
 	public Stage stage;
@@ -52,12 +55,12 @@ public class MainApp extends Application {
 	public ControllerRanking cRanking;
 	public ControllerSubmission cSubmission;
 	public ControllerSettings cSettings;
-	
+
 	public static Settings settings;
-	
-	
+
+
 	public static final String webUrl = "192.168.178.43:5000";
-	
+
 	public static WebConnector webConnector = new WebConnector("http://" + webUrl + "/api/", webUrl);// "http://thuermchen.com/api/");
 	public GameManager gameManager = new GameManager();
 	public AiManager aiManager = new AiManager();
@@ -65,6 +68,7 @@ public class MainApp extends Application {
 	public static StringProperty actualGameType = new SimpleStringProperty(null);
 	public static ObservableList<String> gametypes = FXCollections.observableArrayList();
 	public static ObservableList<String> languages = FXCollections.observableArrayList();
+
 
 	/**
 	 * Main-Methode
@@ -74,6 +78,7 @@ public class MainApp extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+
 
 	/**
 	 * start-Methode (wegen: extends Application)
@@ -100,19 +105,21 @@ public class MainApp extends Application {
 
 	}
 
+
 	public void stop() {
 		if (cAi.version != null)
 			cAi.version.saveCode();
-		if (settings != null){
+		if (settings != null) {
 			settings.store();
 		}
 		ErrorLog.write("Programm beendet", true);
 	}
 
+
 	public void loadOnlineResources() {
 		final Task updateTask = new Task() {
-			@Override
-			protected Object call() throws InterruptedException {
+
+			@Override protected Object call() throws InterruptedException {
 
 				updateMessage("Gametypen werden geladen");
 				try {
@@ -144,11 +151,12 @@ public class MainApp extends Application {
 		new Thread(updateTask).start();
 	}
 
+
 	public void showSplashStage(Stage splashStage) {
 
 		final Task updateTask = new Task() {
-			@Override
-			protected Object call() throws InterruptedException {
+
+			@Override protected Object call() throws InterruptedException {
 
 				updateMessage("Gametypen werden geladen");
 				try {
@@ -222,9 +230,10 @@ public class MainApp extends Application {
 		new Thread(updateTask).start();
 	}
 
+
 	public void showMainStage() {
-		
-		
+
+
 		BorderPane root = new BorderPane();
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -242,8 +251,8 @@ public class MainApp extends Application {
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
-		
-		
+
+
 	}
 
 }
