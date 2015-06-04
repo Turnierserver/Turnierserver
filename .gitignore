@@ -3,6 +3,7 @@
 ESU/errorLog.txt
 ESU/session.conf
 __pycache__
+Frontend/tmpfile
 *.log
 AIs/
 Downloads/
