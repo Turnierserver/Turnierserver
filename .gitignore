@@ -1,14 +1,14 @@
 # unnötiges generiertes zeugs
 .directory
-ESU/errorLog.txt
-ESU/session.conf
+Codr/errorLog.txt
+Codr/session.conf
 __pycache__
 Frontend/tmpfile
 *.log
 AIs/
 Downloads/
 Ace/
-ESU/settings.txt
+Codr/settings.txt
 test.db
 gen/
 GameBuilder/Makefile
