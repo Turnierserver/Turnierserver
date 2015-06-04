@@ -1,15 +1,30 @@
 package org.pixelgaffer.turnierserver.codr.view;
 
 
-import org.pixelgaffer.turnierserver.codr.*;
-import org.pixelgaffer.turnierserver.codr.CodrGame.GameMode;
-import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
-import org.pixelgaffer.turnierserver.codr.utilities.Paths;
-import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
+
+import org.pixelgaffer.turnierserver.codr.Ai;
+import org.pixelgaffer.turnierserver.codr.CodrGame;
+import org.pixelgaffer.turnierserver.codr.CodrGame.GameMode;
+import org.pixelgaffer.turnierserver.codr.MainApp;
+import org.pixelgaffer.turnierserver.codr.ParticipantResult;
+import org.pixelgaffer.turnierserver.codr.Version;
+import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
+import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 
 
 
@@ -114,10 +129,16 @@ public class ControllerGameManagement {
 		if (btOffline.isSelected()) {
 			if (lvPlayer1.getSelectionModel().getSelectedItem() != null && lvPlayer2.getSelectionModel().getSelectedItem() != null) {
 				CodrGame game = new CodrGame(Paths.gameLogic(MainApp.actualGameType.toString()), GameMode.playing);
-
+				List<Version> players = new ArrayList<>();
+				players.add(lvPlayer1.getSelectionModel().getSelectedItem().lastVersion());
+				players.add(lvPlayer2.getSelectionModel().getSelectedItem().lastVersion());
+				game.play(players);
+			}
+			else{
+				Dialog.error("Bitte erst die KIs auswählen");
 			}
 		} else {
-			Dialog.info("Onlinespiele werden noch nicht unterstützt");
+			Dialog.error("Onlinespiele werden noch nicht unterstützt");
 		}
 	}
 
