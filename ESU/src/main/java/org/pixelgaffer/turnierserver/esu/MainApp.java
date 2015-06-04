@@ -32,6 +32,7 @@ import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.NothingDoneException;
 import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.UpdateException;
 import org.pixelgaffer.turnierserver.esu.utilities.Resources;
+import org.pixelgaffer.turnierserver.esu.utilities.Settings;
 import org.pixelgaffer.turnierserver.esu.utilities.WebConnector;
 import org.pixelgaffer.turnierserver.esu.view.ControllerAiManagement;
 import org.pixelgaffer.turnierserver.esu.view.ControllerGameManagement;
@@ -51,8 +52,13 @@ public class MainApp extends Application {
 	public ControllerRanking cRanking;
 	public ControllerSubmission cSubmission;
 	public ControllerSettings cSettings;
-
-	public WebConnector webConnector = new WebConnector("http://192.168.178.43:5000/api/", "192.168.178.43");// "http://thuermchen.com/api/");
+	
+	public static Settings settings;
+	
+	
+	public static final String webUrl = "192.168.178.43:5000";
+	
+	public WebConnector webConnector = new WebConnector("http://" + webUrl + "/api/", webUrl);// "http://thuermchen.com/api/");
 	public GameManager gameManager = new GameManager();
 	public AiManager aiManager = new AiManager();
 
@@ -98,6 +104,9 @@ public class MainApp extends Application {
 	public void stop() {
 		if (cAi.version != null)
 			cAi.version.saveCode();
+		if (settings != null){
+			settings.store();
+		}
 		ErrorLog.write("Programm beendet", true);
 	}
 
@@ -215,7 +224,8 @@ public class MainApp extends Application {
 	}
 
 	public void showMainStage() {
-
+		
+		
 		BorderPane root = new BorderPane();
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -223,16 +233,18 @@ public class MainApp extends Application {
 			root = (BorderPane) loader.load();
 			((ControllerRoot) loader.getController()).setMainApp(this);
 		} catch (IOException e) {
-			ErrorLog.write("RootLayout konnte nicht geladen werden (FXML-Fehler)");
+			ErrorLog.write("RootLayout konnte nicht geladen werden (FXML-Fehler): " + e);
 			e.printStackTrace();
 		}
+		settings = new Settings(cStart);
 
 		stage.setTitle("Codr");
 		stage.getIcons().add(Resources.codrIcon());
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
-
+		
+		
 	}
 
 }

@@ -101,7 +101,7 @@
                                                       </Label>
                                                       <TextField fx:id="tbEmail" GridPane.columnIndex="1" />
                                                       <PasswordField fx:id="tbPassword" prefWidth="127.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                      <Hyperlink fx:id="hlForgotPassword" text="Passwort vergessen" GridPane.rowIndex="2" />
+                                                      <Hyperlink onAction="#clickForgotPassword" text="Passwort vergessen" GridPane.rowIndex="2" />
                                                       <HBox alignment="CENTER_RIGHT" fillHeight="false" prefWidth="1.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                                          <children>
                                                             <Button fx:id="btRegister" mnemonicParsing="false" onAction="#clickRegister" text="neu Registrieren" />
@@ -149,19 +149,19 @@
                                                 <Label text="C++ - Compiler:" GridPane.rowIndex="4" />
                                                 <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                                    <children>
-                                                      <TextField />
-                                                      <Button minWidth="-Infinity" mnemonicParsing="false" prefWidth="30.0" text="..." />
+                                                      <TextField fx:id="tbCplusplusCompiler" />
+                                                      <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#clickCplusplusCompiler" prefWidth="30.0" text="..." />
                                                    </children>
                                                 </HBox>
                                                 <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                                    <children>
-                                                      <TextField />
-                                                      <Button minWidth="-Infinity" mnemonicParsing="false" prefWidth="30.0" text="..." />
+                                                      <TextField fx:id="tbPythonInterpreter" />
+                                                      <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#clickPythonInterpreter" prefWidth="30.0" text="..." />
                                                    </children>
                                                 </HBox>
-                                                <Slider GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <Slider GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <ToggleButton mnemonicParsing="false" text="Light" GridPane.columnIndex="1" />
+                                                <Slider fx:id="slScrollSpeed" max="20.0" min="1.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <Slider fx:id="slFontSize" max="40.0" min="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <ToggleButton fx:id="btTheme" mnemonicParsing="false" text="Light" GridPane.columnIndex="1" />
                                              </children>
                                           </GridPane>
                                        </children>

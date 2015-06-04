@@ -13,6 +13,10 @@ public class Paths {
 		return "Ace";
 	}
 	
+	public static String settings(){
+		return "settings.txt";
+	}
+	
 	public static String downloadFolder() {
 		return "Downloads";
 	}

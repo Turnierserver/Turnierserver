@@ -1,6 +1,10 @@
 package org.pixelgaffer.turnierserver.esu.view;
 
+import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 import javax.xml.transform.ErrorListener;
 
@@ -27,8 +31,6 @@ public class ControllerStartPage{
 	@FXML Button btInfo;
 	@FXML Button btRegister;
 	@FXML Button btLogin;
-	@FXML Hyperlink hlForgotPassword;
-	@FXML TextField tbActualLogic;
 	@FXML TextField tbEmail;
 	@FXML PasswordField tbPassword;
 	@FXML TitledPane tpLogic;
@@ -41,6 +43,13 @@ public class ControllerStartPage{
 	@FXML public ChoiceBox<String> cbGameTypes;
 	@FXML Button btTryOnline;
 	@FXML Label lbIsOnline;
+	
+	@FXML public ToggleButton btTheme;
+	@FXML public Slider slFontSize;
+	@FXML public Slider slScrollSpeed;
+	@FXML public TextField tbPythonInterpreter;
+	@FXML public TextField tbCplusplusCompiler;
+	
 	WebEngine webEngine;
 	
 
@@ -61,6 +70,14 @@ public class ControllerStartPage{
 		
 		updateLoggedIn();
 		updateConnected();
+		
+
+		btTheme.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		    	clickTheme(newValue);
+			}
+		});
 		
 		cbGameTypes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 		    @Override
@@ -103,12 +120,12 @@ public class ControllerStartPage{
 	
 	@FXML
 	void clickInfo(){
-		tbActualLogic.setText("Info geklickt");
+		
 	}
 	
 	@FXML
 	void clickRegister(){
-		tbActualLogic.setText("Registrieren geklickt");
+		openWebPage("http://" + MainApp.webUrl + "/");
 	}
 	
 	@FXML
@@ -141,12 +158,49 @@ public class ControllerStartPage{
 	
 	@FXML
 	void clickForgotPassword(){
-		tbActualLogic.setText("Passwort vergessen geklickt");
+		openWebPage("http://" + MainApp.webUrl + "/");
 	}
 	
 	@FXML
 	void clickTryOnline(){
 		updateConnected();
 		mainApp.loadOnlineResources();
+	}
+
+	@FXML
+	void clickPythonInterpreter(){
+		File result = Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner auswählen");
+		if (result != null)
+			tbPythonInterpreter.setText(result.getPath());
+	}
+
+	@FXML
+	void clickCplusplusCompiler(){
+		File result = Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner auswählen");
+		if (result != null)
+			tbCplusplusCompiler.setText(result.getPath());
+	}
+
+	void clickTheme(Boolean isSelected){
+		if (isSelected){
+			btTheme.setText("Dark");
+		}
+		else{
+			btTheme.setText("Light");
+		}
+	}
+
+	
+	
+	private void openWebPage(String url){
+		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+	        try {
+	        	URI uri = new URL(url).toURI();
+	            desktop.browse(uri);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
 	}
 }

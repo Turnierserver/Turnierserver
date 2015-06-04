@@ -110,7 +110,7 @@ public class ControllerRanking {
 		});
 		col2.setCellValueFactory(new Callback<CellDataFeatures<Ai, String>, ObservableValue<String>>() {
 			public ObservableValue<String> call(CellDataFeatures<Ai, String> p) {
-				return p.getValue().userName;
+				return new SimpleStringProperty(p.getValue().userName);
 			}
 		});
 		col3.setCellValueFactory(new Callback<CellDataFeatures<Ai, String>, ObservableValue<String>>() {
@@ -152,7 +152,7 @@ public class ControllerRanking {
 		if (ai != null){
 			lbName.setText(ai.title);
 			tbDescription.setText(ai.description);
-			lbUser.setText(ai.userName.get());
+			lbUser.setText(ai.userName);
 			lbElo.setText(ai.elo);
 			lbLanguage.setText(ai.language.toString());
 			btChallenge.setDisable(false);

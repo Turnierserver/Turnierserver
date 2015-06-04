@@ -38,7 +38,7 @@ public class Ai {
 	public final String title;
 	public final AiMode mode;
 	public String gametype;
-	public SimpleStringProperty userName = new SimpleStringProperty();
+	public String userName = "";
 	public String language;
 	public String description = "(keine Beschreibung)";
 	public String elo = "leere Elo";
@@ -54,7 +54,7 @@ public class Ai {
 	}
 	
 	/**
-	 * Erstellt einen neuen Online-Ai aus einem JSONObject
+	 * Erstellt eine neue Online-Ai aus einem JSONObject
 	 * 
 	 * @param json das übergebene JSONObject
 	 * @throws  
@@ -62,7 +62,7 @@ public class Ai {
 	public Ai(JSONObject json, WebConnector connector) {
 		title = json.getString("name");
 		mode = AiMode.online;
-		userName.set(json.getString("author"));
+		userName = json.getString("author");
 		description = json.getString("description");
 		gametype = json.getJSONObject("gametype").getInt("id") + "";
 		language = json.getJSONObject("lang").getString("name");
@@ -75,7 +75,7 @@ public class Ai {
 	}
 	
 	/**
-	 * Erstellt einen neuen Ai
+	 * Erstellt eine neue Ai
 	 * 
 	 * @param tit der übergebene Titel
 	 */
@@ -90,7 +90,7 @@ public class Ai {
 	}
 	
 	/**
-	 * Speichert einen neuen Ai mit dem übergebenen Titel und der Sprache ab.
+	 * Speichert eine neue Ai mit dem übergebenen Titel und der Sprache ab.
 	 * 
 	 * @param tit der übergebene Titel
 	 * @param lang die übergebene Sprache

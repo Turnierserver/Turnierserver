@@ -102,7 +102,7 @@ public class ControllerAiManagement{
 	 * Zeigt eine KI und eine ihrer Versionen an
 	 * 
 	 * @param p die KI
-	 * @param v die zugeh�rige Version
+	 * @param v die zugehörige Version
 	 */
 	public void showAi(Ai p, Version v){
 		ai = p;
