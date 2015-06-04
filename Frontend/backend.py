@@ -62,6 +62,8 @@ class Backend(threading.Thread):
 		self.requests[reqid] = d
 		self.send_dict(d)
 		self.requests[reqid]["queue"] = Queue()
+		self.requests[reqid]["ai0"] = ais[0][0]
+		self.requests[reqid]["ai1"] = ais[1][0]
 		Activity("Backend[{}]: Spiel mit {} gestartet".format(reqid, [ai.name for ai, version in ais]))
 		return reqid
 
@@ -125,8 +127,8 @@ class Backend(threading.Thread):
 					if r["status"] == "processed":
 						games.append(dict(
 							id=r["requestid"],
-							ai0=AI.query.first(),
-							ai1=AI.query.first(),
+							ai0=r["ai0"],
+							ai1=r["ai1"],
 							status="1/8392"
 						))
 		return games

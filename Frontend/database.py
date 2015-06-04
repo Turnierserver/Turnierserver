@@ -18,7 +18,7 @@ def timestamp():
 	return arrow.utcnow().timestamp
 
 
-db = SQLAlchemy()
+db = SQLAlchemy(session_options={"expire_on_commit": False})
 
 class SyncedFTPError(Exception):
 	pass

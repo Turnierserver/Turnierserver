@@ -50,9 +50,9 @@ Gegen:
 
 		var ais = [$("#ai1").val(), $("#ai2").val()]
 
-
 		$.post("/api/games/start", {"ai": ais}).done(function(data) {
 			console.log("Challenge started.")
+			location.href = "/game_list"
 			//location.reload();
 		}).fail(function(xhr, textStatus, errorThrown) {
 			console.log(xhr.responseText.error)
