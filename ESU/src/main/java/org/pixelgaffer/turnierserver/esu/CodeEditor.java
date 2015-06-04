@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
@@ -26,8 +27,8 @@ import org.w3c.dom.Document;
 
 public class CodeEditor {
 
-	private TextArea ta;  //TODO: nur Übergangslösung --> löschen
-	
+	private TextArea ta; // TODO: nur Übergangslösung --> löschen
+
 	private String savedText = "";
 	private File document;
 	public boolean loaded = false;
@@ -35,18 +36,22 @@ public class CodeEditor {
 
 	public static void writeAce() {
 		File aceFolder = new File(Paths.aceFolder());
-		if(aceFolder.exists()) {
+		if (aceFolder.exists()) {
 			return;
 		}
 		try {
 			aceFolder.mkdirs();
-			FileUtils.write(new File(aceFolder, "bundle.js"), IOUtils.toString(CodeEditor.class.getResource("view/bundle.js")));
-			FileUtils.write(new File(aceFolder, "editor.html"), IOUtils.toString(CodeEditor.class.getResource("view/editor.html")));
+			FileUtils.write(new File(aceFolder, "bundle.js"), IOUtils
+					.toString(CodeEditor.class.getResource("view/bundle.js")));
+			FileUtils
+					.write(new File(aceFolder, "editor.html"), IOUtils
+							.toString(CodeEditor.class
+									.getResource("view/editor.html")));
 		} catch (IOException e) {
 			ErrorLog.write("Konnte Ace nicht schreiben!");
 		}
 	}
-	
+
 	/**
 	 * Initialisiert den CodeEditor mit der zu zeigenden Datei
 	 * 
@@ -56,7 +61,9 @@ public class CodeEditor {
 		document = doc;
 		codeView = new WebView();
 		try {
-			codeView.getEngine().load(new File(Paths.aceFolder() + "/editor.html").toURI().toURL().toString());
+			codeView.getEngine().load(
+					new File(Paths.aceFolder() + "/editor.html").toURI()
+							.toURL().toString());
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			System.exit(1);
@@ -68,15 +75,21 @@ public class CodeEditor {
 				System.err.println("This is an alert: " + event);
 			}
 		});
-		
-		codeView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
-			public void changed(ObservableValue<? extends Document> prop, Document oldDoc, Document newDoc) {
-				codeView.getEngine().executeScript("editor.setTheme(\"ace/theme/eclipse\");");
-				codeView.getEngine().executeScript("editor.getSession().setMode(modelist.getModeForPath(\"" + doc.getName() + "\").mode);");
-//				codeView.getEngine().executeScript("if (!document.getElementById('FirebugLite')){E = document['createElement' + 'NS'] && document.documentElement.namespaceURI;E = E ? document['createElement' + 'NS'](E, 'script') : document['createElement']('script');E['setAttribute']('id', 'FirebugLite');E['setAttribute']('src', 'https://getfirebug.com/' + 'firebug-lite.js' + '#startOpened');E['setAttribute']('FirebugLite', '4');(document['getElementsByTagName']('head')[0] || document['getElementsByTagName']('body')[0]).appendChild(E);E = new Image;E['setAttribute']('src', 'https://getfirebug.com/' + '#startOpened');}");
-				load();
-			}
-		});
+
+		codeView.getEngine().documentProperty()
+				.addListener(new ChangeListener<Document>() {
+					public void changed(
+							ObservableValue<? extends Document> prop,
+							Document oldDoc, Document newDoc) {
+						codeView.getEngine().executeScript(
+								"editor.setTheme(\"ace/theme/eclipse\");");
+						codeView.getEngine().executeScript(
+								"editor.getSession().setMode(modelist.getModeForPath(\""
+										+ doc.getName() + "\").mode);");
+						// codeView.getEngine().executeScript("if (!document.getElementById('FirebugLite')){E = document['createElement' + 'NS'] && document.documentElement.namespaceURI;E = E ? document['createElement' + 'NS'](E, 'script') : document['createElement']('script');E['setAttribute']('id', 'FirebugLite');E['setAttribute']('src', 'https://getfirebug.com/' + 'firebug-lite.js' + '#startOpened');E['setAttribute']('FirebugLite', '4');(document['getElementsByTagName']('head')[0] || document['getElementsByTagName']('body')[0]).appendChild(E);E = new Image;E['setAttribute']('src', 'https://getfirebug.com/' + '#startOpened');}");
+						load();
+					}
+				});
 	}
 
 	/**
@@ -93,12 +106,25 @@ public class CodeEditor {
 	}
 
 	public String getCode() {
-		return (String) codeView.getEngine().executeScript("editor.getValue();");
+		return (String) codeView.getEngine()
+				.executeScript("editor.getValue();");
 	}
 
 	public void setCode(String t) {
-		String s = StringEscapeUtils.escapeJavaScript(t);
-//		codeView.getEngine().executeScript("editor.setValue(\"" + s + "\",1);");
+//		codeView.getEngine().executeScript("editor.setValue('')");
+//		new Thread(new Task() {
+//			public Object call() {
+//				for (int i = 0; i < t.length(); i++) {
+//					char c = t.charAt(i);
+//					String s = StringEscapeUtils.escapeJavaScript(c + "");
+//					System.out.print(s);
+//					codeView.getEngine().executeScript(
+//							"editor.setValue(editor.getValue() + \"" + s
+//									+ "\",1);");
+//				}
+//				return null;
+//			}
+//		}).start();
 	}
 
 	/**
