@@ -16,13 +16,15 @@ import org.pixelgaffer.turnierserver.PropertyUtils;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * @param <E> Der GameState
- * @param <R> Die Antwort der Spiellogik
+ * @param <E>
+ *            Der GameState
+ * @param <R>
+ *            Die Antwort der Spiellogik
  */
 public abstract class Ai<E, R> implements Runnable {
-	
+
 	public static Logger logger = Logger.getLogger("Ai");
-	
+
 	/**
 	 * Die Connection zum Worker
 	 */
@@ -35,18 +37,18 @@ public abstract class Ai<E, R> implements Runnable {
 	 * Der BufferedReader der Connection
 	 */
 	private BufferedReader in;
-	
+
 	/**
-	 * Der kummulierte String von System.out 
+	 * Der kummulierte String von System.out
 	 */
 	protected StringBuilder output = new StringBuilder();
 	/**
 	 * Der momentane Gamestate des Servers
 	 */
 	protected Map<String, String> gamestate;
-	
+
 	private TypeToken<R> token;
-	
+
 	public Ai(TypeToken<R> token, String[] args) {
 		this.token = token;
 		try {
@@ -69,26 +71,30 @@ public abstract class Ai<E, R> implements Runnable {
 			System.exit(1);
 		}
 	}
-	
+
 	/**
 	 * Wird aufgerufen, sobald der Server ein Gamestate-Update sendet
 	 * 
-	 * @param state Der Gamestate
-	 * @return Die Antwort an den Server, null wenn keine gesendet werden soll (der Server wartet bei rundenbasierten Spielen trotzdem auf eine Antwort)
+	 * @param state
+	 *            Der Gamestate
+	 * @return Die Antwort an den Server, null wenn keine gesendet werden soll
+	 *         (der Server wartet bei rundenbasierten Spielen trotzdem auf eine
+	 *         Antwort)
 	 */
 	protected abstract Object update(E state);
+
 	/**
 	 * Gibt den momentanen Spielzustand zurück
 	 * 
 	 * @return Der momentane Spielzustand
 	 */
 	protected abstract E getState(R change);
-	
+
 	public final void run() {
-		
+
 		try {
-			while(true) {
-				if(con.isClosed()) {
+			while (true) {
+				if (con.isClosed()) {
 					System.exit(0);
 				}
 				String line = in.readLine();
@@ -97,28 +103,31 @@ public abstract class Ai<E, R> implements Runnable {
 				logger.info("Geparsed zu: " + updates);
 				Object response = update(getState(updates));
 				logger.info("Sender response:" + response);
-				if(response != null) {
+				if (response != null) {
 					send(response);
 				}
 			}
-		}
-		catch(IOException e) {
+		} catch (IOException e) {
 			System.exit(0);
 		}
 	}
-	
+
 	/**
-	 * Sendet ein Objekt. Wenn ein Objekt nicht geparsed werden kann, oder wenn bei rundenbasierten Spielen mehrere Objekte pro Runde gesendet werden, verliert die ki automatisch
+	 * Sendet ein Objekt. Wenn ein Objekt nicht geparsed werden kann, oder wenn
+	 * bei rundenbasierten Spielen mehrere Objekte pro Runde gesendet werden,
+	 * verliert die ki automatisch
+	 * 
 	 * @param o
 	 */
 	protected final void send(Object o) {
 		try {
 			Parsers.escape(Parsers.getWorker().parse(o), con.getOutputStream());
+			con.getOutputStream().write(0xa);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * ACHTUNG: Mit dieser Methode gibt die KI automatisch auf
 	 */
@@ -126,9 +135,10 @@ public abstract class Ai<E, R> implements Runnable {
 		out.println("SURRENDER");
 		System.exit(0);
 	}
-	
+
 	/**
-	 * Muss in der Main-Methode aufgerufen werden, damit die KI sich zum Worker verbinden kann
+	 * Muss in der Main-Methode aufgerufen werden, damit die KI sich zum Worker
+	 * verbinden kann
 	 */
 	public final void start() {
 		new Thread(this).start();
@@ -140,5 +150,5 @@ public abstract class Ai<E, R> implements Runnable {
 			}
 		}
 	}
-	
+
 }
