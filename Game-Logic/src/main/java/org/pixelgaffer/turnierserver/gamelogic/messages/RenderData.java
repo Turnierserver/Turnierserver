@@ -18,5 +18,9 @@ public class RenderData {
 	 * Die Daten, die an den renderer gesendet werden sollen
 	 */
 	public Object data;
+	/**
+	 * Die requestid des Frontendauftrages
+	 */
+	public int requestid;
 	
 }

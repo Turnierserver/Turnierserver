@@ -16,5 +16,8 @@ public class GameFinished {
 	 * Die übrigen Rechenpunkte
 	 */
 	public Map<Integer, Integer> leftoverMillis;
-	
+	/**
+	 * Die requestid des Frontendauftrages
+	 */
+	public int requestid;
 }
