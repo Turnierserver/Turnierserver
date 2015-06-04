@@ -275,6 +275,14 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 				if (reply->error() != QNetworkReply::NoError)
 				{
 					fprintf(stderr, "Fehler beim Anmelden: %s\n", qPrintable(reply->errorString()));
+					if (reply->header(QNetworkRequest::ContentTypeHeader).toString() == "application/json")
+					{
+						QJsonDocument jsondoc = QJsonDocument::fromJson(reply->readAll());
+						QJsonObject json = jsondoc.object();
+						fprintf(stderr, "Fehler: %s\n", qPrintable(json.value("error").toString()));
+					}
+					else
+						fprintf(stderr, "%s\n", reply->readAll().data());
 					return 1;
 				}
 			}
@@ -298,6 +306,14 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 			if (reply->error() != QNetworkReply::NoError)
 			{
 				fprintf(stderr, "Fehler beim Hochladen von %s: %s\n", qPrintable(file), qPrintable(reply->errorString()));
+				if (reply->header(QNetworkRequest::ContentTypeHeader).toString() == "application/json")
+				{
+					QJsonDocument jsondoc = QJsonDocument::fromJson(reply->readAll());
+					QJsonObject json = jsondoc.object();
+					fprintf(stderr, "Fehler: %s\n", qPrintable(json.value("error").toString()));
+				}
+				else
+					fprintf(stderr, "%s\n", reply->readAll().data());
 				return 1;
 			}
 		}
