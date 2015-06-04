@@ -181,8 +181,9 @@ public class WebConnector {
 	}
 	
 	
-	public void createAi(CodrAi ai) {
-		
+	public void createAi(Version version) {
+		ErrorLog.write("Es können noch keine Spiele erstellt werden");
+		Dialog.error("Es können noch keine Spiele erstellt werden");
 	}
 	
 	

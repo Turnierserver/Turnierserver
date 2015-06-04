@@ -98,7 +98,7 @@ public class WorkerConnection
 		if (!canStartAi())
 			return false;
 		connection.sendCommand(new WorkerCommand(WorkerCommand.STARTAI,
-				ai.getId(), ai.getVersion(), game, ai.getUuid()));
+				ai.getAiId(), ai.getVersion(), game, ai.getUuid()));
 		return true;
 	}
 	
@@ -108,7 +108,7 @@ public class WorkerConnection
 	public void terminateJob (AiWrapper ai) throws IOException
 	{
 		connection.sendCommand(new WorkerCommand(WorkerCommand.TERMAI,
-				ai.getId(), ai.getVersion(), -1, ai.getUuid()));
+				ai.getAiId(), ai.getVersion(), -1, ai.getUuid()));
 	}
 	
 	/**
@@ -117,7 +117,7 @@ public class WorkerConnection
 	public void killJob (AiWrapper ai) throws IOException
 	{
 		connection.sendCommand(new WorkerCommand(WorkerCommand.KILLAI,
-				ai.getId(), ai.getVersion(), -1, ai.getUuid()));
+				ai.getAiId(), ai.getVersion(), -1, ai.getUuid()));
 	}
 	
 	/**

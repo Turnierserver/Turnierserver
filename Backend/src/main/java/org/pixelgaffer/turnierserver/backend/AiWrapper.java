@@ -29,10 +29,15 @@ public class AiWrapper implements Ai
 	@NonNull
 	private UUID uuid;
 	
+	/** Der ID-String dieser KI. */
+	@Setter
+	@Getter
+	private String id;
+	
 	/** Die ID dieser KI. */
 	@Setter
 	@Getter
-	private int id;
+	private int aiId;
 	
 	/** Die Version dieser KI. */
 	@Setter

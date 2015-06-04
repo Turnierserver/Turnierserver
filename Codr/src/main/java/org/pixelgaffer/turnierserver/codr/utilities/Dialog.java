@@ -2,10 +2,9 @@ package org.pixelgaffer.turnierserver.codr.utilities;
 
 
 import java.io.File;
+import java.util.List;
 import java.util.Optional;
-
-import org.pixelgaffer.turnierserver.codr.CodrAi;
-import org.pixelgaffer.turnierserver.codr.MainApp;
+import java.util.stream.Collectors;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -16,6 +15,9 @@ import javafx.scene.control.TextInputDialog;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import org.pixelgaffer.turnierserver.codr.CodrAi;
+import org.pixelgaffer.turnierserver.codr.MainApp;
 
 
 
@@ -189,19 +191,20 @@ public class Dialog {
 	
 	public static String selectOwnVersion() {
 		ObservableList<CodrAi> ownAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+		List<String> ownAiStrings = ownAis.stream().map((ai) -> ai.title).collect(Collectors.toList());
+		ownAiStrings.add("<neue KI>");
 		
-		ChoiceDialog<CodrAi> dialog = new ChoiceDialog<CodrAi>();
-		dialog.getItems().addAll(ownAis);
-		dialog.setTitle("Choice Dialog");
-		dialog.setHeaderText("Look, a Choice Dialog");
-		dialog.setContentText("Choose your letter:");
+		ChoiceDialog<String> dialog = new ChoiceDialog<>();
+		dialog.getItems().addAll(ownAiStrings);
+		dialog.setTitle("Version hochladen");
+		dialog.setHeaderText("Wähle bitte eine KI aus, zu dem die Version hochgeladen werden soll.");
+		dialog.setContentText("KI:");
 		
 		// Traditional way to get the response value.
-		// Optional<String> result = dialog.showAndWait();
-//		if (result.isPresent()){
-//		    System.out.println("Your choice: " + result.get());
-//		}
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			return result.get();
+		}
 		return null;
 	}
-	
 }
