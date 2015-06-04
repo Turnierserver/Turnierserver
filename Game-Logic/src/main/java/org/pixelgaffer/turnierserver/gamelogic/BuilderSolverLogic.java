@@ -96,6 +96,7 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	 */
 	@Override
 	public void lost(Ai ai) {
+		logger.info("Ai hat verloren: " + ai.getIndex());
 		List<Ai> list = building ? getBuilder() : getSolver();
 		if(list.contains(ai)) {
 			if(!finished.contains(ai)) {
@@ -108,18 +109,23 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	
 	@Override
 	protected void receive(BuilderSolverResponse<B, S> response, Ai ai) {
+		logger.info("Antwort erhalten: " + response);
+		
 		if(finished.contains(ai)) {
+			logger.warning("Eine AI hat 2 mal hintereinander ein antwort geschickt!");
 			getUserObject(ai).loose();
 			return;
 		}
 		
 		if(getUserObject(ai).stopCalculationTimer()) {
+			logger.warning("Der AI ist die Zeit ausgegangen");
 			return;
 		}
 		
 		Response<?> result = null;
 		if(building) {
 			if(response.build == null) {
+				logger.warning("Die AI hat kein builder Objekt gesendet, obwohl sie eins hätte senden sollen!");
 				getUserObject(ai).loose();
 				return;
 			}
@@ -127,12 +133,15 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 		}
 		else {
 			if(response.solve == null) {
+				logger.warning("Die AI hat kein solver Objekt gesendet, obwohl sie eins hätte senden sollen!");
 				getUserObject(ai).loose();
 				return;
 			}
 			result = getUserObject(ai).solving.solve(response.solve);
 		}
-			
+		
+		logger.info("Antwort, die gesendet wird: " + result);
+		
 		if(result.renderData != null) {
 			sendToFronted(result.renderData);
 		}
@@ -141,18 +150,23 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 				sendToAi(result.changes, ai);
 				getUserObject(ai).startCalculationTimer(10);
 			} catch (IOException e) {
+				logger.severe("Die Antwort konnte nicht gesendet werden, die AI wird nun Automatisch verlieren");
 				getUserObject(ai).loose();
 			}
 		}
 		if(result.finished) {
+			logger.info("Die Aufgabe wurde erfolgreich beendet!");
 			if(getUserObject(ai).stopCalculationTimer()) {
+				logger.warning("Die ai hat keine Zeit mehr und hat nun verloren");
 				return;
 			}
 			finished.add(ai);
 			if(!result.valid) {
+				logger.info("Die Aufgabe wurde nicht erfolgreich beendet!");
 				failed(building, ai);
 			}
 			else {
+				logger.info("Die Aufgabe wurde erfolgreich beendet!");
 				succeeded(building, ai);
 				getUserObject(ai).succesful = true;
 			}
@@ -169,16 +183,19 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 		
 		if(getMaxTurns() == getPlayedRounds()) {
 			endGame();
+			logger.finest("Das SPiel wurde erfolgreich beendet");
 			return;
 		}
 		
 		finished.clear();
 		
 		if(building) {
+			logger.fine("Die Ais fangen nun an zu solven");
 			startSolving();
 		}
 		else {
 			round();
+			logger.fine("Die Ais fangen nun an zu builden");
 			startBuilding();
 		}
 	}
