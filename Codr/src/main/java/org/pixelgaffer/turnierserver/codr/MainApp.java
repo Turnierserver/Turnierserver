@@ -69,6 +69,9 @@ public class MainApp extends Application {
 	public static ObservableList<String> gametypes = FXCollections.observableArrayList();
 	public static ObservableList<String> languages = FXCollections.observableArrayList();
 	
+	public static ObservableList<CodrAi> onlineAis = FXCollections.observableArrayList();
+	public static ObservableList<CodrAi> ownOnlineAis = FXCollections.observableArrayList();
+	
 	
 	/**
 	 * Main-Methode
@@ -149,6 +152,17 @@ public class MainApp extends Application {
 		};
 		
 		new Thread(updateTask).start();
+	}
+	
+	
+	public static void loadOnlineAis() {
+		ObservableList<CodrAi> newOwnOnline = null;  //MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+		ObservableList<CodrAi> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
+		
+		if (newOwnOnline != null)
+			ownOnlineAis = newOwnOnline;
+		if (newOnline != null)
+			onlineAis = newOnline;
 	}
 	
 	

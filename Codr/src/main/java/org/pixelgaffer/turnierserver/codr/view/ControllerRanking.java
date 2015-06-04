@@ -44,7 +44,6 @@ public class ControllerRanking {
 	@FXML ImageView imageView;
 	
 	MainApp mainApp;
-	public ObservableList<CodrAi> ais = FXCollections.observableArrayList();
 	CodrAi ai;
 	
 	
@@ -146,8 +145,8 @@ public class ControllerRanking {
 	
 	
 	public void loadOnlineAis() {
-		ais = mainApp.webConnector.getAis(MainApp.actualGameType.get());
-		tvAis.setItems(ais);
+		MainApp.loadOnlineAis();
+		tvAis.setItems(MainApp.onlineAis);
 		tvAis.getSelectionModel().selectFirst();
 	}
 	

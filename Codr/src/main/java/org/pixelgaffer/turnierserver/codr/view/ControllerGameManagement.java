@@ -4,6 +4,7 @@ package org.pixelgaffer.turnierserver.codr.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -119,13 +120,19 @@ public class ControllerGameManagement {
 	
 	
 	@FXML void clickOnline() {
-		
+		MainApp.loadOnlineAis();
+		lvPlayer1.setItems(MainApp.ownOnlineAis);
+		lvPlayer2.setItems(MainApp.onlineAis);
+		lvPlayer1.getSelectionModel().selectFirst();
+		lvPlayer2.getSelectionModel().select(1);
 	}
 	
 	
 	@FXML void clickOffline() {
 		lvPlayer1.setItems(mainApp.aiManager.ais);
 		lvPlayer2.setItems(mainApp.aiManager.ais);
+		lvPlayer1.getSelectionModel().selectFirst();
+		lvPlayer2.getSelectionModel().select(1);
 	}
 	
 	
