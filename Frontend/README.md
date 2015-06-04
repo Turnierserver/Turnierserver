@@ -14,6 +14,7 @@ Die Libs können mit
     pip3 install -r requirements.txt
 
 installiert werden.
+(Achtung psycopg2 braucht eine Postgresql installation)
 
 Der Server wird dann mit
 
