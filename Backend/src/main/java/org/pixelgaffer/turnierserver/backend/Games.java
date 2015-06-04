@@ -218,11 +218,37 @@ public class Games
 	 * Startet ein Spiel des angegebenen Typs mit den angegebenen KIs.
 	 */
 	public static Game startGame (int gameId, int requestId, String ... ais)
-			throws ReflectiveOperationException, IOException,
-			FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
+			throws ReflectiveOperationException, IOException, FTPIllegalReplyException, FTPException,
+			FTPDataTransferException, FTPAbortedException
 	{
 		GameLogic<?, ?> logic = loadGameLogic(gameId);
 		UUID uuid = randomUuid();
+		GameImpl game = new GameImpl(gameId, uuid, requestId, ais);
+		game.logic = logic;
+		games.put(uuid, game);
+		return game;
+	}
+	
+	/**
+	 * Startet ein Qualifikations-Spiel des angegebenen Typs mit der
+	 * angegegebenen KI.
+	 */
+	public static Game startQualifyGame (int gameId, int requestId, String ai)
+			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
+			ReflectiveOperationException
+	{
+		GameLogic<?, ?> logic = loadGameLogic(gameId);
+		UUID uuid = randomUuid();
+		
+		// die KIs herausfinden. QualiKI: -gameId version 1
+		System.out.println("Games:242: Nico muss mir die Anzahl der KIs sagen. Benutze default-Wert 2");
+		int numAis = 2;
+		String ais[] = new String[numAis];
+		ais[0] = ai;
+		for (int i = 1; i < numAis; i++)
+			ais[1] = "-" + gameId + "v1";
+		
+		// Spiel starten
 		GameImpl game = new GameImpl(gameId, uuid, requestId, ais);
 		game.logic = logic;
 		games.put(uuid, game);

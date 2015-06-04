@@ -122,6 +122,30 @@ public class Jobs
 						}
 					}
 				}
+				else if (cmd.getAction().equals("qualify"))
+				{
+					try
+					{
+						Games.startQualifyGame(cmd.getGametype(), cmd.getRequestid(), cmd.getId());
+						BackendFrontendConnectionHandler.getFrontend().sendMessage(
+								Parsers.getFrontend().parse(
+										new BackendFrontendCommandProcessed(cmd.getRequestid())));
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+						BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
+						try
+						{
+							BackendFrontendConnectionHandler.getFrontend().sendMessage(
+									Parsers.getFrontend().parse(result));
+						}
+						catch (IOException e1)
+						{
+							e1.printStackTrace();
+						}
+					}
+				}
 				else
 					BackendMain.getLogger().severe(
 							"Unknown action from Frontend: " + cmd.getAction());

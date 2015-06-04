@@ -22,11 +22,11 @@ public class BackendFrontendCommand
 	@Getter
 	private int requestid;
 	
-	/** Diee id des Spiels. */
+	/** Die id des Spiels. */
 	@Getter
 	private int gametype;
 	
-	// action=compile
+	// action=compile oder action=qualify
 	
 	/** Falls der Befehl kompilieren ist, ist dies die id der KI. */
 	@Getter
