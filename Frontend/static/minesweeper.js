@@ -1,10 +1,10 @@
 var CELL_TYPE = {
 	BOMB: 0,
 	EMPTY: 1,
-	COVERED: 2,
-	COVERED_BOMB: 3
+	COVERED: "COVERED",
+	EMPTY: "EMPTY"
 }
-var FIELD_SIZE = 16;
+var FIELD_SIZE = 3;
 
 var data = [
 ]
@@ -15,40 +15,58 @@ var is_playing = false;
 var play_speed = 100;
 var play_timeout;
 
-function getNear(d, x, y) {
-	var count = 0;
-	var mxl = [-1, 0, 1]
-	if (x < 1) {
-		mxl.splice(0, 1)
-	} else if (x >= (FIELD_SIZE-1)) {
-		mxl.splice(-1, 1)
-	}
-	var myl = [-1, 0, 1]
-	if (y < 1) {
-		myl.splice(0, 1)
-	} else if (y >= (FIELD_SIZE-1)) {
-		myl.splice(-1, 1)
-	}
-	for (var ix = mxl.length - 1; ix >= 0; ix--) {
-		for (var iy = myl.length - 1; iy >= 0; iy--) {
-			var mx = mxl[ix];
-			var my = myl[iy];
-			if (d[x+mx][y+my] === CELL_TYPE.BOMB || d[x+mx][y+my] === CELL_TYPE.COVERED_BOMB) {
-				count++;
-			}
-		};
-	};
-	return count
+
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+ctx.font = "75px serif";
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+
+
+function drawBomb(c_x, c_y, c_sx, c_sy, edgesize) {
+	ctx.fillStyle = "rgb(200, 200, 200)";
+	ctx.fillRect(c_x, c_y, c_sx, c_sy);
+	ctx.fillStyle = "rgb(220, 220, 220)";
+	ctx.fillRect(c_x+c_sx*edgesize*0.5, c_y+c_sy*edgesize*0.5, c_sx-c_sx*edgesize, c_sy-c_sy*edgesize);
+	ctx.beginPath();
+	ctx.arc(c_x+c_sx/2, c_y+c_sy/2, c_sx/3, 0, 2 * Math.PI, false);
+	ctx.fillStyle = 'black';
+	ctx.fill();
+	ctx.lineWidth = 2;
+	ctx.strokeStyle = 'red';
+	ctx.stroke();
 }
+
+function drawEmpty(c_x, c_y, c_sx, c_sy, edgesize, nearby_bombs) {
+	ctx.fillStyle = "rgb(200, 200, 200)";
+	ctx.fillRect(c_x, c_y, c_sx, c_sy);
+	ctx.fillStyle = "rgb(220, 220, 220)";
+	ctx.fillRect(c_x+c_sx*edgesize*0.5, c_y+c_sy*edgesize*0.5, c_sx-c_sx*edgesize, c_sy-c_sy*edgesize);
+	if (nearby_bombs >= 1) {
+		ctx.fillStyle = "black";
+		ctx.fillText(nearby_bombs, c_x+(c_sx/2), c_y+(c_sy/2))
+	}
+}
+
+function drawCovered(c_x, c_y, c_sx, c_sy, edgesize) {
+	ctx.fillStyle = "rgb(200, 200, 200)";
+	ctx.fillRect(c_x, c_y, c_sx, c_sy);
+	ctx.fillStyle = "black";
+	ctx.fillRect(c_x+c_sx*edgesize*0.5, c_y+c_sy*edgesize*0.5, c_sx-c_sx*edgesize, c_sy-c_sy*edgesize);
+}
+
+function drawFlagged(c_x, c_y, c_sx, c_sy, edgesize) {
+	ctx.fillStyle = "rgba(0, 255, 0, 0.75)";
+	ctx.beginPath();
+	ctx.moveTo(c_x + c_sx, c_y);
+	ctx.lineTo(c_x + c_sx, c_y + c_sx * (edgesize*2));
+	ctx.lineTo(c_x + c_sx * (1 - edgesize*2), c_y);
+	ctx.fill();
+}
+
 
 function draw() {
 	update()
-
-	var canvas = document.getElementById('canvas');
-	var ctx = canvas.getContext('2d');
-	ctx.font = "45px serif";
-	ctx.textAlign = 'center';
-	ctx.textBaseline = 'middle';
 
 
 	canvas.width = $("#canvas").width()
@@ -71,43 +89,19 @@ function draw() {
 		for (var y = FIELD_SIZE - 1; y >= 0; y--) {
 			var c_x = x * c_sx
 			var c_y = y * c_sy
-			switch (d.cells[x][y]) {
+			switch (d.field[x][y].type) {
 				case CELL_TYPE.BOMB:
-					ctx.fillStyle = "rgb(200, 200, 200)";
-					ctx.fillRect(c_x, c_y, c_sx, c_sy);
-					ctx.fillStyle = "rgb(220, 220, 220)";
-					ctx.fillRect(c_x+c_sx*edgesize*0.5, c_y+c_sy*edgesize*0.5, c_sx-c_sx*edgesize, c_sy-c_sy*edgesize);
-					ctx.beginPath();
-					ctx.arc(c_x+c_sx/2, c_y+c_sy/2, c_sx/3, 0, 2 * Math.PI, false);
-					ctx.fillStyle = 'black';
-					ctx.fill();
-					ctx.lineWidth = 2;
-					ctx.strokeStyle = 'red';
-					ctx.stroke();
+					drawBomb()(c_x, c_y, c_sx, c_sy, edgesize)
 					break;
 				case CELL_TYPE.EMPTY:
-					ctx.fillStyle = "rgb(200, 200, 200)";
-					ctx.fillRect(c_x, c_y, c_sx, c_sy);
-					ctx.fillStyle = "rgb(220, 220, 220)";
-					ctx.fillRect(c_x+c_sx*edgesize*0.5, c_y+c_sy*edgesize*0.5, c_sx-c_sx*edgesize, c_sy-c_sy*edgesize);
-					var nearby_bombs = getNear(d.cells, x, y);
-					if (nearby_bombs >= 1) {
-						ctx.fillStyle = "black";
-						ctx.fillText(nearby_bombs, c_x+(c_sx/2), c_y+(c_sy/2))
-					}
+					drawEmpty(c_x, c_y, c_sx, c_sy, edgesize, d.field[x][y].bombsAround)
 					break;
-				case CELL_TYPE.COVERED_BOMB:
-					if (god_mode) {
-						ctx.fillStyle = "rgb(100, 0, 0)";
-						ctx.fillRect(c_x, c_y, c_sx, c_sy);
-						break;
-					}
 				case CELL_TYPE.COVERED:
-					ctx.fillStyle = "rgb(200, 200, 200)";
-					ctx.fillRect(c_x, c_y, c_sx, c_sy);
-					ctx.fillStyle = "black";
-					ctx.fillRect(c_x+c_sx*edgesize*0.5, c_y+c_sy*edgesize*0.5, c_sx-c_sx*edgesize, c_sy-c_sy*edgesize);
+					drawCovered(c_x, c_y, c_sx, c_sy, edgesize)
 					break;
+			}
+			if (d.field[x][y].flagged) {
+				drawFlagged(c_x, c_y, c_sx, c_sy, edgesize)
 			}
 		};
 	};
@@ -130,7 +124,7 @@ function update() {
 }
 
 
-var evtSrc = new EventSource("http://localhost:5000/api/game/1/log");
+var evtSrc = new EventSource(window.location.origin + "/api/game/1/log");
 
 evtSrc.onerror = function () {
 	console.log("SSE Err")
@@ -163,7 +157,6 @@ evtSrc.addEventListener("finished_transmitting", function(e) {
 })
 
 $(document).ready(function () {
-	console.log("body loaded...")
 	$("#step_slider").change(function (e) {
 		console.log($(e.target).val())
 		step = $(e.target).val();

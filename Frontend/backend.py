@@ -8,6 +8,9 @@ from queue import Queue, Empty
 from weakref import WeakSet
 from database import db, AI, Game
 
+from pprint import pprint
+
+
 class Backend(threading.Thread):
 	daemon=True
 	game_update_queues = WeakSet()
@@ -91,24 +94,25 @@ class Backend(threading.Thread):
 
 	def parse(self, d):
 		if not "requestid" in d:
-			print("Invalid Response!", d)
+			print("Invalid Response!")
+			pprint(d)
 			return
 
-		print(d)
 		reqid = d["requestid"]
 
 		if not reqid in self.requests:
 			print("Requestid isnt known")
 			return
 
-		Activity("Backend [{}]: {}".format(reqid, d))
+		#Activity("Backend [{}]: {}".format(reqid, d))
+		pprint(d)
 
 		self.requests[reqid].update(d)
 		self.requests[reqid]["queue"].put(d)
 
 		if self.requests[reqid]["action"] == "start":
-			for q in self.game_update_queues:
-				q.put(d)
+			#for q in self.game_update_queues:
+			#	q.put(d)
 			if "success" in d:
 				if not self.app:
 					raise RuntimeError("Spiel, vor verbindung mit App")
@@ -166,7 +170,7 @@ class Backend(threading.Thread):
 				self.connect()
 			if self.connected:
 				r = self.sock.recv(1024*1024).decode("utf-8")
-				print('recvd', r)
+				#print('recvd', r)
 				## zerstückelte blöcke?
 				for d in r.split("\n"):
 					if d == '':

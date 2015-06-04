@@ -134,14 +134,19 @@ def api_game_log(id):
 	import random
 	game = Game.query.get(id)
 	if game:
-		for chunk in []:
-			yield chunk
 		for i in range(21):
-			size = 16
-			m = [[random.randrange(0, 3) for y in range(size)] for x in range(size)]
+			field = [[{'bombsAround': -1, 'flagged': True, 'type': 'COVERED'},
+                      {'bombsAround': 3, 'flagged': False, 'type': 'EMPTY'},
+                      {'bombsAround': -1, 'flagged': True, 'type': 'COVERED'}],
+                     [{'bombsAround': -1, 'flagged': False, 'type': 'COVERED'},
+                      {'bombsAround': 3, 'flagged': False, 'type': 'EMPTY'},
+                      {'bombsAround': -1, 'flagged': True, 'type': 'COVERED'}],
+                     [{'bombsAround': -1, 'flagged': True, 'type': 'COVERED'},
+                      {'bombsAround': 3, 'flagged': False, 'type': 'EMPTY'},
+                      {'bombsAround': -1, 'flagged': True, 'type': 'COVERED'}]]
 			info = dict(
 				data = dict(
-					cells=m, id=i,
+					field=field, id=i,
 					ai_logs = [
 						"log fuer zug" + str(i),
 						"log von ki 2 fuer zug " + str(i)
