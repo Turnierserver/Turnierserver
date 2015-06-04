@@ -153,7 +153,7 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 		logger.info("Antwort, die gesendet wird: " + result);
 		
 		if(result.renderData != null) {
-			sendToFronted(result.renderData);
+			sendRenderData(result.renderData);
 		}
 		if(result.changes != null) {
 			try {

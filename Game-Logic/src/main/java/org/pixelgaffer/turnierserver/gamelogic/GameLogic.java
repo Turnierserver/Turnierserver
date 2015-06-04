@@ -12,7 +12,6 @@ import lombok.Setter;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
-import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 import org.pixelgaffer.turnierserver.gamelogic.messages.GameFinished;
 import org.pixelgaffer.turnierserver.gamelogic.messages.RenderData;
