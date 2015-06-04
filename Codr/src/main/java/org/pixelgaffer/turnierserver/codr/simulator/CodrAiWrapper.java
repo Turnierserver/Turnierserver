@@ -10,12 +10,12 @@ import lombok.Setter;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
 
-public class AiWrapper implements Ai
+public class CodrAiWrapper implements Ai
 {
 	/** Das zugrundeliegende Spiel, enthält die Spiellogik. */
 	@NonNull
 	@Getter
-	private GameImpl game;
+	private CodrGameImpl game;
 	
 	/** Die UUID der KI im Netzwerk. */
 	@Getter
@@ -27,10 +27,10 @@ public class AiWrapper implements Ai
 	@Setter
 	private boolean connected = false;
 	
-	/** Die ID dieser KI. */
+	/** Der ID-String dieser KI. */
 	@Setter
 	@Getter
-	private int id;
+	private String id;
 	
 	/** Der Index der KI in der Liste. */
 	@Getter
