@@ -1,0 +1,5 @@
+19:27,06: Programm startet...
+ERROR: Executing post request to http://192.168.178.43:5000/api/loggedin failed! ErrorCode: 401, ErrorMessage: {"error": "Insufficient permissions."}
+19:27,07: Programm gestartet
+Man kann den Code einer fertiggestellten Version nicht speichern
+19:27,11: Programm beendet

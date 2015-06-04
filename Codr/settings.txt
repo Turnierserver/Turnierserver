@@ -1,0 +1,7 @@
+#Settings
+#Thu Jun 04 19:27:11 CEST 2015
+cplusplusCompiler=
+pythonInterpreter=
+scrollSpeed=1.0
+fontSize=5.0
+theme=false
