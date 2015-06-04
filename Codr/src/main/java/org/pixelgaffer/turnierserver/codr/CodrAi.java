@@ -35,7 +35,7 @@ import org.pixelgaffer.turnierserver.codr.utilities.WebConnector;
 
 
 
-public class Ai {
+public class CodrAi {
 
 	public final String title;
 	public final AiMode mode;
@@ -63,7 +63,7 @@ public class Ai {
 	 * @param json das übergebene JSONObject
 	 * @throws
 	 */
-	public Ai(JSONObject json, WebConnector connector) {
+	public CodrAi(JSONObject json, WebConnector connector) {
 		title = json.getString("name");
 		mode = AiMode.online;
 		userName = json.getString("author");
@@ -84,7 +84,7 @@ public class Ai {
 	 * 
 	 * @param tit der übergebene Titel
 	 */
-	public Ai(String tit, AiMode mmode) {
+	public CodrAi(String tit, AiMode mmode) {
 		title = tit;
 		mode = mmode;
 		gametype = MainApp.actualGameType.get();
@@ -101,7 +101,7 @@ public class Ai {
 	 * @param tit der übergebene Titel
 	 * @param lang die übergebene Sprache
 	 */
-	public Ai(String tit, String lang) {
+	public CodrAi(String tit, String lang) {
 		title = tit;
 		language = lang;
 		mode = AiMode.saved;

@@ -36,7 +36,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.pixelgaffer.turnierserver.codr.Ai;
+import org.pixelgaffer.turnierserver.codr.CodrAi;
 import org.pixelgaffer.turnierserver.codr.CodrGame;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.DeletedException;
@@ -137,8 +137,8 @@ public class WebConnector {
 	}
 
 
-	public ObservableList<Ai> getAis(String game) {
-		ObservableList<Ai> result = FXCollections.observableArrayList();
+	public ObservableList<CodrAi> getAis(String game) {
+		ObservableList<CodrAi> result = FXCollections.observableArrayList();
 		String json;
 		try {
 			json = toString(sendGet("ais/" + game));
@@ -151,7 +151,7 @@ public class WebConnector {
 		JSONArray ais = new JSONArray(json);
 
 		for (int i = 0; i < ais.length(); i++) {
-			result.add(new Ai(ais.getJSONObject(i), this));
+			result.add(new CodrAi(ais.getJSONObject(i), this));
 		}
 
 		return result;
@@ -181,13 +181,13 @@ public class WebConnector {
 	}
 
 
-	public void createAi(Ai ai) {
+	public void createAi(CodrAi ai) {
 
 	}
 
 
-	public ObservableList<Ai> getOwnAis(String game) {
-		return FXCollections.observableArrayList(getAis(game).stream().filter((Ai ai) -> ai.userName == getUserName()).collect(Collectors.toList()));
+	public ObservableList<CodrAi> getOwnAis(String game) {
+		return FXCollections.observableArrayList(getAis(game).stream().filter((CodrAi ai) -> ai.userName == getUserName()).collect(Collectors.toList()));
 	}
 
 

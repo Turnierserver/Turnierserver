@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.json.JSONObject;
-import org.pixelgaffer.turnierserver.codr.Ai.AiMode;
+import org.pixelgaffer.turnierserver.codr.CodrAi.AiMode;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Libraries;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
@@ -30,7 +30,7 @@ import org.pixelgaffer.turnierserver.compile.Compiler;
 
 public class Version {
 
-	public final Ai ai;
+	public final CodrAi ai;
 	public final int number;
 	public final AiMode mode;
 
@@ -44,7 +44,7 @@ public class Version {
 	public List<CodeEditor> files = new ArrayList<CodeEditor>();
 
 
-	public Version(Ai p, int n, JSONObject json) {
+	public Version(CodrAi p, int n, JSONObject json) {
 		ai = p;
 		number = n;
 		mode = AiMode.online;
@@ -62,7 +62,7 @@ public class Version {
 	 * @param n
 	 *            die Nummer
 	 */
-	public Version(Ai p, int n, AiMode mmode) {
+	public Version(CodrAi p, int n, AiMode mmode) {
 		ai = p;
 		number = n;
 		mode = mmode;
@@ -81,7 +81,7 @@ public class Version {
 	}
 
 
-	public Version(Ai p, int n, String path) {
+	public Version(CodrAi p, int n, String path) {
 		ai = p;
 		number = n;
 		mode = AiMode.saved;

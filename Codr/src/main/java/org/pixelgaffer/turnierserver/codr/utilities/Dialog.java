@@ -4,7 +4,7 @@ package org.pixelgaffer.turnierserver.codr.utilities;
 import java.io.File;
 import java.util.Optional;
 
-import org.pixelgaffer.turnierserver.codr.Ai;
+import org.pixelgaffer.turnierserver.codr.CodrAi;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 
 import javafx.collections.ObservableList;
@@ -188,9 +188,9 @@ public class Dialog {
 
 
 	public static String selectOwnVersion() {
-		ObservableList<Ai> ownAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+		ObservableList<CodrAi> ownAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
 
-		ChoiceDialog<Ai> dialog = new ChoiceDialog<Ai>();
+		ChoiceDialog<CodrAi> dialog = new ChoiceDialog<CodrAi>();
 		dialog.getItems().addAll(ownAis);
 		dialog.setTitle("Choice Dialog");
 		dialog.setHeaderText("Look, a Choice Dialog");

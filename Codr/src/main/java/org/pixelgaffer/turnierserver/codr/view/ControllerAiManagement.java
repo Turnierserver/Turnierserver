@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.pixelgaffer.turnierserver.codr.*;
-import org.pixelgaffer.turnierserver.codr.Ai.AiMode;
-import org.pixelgaffer.turnierserver.codr.Ai.NewVersionType;
+import org.pixelgaffer.turnierserver.codr.CodrAi.AiMode;
+import org.pixelgaffer.turnierserver.codr.CodrAi.NewVersionType;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
@@ -52,7 +52,7 @@ public class ControllerAiManagement {
 	@FXML public TextArea tbDescription;
 	@FXML public ChoiceBox<Version> cbVersion;
 	@FXML public ChoiceBox<String> cbLanguage;
-	@FXML public ListView<Ai> lvAis;
+	@FXML public ListView<CodrAi> lvAis;
 	@FXML public ImageView image;
 	@FXML public TabPane tpCode;
 	@FXML public Hyperlink hlShowQualified;
@@ -60,7 +60,7 @@ public class ControllerAiManagement {
 	public Tab newFileTab;
 
 	public MainApp mainApp;
-	public Ai ai;
+	public CodrAi ai;
 	public Version version;
 
 
@@ -78,9 +78,9 @@ public class ControllerAiManagement {
 				clickVersionChange();
 			}
 		});
-		lvAis.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Ai>() {
+		lvAis.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<CodrAi>() {
 
-			@Override public void changed(ObservableValue<? extends Ai> observable, Ai oldValue, Ai newValue) {
+			@Override public void changed(ObservableValue<? extends CodrAi> observable, CodrAi oldValue, CodrAi newValue) {
 				clickChangeAi();
 			}
 		});
@@ -108,7 +108,7 @@ public class ControllerAiManagement {
 	 * @param p die KI
 	 * @param v die zugehörige Version
 	 */
-	public void showAi(Ai p, Version v) {
+	public void showAi(CodrAi p, Version v) {
 		ai = p;
 		version = v;
 		showAi();
@@ -296,7 +296,7 @@ public class ControllerAiManagement {
 			}
 		}
 
-		mainApp.aiManager.ais.add(new Ai(title, cbLanguage.getValue()));
+		mainApp.aiManager.ais.add(new CodrAi(title, cbLanguage.getValue()));
 		lvAis.getSelectionModel().selectLast();
 	}
 

@@ -12,7 +12,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
 
-import org.pixelgaffer.turnierserver.codr.Ai.AiMode;
+import org.pixelgaffer.turnierserver.codr.CodrAi.AiMode;
 import org.pixelgaffer.turnierserver.codr.view.ControllerStartPage;
 
 

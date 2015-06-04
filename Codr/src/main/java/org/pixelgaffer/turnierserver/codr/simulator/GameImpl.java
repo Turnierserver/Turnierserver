@@ -7,13 +7,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import lombok.Getter;
-
 import org.pixelgaffer.turnierserver.codr.CodrGame;
+import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
@@ -46,28 +50,36 @@ public class GameImpl implements Game, Frontend
 		return (GameLogic<?, ?>)clazz.newInstance();
 	}
 	
-	@Getter
-	private List<? extends Ai> ais;
+	private SortedMap<UUID, AiWrapper> ais = new TreeMap<>();
 	
 	private OutputStream renderData;
 	
-	public GameImpl (CodrGame game) throws FileNotFoundException
+	public GameImpl (CodrGame game, Collection<Version> opponents) throws FileNotFoundException
 	{
 		renderData = new FileOutputStream(Paths.gameRenderData(game));
+		
+		for (Version v : opponents)
+		{
+			
+		}
 	}
-
+	
 	@Override
 	public Frontend getFrontend ()
 	{
-		return null;
+		return this;
 	}
-
+	
 	@Override
 	public void finishGame () throws IOException
 	{
-		renderData.close();
+		synchronized (renderData)
+		{
+			renderData.close();
+		}
+		throw new UnsupportedOperationException();
 	}
-
+	
 	// Frontend iface
 	
 	@Override
@@ -75,10 +87,20 @@ public class GameImpl implements Game, Frontend
 	{
 		return 0;
 	}
-
+	
 	@Override
 	public void sendMessage (byte[] message) throws IOException
 	{
-		
+		synchronized (renderData)
+		{
+			renderData.write(message);
+			renderData.flush();
+		}
+	}
+
+	@Override
+	public List<? extends Ai> getAis ()
+	{
+		return new ArrayList<AiWrapper>(ais.values());
 	}
 }

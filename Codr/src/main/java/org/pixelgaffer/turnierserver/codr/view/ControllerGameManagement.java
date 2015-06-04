@@ -17,7 +17,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-import org.pixelgaffer.turnierserver.codr.Ai;
+import org.pixelgaffer.turnierserver.codr.CodrAi;
 import org.pixelgaffer.turnierserver.codr.CodrGame;
 import org.pixelgaffer.turnierserver.codr.CodrGame.GameMode;
 import org.pixelgaffer.turnierserver.codr.MainApp;
@@ -40,8 +40,8 @@ public class ControllerGameManagement {
 	@FXML public ToggleButton btOffline;
 	@FXML public ToggleButton btOnline;
 	@FXML public ChoiceBox<String> cbLogic;
-	@FXML public ListView<Ai> lvPlayer1;
-	@FXML public ListView<Ai> lvPlayer2;
+	@FXML public ListView<CodrAi> lvPlayer1;
+	@FXML public ListView<CodrAi> lvPlayer2;
 	@FXML public ProgressIndicator progress;
 	@FXML public Button btLoadOnline;
 	@FXML public TextArea tbOutput1;
