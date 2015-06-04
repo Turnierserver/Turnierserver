@@ -1,11 +1,11 @@
 package org.pixelgaffer.turnierserver.esu.utilities;
 
-import org.pixelgaffer.turnierserver.esu.Ai;
 import org.pixelgaffer.turnierserver.esu.Game;
 import org.pixelgaffer.turnierserver.esu.MainApp;
 import org.pixelgaffer.turnierserver.esu.ParticipantResult;
-import org.pixelgaffer.turnierserver.esu.Version;
+import org.pixelgaffer.turnierserver.esu.Ai;
 import org.pixelgaffer.turnierserver.esu.Ai.AiMode;
+import org.pixelgaffer.turnierserver.esu.Version;
 
 public class Paths {
 	

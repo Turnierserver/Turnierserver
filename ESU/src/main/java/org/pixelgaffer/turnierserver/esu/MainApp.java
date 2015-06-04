@@ -28,12 +28,12 @@ import javafx.util.Duration;
 
 import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.esu.utilities.Resources;
-import org.pixelgaffer.turnierserver.esu.utilities.Settings;
-import org.pixelgaffer.turnierserver.esu.utilities.WebConnector;
 import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.NothingDoneException;
 import org.pixelgaffer.turnierserver.esu.utilities.Exceptions.UpdateException;
+import org.pixelgaffer.turnierserver.esu.utilities.Resources;
+import org.pixelgaffer.turnierserver.esu.utilities.Settings;
+import org.pixelgaffer.turnierserver.esu.utilities.WebConnector;
 import org.pixelgaffer.turnierserver.esu.view.ControllerAiManagement;
 import org.pixelgaffer.turnierserver.esu.view.ControllerGameManagement;
 import org.pixelgaffer.turnierserver.esu.view.ControllerRanking;

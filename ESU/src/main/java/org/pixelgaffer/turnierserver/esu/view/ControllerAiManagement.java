@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.pixelgaffer.turnierserver.esu.*;
-import org.pixelgaffer.turnierserver.esu.Ai.AiMode;
 import org.pixelgaffer.turnierserver.esu.Ai.NewVersionType;
+import org.pixelgaffer.turnierserver.esu.Ai.AiMode;
 import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
 import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 import org.pixelgaffer.turnierserver.esu.utilities.Resources;

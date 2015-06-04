@@ -10,8 +10,8 @@ import javax.xml.transform.ErrorListener;
 
 import org.pixelgaffer.turnierserver.esu.MainApp;
 import org.pixelgaffer.turnierserver.esu.Version;
-import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.esu.utilities.Dialog;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyStringProperty;
