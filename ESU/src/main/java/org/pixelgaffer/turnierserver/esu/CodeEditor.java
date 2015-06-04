@@ -1,14 +1,18 @@
 package org.pixelgaffer.turnierserver.esu;
 
+import java.awt.TextField;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
@@ -22,6 +26,8 @@ import org.w3c.dom.Document;
 
 public class CodeEditor {
 
+	private TextArea ta;  //TODO: nur Übergangslösung --> löschen
+	
 	private String savedText = "";
 	private File document;
 	public boolean loaded = false;
@@ -90,8 +96,8 @@ public class CodeEditor {
 		return (String) codeView.getEngine().executeScript("editor.getValue();");
 	}
 
-	public void setCode(String tanga) {
-		codeView.getEngine().executeScript("editor.setValue(\"" + StringEscapeUtils.escapeJavaScript(tanga) + "\");");
+	public void setCode(String t) {
+		codeView.getEngine().executeScript("editor.setValue(\"" + StringEscapeUtils.escapeJavaScript(t) + "\");");
 	}
 
 	/**

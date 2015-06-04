@@ -1,7 +1,7 @@
 #Settings
-#Thu Jun 04 15:52:08 CEST 2015
+#Thu Jun 04 17:01:12 CEST 2015
 cplusplusCompiler=c++
-pythonInterpreter=hicppython
+pythonInterpreter=python
 scrollSpeed=20.0
 fontSize=17.751937984496124
 theme=false

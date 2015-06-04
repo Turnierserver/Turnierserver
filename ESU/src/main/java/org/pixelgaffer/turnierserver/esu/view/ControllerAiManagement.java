@@ -233,9 +233,17 @@ public class ControllerAiManagement{
 		tpCode.getTabs().clear();
 		tpCode.getTabs().add(infoTab);
 		for (int i = 0; i < version.files.size(); i++){
-			tpCode.getTabs().add(version.files.get(i).getView());
+			Tab tab = version.files.get(i).getView();
+			if (version.finished){
+				if (tab.getContent() != null)
+					tab.getContent().setDisable(true);
+				else
+					tab.setDisable(true);
+			}
+			tpCode.getTabs().add(tab);
 		}
-		tpCode.getTabs().add(newFileTab);
+		if (!version.finished)
+			tpCode.getTabs().add(newFileTab);
 	}
 	
 	/**
@@ -245,7 +253,7 @@ public class ControllerAiManagement{
 	 * @param newTab der neu ausgewählte Tab
 	 */
 	void clickTabSelection(Tab oldTab, Tab newTab){
-    	if (version != null)
+    	if (version != null && !version.finished)
     		version.saveCode();
     	if (newTab == newFileTab && newTab != oldTab){
     		tpCode.getSelectionModel().select(oldTab);

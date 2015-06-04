@@ -8,6 +8,7 @@ Frontend/tmpfile
 AIs/
 Downloads/
 Ace/
+settings.txt
 test.db
 gen/
 GameBuilder/Makefile

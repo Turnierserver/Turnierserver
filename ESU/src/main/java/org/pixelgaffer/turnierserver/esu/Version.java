@@ -155,6 +155,11 @@ public class Version {
 				ErrorLog.write("dies ist kein speicherbares Objekt (saveCode)");
 			return;
 		}
+		if (finished == true){
+			ErrorLog.write("Man kann den Code einer fertiggestellten Version nicht speichern");
+			return;
+		}
+		
 		for (int i = 0; i < files.size(); i++) {
 			files.get(i).save();
 		}
