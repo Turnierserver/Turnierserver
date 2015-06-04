@@ -1,6 +1,6 @@
 package org.pixelgaffer.turnierserver.esu.utilities;
 
-import org.pixelgaffer.turnierserver.esu.Game;
+import org.pixelgaffer.turnierserver.esu.CodrGame;
 import org.pixelgaffer.turnierserver.esu.MainApp;
 import org.pixelgaffer.turnierserver.esu.ParticipantResult;
 import org.pixelgaffer.turnierserver.esu.Ai;
@@ -72,7 +72,7 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zum Ordner eines bestimmten Spiels zurück
 	 */
-	public static String game(Game game){
+	public static String game(CodrGame game){
 		return gameFolder() + "/" + game.ID;
 	}
 	/**
@@ -84,8 +84,16 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zu den Properties eines bestimmten Spiels zurück
 	 */
-	public static String gameProperties(Game game){
-		return gameFolder() + "/" + game.ID + "/properties.txt";
+	public static String gameProperties(CodrGame game){
+		return game(game) + "/properties.txt";
+	}
+	
+	/**
+	 * Gibt den Pfad zu dem Output der GameLogic für das Spiel zurück. 
+	 */
+	public static String gameRenderData (CodrGame game)
+	{
+		return game(game) + "/renderData.txt";
 	}
 	
 	public static String participant(ParticipantResult part){

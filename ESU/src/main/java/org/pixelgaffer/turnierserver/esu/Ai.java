@@ -26,7 +26,7 @@ import javax.imageio.ImageIO;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.pixelgaffer.turnierserver.esu.Game.GameMode;
+import org.pixelgaffer.turnierserver.esu.CodrGame.GameMode;
 import org.pixelgaffer.turnierserver.esu.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.esu.utilities.Paths;
 import org.pixelgaffer.turnierserver.esu.utilities.Resources;
