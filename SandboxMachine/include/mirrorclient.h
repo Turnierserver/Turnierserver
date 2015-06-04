@@ -20,6 +20,8 @@
 #ifndef MIRRORCLIENT_H
 #define MIRRORCLIENT_H
 
+#include "global.h"
+
 #include <QFile>
 #include <QMutex>
 #include <QObject>
@@ -38,6 +40,8 @@ class MirrorClient : public QObject
 	
 public:
 	explicit MirrorClient (const QString &host, quint16 port, QObject *parent = 0);
+	
+	bool waitForConnected () { return socket.waitForConnected(timeout()); }
 	
 	QString host () const { return _host; }
 	quint16 port () const { return _port; }

@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "mirrorclient.h"
 #include "workerclient.h"
 
 #include <QMutex>
@@ -25,8 +24,6 @@
 
 /// Eine Verbindung zum Worker
 WorkerClient *worker;
-/// Eine Verbindung zum Mirror des Workers
-MirrorClient *mirror;
 
 /// Die Konfigurationsdatei
 QSettings *config;

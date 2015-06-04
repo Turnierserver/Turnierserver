@@ -23,13 +23,10 @@
 #include <QMutex>
 #include <QSettings>
 
-class MirrorClient;
 class WorkerClient;
 
 /// Eine Verbindung zum Worker
 extern WorkerClient *worker;
-/// Eine Verbindung zum Mirror des Workers
-extern MirrorClient *mirror;
 
 /// Die Konfigurationsdatei
 extern QSettings *config;

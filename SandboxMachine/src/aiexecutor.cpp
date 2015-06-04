@@ -112,10 +112,22 @@ void AiExecutor::download ()
 	}
 	
 	// das Archiv über den Mirror des Workers herunterladen
-	binArchive = dir.absoluteFilePath("bin.tar.bz2");
-	if (!mirror->retrieveAi(id(), version(), binArchive))
+	configMutex->lock();
+	config->beginGroup("Worker");
+	MirrorClient mirror(config->value("Host").toString(), config->value("MirrorPort").toUInt());
+	config->endGroup();
+	configMutex->unlock();
+	if (!mirror.waitForConnected())
 	{
-		fprintf(stderr, "Fehler: Konnte KI nicht über den Mirror des Workers herunterladen.");
+		fprintf(stderr, "Fehler: Konnte nicht mit dem Mirror verbinden.\n");
+		abort = true;
+		emit downloaded();
+		return;
+	}
+	binArchive = dir.absoluteFilePath("bin.tar.bz2");
+	if (!mirror.retrieveAi(id(), version(), binArchive))
+	{
+		fprintf(stderr, "Fehler: Konnte KI nicht über den Mirror des Workers herunterladen.\n");
 		abort = true;
 		emit downloaded();
 		return;

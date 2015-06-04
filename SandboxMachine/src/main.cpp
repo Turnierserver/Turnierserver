@@ -19,7 +19,6 @@
 
 #include "global.h"
 
-#include "mirrorclient.h"
 #include "workerclient.h"
 
 #include <stdio.h>
@@ -111,14 +110,6 @@ int main(int argc, char *argv[])
 	QJsonDocument doc(array);
 	client.write(doc.toJson(QJsonDocument::Compact) + "\n");
 	client.waitForBytesWritten(timeout());
-	
-	// Mit dem Mirror verbinden
-//	QThread *mirrorThread = new QThread;
-	config->beginGroup("Worker");
-	mirror = new MirrorClient(host, config->value("MirrorPort").toUInt());
-//	mirror->moveToThread(mirrorThread);
-	config->endGroup();
-//	mirrorThread->start();
 	
 	worker = new WorkerClient(&client);
 	QObject::connect(&client, SIGNAL(connected()), worker, SLOT(connected()));
