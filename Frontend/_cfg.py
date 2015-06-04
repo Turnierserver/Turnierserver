@@ -27,6 +27,8 @@ class LocalEnvironment:
 	SQLALCHEMY_DATABASE_URI = "sqlite:///test.db"
 	SQLALCHEMY_ECHO = False
 
+print("Startet mit falschem ENV!")
+env = LocalEnvironment
 
 def showopts():
 	for key in dir(env):
