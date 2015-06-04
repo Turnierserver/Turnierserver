@@ -79,6 +79,7 @@ public class Games
 	 */
 	public static void receiveMessage (UUID uuid, byte message[])
 	{
+		System.out.println("Game.receiveMessage(" + uuid + ", " + new String(message) + ")");
 		getAiWrapper(uuid).receiveMessage(message);
 	}
 	
@@ -87,6 +88,7 @@ public class Games
 	 */
 	public static void receiveMessage (MessageForward mf)
 	{
+		System.out.println("Game.receiveMessage(" + mf + ")");
 		receiveMessage(mf.getAi(), mf.getMessage());
 	}
 	

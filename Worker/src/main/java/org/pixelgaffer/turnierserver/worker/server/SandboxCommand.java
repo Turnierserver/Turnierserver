@@ -14,6 +14,7 @@ import lombok.ToString;
 public class SandboxCommand
 {
 	public static final char RUN_AI = 'R';
+	public static final char TERM_AI = 'T';
 	public static final char KILL_AI = 'K';
 	
 	/** Der Befehl. */

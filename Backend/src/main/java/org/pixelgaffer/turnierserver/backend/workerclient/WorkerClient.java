@@ -9,7 +9,6 @@ import naga.NIOSocket;
 import naga.SocketObserver;
 
 import org.pixelgaffer.turnierserver.Parsers;
-import org.pixelgaffer.turnierserver.backend.AiWrapper;
 import org.pixelgaffer.turnierserver.backend.BackendMain;
 import org.pixelgaffer.turnierserver.backend.Games;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
@@ -83,6 +82,7 @@ public class WorkerClient implements SocketObserver
 			try
 			{
 				MessageForward mf = Parsers.getWorker().parse(line, MessageForward.class);
+				System.out.println(mf);
 				Games.receiveMessage(mf);
 			}
 			catch (IOException e)

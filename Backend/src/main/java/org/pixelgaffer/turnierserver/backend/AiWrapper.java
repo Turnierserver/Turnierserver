@@ -66,6 +66,7 @@ public class AiWrapper implements Ai
 	/** Empfängt eine Nachricht und leitet sie an die Speillogik weiter. */
 	public void receiveMessage (byte message[])
 	{
+		System.out.println("AiWrapper.receiveMessage(" + new String(message) + ")");
 		getGame().getLogic().receiveMessage(message, this);
 	}
 	

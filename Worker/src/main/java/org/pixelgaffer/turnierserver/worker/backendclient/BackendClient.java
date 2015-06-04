@@ -1,10 +1,16 @@
 package org.pixelgaffer.turnierserver.worker.backendclient;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.*;
+import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.AICONNECTED;
+import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.ANSWER;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.INFO;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.COMPILE;
+import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.KILLAI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.STARTAI;
+import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.TERMAI;
+import static org.pixelgaffer.turnierserver.worker.server.SandboxCommand.KILL_AI;
+import static org.pixelgaffer.turnierserver.worker.server.SandboxCommand.RUN_AI;
+import static org.pixelgaffer.turnierserver.worker.server.SandboxCommand.TERM_AI;
 
 import java.io.IOException;
 
@@ -21,6 +27,7 @@ import org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
+import org.pixelgaffer.turnierserver.worker.Sandbox;
 import org.pixelgaffer.turnierserver.worker.Sandboxes;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
 import org.pixelgaffer.turnierserver.worker.compile.CompileQueue;
@@ -100,22 +107,39 @@ public class BackendClient implements SocketObserver, Backend
 					CompileQueue.addJob(cmd);
 				else if (cmd.getAction() == STARTAI)
 				{
-					// das Herunterladen & verschicken in einem neuen Thread
-					// machen, damit der Netzwerk-Thread nicht zu lange
-					// angehalten wird
-					new Thread( () -> {
-						try
-						{
-							SandboxCommand scmd = new SandboxCommand(SandboxCommand.RUN_AI,
-									cmd.getAiId(), cmd.getVersion(), cmd.getUuid());
-							Sandboxes.send(scmd);
-						}
-						catch (Exception e)
-						{
-							WorkerMain.getLogger().severe("BackendClient: Fehler beim Senden des StartKI-Befehls: " + e);
-							e.printStackTrace();
-						}
-					}).start();
+					try
+					{
+						SandboxCommand scmd = new SandboxCommand(RUN_AI,
+								cmd.getAiId(), cmd.getVersion(), cmd.getUuid());
+						Sandbox s = Sandboxes.send(scmd);
+						if (s == null)
+							System.out.println("todo:BackendClient:111: Hier sollte das Backend informiert werden.");
+						else
+							Sandboxes.sandboxJobs.put(cmd.getUuid(), s);
+					}
+					catch (Exception e)
+					{
+						WorkerMain.getLogger().severe("BackendClient: Fehler beim Senden des StartKI-Befehls: " + e);
+						e.printStackTrace();
+					}
+				}
+				else if (cmd.getAction() == TERMAI || cmd.getAction() == KILLAI)
+				{
+					try
+					{
+						SandboxCommand scmd = new SandboxCommand(cmd.getAction() == TERMAI ? TERM_AI : KILL_AI,
+								cmd.getAiId(), cmd.getVersion(), cmd.getUuid());
+						Sandbox s = Sandboxes.sandboxJobs.get(cmd.getUuid());
+						if (s == null)
+							WorkerMain.getLogger().severe("Das Backend hat mich beauftragt die unbekannte KI " + cmd.getUuid() + " zu beenden.");
+						else
+							s.sendJob(scmd);
+					}
+					catch (IOException ioe)
+					{
+						WorkerMain.getLogger().severe("BackendClient: Fehler beim Senden des StopKI-Befehls: " + ioe);
+						ioe.printStackTrace();
+					}
 				}
 				else
 					WorkerMain.getLogger().severe("BackendClient: Unknown job " + cmd.getAction());

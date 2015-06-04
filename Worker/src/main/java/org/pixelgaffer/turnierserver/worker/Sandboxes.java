@@ -2,7 +2,10 @@ package org.pixelgaffer.turnierserver.worker;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -15,7 +18,9 @@ import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Sandboxes
 {
-	private static List<Sandbox> sandboxes = new ArrayList<>();
+	private static final List<Sandbox> sandboxes = new ArrayList<>();
+	
+	public static final Map<UUID, Sandbox> sandboxJobs = new HashMap<>();
 	
 	/**
 	 * Fügt die Sandbox zur Liste hinzu.
@@ -54,9 +59,11 @@ public class Sandboxes
 	}
 	
 	/**
-	 * Schickt den Job an die KI.
+	 * Schickt den Job an eine Sandbox und gibt diese zurück. Wenn keine Sandbox
+	 * unbeschäftigt ist, wird null zurückgegeben. DIESE METHODE WARTET NICHT
+	 * AUF EINE FREIE SANDBOX!
 	 */
-	public static boolean send (SandboxCommand job) throws IOException
+	public static Sandbox send (SandboxCommand job) throws IOException
 	{
 		for (Sandbox s : sandboxes)
 		{
@@ -65,9 +72,9 @@ public class Sandboxes
 			if (!s.isBusy())
 			{
 				s.sendJob(job);
-				return true;
+				return s;
 			}
 		}
-		return false;
+		return null;
 	}
 }

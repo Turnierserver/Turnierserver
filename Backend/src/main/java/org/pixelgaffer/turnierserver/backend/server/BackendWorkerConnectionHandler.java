@@ -1,7 +1,9 @@
 package org.pixelgaffer.turnierserver.backend.server;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.*;
+import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.AICONNECTED;
+import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.ANSWER;
+import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.INFO;
 
 import java.io.IOException;
 
@@ -41,7 +43,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 		super(socket);
 	}
 	
-	public void sendCommand (@NonNull WorkerCommand cmd) throws IOException
+	public synchronized void sendCommand (@NonNull WorkerCommand cmd) throws IOException
 	{
 		getClient().write(Parsers.getWorker().parse(cmd));
 		getClient().write("\n".getBytes(UTF_8));
@@ -89,7 +91,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 					ProtocolLine l = new ProtocolLine(line);
 					if (l.getMode() == ANSWER)
 					{
-						WorkerCommandAnswer answer = (WorkerCommandAnswer) l.getObject();
+						WorkerCommandAnswer answer = (WorkerCommandAnswer)l.getObject();
 						if (answer.getWhat() == WorkerCommandAnswer.MESSAGE)
 						{
 							BackendFrontendCompileMessage msg = new BackendFrontendCompileMessage(answer.getMessage(),
@@ -106,15 +108,18 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 					}
 					else if (l.getMode() == INFO)
 					{
-						WorkerInfo info = (WorkerInfo) l.getObject();
+						WorkerInfo info = (WorkerInfo)l.getObject();
 						workerConnection.update(info);
 					}
 					else if (l.getMode() == AICONNECTED)
 					{
-						AiConnected aicon = (AiConnected) l.getObject();
+						AiConnected aicon = (AiConnected)l.getObject();
 						AiWrapper ai = Games.getAiWrapper(aicon.getUuid());
 						if (ai == null)
+						{
 							BackendMain.getLogger().severe("Unknown AI with UUID " + aicon.getUuid() + " connected");
+							sendCommand(new WorkerCommand(WorkerCommand.KILLAI, -1, -1, -1, aicon.getUuid()));
+						}
 						else
 							ai.connected();
 					}

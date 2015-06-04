@@ -50,7 +50,7 @@ public class BackendFrontendConnectionHandler extends ConnectionHandler
 		}
 	}
 	
-	public void sendMessage (byte message[])
+	public synchronized void sendMessage (byte message[])
 	{
 		getClient().write(message);
 		getClient().write("\n".getBytes(UTF_8));
