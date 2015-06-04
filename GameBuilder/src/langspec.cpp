@@ -155,7 +155,7 @@ bool LangSpec::evalLine(QString line, uint linenum, const QString &childLang)
 	{
 		QString name = match.captured("name");
 		QString command = match.captured("command").trimmed();
-		qDebug() << name << ":" << command; // ohne dieses sysout ist der command iwi komisch
+		//qDebug() << name << ":" << command; // ohne dieses sysout ist der command iwi komisch
 		commands.insert(name, QStringList(commands.value(name)) << command);
 		
 		return true;

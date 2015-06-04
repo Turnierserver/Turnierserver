@@ -133,9 +133,10 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 				}
 			}
 			
-			const char *cmd = match.captured("cmd").toStdString().data();
-			printf("%s$ %s\n", qPrintable(wd), cmd);
-			int ret = system(cmd);
+			QString cmd = match.captured("cmd");
+			//qDebug() << "cmd:" << cmd;
+			printf("%s$ %s\n", qPrintable(wd), qPrintable(cmd));
+			int ret = system(qPrintable(cmd));
 			if (ret != 0)
 				return ret;
 			
