@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.PropertyUtils;
@@ -19,6 +20,8 @@ import com.google.gson.reflect.TypeToken;
  * @param <R> Die Antwort der Spiellogik
  */
 public abstract class Ai<E, R> implements Runnable {
+	
+	public static Logger logger = Logger.getLogger("Ai");
 	
 	/**
 	 * Die Connection zum Worker
@@ -36,7 +39,7 @@ public abstract class Ai<E, R> implements Runnable {
 	/**
 	 * Der kummulierte String von System.out 
 	 */
-	protected StringBuilder output;
+	protected StringBuilder output = new StringBuilder();
 	/**
 	 * Der momentane Gamestate des Servers
 	 */
@@ -89,8 +92,11 @@ public abstract class Ai<E, R> implements Runnable {
 					System.exit(0);
 				}
 				String line = in.readLine();
+				logger.info("JSON erhalten: " + line);
 				R updates = Parsers.getWorker().parse(Parsers.escape(line.getBytes("UTF-8")), token.getType());
+				logger.info("Geparsed zu: " + updates);
 				Object response = update(getState(updates));
+				logger.info("Sender response:" + response);
 				if(response != null) {
 					send(response);
 				}
