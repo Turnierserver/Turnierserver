@@ -111,8 +111,8 @@ public class AiObject {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		logic.lost(ai);
 		lost = true;
+		logic.lost(ai);
 		boolean finishGame = true;
 		for(Ai ai : logic.getGame().getAis()) {
 			if(!ai.getObject().lost) {

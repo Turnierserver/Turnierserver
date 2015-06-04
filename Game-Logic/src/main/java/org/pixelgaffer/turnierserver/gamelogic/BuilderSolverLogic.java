@@ -89,6 +89,7 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	public void startGame(Game game) {
 		super.startGame(game);
 		System.out.println("Das Spiel fängt an");
+		setMaxTurns(game.getAis().size() - 1);
 		startBuilding();
 	}
 	
@@ -106,6 +107,14 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 				check();
 			}
 		}
+		for(Ai aiWrapper : game.getAis()) {
+			if(!getUserObject(aiWrapper).lost) {
+				logger.info("AI " + aiWrapper + " hat noch nicht verloren!");
+				return;
+			}
+		}
+		logger.info("Alle Ais haben verloren, das Spiel wird nun beendet!");
+		gameFinished();
 	}
 	
 	@Override
@@ -156,7 +165,7 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 			}
 		}
 		if(result.finished) {
-			logger.info("Die Aufgabe wurde erfolgreich beendet!");
+			logger.info("Die Aufgabe wurde beendet!");
 			if(getUserObject(ai).stopCalculationTimer()) {
 				logger.warning("Die ai hat keine Zeit mehr und hat nun verloren");
 				return;
@@ -179,12 +188,13 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	
 	private void check() {
 		if(finished.size() != game.getAis().size()) {
+			gameFinished();
 			return;
 		}
 		
 		if(getMaxTurns() == getPlayedRounds()) {
 			endGame();
-			logger.finest("Das SPiel wurde erfolgreich beendet");
+			logger.finest("Das Spiel wurde erfolgreich beendet");
 			return;
 		}
 		

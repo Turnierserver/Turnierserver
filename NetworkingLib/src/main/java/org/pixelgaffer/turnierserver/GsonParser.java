@@ -29,4 +29,5 @@ class GsonParser implements Parser {
 		return builder.create().toJson(obj).getBytes("UTF-8");
 	}
 	
+	
 }
