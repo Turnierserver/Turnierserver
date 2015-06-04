@@ -45,7 +45,7 @@ def game(id):
 	if not game:
 		abort(404)
 
-	return render_template(game.type.viz, game=game)
+	return render_template(game.type.viz, game=game, inprogress=False, ai0=game.ais[0], ai1=game.ais[1])
 
 @anonymous.route("/game/inprogress/<int:id>")
 def inprogress_game(id):

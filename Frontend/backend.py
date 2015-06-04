@@ -6,7 +6,7 @@ from activityfeed import Activity
 import threading
 from queue import Queue, Empty
 from weakref import WeakSet
-from database import db, AI
+from database import db, AI, Game
 
 class Backend(threading.Thread):
 	daemon=True
@@ -19,6 +19,7 @@ class Backend(threading.Thread):
 		self.start()
 		self.requests = {}
 		self.lastest_request_id = 0
+		self.app = None
 
 	def is_connected(self):
 		if self.sock:
@@ -108,6 +109,11 @@ class Backend(threading.Thread):
 		if self.requests[reqid]["action"] == "start":
 			for q in self.game_update_queues:
 				q.put(d)
+			if "success" in d:
+				if not self.app:
+					raise RuntimeError("Spiel, vor verbindung mit App")
+				with self.app.app_context():
+					Game.from_inprogress(self.requests[reqid])
 
 	def request(self, reqid):
 		return self.requests[reqid]
@@ -131,15 +137,22 @@ class Backend(threading.Thread):
 		games = []
 		for reqid in self.requests:
 			r = self.requests[reqid]
-			if r["action"] == "start":
-				if "status" in r:
-					if r["status"] == "processed":
-						games.append(dict(
-							id=r["requestid"],
-							ai0=r["ai0"],
-							ai1=r["ai1"],
-							status="1/8392"
-						))
+			if not r["action"] == "start":
+				continue
+			if not "status" in r:
+				continue
+			if not r["status"] == "processed":
+				continue
+
+			if "success" in r:
+				continue
+
+			games.append(dict(
+				id=r["requestid"],
+				ai0=r["ai0"],
+				ai1=r["ai1"],
+				status="1/8392"
+			))
 		return games
 
 

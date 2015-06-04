@@ -213,12 +213,13 @@ class User(db.Model):
 
 class AI_Game_Assoc(db.Model):
 	__tablename__ = 't_ai_game_assocs'
-	game_id = db.Column(db.Integer, db.ForeignKey('t_games.id'), primary_key=True)
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	game_id = db.Column(db.Integer, db.ForeignKey('t_games.id'))
 	game = db.relationship("Game", cascade="all, delete, delete-orphan", single_parent=True)
-	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'), primary_key=True)
+	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'))
 	ai = db.relationship("AI")
-	role_id = db.Column(db.Integer, db.ForeignKey('t_gametyperoles.id'), primary_key=True)
-	role = db.relationship("GameTypeRole", backref="assocs")
+	#role_id = db.Column(db.Integer, db.ForeignKey('t_gametyperoles.id'), primary_key=True)
+	#role = db.relationship("GameTypeRole", backref="assocs")
 
 	def __repr__(self):
 		return "<AI_Game_Assoc(game={}, ai={})".format(game.id, ai.name)
@@ -449,6 +450,10 @@ class Game(db.Model):
 		self.timestamp = timestamp()
 		db_obj_init_msg(self)
 
+	@property
+	def ais(self):
+		return [assoc.ai for assoc in self.ai_assocs]
+
 	def time(self, locale):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
 
@@ -457,6 +462,18 @@ class Game(db.Model):
 
 	def delete(self):
 		db.session.delete(self)
+		db.session.commit()
+
+	@classmethod
+	def from_inprogress(cls, d):
+		ais = [d["ai0"], d["ai1"]]
+		print(ais)
+		print(ais[0] == ais[1])
+		g = Game(type=ais[0].type)
+		db.session.add(g)
+		db.session.commit()
+		g.ai_assocs = [AI_Game_Assoc(game_id=g.id, ai_id=ai.id) for ai in ais]
+		db.session.add(g)
 		db.session.commit()
 
 	def __repr__(self):
@@ -548,12 +565,6 @@ def populate(count=20):
 	random.shuffle(users)
 	ais = [AI(user=users[i-1], name=fake.word(), desc=fake.text(50), lang=random.choice(langs), type=minesweeper) for i in r]
 	db_save(ais)
-
-	games = [Game(id=i, type=minesweeper) for i in r]
-	assocs = []
-	for ri, role in enumerate(minesweeper.roles, 1):
-		assocs += [AI_Game_Assoc(game_id=games[i-1].id, ai_id=ais[i-ri].id, role=role) for i in r]
-	db_save(games)
 
 	admin = User(name="admin", admin=True, email="admin@ad.min")
 	admin.set_pw("admin")

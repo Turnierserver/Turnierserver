@@ -57,6 +57,7 @@ if env.airbrake:
 
 cache.init_app(app)
 bcrypt.init_app(app)
+backend.app = app
 
 @app.context_processor
 def inject_globals():
