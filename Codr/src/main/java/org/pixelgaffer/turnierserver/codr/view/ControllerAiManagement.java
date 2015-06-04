@@ -452,7 +452,7 @@ public class ControllerAiManagement {
 		if (result == null)
 			return;
 		if (result.equals("<neue KI>")){
-			MainApp.webConnector.createAi(version);
+			//MainApp.webConnector.createAi(version);
 		} else{
 			//MainApp.webConnector.uploadVersion(version, result);
 		}

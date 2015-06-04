@@ -129,15 +129,44 @@ public class ControllerRanking {
 		tvAis.getColumns().add(col2);
 		tvAis.getColumns().add(col3);
 		
-		TableColumn colV0 = new TableColumn("Version");
-		TableColumn colV1 = new TableColumn("Kompiliert");
-		TableColumn colV2 = new TableColumn("Qualifiziert");
-		TableColumn colV3 = new TableColumn("Fertiggestellt");
+		TableColumn<Version, String> colV0 = new TableColumn("Version");
+		TableColumn<Version, String> colV1 = new TableColumn("Kompiliert");
+		TableColumn<Version, String> colV2 = new TableColumn("Qualifiziert");
+		TableColumn<Version, String> colV3 = new TableColumn("Fertiggestellt");
 		
-		colV0.setCellValueFactory(new PropertyValueFactory<Version, String>("number"));
-		colV1.setCellValueFactory(new PropertyValueFactory<Version, String>("compiled"));
-		colV2.setCellValueFactory(new PropertyValueFactory<Version, String>("qualified"));
-		colV3.setCellValueFactory(new PropertyValueFactory<Version, String>("finished"));
+		colV0.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
+			
+			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
+				return new SimpleStringProperty(p.getValue().number + "");
+			}
+		});
+		colV1.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
+			
+			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
+				if (p.getValue().compiled)
+					return new SimpleStringProperty("Ja");
+				else
+					return new SimpleStringProperty("Nein");
+			}
+		});
+		colV2.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
+			
+			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
+				if (p.getValue().qualified)
+					return new SimpleStringProperty("Ja");
+				else
+					return new SimpleStringProperty("Nein");
+			}
+		});
+		colV3.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
+			
+			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
+				if (p.getValue().finished)
+					return new SimpleStringProperty("Ja");
+				else
+					return new SimpleStringProperty("Nein");
+			}
+		});
 		
 		tvVersions.getColumns().addAll(colV0, colV1, colV2, colV3);
 		

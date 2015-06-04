@@ -193,7 +193,6 @@ public class MainApp extends Application {
 					webConnector.updateLanguages();
 				} catch (NewException e) {
 					languages = e.newValues;
-				} catch (UpdateException e) {
 				} catch (NothingDoneException e) {
 				} catch (IOException e) {
 					ErrorLog.write("Bitte stellen Sie beim ersten Start eine Verbindung zum Internet her");
