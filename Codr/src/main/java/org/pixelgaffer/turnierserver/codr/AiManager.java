@@ -13,11 +13,11 @@ import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 
 
 public class AiManager {
-
-
+	
+	
 	public ObservableList<CodrAi> ais = FXCollections.observableArrayList();
-
-
+	
+	
 	/**
 	 * Lädt alle Spieler aus dem Dateisystem in die Liste
 	 */
@@ -34,7 +34,7 @@ public class AiManager {
 			if (playerDirs[i].isDirectory())
 				ais.add(new CodrAi(playerDirs[i].getName(), AiMode.saved));
 		}
-
+		
 		File simpleDir = new File(Paths.simplePlayerFolder(MainApp.actualGameType.get()));
 		simpleDir.mkdirs();
 		File[] simpleDirs = simpleDir.listFiles();
@@ -47,6 +47,6 @@ public class AiManager {
 				ais.add(new CodrAi(simpleDirs[i].getName(), AiMode.simplePlayer));
 		}
 	}
-
-
+	
+	
 }

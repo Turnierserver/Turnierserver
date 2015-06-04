@@ -26,8 +26,8 @@ import javafx.scene.web.WebView;
 
 
 public class ControllerAiManagement {
-
-
+	
+	
 	@FXML public Button btAbort;
 	@FXML public Button btEdit;
 	@FXML public Button btNewVersion;
@@ -58,12 +58,12 @@ public class ControllerAiManagement {
 	@FXML public Hyperlink hlShowQualified;
 	public Tab infoTab;
 	public Tab newFileTab;
-
+	
 	public MainApp mainApp;
 	public CodrAi ai;
 	public Version version;
-
-
+	
+	
 	/**
 	 * Initialisiert den Controller
 	 * 
@@ -73,35 +73,35 @@ public class ControllerAiManagement {
 		mainApp = app;
 		mainApp.cAi = this;
 		cbVersion.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Version>() {
-
+			
 			@Override public void changed(ObservableValue<? extends Version> observable, Version oldValue, Version newValue) {
 				clickVersionChange();
 			}
 		});
 		lvAis.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<CodrAi>() {
-
+			
 			@Override public void changed(ObservableValue<? extends CodrAi> observable, CodrAi oldValue, CodrAi newValue) {
 				clickChangeAi();
 			}
 		});
 		tpCode.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
-
+			
 			@Override public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
 				clickTabSelection(oldValue, newValue);
 			}
 		});
-
+		
 		cbLanguage.getItems().addAll(MainApp.languages);
 		cbLanguage.getSelectionModel().selectFirst();
-
+		
 		infoTab = tpCode.getTabs().get(0);
 		newFileTab = tpCode.getTabs().get(1);
-
+		
 		lvAis.setItems(mainApp.aiManager.ais);
 		lvAis.getSelectionModel().selectFirst();
 	}
-
-
+	
+	
 	/**
 	 * Zeigt eine KI und eine ihrer Versionen an
 	 * 
@@ -113,13 +113,13 @@ public class ControllerAiManagement {
 		version = v;
 		showAi();
 	}
-
-
+	
+	
 	/**
 	 * Setzt alle Eigenschaften der Benutzeroberfläche, wie z.B. das KI-Namensfeld, das KI-Bild, die KI-Beschreibung, ...
 	 */
 	public void showAi() {
-
+		
 		// Ai-spezifisches
 		if (ai != null) {
 			lbName.setText(ai.title);
@@ -128,13 +128,13 @@ public class ControllerAiManagement {
 			cbVersion.getSelectionModel().clearSelection();
 			cbVersion.setItems(ai.versions);
 			Bindings.bindBidirectional(image.imageProperty(), ai.getPicture());
-
+			
 			btChangeImage.setDisable(false);
 			btDeleteImage.setDisable(false);
 			btNewVersion.setDisable(false);
 			btEdit.setDisable(false);
 			btToActual.setDisable(false);
-
+			
 			if (version == null) {  // versuchen, die Version zu setzen, wenn keine ausgewählt ist
 				version = ai.lastVersion();
 			}
@@ -153,20 +153,20 @@ public class ControllerAiManagement {
 			ObservableList<Version> emptyFill = FXCollections.observableArrayList();
 			cbVersion.setItems(emptyFill);
 			image.setImage(Resources.defaultPicture());
-
+			
 			btChangeImage.setDisable(true);
 			btDeleteImage.setDisable(true);
 			btNewVersion.setDisable(true);
 			btEdit.setDisable(true);
 			btToActual.setDisable(true);
 		}
-
+		
 		// Beschreibung setzen
 		tbDescription.setEditable(false);
 		btAbort.setVisible(false);
 		btEdit.setText("Bearbeiten");
 		tbDescription.setEditable(false);
-
+		
 		// Version-spezifisches
 		if (version != null && ai != null) {
 			cbVersion.setValue(version);
@@ -186,11 +186,11 @@ public class ControllerAiManagement {
 			btFinish.setDisable(version.finished);
 			btUpload.setDisable(false);
 			rbContinue.setDisable(false);
-
+			
 			rbContinue.setSelected(true);
 			rbFromFile.setSelected(false);
 			rbSimple.setSelected(false);
-
+			
 			setVersionTabs();
 		} else {
 			cbVersion.setValue(null);
@@ -204,12 +204,12 @@ public class ControllerAiManagement {
 			btFinish.setDisable(true);
 			btUpload.setDisable(true);
 			rbContinue.setDisable(true);
-
+			
 			rbContinue.setSelected(false);
 			rbFromFile.setSelected(false);
 			rbSimple.setSelected(true);
 		}
-
+		
 		if (ai != null) {
 			if (ai.mode == AiMode.simplePlayer) {
 				btEdit.setDisable(true);
@@ -222,15 +222,15 @@ public class ControllerAiManagement {
 				hlShowQualified.setVisible(false);
 				lbFinished.setVisible(false);
 				lbUploaded.setVisible(false);
-
+				
 				btChangeImage.setDisable(true);
 				btDeleteImage.setDisable(true);
 			}
 		}
-
+		
 	}
-
-
+	
+	
 	/**
 	 * Lädt mithilfe der CodeEditoren der anzuzeigenden Version alle Dateien der Version in die Tab-Leiste
 	 */
@@ -250,8 +250,8 @@ public class ControllerAiManagement {
 		if (!version.finished)
 			tpCode.getTabs().add(newFileTab);
 	}
-
-
+	
+	
 	/**
 	 * Speichert und überprüft, ob auf das "neue Datei"-Tab geklickt wurde
 	 * 
@@ -276,31 +276,31 @@ public class ControllerAiManagement {
 			}
 		}
 	}
-
-
+	
+	
 	/**
 	 * Button: Neue KI anlegen
 	 */
 	@FXML void clickNewAi() {
 		String title = tbName.getText().replace(" ", "");
-
+		
 		if (title.equals("")) {
 			Dialog.error("Bitte einen Namen für die KI eingeben", "Kein Name");
 			return;
 		}
-
+		
 		for (int i = 0; i < lvAis.getItems().size(); i++) {  // Testen, ob die KI schon existiert
 			if (title.equals(lvAis.getItems().get(i).title)) {
 				Dialog.error("Es können keine zwei KIs mit dem gleichen Namen erstellt werden", "Doppelter Name");
 				return;
 			}
 		}
-
+		
 		mainApp.aiManager.ais.add(new CodrAi(title, cbLanguage.getValue()));
 		lvAis.getSelectionModel().selectLast();
 	}
-
-
+	
+	
 	/**
 	 * Listenselektions-Änderung: zeigt andere KI an
 	 */
@@ -311,8 +311,8 @@ public class ControllerAiManagement {
 			showAi();
 		}
 	}
-
-
+	
+	
 	/**
 	 * Button: Abbruch der Bearbeitung der Beschreibung der KI
 	 */
@@ -322,8 +322,8 @@ public class ControllerAiManagement {
 		tbDescription.setEditable(false);
 		tbDescription.setText(ai.description);
 	}
-
-
+	
+	
 	/**
 	 * Button: Bearbeitung der Beschreibung der KI
 	 */
@@ -339,8 +339,8 @@ public class ControllerAiManagement {
 			ai.setDescription(tbDescription.getText());
 		}
 	}
-
-
+	
+	
 	/**
 	 * Button: aktuelle Version der KI wird ausgewählt
 	 */
@@ -348,8 +348,8 @@ public class ControllerAiManagement {
 		version = ai.lastVersion();
 		showAi();
 	}
-
-
+	
+	
 	/**
 	 * Listenselektions-Änderung: zeigt andere Version an
 	 */
@@ -359,8 +359,8 @@ public class ControllerAiManagement {
 			showAi();
 		}
 	}
-
-
+	
+	
 	/**
 	 * Radiobutton: "SimplePlayer" wurde ausgewählt
 	 */
@@ -369,8 +369,8 @@ public class ControllerAiManagement {
 		rbContinue.setSelected(false);
 		rbFromFile.setSelected(false);
 	}
-
-
+	
+	
 	/**
 	 * Radiobutton: "Weiterschreiben" wurde ausgewählt
 	 */
@@ -379,8 +379,8 @@ public class ControllerAiManagement {
 		rbContinue.setSelected(true);
 		rbFromFile.setSelected(false);
 	}
-
-
+	
+	
 	/**
 	 * Radiobutton: "Aus Datei" wurde ausgewählt
 	 */
@@ -389,8 +389,8 @@ public class ControllerAiManagement {
 		rbContinue.setSelected(false);
 		rbFromFile.setSelected(true);
 	}
-
-
+	
+	
 	/**
 	 * Button: Dateiauswahl wenn "Aus Datei" ausgewählt ist
 	 */
@@ -399,8 +399,8 @@ public class ControllerAiManagement {
 		if (result != null)
 			tbFile.setText(result.getPath());
 	}
-
-
+	
+	
 	/**
 	 * Button: neue Version erstellen
 	 */
@@ -413,8 +413,8 @@ public class ControllerAiManagement {
 			showAi(ai, ai.newVersion(NewVersionType.simplePlayer));
 		}
 	}
-
-
+	
+	
 	/**
 	 * Button: Kompilieren
 	 */
@@ -422,8 +422,8 @@ public class ControllerAiManagement {
 		version.compile();
 		showAi();
 	}
-
-
+	
+	
 	/**
 	 * Button: Qualifizieren
 	 */
@@ -431,8 +431,8 @@ public class ControllerAiManagement {
 		version.qualify();
 		showAi();
 	}
-
-
+	
+	
 	/**
 	 * Button: Fertigstellen
 	 */
@@ -442,24 +442,24 @@ public class ControllerAiManagement {
 		}
 		showAi();
 	}
-
-
+	
+	
 	/**
 	 * Button: Hochladen
 	 */
 	@FXML void clickUpload() {
 		tbFile.setText("Info14 geklickt");
 	}
-
-
+	
+	
 	/**
 	 * Hyperlink: zeigt das Qualifizier-Spiel an
 	 */
 	@FXML void clickShowQualified() {
 		tbFile.setText("Info14 geklickt");
 	}
-
-
+	
+	
 	/**
 	 * Button: Bild ändern
 	 */
@@ -471,8 +471,8 @@ public class ControllerAiManagement {
 		}
 		showAi();
 	}
-
-
+	
+	
 	/**
 	 * Button: Bild löschen
 	 */
@@ -480,5 +480,5 @@ public class ControllerAiManagement {
 		ai.setPicture(null);
 		showAi();
 	}
-
+	
 }

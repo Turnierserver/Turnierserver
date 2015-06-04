@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 
 
 public class Dialog {
-
+	
 	/**
 	 * Ruft einen javafx.scene.control.Alert auf
 	 * 
@@ -34,7 +34,7 @@ public class Dialog {
 		alert.setTitle(title);
 		alert.setHeaderText(null);
 		alert.setContentText(text);
-
+		
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK) {
 			return true;
@@ -42,8 +42,8 @@ public class Dialog {
 			return false;
 		}
 	}
-
-
+	
+	
 	/**
 	 * Ruft einen Info-Dialog auf
 	 * 
@@ -53,13 +53,13 @@ public class Dialog {
 	public static boolean info(String text) {
 		return info(text, "Information");
 	}
-
-
+	
+	
 	public static boolean info(String text, String title) {
 		return generalDialog(text, title, AlertType.INFORMATION);
 	}
-
-
+	
+	
 	/**
 	 * Ruft einen Warnungs-Dialog auf
 	 * 
@@ -69,13 +69,13 @@ public class Dialog {
 	public static boolean warning(String text) {
 		return warning(text, "Warnung");
 	}
-
-
+	
+	
 	public static boolean warning(String text, String title) {
 		return generalDialog(text, title, AlertType.WARNING);
 	}
-
-
+	
+	
 	/**
 	 * Ruft einen Fehler-Dialog auf
 	 * 
@@ -85,13 +85,13 @@ public class Dialog {
 	public static boolean error(String text) {
 		return error(text, "Fehler");
 	}
-
-
+	
+	
 	public static boolean error(String text, String title) {
 		return generalDialog(text, title, AlertType.ERROR);
 	}
-
-
+	
+	
 	/**
 	 * Ruft einen Ok/Abbruch-Dialog auf
 	 * 
@@ -101,13 +101,13 @@ public class Dialog {
 	public static boolean okAbort(String text) {
 		return okAbort(text, "Bitte bestätigen");
 	}
-
-
+	
+	
 	public static boolean okAbort(String text, String title) {
 		return generalDialog(text, title, AlertType.CONFIRMATION);
 	}
-
-
+	
+	
 	/**
 	 * Ruft einen Text-Eingabe-Dialog auf
 	 * 
@@ -117,21 +117,21 @@ public class Dialog {
 	public static String textInput(String text) {
 		return textInput(text, "Bitte Text eingeben");
 	}
-
-
+	
+	
 	public static String textInput(String text, String title) {
 		TextInputDialog dialog = new TextInputDialog("");
 		dialog.setTitle("Text Input Dialog");
 		dialog.setContentText("Please enter your name:");
-
+		
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			return result.get();
 		}
 		return null;
 	}
-
-
+	
+	
 	/**
 	 * Ruft einen Dateiauswahl-Dialog auf
 	 * 
@@ -141,15 +141,15 @@ public class Dialog {
 	public static File fileChooser(Stage stage) {
 		return fileChooser(stage, "Bitte eine Datei auswählen");
 	}
-
-
+	
+	
 	public static File fileChooser(Stage stage, String title) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(title);
 		return fileChooser.showOpenDialog(stage);
 	}
-
-
+	
+	
 	/**
 	 * Ruft einen Datei-Speicher-Dialog auf
 	 * 
@@ -159,16 +159,16 @@ public class Dialog {
 	public static File fileSaver(Stage stage) {
 		return fileChooser(stage, "Bitte eine Datei auswählen");
 	}
-
-
+	
+	
 	public static File fileSaver(Stage stage, String title, String defaultPath) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(title);
 		fileChooser.setInitialDirectory(new File(defaultPath));
 		return fileChooser.showSaveDialog(stage);
 	}
-
-
+	
+	
 	/**
 	 * Ruft einen Ordnerauswahl-Dialog auf
 	 * 
@@ -178,24 +178,24 @@ public class Dialog {
 	public static File folderChooser(Stage stage) {
 		return folderChooser(stage, "Bitte einen Ordner auswählen");
 	}
-
-
+	
+	
 	public static File folderChooser(Stage stage, String title) {
 		DirectoryChooser folderChooser = new DirectoryChooser();
 		folderChooser.setTitle(title);
 		return folderChooser.showDialog(stage);
 	}
-
-
+	
+	
 	public static String selectOwnVersion() {
 		ObservableList<CodrAi> ownAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
-
+		
 		ChoiceDialog<CodrAi> dialog = new ChoiceDialog<CodrAi>();
 		dialog.getItems().addAll(ownAis);
 		dialog.setTitle("Choice Dialog");
 		dialog.setHeaderText("Look, a Choice Dialog");
 		dialog.setContentText("Choose your letter:");
-
+		
 		// Traditional way to get the response value.
 		// Optional<String> result = dialog.showAndWait();
 //		if (result.isPresent()){
@@ -203,5 +203,5 @@ public class Dialog {
 //		}
 		return null;
 	}
-
+	
 }

@@ -9,7 +9,7 @@ import javafx.scene.image.Image;
 
 
 public class Resources {
-
+	
 	/**
 	 * Gibt das Default-Bild für die KIs zurück
 	 */
@@ -22,8 +22,8 @@ public class Resources {
 			return null;
 		}
 	}
-
-
+	
+	
 	public static Image codrIcon() {
 		try {
 			return new Image(Paths.class.getResourceAsStream("../CodrIcon128.png"));
@@ -32,8 +32,8 @@ public class Resources {
 			return null;
 		}
 	}
-
-
+	
+	
 	public static Image codr() {
 		try {
 			return new Image(Paths.class.getResourceAsStream("../Codr200.png"));
@@ -42,8 +42,8 @@ public class Resources {
 			return null;
 		}
 	}
-
-
+	
+	
 	/**
 	 * Gibt das Default-Bild für die KIs zurück
 	 */
@@ -54,8 +54,8 @@ public class Resources {
 			return null;
 		}
 	}
-
-
+	
+	
 	/**
 	 * Gibt das Bild, das an der übergebenen Stelle gespeichert ist, zurück
 	 */
@@ -69,5 +69,5 @@ public class Resources {
 			return null;
 		}
 	}
-
+	
 }

@@ -29,8 +29,8 @@ import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 
 
 public class ControllerGameManagement {
-
-
+	
+	
 	@FXML public Label lbMode;
 	@FXML public Label lbDate;
 	@FXML public Label lbDuration;
@@ -47,12 +47,12 @@ public class ControllerGameManagement {
 	@FXML public TextArea tbOutput1;
 	@FXML public TextArea tbOutput2;
 	@FXML public TableView<ParticipantResult> tableResult;
-
+	
 	MainApp mainApp;
-
+	
 	CodrGame game = null;
-
-
+	
+	
 	/**
 	 * Initialisiert den Controller
 	 * 
@@ -61,38 +61,42 @@ public class ControllerGameManagement {
 	public void setMainApp(MainApp app) {
 		mainApp = app;
 		mainApp.cGame = this;
-
+		
 		TableColumn col0 = new TableColumn("Spieler");
 		TableColumn col1 = new TableColumn("KI");
 		TableColumn col2 = new TableColumn("gespielte Zeit");
 		TableColumn col3 = new TableColumn("Züge");
 		TableColumn col4 = new TableColumn("Punkte");
 		TableColumn col5 = new TableColumn("Gewonnen?");
-
+		
 		col0.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("playerName"));
 		col1.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("kiName"));
 		col2.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("duration"));
 		col3.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("moveCount"));
 		col4.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("points"));
 		col5.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("won"));
-
+		
 		tableResult.getColumns().addAll(col0, col1, col2, col3, col4, col5);
-
+		
 		final ToggleGroup group = new ToggleGroup();
 		btOffline.setToggleGroup(group);
 		btOffline.setSelected(true);
 		btOnline.setToggleGroup(group);
-
+		
 		mainApp.gameManager.loadGames();
 		showGame();
+		
+		lvPlayer1.setItems(mainApp.aiManager.ais);
+		lvPlayer2.setItems(mainApp.aiManager.ais);
 	}
-
-
+	
+	
 	public void showGame(CodrGame ggame) {
-
+		game = ggame;
+		showGame();
 	}
-
-
+	
+	
 	public void showGame() {
 		if (game != null) {
 			if (game.mode == GameMode.onlineLoaded)
@@ -111,20 +115,20 @@ public class ControllerGameManagement {
 			tableResult.setItems(null);
 		}
 	}
-
-
-
+	
+	
+	
 	@FXML void clickOnline() {
-
+		
 	}
-
-
+	
+	
 	@FXML void clickOffline() {
 		lvPlayer1.setItems(mainApp.aiManager.ais);
 		lvPlayer2.setItems(mainApp.aiManager.ais);
 	}
-
-
+	
+	
 	@FXML void clickStartGame() {
 		if (btOffline.isSelected()) {
 			if (lvPlayer1.getSelectionModel().getSelectedItem() != null && lvPlayer2.getSelectionModel().getSelectedItem() != null) {
@@ -133,21 +137,20 @@ public class ControllerGameManagement {
 				players.add(lvPlayer1.getSelectionModel().getSelectedItem().lastVersion());
 				players.add(lvPlayer2.getSelectionModel().getSelectedItem().lastVersion());
 				game.play(players);
-			}
-			else{
+			} else {
 				Dialog.error("Bitte erst die KIs auswählen");
 			}
 		} else {
 			Dialog.error("Onlinespiele werden noch nicht unterstützt");
 		}
 	}
-
-
+	
+	
 	@FXML void clickLoadSaved() {
 		tbOutput1.setText("Info5 geklickt");
 	}
-
-
+	
+	
 	@FXML void clickLoadOnline() {
 		tbOutput1.setText("Info6 geklickt");
 	}

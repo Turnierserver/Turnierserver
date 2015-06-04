@@ -18,25 +18,25 @@ import org.pixelgaffer.turnierserver.codr.view.ControllerStartPage;
 
 
 public class Settings {
-
+	
 	ControllerStartPage cStart;
-
-
+	
+	
 	public Settings(ControllerStartPage c) {
 		cStart = c;
 		load();
 	}
-
-
+	
+	
 	public void store() {
 		Properties prop = new Properties();
-
+		
 		prop.setProperty("theme", cStart.btTheme.isSelected() + "");
 		prop.setProperty("fontSize", cStart.slFontSize.getValue() + "");
 		prop.setProperty("scrollSpeed", cStart.slScrollSpeed.getValue() + "");
 		prop.setProperty("pythonInterpreter", cStart.tbPythonInterpreter.getText());
 		prop.setProperty("cplusplusCompiler", cStart.tbCplusplusCompiler.getText());
-
+		
 		try {
 			Writer writer = new FileWriter(Paths.settings());
 			prop.store(writer, "Settings");
@@ -45,15 +45,15 @@ public class Settings {
 			ErrorLog.write("Es kann keine Settings-Datei angelegt werden.");
 		}
 	}
-
-
+	
+	
 	public void load() {
 		try {
 			Reader reader = new FileReader(Paths.settings());
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
-
+			
 			cStart.btTheme.setSelected(Boolean.parseBoolean(prop.getProperty("theme")));
 			cStart.slFontSize.setValue(Double.parseDouble(prop.getProperty("fontSize")));
 			cStart.slScrollSpeed.setValue(Double.parseDouble(prop.getProperty("scrollSpeed")));
@@ -63,7 +63,7 @@ public class Settings {
 			ErrorLog.write("Fehler bei Laden aus der settings.txt");
 		}
 	}
-
-
-
+	
+	
+	
 }

@@ -22,7 +22,7 @@ import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 
 
 public class CodrGame {
-
+	
 	public final GameMode mode;
 	public String ID = null;
 	public String date;
@@ -31,13 +31,13 @@ public class CodrGame {
 	public String state;
 	public String judged;
 	public ObservableList<ParticipantResult> participants = FXCollections.observableArrayList();
-
-
+	
+	
 	public static enum GameMode {
 		playing, saved, onlineLoaded
 	}
-
-
+	
+	
 	public CodrGame(String idOrLogic, GameMode mmode) {
 		mode = mmode;
 		if (mode == GameMode.saved) {
@@ -47,14 +47,14 @@ public class CodrGame {
 			logic = idOrLogic;
 		}
 	}
-
-
+	
+	
 	public CodrGame(JSONObject json) {
 		mode = GameMode.onlineLoaded;
-
+		
 	}
-
-
+	
+	
 	public void loadProps() {
 		if (mode != GameMode.saved && mode != GameMode.playing) {
 			ErrorLog.write("dies ist kein lesbares Objekt (Game.loadProps)");
@@ -70,7 +70,7 @@ public class CodrGame {
 			logic = prop.getProperty("logic");
 			state = prop.getProperty("state");
 			judged = prop.getProperty("judged");
-
+			
 			int amount = Integer.parseInt(prop.getProperty("participantAmount"));
 			for (int i = 0; i < amount; i++) {
 				participants.get(i).playerName.set(prop.getProperty("playerName" + participants.get(i).number));
@@ -80,30 +80,30 @@ public class CodrGame {
 				participants.get(i).points.set(prop.getProperty("points" + participants.get(i).number));
 				participants.get(i).won.set(prop.getProperty("won" + participants.get(i).number));
 			}
-
+			
 		} catch (IOException e) {
 			ErrorLog.write("Fehler bei Laden aus der properties.txt (Game)");
 		}
 	}
-
-
+	
+	
 	public void storeProps() {
 		if (mode != GameMode.playing) {
 			ErrorLog.write("dies ist kein speicherbares Objekt (Game.storeProps)");
 			return;
 		}
-
+		
 		if (ID == null) {
 			getNewID();
 		}
-
+		
 		Properties prop = new Properties();
 		prop.setProperty("date", date);
 		prop.setProperty("duration", duration);
 		prop.setProperty("logic", logic);
 		prop.setProperty("state", state);
 		prop.setProperty("judged", judged);
-
+		
 		prop.setProperty("participantAmount", participants.size() + "");
 		for (int i = 0; i < participants.size(); i++) {
 			prop.setProperty("playerName" + participants.get(i).number.get(), participants.get(i).playerName.get());
@@ -113,11 +113,11 @@ public class CodrGame {
 			prop.setProperty("points" + participants.get(i).number.get(), participants.get(i).points.get());
 			prop.setProperty("won" + participants.get(i).number.get(), participants.get(i).won.get());
 		}
-
+		
 		try {
 			File dir = new File(Paths.game(this));
 			dir.mkdirs();
-
+			
 			Writer writer = new FileWriter(Paths.gameProperties(this));
 			prop.store(writer, ID);
 			writer.close();
@@ -125,8 +125,8 @@ public class CodrGame {
 			ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Game)");
 		}
 	}
-
-
+	
+	
 	/**
 	 * Setzt den date-String auf die aktuelle Zeit
 	 */
@@ -135,8 +135,8 @@ public class CodrGame {
 		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm,ss");
 		date = format.format(now);
 	}
-
-
+	
+	
 	public void getNewID() {
 		for (int i = 1; i < 10000; i++) {
 			File dir = new File(Paths.game("Game" + i));
@@ -147,17 +147,17 @@ public class CodrGame {
 		}
 		ErrorLog.write("GetNewID-ERROR: Mehr als 10.000 Spielordner wurden ausprobiert: Möglicherweise gibt es keine Zugriffsberechtigung.");
 	}
-
-
+	
+	
 	public void play(List<Version> opponents) {
-
-
+		
+		
 		for (int i = 0; i < opponents.size(); i++) {
 			participants.add(new ParticipantResult(this, "Lokal", opponents.get(i).ai.title + "v" + opponents.get(i).number, "100ms", "5", "20", "Ja"));
 		}
 		setDateNow();
 		duration = "500ms";
 	}
-
-
+	
+	
 }

@@ -13,10 +13,10 @@ import javafx.collections.*;
 
 
 public class GameManager {
-
+	
 	public ObservableList<CodrGame> games = FXCollections.observableArrayList();
-
-
+	
+	
 	/**
 	 * Lädt alle Spieler aus dem Dateisystem in die Liste
 	 */
@@ -33,6 +33,6 @@ public class GameManager {
 			if (dirs[i].isDirectory())
 				games.add(new CodrGame(dirs[i].getName(), GameMode.saved));
 		}
-
+		
 	}
 }

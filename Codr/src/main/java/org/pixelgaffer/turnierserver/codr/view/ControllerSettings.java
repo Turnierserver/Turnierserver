@@ -8,10 +8,10 @@ import javafx.fxml.FXML;
 
 
 public class ControllerSettings {
-
+	
 	MainApp mainApp;
-
-
+	
+	
 	/**
 	 * Initialisiert den Controller
 	 * 

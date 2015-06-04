@@ -8,10 +8,10 @@ import javafx.fxml.FXML;
 
 
 public class ControllerSubmission {
-
+	
 	MainApp mainApp;
-
-
+	
+	
 	/**
 	 * Initialisiert den Controller
 	 * 

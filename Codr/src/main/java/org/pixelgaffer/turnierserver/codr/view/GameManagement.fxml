@@ -74,7 +74,7 @@
                            <top>
                               <AnchorPane prefHeight="68.0" prefWidth="273.0" BorderPane.alignment="CENTER">
                                  <children>
-                                    <ToggleButton fx:id="btOffline" layoutX="108.0" mnemonicParsing="false" onAction="#clickOffline" prefHeight="31.0" prefWidth="80.0" text="Offline" />
+                                    <ToggleButton fx:id="btOffline" layoutX="108.0" mnemonicParsing="false" onAction="#clickOffline" prefHeight="31.0" prefWidth="80.0" selected="true" text="Offline" />
                                     <ChoiceBox fx:id="cbLogic" layoutX="108.0" layoutY="36.0" prefHeight="31.0" prefWidth="165.0" />
                                     <ToggleButton fx:id="btOnline" layoutX="193.0" mnemonicParsing="false" onAction="#clickOnline" prefHeight="31.0" prefWidth="80.0" text="Online" />
                                     <Label layoutX="2.0" layoutY="41.0" text="Logik:" />

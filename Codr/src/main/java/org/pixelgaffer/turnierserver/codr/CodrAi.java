@@ -36,7 +36,7 @@ import org.pixelgaffer.turnierserver.codr.utilities.WebConnector;
 
 
 public class CodrAi {
-
+	
 	public final String title;
 	public final AiMode mode;
 	public String gametype;
@@ -46,17 +46,17 @@ public class CodrAi {
 	public String elo = "leere Elo";
 	public ObjectProperty<Image> onlinePicture = new SimpleObjectProperty<Image>();
 	public ObservableList<Version> versions = FXCollections.observableArrayList();
-
-
+	
+	
 	public static enum AiMode {
 		saved, online, simplePlayer
 	}
-
+	
 	public static enum NewVersionType {
 		fromFile, simplePlayer, lastVersion
 	}
-
-
+	
+	
 	/**
 	 * Erstellt eine neue Online-Ai aus einem JSONObject
 	 * 
@@ -74,11 +74,11 @@ public class CodrAi {
 		for (int i = 0; i < versions.length(); i++) {
 			newVersion(versions.getJSONObject(i));
 		}
-
+		
 		new Thread(() -> loadPicture(json, connector), "Image Loader").start();
 	}
-
-
+	
+	
 	/**
 	 * Erstellt eine neue Ai
 	 * 
@@ -93,8 +93,8 @@ public class CodrAi {
 			loadVersions();
 		}
 	}
-
-
+	
+	
 	/**
 	 * Speichert eine neue Ai mit dem übergebenen Titel und der Sprache ab.
 	 * 
@@ -106,7 +106,7 @@ public class CodrAi {
 		language = lang;
 		mode = AiMode.saved;
 		gametype = MainApp.actualGameType.get();
-
+		
 		File dir = new File(Paths.ai(this));
 		if (!dir.mkdirs()) {
 			ErrorLog.write("Der Spieler existiert bereits.");
@@ -115,8 +115,8 @@ public class CodrAi {
 			storeProps();
 		}
 	}
-
-
+	
+	
 	private void loadPicture(JSONObject json, WebConnector connector) {
 		try {
 			setPicture(connector.getImage(json.getInt("id")));
@@ -124,8 +124,8 @@ public class CodrAi {
 			ErrorLog.write("ERROR: Konnte das Bild der AI " + json.getString("name") + " nicht laden (" + e.getLocalizedMessage() + ")!");
 		}
 	}
-
-
+	
+	
 	/**
 	 * gibt die neueste Version oder null zurück
 	 * 
@@ -138,8 +138,8 @@ public class CodrAi {
 			return null;
 		}
 	}
-
-
+	
+	
 	/**
 	 * Fügt eine neue Version der Versionsliste hinzu.
 	 * 
@@ -152,8 +152,8 @@ public class CodrAi {
 		}
 		return newVersion(type, "");
 	}
-
-
+	
+	
 	/**
 	 * Fügt eine neue Version, die mit JSON erstellt wurde, der Versionsliste hinzu.
 	 * 
@@ -165,8 +165,8 @@ public class CodrAi {
 		versions.add(version);
 		return version;
 	}
-
-
+	
+	
 	/**
 	 * Fügt eine neue Version der Versionsliste hinzu.
 	 * 
@@ -194,9 +194,9 @@ public class CodrAi {
 		storeProps();
 		return version;
 	}
-
-
-
+	
+	
+	
 	/**
 	 * Lädt aus dem Dateiverzeichnis die Eigenschaften des Players.
 	 */
@@ -217,8 +217,8 @@ public class CodrAi {
 			ErrorLog.write("Fehler bei Laden aus der properties.txt");
 		}
 	}
-
-
+	
+	
 	/**
 	 * Speichert die Eigenschaften des Players in das Dateiverzeichnis.
 	 */
@@ -227,13 +227,13 @@ public class CodrAi {
 			ErrorLog.write("dies ist kein speicherbares Objekt (AI.storeProps)");
 			return;
 		}
-
+		
 		Properties prop = new Properties();
 		prop.setProperty("description", description);
 		prop.setProperty("versionAmount", "" + versions.size());
 		prop.setProperty("language", language.toString());
 		prop.setProperty("gametype", gametype + "");
-
+		
 		try {
 			Writer writer = new FileWriter(Paths.aiProperties(this));
 			prop.store(writer, title);
@@ -242,8 +242,8 @@ public class CodrAi {
 			ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Ai)");
 		}
 	}
-
-
+	
+	
 	/**
 	 * Lädt die Versionen aus dem Dateisystem, mit Hilfe der versionAmount-Property
 	 */
@@ -263,8 +263,8 @@ public class CodrAi {
 			versions.add(new Version(this, i, mode));
 		}
 	}
-
-
+	
+	
 	/**
 	 * Setzt die Ai-Beschreibung.
 	 * 
@@ -274,8 +274,8 @@ public class CodrAi {
 		description = des;
 		storeProps();
 	}
-
-
+	
+	
 	/**
 	 * Gibt das gespeicherte Bild des Spielers zurück.
 	 * 
@@ -295,8 +295,8 @@ public class CodrAi {
 		}
 		return img;
 	}
-
-
+	
+	
 	/**
 	 * Speichert das Bild des Spielers in der Datei picture.png.
 	 * 
@@ -318,13 +318,13 @@ public class CodrAi {
 			}
 		}
 	}
-
-
+	
+	
 	/**
 	 * damit die Ai-Liste richtig angezeigt wird
 	 */
 	public String toString() {
 		return title;
 	}
-
+	
 }

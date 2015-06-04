@@ -46,7 +46,7 @@ import org.pixelgaffer.turnierserver.codr.view.ControllerSubmission;
 
 
 public class MainApp extends Application {
-
+	
 	public Stage stage;
 	public ControllerRoot cRoot;
 	public ControllerStartPage cStart;
@@ -55,21 +55,21 @@ public class MainApp extends Application {
 	public ControllerRanking cRanking;
 	public ControllerSubmission cSubmission;
 	public ControllerSettings cSettings;
-
+	
 	public static Settings settings;
-
-
+	
+	
 	public static final String webUrl = "192.168.178.43:5000";
-
+	
 	public static WebConnector webConnector = new WebConnector("http://" + webUrl + "/api/", webUrl);// "http://thuermchen.com/api/");
 	public GameManager gameManager = new GameManager();
 	public AiManager aiManager = new AiManager();
-
+	
 	public static StringProperty actualGameType = new SimpleStringProperty(null);
 	public static ObservableList<String> gametypes = FXCollections.observableArrayList();
 	public static ObservableList<String> languages = FXCollections.observableArrayList();
-
-
+	
+	
 	/**
 	 * Main-Methode
 	 * 
@@ -78,34 +78,34 @@ public class MainApp extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
-
-
+	
+	
 	/**
 	 * start-Methode (wegen: extends Application)
 	 */
 	public void start(Stage _stage) throws Exception {
 		ErrorLog.clear();
 		ErrorLog.write("Programm startet...", true);
-
+		
 		stage = new Stage(StageStyle.DECORATED);
-
+		
 		gametypes = webConnector.loadGametypesFromFile();
 		languages = webConnector.loadLangsFromFile();
-
+		
 		CodeEditor.writeAce();
-
+		
 		if (gametypes == null || languages == null) {
 			showSplashStage(_stage);
 		} else {
 			loadOnlineResources();
 			showMainStage();
 		}
-
+		
 		ErrorLog.write("Programm gestartet", true);
-
+		
 	}
-
-
+	
+	
 	public void stop() {
 		if (cAi.version != null)
 			cAi.version.saveCode();
@@ -114,13 +114,13 @@ public class MainApp extends Application {
 		}
 		ErrorLog.write("Programm beendet", true);
 	}
-
-
+	
+	
 	public void loadOnlineResources() {
 		final Task updateTask = new Task() {
-
+			
 			@Override protected Object call() throws InterruptedException {
-
+				
 				updateMessage("Gametypen werden geladen");
 				try {
 					webConnector.updateGametypes();
@@ -133,9 +133,9 @@ public class MainApp extends Application {
 				} catch (NothingDoneException e) {
 				} catch (IOException e) {
 				}
-
+				
 				updateMessage("Sprachen werden geladen");
-
+				
 				try {
 					webConnector.updateLanguages();
 				} catch (NewException e) {
@@ -147,17 +147,17 @@ public class MainApp extends Application {
 				return null;
 			}
 		};
-
+		
 		new Thread(updateTask).start();
 	}
-
-
+	
+	
 	public void showSplashStage(Stage splashStage) {
-
+		
 		final Task updateTask = new Task() {
-
+			
 			@Override protected Object call() throws InterruptedException {
-
+				
 				updateMessage("Gametypen werden geladen");
 				try {
 					webConnector.updateGametypes();
@@ -174,7 +174,7 @@ public class MainApp extends Application {
 					System.exit(1);
 				}
 				updateMessage("Sprachen werden geladen");
-
+				
 				try {
 					webConnector.updateLanguages();
 				} catch (NewException e) {
@@ -192,7 +192,7 @@ public class MainApp extends Application {
 				return null;
 			}
 		};
-
+		
 		// Screen erstellen
 		ImageView img = new ImageView(Resources.codr());
 		ProgressBar loadProgress = new ProgressBar();
@@ -206,7 +206,7 @@ public class MainApp extends Application {
 		splashLayout.setStyle("-fx-padding: 10; " + "-fx-border-color: derive(black, 90%); " + "-fx-border-width:1; " + "-fx-background-color: white;");
 		progressText.textProperty().bind(updateTask.messageProperty());
 		splashLayout.setEffect(new DropShadow());
-
+		
 		Scene splashScene = new Scene(splashLayout);
 		splashStage.initStyle(StageStyle.UNDECORATED);
 		final Rectangle2D bounds = Screen.getPrimary().getBounds();
@@ -214,7 +214,7 @@ public class MainApp extends Application {
 		splashStage.setX(bounds.getMinX() + bounds.getWidth() / 2 - 400 / 2);
 		splashStage.setY(bounds.getMinY() + bounds.getHeight() / 2 - 200);
 		splashStage.show();
-
+		
 		updateTask.stateProperty().addListener((observableValue, oldState, newState) -> {
 			if (newState == Worker.State.SUCCEEDED) {
 				FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1), splashLayout);
@@ -222,18 +222,18 @@ public class MainApp extends Application {
 				fadeSplash.setToValue(0.5);
 				fadeSplash.setOnFinished(actionEvent -> splashStage.hide());
 				fadeSplash.play();
-
+				
 				showMainStage();
 			}
 		});
-
+		
 		new Thread(updateTask).start();
 	}
-
-
+	
+	
 	public void showMainStage() {
-
-
+		
+		
 		BorderPane root = new BorderPane();
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -245,14 +245,14 @@ public class MainApp extends Application {
 			e.printStackTrace();
 		}
 		settings = new Settings(cStart);
-
+		
 		stage.setTitle("Codr");
 		stage.getIcons().add(Resources.codrIcon());
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.show();
-
-
+		
+		
 	}
-
+	
 }

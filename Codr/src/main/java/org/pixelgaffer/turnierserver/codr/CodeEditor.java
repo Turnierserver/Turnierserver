@@ -29,15 +29,15 @@ import org.w3c.dom.Document;
 
 
 public class CodeEditor {
-
+	
 	private TextArea ta; // TODO: nur Übergangslösung --> löschen
-
+	
 	private String savedText = "";
 	private File document;
 	public boolean loaded = false;
 	private WebView codeView;
-
-
+	
+	
 	public static void writeAce() {
 		File aceFolder = new File(Paths.aceFolder());
 		if (aceFolder.exists()) {
@@ -51,8 +51,8 @@ public class CodeEditor {
 			ErrorLog.write("Konnte Ace nicht schreiben!");
 		}
 	}
-
-
+	
+	
 	/**
 	 * Initialisiert den CodeEditor mit der zu zeigenden Datei
 	 * 
@@ -67,16 +67,16 @@ public class CodeEditor {
 			e1.printStackTrace();
 			System.exit(1);
 		}
-
+		
 		codeView.getEngine().setOnAlert(new EventHandler<WebEvent<String>>() {
-
+			
 			@Override public void handle(WebEvent<String> event) {
 				System.err.println("This is an alert: " + event);
 			}
 		});
-
+		
 		codeView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
-
+			
 			public void changed(ObservableValue<? extends Document> prop, Document oldDoc, Document newDoc) {
 				codeView.getEngine().executeScript("editor.setTheme(\"ace/theme/eclipse\");");
 				codeView.getEngine().executeScript("editor.getSession().setMode(modelist.getModeForPath(\"" + doc.getName() + "\").mode);");
@@ -85,8 +85,8 @@ public class CodeEditor {
 			}
 		});
 	}
-
-
+	
+	
 	/**
 	 * überprüft, ob der angezeigte Text mit seiner gespeicherten Datei
 	 * übereinstimmt
@@ -99,13 +99,13 @@ public class CodeEditor {
 		else
 			return false;
 	}
-
-
+	
+	
 	public String getCode() {
 		return (String) codeView.getEngine().executeScript("editor.getValue();");
 	}
-
-
+	
+	
 	public void setCode(String t) {
 //		codeView.getEngine().executeScript("editor.setValue('')");
 //		new Thread(new Task() {
@@ -122,8 +122,8 @@ public class CodeEditor {
 //			}
 //		}).start();
 	}
-
-
+	
+	
 	/**
 	 * Erstellt ein Tab, das in die Tab-Leiste eingefügt werden kann
 	 * 
@@ -133,15 +133,15 @@ public class CodeEditor {
 		BorderPane pane = new BorderPane(codeView);
 		return new Tab(document.getName(), pane);
 	}
-
-
+	
+	
 	/**
 	 * Lädt den Inhalt der Datei in die StringProperty text
 	 */
 	public void load() {
 		try {
 			setCode(FileUtils.readFileToString(document));
-
+			
 			savedText = getCode();
 			loaded = true;
 		} catch (FileNotFoundException e) {
@@ -150,8 +150,8 @@ public class CodeEditor {
 			ErrorLog.write("Quellcode konnte nicht gelesen werden");
 		}
 	}
-
-
+	
+	
 	/**
 	 * Speichert den Inhalt der StringProperty text in die Datei
 	 */
@@ -160,8 +160,8 @@ public class CodeEditor {
 			return;
 		forceSave();
 	}
-
-
+	
+	
 	/**
 	 * Speichert den Inhalt der StringProperty text in eine Datei. Dabei wird
 	 * nicht �berpr�ft, ob sich der Inhalt ver�ndert hat.
@@ -176,5 +176,5 @@ public class CodeEditor {
 			ErrorLog.write("Quellcode konnte nicht bearbeitet werden");
 		}
 	}
-
+	
 }

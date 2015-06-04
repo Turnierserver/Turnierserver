@@ -9,18 +9,18 @@ import java.util.Date;
 
 
 public class ErrorLog {
-
+	
 	private static final File file = new File("errorLog.txt");
-
-
+	
+	
 	/**
 	 * löscht die Datei "errorLog.txt"
 	 */
 	public static void clear() {
 		file.delete();
 	}
-
-
+	
+	
 	/**
 	 * Speichert einen neuen Eintrag in "errorLog.txt" mit anschließender newLine
 	 * 
@@ -35,8 +35,8 @@ public class ErrorLog {
 			write(log);
 		}
 	}
-
-
+	
+	
 	/**
 	 * überladene Methode ohne withClock-Auswahl (siehe oben)
 	 * 
@@ -46,8 +46,8 @@ public class ErrorLog {
 		writeWithoutBlanck(log);
 		writeWithoutBlanck(System.getProperty("line.separator"));
 	}
-
-
+	
+	
 	/**
 	 * übernimmt den eigentlichen Vorgang des Schreibens
 	 * 
@@ -64,5 +64,5 @@ public class ErrorLog {
 			e.printStackTrace();
 		}
 	}
-
+	
 }
