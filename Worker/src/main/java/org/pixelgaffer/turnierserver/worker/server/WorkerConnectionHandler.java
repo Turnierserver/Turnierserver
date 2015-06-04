@@ -91,7 +91,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 		byte line[];
 		while ((line = buffer.readLine()) != null)
 		{
-			System.out.println("Der Worker Server hat eine Zeile empfangen: " + new String(line, UTF_8));
+//			System.out.println("Der Worker Server hat eine Zeile empfangen: " + new String(line, UTF_8));
 			
 			// wenn type noch null ist, diesen lesen
 			if (type == null)
@@ -138,7 +138,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					{
 						try
 						{
-							System.out.println("Die KI hat " + new String(line, UTF_8) + " gesendet");
+//							System.out.println("Die KI hat " + new String(line, UTF_8) + " gesendet");
 							MessageForward mf = new MessageForward(type.getUuid(), line);
 							DataBuffer buf = new DataBuffer();
 //							buf.add((byte)'M');
