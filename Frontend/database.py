@@ -128,7 +128,7 @@ def db_obj_init_msg(obj):
 
 class User(db.Model):
 	__tablename__ = 't_users'
-	id = db.Column(db.Integer, primary_key=True)
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
 	name = db.Column(db.String(50), unique=True, nullable=False)
 	firstname = db.Column(db.Text)
 	lastname = db.Column(db.Text)
@@ -226,7 +226,7 @@ class AI_Game_Assoc(db.Model):
 
 class AI(db.Model):
 	__tablename__ = 't_ais'
-	id = db.Column(db.Integer, primary_key=True)
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	name = db.Column(db.Text, nullable=False)
 	desc = db.Column(db.Text)
 	last_modified = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
@@ -361,7 +361,7 @@ class AI(db.Model):
 
 class AI_Version(db.Model):
 	__tablename__ = 't_ai_versions'
-	id = db.Column(db.Integer, primary_key=True)
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	version_id = db.Column(db.Integer)
 	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'))
 	compiled = db.Column(db.Boolean, default=False)
@@ -524,35 +524,42 @@ def populate(count=20):
 	fake = Faker()
 	db.create_all()
 
-	py = Lang(id=1, name="Python", ace_name="python", url="https://www.python.org")
-	java = Lang(id=2, name="Java", ace_name="java", url="https://www.java.com/?isthaesslig=1")
-	cpp = Lang(id=3, name="C++", ace_name="cpp", url="http://en.wikipedia.org/wiki/C%2B%2B")
-	langs = [py, java, cpp]
+	def db_save(o):
+		db.session.add_all(o)
+		db.session.commit()
 
-	minesweeper = GameType(id=1, name="Minesweeper", viz="vizs/minesweeper.html", roles=[
-		GameTypeRole(id=1, name="builder"), GameTypeRole(id=2, name="solver")
+	py = Lang(name="Python", ace_name="python", url="https://www.python.org")
+	java = Lang(name="Java", ace_name="java", url="https://www.java.com/?isthaesslig=1")
+	cpp = Lang(name="C++", ace_name="cpp", url="http://en.wikipedia.org/wiki/C%2B%2B")
+	langs = [py, java, cpp]
+	db_save(langs)
+
+	minesweeper = GameType(name="Minesweeper", viz="vizs/minesweeper.html", roles=[
+		GameTypeRole(name="builder"), GameTypeRole(id=2, name="solver")
 	])
 	gametypes = [minesweeper]
+	db_save(gametypes)
 
 	users = []
 	for i in r:
 		p = fake.simple_profile()
-		users.append(User(id=i, name=p["username"], email=p["mail"], firstname=fake.first_name(), lastname=fake.last_name()))
+		users.append(User(name=p["username"], email=p["mail"], firstname=fake.first_name(), lastname=fake.last_name()))
+	db_save(users)
 	random.shuffle(users)
-	ais = [AI(id=i, user=users[i-1], name=fake.word(), desc=fake.text(50), lang=random.choice(langs), type=minesweeper) for i in r]
+	ais = [AI(user=users[i-1], name=fake.word(), desc=fake.text(50), lang=random.choice(langs), type=minesweeper) for i in r]
+	db_save(ais)
+
 	games = [Game(id=i, type=minesweeper) for i in r]
 	assocs = []
 	for ri, role in enumerate(minesweeper.roles, 1):
 		assocs += [AI_Game_Assoc(game_id=games[i-1].id, ai_id=ais[i-ri].id, role=role) for i in r]
+	db_save(games)
 
 	admin = User(name="admin", admin=True, email="admin@ad.min")
 	admin.set_pw("admin")
 	admin.validate(admin.validation_code)
 	users.append(admin)
-
-	db.session.add_all(users + ais + games + assocs + langs + gametypes)
-	db.session.commit()
-
+	db_save(users)
 
 if __name__ == '__main__':
 	populate(99)

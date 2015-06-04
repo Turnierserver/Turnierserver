@@ -152,7 +152,7 @@ class Backend(threading.Thread):
 			if not self.connected:
 				self.connect()
 			if self.connected:
-				r = self.sock.recv(1024*10).decode("utf-8")
+				r = self.sock.recv(1024*1024).decode("utf-8")
 				print('recvd', r)
 				## zerstückelte blöcke?
 				for d in r.split("\n"):
