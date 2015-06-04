@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
+import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 import org.pixelgaffer.turnierserver.gamelogic.messages.GameFinished;
 import org.pixelgaffer.turnierserver.gamelogic.messages.RenderData;
@@ -170,6 +171,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		renderData.update = update;
 		update++;
 		renderData.data = data;
+		renderData.requestid = game.getFrontend().getRequestId();
 		sendToFronted(renderData);
 	}
 
@@ -194,7 +196,8 @@ public abstract class GameLogic<E extends AiObject, R> {
 		message.leftoverMillis = new HashMap<>();
 		message.scores = new HashMap<>();
 		message.position = new HashMap<>();
-
+		message.requestid = game.getFrontend().getRequestId();
+		
 		int pos = 1;
 
 		for (Ai ai : ordering.sortedCopy(game.getAis())) {
