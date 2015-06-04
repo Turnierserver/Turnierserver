@@ -21,6 +21,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -37,7 +38,17 @@ import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Games
 {
-	private static final Frontend f = (message) -> BackendFrontendConnectionHandler.getFrontend().sendMessage(message);
+	@AllArgsConstructor
+	static class FrontendWrapper implements Frontend
+	{
+		@Getter
+		private int requestId;
+		
+		public void sendMessage (byte[] message) throws IOException
+		{
+			BackendFrontendConnectionHandler.getFrontend().sendMessage(message);
+		}
+	}
 	
 	/** Alle aktuell benutzten UUIDs. */
 	private static final Set<UUID> uuids = new HashSet<>();
@@ -79,7 +90,6 @@ public class Games
 	 */
 	public static void receiveMessage (UUID uuid, byte message[])
 	{
-		System.out.println("Game.receiveMessage(" + uuid + ", " + new String(message) + ")");
 		getAiWrapper(uuid).receiveMessage(message);
 	}
 	
@@ -88,7 +98,6 @@ public class Games
 	 */
 	public static void receiveMessage (MessageForward mf)
 	{
-		System.out.println("Game.receiveMessage(" + mf + ")");
 		receiveMessage(mf.getAi(), mf.getMessage());
 	}
 	
@@ -151,7 +160,7 @@ public class Games
 		@Override
 		public Frontend getFrontend ()
 		{
-			return f;
+			return new FrontendWrapper(getRequestId());
 		}
 		
 		@Override
