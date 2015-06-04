@@ -22,6 +22,7 @@
 
 #include <QList>
 #include <QNetworkAccessManager>
+#include <QSettings>
 #include <QString>
 
 class BuildInstructions;
@@ -53,6 +54,9 @@ private:
 	QString email;
 	QString pass;
 	QNetworkAccessManager *mgr = 0;
+	
+	// zeugs zum cachen des hosts und der email
+	QSettings pwCache;
 	
 };
 
