@@ -58,7 +58,7 @@ public class MainApp extends Application {
 	
 	public static final String webUrl = "192.168.178.43:5000";
 	
-	public WebConnector webConnector = new WebConnector("http://" + webUrl + "/api/", webUrl);// "http://thuermchen.com/api/");
+	public static WebConnector webConnector = new WebConnector("http://" + webUrl + "/api/", webUrl);// "http://thuermchen.com/api/");
 	public GameManager gameManager = new GameManager();
 	public AiManager aiManager = new AiManager();
 
@@ -69,8 +69,7 @@ public class MainApp extends Application {
 	/**
 	 * Main-Methode
 	 * 
-	 * @param args
-	 *            Argumente
+	 * @param args Argumente
 	 */
 	public static void main(String[] args) {
 		launch(args);

@@ -1,7 +1,0 @@
-#Settings
-#Thu Jun 04 18:08:39 CEST 2015
-cplusplusCompiler=c++
-pythonInterpreter=python
-scrollSpeed=20.0
-fontSize=17.751937984496124
-theme=true
