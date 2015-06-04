@@ -3,6 +3,7 @@ package org.pixelgaffer.turnierserver.gamelogic;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.BuilderSolverAiObject;
@@ -21,6 +22,8 @@ import com.google.gson.reflect.TypeToken;
  * @param <S> Die SolverResponse
  */
 public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G extends BuilderSolverGameState<?, B, S>, B, S> extends GameLogic<E, BuilderSolverResponse<B, S>> {
+	
+	public static Logger logger = Logger.getLogger("GameLogic");
 	
 	/**
 	 * True wenn building, sonst solving
