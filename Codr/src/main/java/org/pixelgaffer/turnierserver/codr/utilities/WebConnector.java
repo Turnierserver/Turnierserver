@@ -19,6 +19,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
@@ -28,6 +29,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -233,14 +235,23 @@ public class WebConnector {
 	}
 	
 	
-	public void uploadVersion(Version version) {
-		
+	public void uploadVersion(Version version) throws ZipException, IOException {
+		HttpPost post = new HttpPost("ai/id/new_version_from_zip");
+		ZipFile zip = new ZipFile(Files.createTempFile(version.ai.title + "v" + version.number + System.currentTimeMillis(), ".zip").toFile());
+		ZipParameters params = new ZipParameters();
+		params.setIncludeRootFolder(false);
+		zip.addFolder(new File(Paths.version(version)), params);
+		post.setEntity(new ByteArrayEntity(FileUtils.readFileToByteArray(zip.getFile())));
+		HttpResponse response = http.execute(post);
+		if(getOutput(response.getEntity().getContent()) == null) {
+			throw new IOException("Konnte nicht zum Server verbinden");
+		}
 	}
 	
 	
-	public boolean createAi(CodrAi ai) {
+	public boolean createAi(CodrAi ai, String name) {
 		try {
-			sendGet("ai/create", "name", ai.title, "desc", ai.description, "lang", getLangID(ai.language) + "", "type", getGametypeID(ai.gametype) + "");
+			sendGet("ai/create", "name", name, "desc", ai.description, "lang", getLangID(ai.language) + "", "type", getGametypeID(ai.gametype) + "");
 			return true;
 		} catch (IOException e) {
 			ErrorLog.write("Konnte AI nicht erstellen: " + e.getLocalizedMessage());;
