@@ -61,8 +61,7 @@ def manage(manager, app):
 		clean_tmp()
 		@ftp.safe
 		def f():
-			## Hardgecodete Sprachen...
-			langs = ["Python", "Java"]
+			langs = [d for d in ftp.ftp_host.listdir("Games/"+game_id) if ftp.ftp_host.path.isdir("Games/"+game_id+"/"+d)]
 
 			os.mkdir("tmp/AiLibraries")
 			for lang in langs:

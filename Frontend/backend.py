@@ -43,7 +43,7 @@ class Backend(threading.Thread):
 		self.lastest_request_id += 1
 		d = {
 			'action': 'compile', 'id':str(ai.id)+'v'+str(ai.lastest_version().version_id),
-			'requestid': reqid, 'gametype': 1
+			'requestid': reqid, 'gametype': ai.type.id
 		}
 		self.requests[reqid] = d
 		self.send_dict(d)
@@ -55,20 +55,29 @@ class Backend(threading.Thread):
 	def request_game(self, ais):
 		reqid = self.lastest_request_id
 		self.lastest_request_id += 1
-		d = {'action': 'start', 'ais': [], 'gametype': 1, 'requestid': reqid}
-		for ai, version in ais:
-			d['ais'].append(str(ai.id) + 'v' + str(version.version_id))
-		##gametype checkenreq
+		if any([ai.type != ais[0].type for ai in ais]):
+			raise RuntimeError("AIs haben verschiedene Typen: " + str(ais))
+		d = {'action': 'start', 'ais': [], 'gametype': ais[0].type.id, 'requestid': reqid}
+		for ai in ais:
+			d['ais'].append(str(ai.id) + 'v' + str(ai.lastest_version().version_id))
 		self.requests[reqid] = d
 		self.send_dict(d)
 		self.requests[reqid]["queue"] = Queue()
-		self.requests[reqid]["ai0"] = ais[0][0]
-		self.requests[reqid]["ai1"] = ais[1][0]
-		Activity("Backend[{}]: Spiel mit {} gestartet".format(reqid, [ai.name for ai, version in ais]))
+		self.requests[reqid]["ai0"] = ais[0]
+		self.requests[reqid]["ai1"] = ais[1]
+		Activity("Backend[{}]: Spiel mit {} gestartet".format(reqid, [ai.name for ai in ais]))
 		return reqid
 
 	def request_qualify(self, ai):
-		return self.request_game([str(ai.id) + "v" + str(ai.lastest_version().version_id), "-1v1"])
+		reqid = self.lastest_request_id
+		self.lastest_request_id += 1
+		d = {'action': 'qualify', 'id': str(ai.id)+'v'+str(ai.lastest_version().version_id),
+			'gametype': ai.type.id, "requestid": reqid}
+		self.requests[reqid] = d
+		self.send_dict(d)
+		self.requests[reqid]["queue"] = Queue()
+		Activity("Backend[{}]: Quali-Spiel mit '{}' gestartet".format(reqid, ai.name))
+		return reqid
 
 	def send_dict(self, d):
 		if not self.is_connected():

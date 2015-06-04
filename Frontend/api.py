@@ -220,6 +220,8 @@ def api_user_update(id):
 
 	a.extratext += str(user)
 
+	flash("Änderungen gespeichert.", "info")
+
 	return {"error": False, "user": user.info()}, 200
 
 
@@ -256,7 +258,7 @@ def api_user_password_reset_with_token(id, token):
 		db.session.commit()
 		login_user(user)
 		flash("Du kannst dein Passwort jetzt in deinen Profil-Einstellungen ändern.", "info")
-		return redirect("/")
+		return redirect("/profile")
 
 	flash("Dieser Link ist nicht gültig.", "warning")
 	return redirect("/")
@@ -824,8 +826,7 @@ def start_game():
 	if not any([current_user.can_access(ai) for ai in ais]):
 		return CommonErrors.NO_ACCESS
 
-	ai_versions = [(ai, ai.lastest_version()) for ai in ais]
-	backend.request_game(ai_versions)
+	backend.request_game(ais)
 
 	return {"error": False}
 

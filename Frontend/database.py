@@ -165,7 +165,7 @@ class User(db.Model):
 
 
 	def info(self):
-		return {"id": self.id, "name": self.name, "ais": [ai.info() for ai in self.ai_list], "admin": self.admin}
+		return {"id": self.id, "name": self.name, "ais": [ai.info() for ai in self.ai_list]}
 
 	@ftp.failsafe_locked
 	def icon(self):
