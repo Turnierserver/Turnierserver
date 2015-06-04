@@ -7,15 +7,15 @@ public class GameFinished {
 	/**
 	 * Die Scores der AIs
 	 */
-	public Map<Integer, Integer> scores;
+	public Map<String, Integer> scores;
 	/**
 	 * Die Position der AIs, sortiert nach Score
 	 */
-	public Map<Integer, Integer> position;
+	public Map<String, Integer> position;
 	/**
 	 * Die übrigen Rechenpunkte
 	 */
-	public Map<Integer, Integer> leftoverMillis;
+	public Map<String, Integer> leftoverMillis;
 	/**
 	 * Die requestid des Frontendauftrages
 	 */

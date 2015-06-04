@@ -16,7 +16,7 @@ public interface Ai
 	 * 
 	 * @return Die ID der Ai
 	 */
-	public int getId ();
+	public String getId ();
 	
 	/**
 	 * Sendet eine Nachricht an die Ai
