@@ -44,6 +44,7 @@ using namespace std;
 
 Evaluator::Evaluator(const BuildInstructions &instructions)
 	: _instructions(instructions)
+	, pwCache(QSettings::IniFormat, QSettings::UserScope, "Pixelgaffer", "GameBuilder")
 {
 }
 
@@ -195,17 +196,33 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 				QTextStream in(stdin);
 				mgr = new QNetworkAccessManager;
 				
+				pwCache.beginGroup("pwCache");
+				
 				// host fragen
 				if (host.isEmpty())
 				{
-					printf("Host: ");
-					in >> host;
+					QString def = pwCache.value("host").toString();
+					if (def.isEmpty())
+						printf("Host: ");
+					else
+						printf("Host(%s): ", qPrintable(def));
+					host = in.readLine();
+					if (host.isEmpty())
+						host = def;
+					pwCache.setValue("host", host);
 				}
 				// benutzer fragen
 				if (email.isEmpty())
 				{
-					printf("E-Mail: ");
-					in >> email;
+					QString def = pwCache.value("mail").toString();
+					if (def.isEmpty())
+						printf("E-Mail: ");
+					else
+						printf("E-Mail(%s): ", qPrintable(def));
+					email = in.readLine();
+					if (email.isEmpty())
+						email = def;
+					pwCache.setValue("mail", email);
 				}
 				// passwort fragen
 				if (pass.isEmpty())
@@ -232,13 +249,15 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 					
 					string s;
 					getline(cin, s);
-					pass = s;
+					pass = s.data();
 					
 					SetConsoleMode(hStdin, mode);
 #else
 					in >> pass;
 #endif
 				}
+				
+				pwCache.endGroup();
 				
 				// anmelden
 				QNetworkRequest loginRequest("http://" + host + "/api/login"); // sollte https werden

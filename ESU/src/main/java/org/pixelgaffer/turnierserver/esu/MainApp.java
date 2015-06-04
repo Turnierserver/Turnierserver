@@ -37,6 +37,7 @@ import org.pixelgaffer.turnierserver.esu.view.ControllerAiManagement;
 import org.pixelgaffer.turnierserver.esu.view.ControllerGameManagement;
 import org.pixelgaffer.turnierserver.esu.view.ControllerRanking;
 import org.pixelgaffer.turnierserver.esu.view.ControllerRoot;
+import org.pixelgaffer.turnierserver.esu.view.ControllerSettings;
 import org.pixelgaffer.turnierserver.esu.view.ControllerStartPage;
 import org.pixelgaffer.turnierserver.esu.view.ControllerSubmission;
 
@@ -49,6 +50,7 @@ public class MainApp extends Application {
 	public ControllerGameManagement cGame;
 	public ControllerRanking cRanking;
 	public ControllerSubmission cSubmission;
+	public ControllerSettings cSettings;
 
 	public WebConnector webConnector = new WebConnector("http://192.168.178.43:5000/api/", "192.168.178.43");// "http://thuermchen.com/api/");
 	public GameManager gameManager = new GameManager();
