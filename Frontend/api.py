@@ -7,6 +7,9 @@ from sqlalchemy.orm.exc import NoResultFound
 import json
 import magic
 import time
+import zipfile
+import tempfile
+import os
 
 from database import AI, User, Game, Lang, GameType, db, populate, ftp
 from backend import backend
@@ -421,12 +424,25 @@ def api_ai_create():
 	name = request.args.get('name', 'unbenannte ki')
 	desc = request.args.get('desc', 'unbeschriebene ki')
 	## lang fix setzen
-	lang = Lang.query.get(request.args.get('lang', -1))
-	type = Lang.query.get(request.args.get('type', -1))
-	##
+
+	lang = request.args.get('lang')
+	if not lang:
+		return {"error": "Language not specified."}, 400
+
+	lang = Lang.query.get(lang)
+
+	type = request.args.get('type')
+	if type:
+		type = Lang.query.get(type)
+		if not type:
+			return {"error": "Invalid type."}, 400
+	else:
+		type = GameType.lastest()
+
 	if not lang:
 		return {'error', 'Invalid Language'}, 404
-	ai = AI(name=name, user=current_user, desc=desc, lang=lang)
+
+	ai = AI(name=name, user=current_user, desc=desc, lang=lang, type=type)
 	db.session.add(ai)
 	# es muss zur Datenbank geschrieben werden, um die ID zu bekommen
 	db.session.commit()
@@ -665,7 +681,7 @@ def api_ai_compile_blocking(id):
 
 	compile_log = ""
 
-	error = False
+	error = None
 	while True:
 		resp = backend.lock_for_req(reqid, timeout=5*20)
 		b_req = backend.request(reqid)
@@ -728,6 +744,36 @@ def ai_new_version(id):
 		return CommonErrors.NO_ACCESS
 
 	ai.new_version()
+	return {"error": False}, 200
+
+@api.route("/ai/<int:id>/new_version_from_zip", methods=["POST"])
+@json_out
+@authenticated
+def ai_new_version_from_zip(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+
+	ai.new_version()
+
+
+
+	tmpdir = tempfile.mkdtemp()
+	_, tmpzip = tempfile.mkstemp()
+	with open(tmpzip, "wb") as f:
+		f.write(request.data)
+
+	try:
+		with zipfile.ZipFile(tmpzip) as z:
+			z.extractall(tmpdir)
+	except zipfile.BadZipFile:
+		return {"error": "Bad zip file."}, 400
+
+	if not ftp.upload_tree(tmpdir, "AIs/{}/v{}".format(ai.id, ai.lastest_version().version_id)):
+		return CommonErrors.FTP_ERROR
+
 	return {"error": False}, 200
 
 
