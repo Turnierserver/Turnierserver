@@ -27,6 +27,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import org.pixelgaffer.turnierserver.Parsers;
+import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCommandProcessed;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendResult;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
@@ -194,6 +195,15 @@ public class Games
 					return;
 			getLogic().startGame(this);
 			started = true;
+			try
+			{
+				BackendFrontendConnectionHandler.getFrontend().sendMessage(
+						Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(getRequestId(), "started")));
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 	
