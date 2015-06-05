@@ -2,7 +2,6 @@ package org.pixelgaffer.turnierserver.codr.view;
 
 
 import java.awt.Desktop;
-import java.awt.event.InputEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -10,6 +9,7 @@ import java.net.URL;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -20,7 +20,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
@@ -125,15 +124,23 @@ public class ControllerStartPage {
 	
 	
 	public void updateLoggedIn() {
-		if (mainApp.webConnector.isLoggedIn()) {
-			vbLogin.getChildren().clear();
-			vbLogin.getChildren().add(lbLogin);
-			vbLogin.getChildren().add(btLogout);
-		} else {
-			vbLogin.getChildren().clear();
-			vbLogin.getChildren().add(lbLogin);
-			vbLogin.getChildren().add(gpLogin);
-		}
+		new Thread(new Task<Object>() {
+			public Object call() {
+				System.out.println("logintest");
+				if (MainApp.webConnector.isLoggedIn()) {
+					vbLogin.getChildren().clear();
+					vbLogin.getChildren().add(lbLogin);
+					vbLogin.getChildren().add(btLogout);
+				} else {
+					vbLogin.getChildren().clear();
+					vbLogin.getChildren().add(lbLogin);
+					vbLogin.getChildren().add(gpLogin);
+				}
+				System.out.println("logintest fertig");
+				return null;
+			}
+		}).start();
+		
 	}
 	
 	

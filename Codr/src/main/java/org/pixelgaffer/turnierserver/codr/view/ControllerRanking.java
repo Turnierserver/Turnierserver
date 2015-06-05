@@ -129,10 +129,10 @@ public class ControllerRanking {
 		tvAis.getColumns().add(col2);
 		tvAis.getColumns().add(col3);
 		
-		TableColumn<Version, String> colV0 = new TableColumn("Version");
-		TableColumn<Version, String> colV1 = new TableColumn("Kompiliert");
-		TableColumn<Version, String> colV2 = new TableColumn("Qualifiziert");
-		TableColumn<Version, String> colV3 = new TableColumn("Fertiggestellt");
+		TableColumn<Version, String> colV0 = new TableColumn<>("Version");
+		TableColumn<Version, String> colV1 = new TableColumn<>("Kompiliert");
+		TableColumn<Version, String> colV2 = new TableColumn<>("Qualifiziert");
+		TableColumn<Version, String> colV3 = new TableColumn<>("Fertiggestellt");
 		
 		colV0.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
 			
@@ -167,8 +167,11 @@ public class ControllerRanking {
 					return new SimpleStringProperty("Nein");
 			}
 		});
-		
-		tvVersions.getColumns().addAll(colV0, colV1, colV2, colV3);
+
+		tvVersions.getColumns().add(colV0);
+		tvVersions.getColumns().add(colV1);
+		tvVersions.getColumns().add(colV2);
+		tvVersions.getColumns().add(colV3);
 		
 	}
 	

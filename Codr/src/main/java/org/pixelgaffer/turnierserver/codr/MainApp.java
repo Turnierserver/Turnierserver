@@ -136,7 +136,7 @@ public class MainApp extends Application {
 				} catch (NothingDoneException e) {
 				} catch (IOException e) {
 				}
-				
+
 				updateMessage("Sprachen werden geladen");
 				
 				try {
@@ -244,7 +244,6 @@ public class MainApp extends Application {
 	
 	
 	public void showMainStage() {
-		
 		
 		BorderPane root = new BorderPane();
 		try {
