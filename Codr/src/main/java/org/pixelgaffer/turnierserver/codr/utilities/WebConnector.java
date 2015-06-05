@@ -4,16 +4,21 @@ package org.pixelgaffer.turnierserver.codr.utilities;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import javafx.collections.FXCollections;
@@ -53,7 +58,8 @@ import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
 public class WebConnector {
 	
 	private final String url;
-	private final String cookieUrl;
+	
+	private DateFormat cookieDateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.UK);
 	
 	private CookieStore cookies = new BasicCookieStore();
 	private CloseableHttpClient http = HttpClients.custom().setDefaultCookieStore(cookies).build();
@@ -66,9 +72,8 @@ public class WebConnector {
 	 *            Die URL der API (z.B. http://www.thuermchen.com/api/ <- Der
 	 *            '/' muss da sein)
 	 */
-	public WebConnector(final String url, final String cookieUrl) {
+	public WebConnector(final String url) {
 		this.url = url;
-		this.cookieUrl = cookieUrl;
 		readFromFile();
 	}
 	
@@ -191,7 +196,7 @@ public class WebConnector {
 			}
 			boolean result = sendPost("loggedin") != null;
 			if (!result) {
-				setTokens(null, null);
+				cookies.getCookies().clear();
 			}
 			return result;
 		} catch (IOException e) {
@@ -570,24 +575,6 @@ public class WebConnector {
 	
 	
 	/**
-	 * Setzt die Tokens einer Session
-	 * 
-	 * @param rememberToken
-	 *            Den Remember Token
-	 * @param sessionToken
-	 *            Den Session Token
-	 */
-	public void setTokens(String rememberToken, String sessionToken) {
-		if (rememberToken == null || sessionToken == null) {
-			cookies.clear();
-			return;
-		}
-		cookies.addCookie(createCookie("remember_token", rememberToken));
-		cookies.addCookie(createCookie("session", sessionToken));
-	}
-	
-	
-	/**
 	 * Gibt den Session Token zurück
 	 * 
 	 * @return Den Session Token der Session
@@ -615,10 +602,25 @@ public class WebConnector {
 	public void saveToFile() {
 		File file = new File(Paths.sessionFile());
 		try {
-			file.createNewFile();
-			FileUtils.write(file, (getSession() == null ? "" : getSession()) + System.lineSeparator() + (getRememberToken() == null ? "" : getRememberToken()), false);
+			Properties p = new Properties();
+			List<Cookie> cookies = this.cookies.getCookies();
+			
+			p.setProperty("session.cookies", Integer.toString(cookies.size()));
+			for (int i = 0; i < cookies.size(); i++)
+			{
+				Cookie c = cookies.get(i);
+				p.setProperty("session.cookies." + i + ".domain", c.getDomain());
+				if (c.getExpiryDate() != null)
+					p.setProperty("session.cookies." + i + ".expiry", cookieDateFormat.format(c.getExpiryDate()));
+				p.setProperty("session.cookies." + i + ".name", c.getName());
+				p.setProperty("session.cookies." + i + ".path", c.getPath());
+				p.setProperty("session.cookies." + i + ".value", c.getValue());
+				p.setProperty("session.cookies." + i + ".version", Integer.toString(c.getVersion()));
+			}
+			
+			p.store(new FileOutputStream(file), "Die Session von Codr");
 		} catch (IOException e) {
-			ErrorLog.write("ERROR SAVING SESSION: " + e.getMessage());
+			ErrorLog.write("Fehler beim Speichern der Session: " + e.getMessage());
 			return;
 		}
 	}
@@ -633,13 +635,29 @@ public class WebConnector {
 			if (!file.exists()) {
 				return;
 			}
-			String[] tokens = FileUtils.readFileToString(file).split("\n");
-			if (tokens.length != 2) {
-				return;
+			
+			Properties p = new Properties();
+			p.load(new FileInputStream(file));
+			
+			int cookies = Integer.parseInt(p.getProperty("session.cookies"));
+			for (int i = 0; i < cookies; i++)
+			{
+				String name = p.getProperty("session.cookies." + i + ".name");
+				String value = p.getProperty("session.cookies." + i + ".value");
+				BasicClientCookie c = new BasicClientCookie(name, value);
+				c.setDomain(p.getProperty("session.cookies." + i + ".domain"));
+				if (p.containsKey("session.cookies." + i + ".expiry"))
+					c.setExpiryDate(cookieDateFormat.parse(p.getProperty("session.cookies." + i + ".expiry")));
+				else
+					c.setExpiryDate(null);
+				c.setPath(p.getProperty("session.cookies." + i + ".path"));
+				c.setVersion(Integer.parseInt(p.getProperty("session.cookies." + i + ".version")));
+				System.out.println("Cookie geladen: " + c);
+				this.cookies.addCookie(c);
 			}
-			setTokens(tokens[1].isEmpty() ? null : tokens[1], tokens[0].isEmpty() ? null : tokens[0]);
-		} catch (IOException e) {
-			ErrorLog.write("ERROR SAVING SESSION: " + e.getMessage());
+			
+		} catch (IOException | ParseException e) {
+			ErrorLog.write("Fehler beim Laden der Session: " + e.getMessage());
 			return;
 		}
 	}
@@ -773,15 +791,4 @@ public class WebConnector {
 		
 		return responseContent.toByteArray();
 	}
-	
-	
-	public Cookie createCookie(String key, String value) {
-		BasicClientCookie cookie = new BasicClientCookie(key, value);
-		cookie.setCreationDate(new Date(System.currentTimeMillis()));
-		cookie.setSecure(false);
-		cookie.setDomain(cookieUrl);
-		cookie.setPath("/");
-		return cookie;
-	}
-	
 }
