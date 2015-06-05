@@ -65,6 +65,11 @@ public class CodrAiWrapper implements Ai
 		ErrorLog.write("Die KI " + id + " wurde aufgerufen.");
 	}
 	
+	public void receiveMessage (byte message[])
+	{
+		throw new UnsupportedOperationException();
+	}
+	
 	@Override
 	public void sendMessage (byte[] message) throws IOException
 	{

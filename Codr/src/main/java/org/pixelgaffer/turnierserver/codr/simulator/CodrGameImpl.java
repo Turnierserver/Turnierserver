@@ -51,6 +51,11 @@ public class CodrGameImpl implements Game, Frontend
 	
 	private Map<UUID, CodrAiWrapper> aiWrappers = new HashMap<>();
 	
+	public CodrAiWrapper getAi (UUID uuid)
+	{
+		return aiWrappers.get(uuid);
+	}
+	
 	@Getter
 	private List<CodrAiWrapper> ais;
 	
@@ -69,9 +74,10 @@ public class CodrGameImpl implements Game, Frontend
 	
 	private OutputStream renderData;
 	
-	public CodrGameImpl (CodrGame game, Collection<Version> opponents) throws IOException
+	public CodrGameImpl (CodrGame game, Collection<Version> opponents) throws IOException, ReflectiveOperationException
 	{
 		renderData = new FileOutputStream(Paths.gameRenderData(game));
+		logic = loadGameLogic(game.logic);
 		
 		for (Version v : opponents)
 		{
