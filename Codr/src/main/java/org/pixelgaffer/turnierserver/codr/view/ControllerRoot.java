@@ -44,7 +44,7 @@ public class ControllerRoot {
 			anchorStartPage = (AnchorPane) loader.load();
 			tabStartPage.setContent(anchorStartPage);
 			((ControllerStartPage) loader.getController()).setMainApp(mainApp);
-			
+
 			loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("AiManagement.fxml"));
 			anchorKiManagement = (AnchorPane) loader.load();

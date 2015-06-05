@@ -55,11 +55,8 @@ public class ControllerRanking {
 	public void setMainApp(MainApp app) {
 		mainApp = app;
 		mainApp.cRanking = this;
-		tvAis.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<CodrAi>() {
-			
-			@Override public void changed(ObservableValue<? extends CodrAi> observable, CodrAi oldValue, CodrAi newValue) {
-				clickChangeAi(newValue);
-			}
+		tvAis.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+			clickChangeAi(newValue);
 		});
 		
 		loadOnlineAis();
@@ -167,7 +164,7 @@ public class ControllerRanking {
 					return new SimpleStringProperty("Nein");
 			}
 		});
-
+		
 		tvVersions.getColumns().add(colV0);
 		tvVersions.getColumns().add(colV1);
 		tvVersions.getColumns().add(colV2);

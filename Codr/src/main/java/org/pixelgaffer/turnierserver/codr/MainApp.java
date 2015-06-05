@@ -31,17 +31,16 @@ import javafx.util.Duration;
 
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.codr.utilities.Resources;
-import org.pixelgaffer.turnierserver.codr.utilities.Settings;
-import org.pixelgaffer.turnierserver.codr.utilities.WebConnector;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NothingDoneException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
+import org.pixelgaffer.turnierserver.codr.utilities.Resources;
+import org.pixelgaffer.turnierserver.codr.utilities.Settings;
+import org.pixelgaffer.turnierserver.codr.utilities.WebConnector;
 import org.pixelgaffer.turnierserver.codr.view.ControllerAiManagement;
 import org.pixelgaffer.turnierserver.codr.view.ControllerGameManagement;
 import org.pixelgaffer.turnierserver.codr.view.ControllerRanking;
 import org.pixelgaffer.turnierserver.codr.view.ControllerRoot;
-import org.pixelgaffer.turnierserver.codr.view.ControllerSettings;
 import org.pixelgaffer.turnierserver.codr.view.ControllerStartPage;
 import org.pixelgaffer.turnierserver.codr.view.ControllerSubmission;
 
@@ -56,7 +55,6 @@ public class MainApp extends Application {
 	public ControllerGameManagement cGame;
 	public ControllerRanking cRanking;
 	public ControllerSubmission cSubmission;
-	public ControllerSettings cSettings;
 	
 	public static Settings settings;
 	
@@ -128,37 +126,29 @@ public class MainApp extends Application {
 			@Override protected Object call() throws InterruptedException {
 				
 				try {
-					webConnector.updateGametypes();
+					webConnector.updateGametypes();  // TODO: Timeout
 				} catch (NewException e) {
-					//gametypes = e.newValues;
-					updateValue(e.newValues);
+					gametypes = e.newValues;
 					updateMessage("neue Spieltypen");
 				} catch (UpdateException e) {
 				} catch (NothingDoneException e) {
 				} catch (IOException e) {
 				}
 				
-				
 				try {
-					webConnector.updateLanguages();
+					webConnector.updateLanguages();  // TODO: Timeout
 				} catch (NewException e) {
-					//languages = e.newValues;
-					updateValue(e.newValues);
+					languages = e.newValues;
 					updateMessage("neue Sprachen");
 				} catch (NothingDoneException e) {
 				} catch (IOException e) {
 				}
-				System.out.println("Laden fertig");
+				
+				updateMessage("laden fertig");
 				return null;
 			}
 		};
-
-		updateTask.valueProperty().addListener(new ChangeListener<String>() {
-			
-			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				onlineResourcesFinished(newValue);
-			}
-		});
+		
 		updateTask.messageProperty().addListener(new ChangeListener<String>() {
 			
 			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -172,40 +162,50 @@ public class MainApp extends Application {
 		new Thread(updateTask).start();
 	}
 	
-	 
-	public void onlineResourcesFinished(String text){
-		switch (text){
-			case "neue Spieltypen":
-				if (Dialog.okAbort("Neue Spieltypen sind verfügbar. Wollen Sie zum aktuellen wechseln?")) {
-					cStart.cbGameTypes.getSelectionModel().selectLast();
-				}
-				break;
-			case "neue Sprachen":
-				//languages = ;
-				Dialog.info("Neue Sprachen sind verfügbar");
-				break;
-			case "laden fertig":
-				if (cStart != null)
-					cStart.prOnlineResources.setVisible(false);
-				break;
+	
+	public void onlineResourcesFinished(String text) {
+		switch (text) {
+		case "neue Spieltypen":
+			if (Dialog.okAbort("Neue Spieltypen sind verfügbar. Wollen Sie zum aktuellen wechseln?")) {
+				cStart.cbGameTypes.getSelectionModel().selectLast();
+			}
+			break;
+		case "neue Sprachen":
+			// languages = ;
+			Dialog.info("Neue Sprachen sind verfügbar");
+			break;
+		case "laden fertig":
+			if (cStart != null) {
+				cStart.prOnlineResources.setVisible(false);
+			}
+			break;
 		}
 	}
 	
 	
 	public static void loadOnlineAis() {
-		ObservableList<CodrAi> newOwnOnline = null;  // MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
-		ObservableList<CodrAi> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
+		new Thread(new Task<Object>() {
+			
+			public Object call() {
+				ObservableList<CodrAi> newOwnOnline = null;
+				if (MainApp.webConnector.isLoggedIn()) {
+					newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+				}
+				ObservableList<CodrAi> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
+				if (newOwnOnline != null)
+					ownOnlineAis = newOwnOnline;
+				if (newOnline != null)
+					onlineAis = newOnline;
+				return null;
+			}
+		}).start();
 		
-		if (newOwnOnline != null)
-			ownOnlineAis = newOwnOnline;
-		if (newOnline != null)
-			onlineAis = newOnline;
 	}
 	
 	
 	public void showSplashStage(Stage splashStage) {
 		
-		final Task updateTask = new Task() {
+		final Task<Object> updateTask = new Task<Object>() {
 			
 			@Override protected Object call() throws InterruptedException {
 				
@@ -268,7 +268,7 @@ public class MainApp extends Application {
 			if (newState == Worker.State.SUCCEEDED) {
 				FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1), splashLayout);
 				fadeSplash.setFromValue(1.0);
-				fadeSplash.setToValue(0.5);
+				fadeSplash.setToValue(0);
 				fadeSplash.setOnFinished(actionEvent -> splashStage.hide());
 				fadeSplash.play();
 				

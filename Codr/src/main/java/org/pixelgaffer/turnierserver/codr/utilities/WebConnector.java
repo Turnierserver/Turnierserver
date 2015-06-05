@@ -236,7 +236,12 @@ public class WebConnector {
 	 * @throws IOException
 	 */
 	public Image getImage(int id) throws IOException {
-		return new Image(new ByteArrayInputStream(sendGet("ai/" + id + "/icon")));
+		try {
+			return new Image(new ByteArrayInputStream(sendGet("ai/" + id + "/icon")));
+		} catch (NullPointerException e) {
+			ErrorLog.write("Konnte das Bild von " + id + " nicht empfangen.");
+			return null;
+		}
 	}
 	
 	

@@ -30,7 +30,6 @@ import org.w3c.dom.Document;
 
 public class CodeEditor {
 	
-	private TextArea ta; // TODO: nur Übergangslösung --> löschen
 	
 	private String savedText = "";
 	private File document;
