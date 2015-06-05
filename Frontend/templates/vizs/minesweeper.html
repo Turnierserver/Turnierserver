@@ -25,7 +25,11 @@
 			<i class="pause icon"></i>
 		</a>
 	</div>
+	{% if not qualify %}
 	{{render_rail(ai0, "left", "left")}}
+	{% else %}
+	{{render_rail(ai, "left", "left")}}
+	{% endif %}
 	<canvas id="canvas" style="width: 100%; height: 800px;">
 		<h1>Du musst Javascript aktiviert haben, um Spiele zu sehen.</h1>
 	</canvas>
@@ -33,7 +37,9 @@
 	<div id="download_progress" class="ui bottom attached progress" data-percent="0">
 		<div class="bar" style="transition-duration: 300ms; width: 0%;"></div>
 	</div>
+	{% if not qualify %}
 	{{render_rail(ai0, "right", "right")}}
+	{% endif %}
 </div>
 
 <script>

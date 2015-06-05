@@ -137,35 +137,5 @@ def manage(manager, app):
 					continue
 				ai.lastest_version().compiled = True
 				print("Compiling", ai.name)
-				reqid = backend.request_compile(ai)
-
-				while True:
-					resp = backend.lock_for_req(reqid, timeout=5*20)
-					b_req = backend.request(reqid)
-					if not resp:
-						print("\nDas Backend sendet nichts.")
-						print("\nVersuch es nochmal.")
-						error = "Das Backend sendet nichts."
-						break
-					else:
-						if "success" in resp:
-							if resp["success"]:
-								print("Anfrage erfolgreich beendet\n")
-								ai.lastest_version().compiled = True
-								db.session.commit()
-							else:
-								ai.lastest_version().compiled = False
-								db.session.commit()
-								print("Kompilierung fehlgeschlagen\n")
-								if "exception" in resp:
-									print(resp["exception"])
-								error = "Kompilierung fehlgeschlagen"
-							break
-						elif "status" in resp:
-							if resp["status"] == "processed":
-								print("Anfrage angefangen\n")
-						elif "compilelog" in resp:
-							print(resp["compilelog"])
-						else:
-							# Falls die Antwort vom Backend nicht verstanden wurde.
-							print("B: " + str(resp) + "\n")
+				for data, event in backend.compile(ai):
+					print(event, ":", data)

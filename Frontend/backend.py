@@ -56,6 +56,56 @@ class Backend(threading.Thread):
 		return reqid
 
 
+	def compile(self, ai):
+		reqid = self.request_compile(ai)
+		yield ("compiling", "status")
+		yield ("F: Kompilierung mit ID {} angefangen.\n".format(reqid), "set_text")
+
+		timed_out = 0
+		char_before_timeout = None
+		while True:
+			resp = backend.lock_for_req(reqid, timeout=5)
+			b_req = backend.request(reqid)
+			if not resp:
+				yield (".", "log")
+				timed_out += 1
+				if timed_out > 20:
+					yield ("\nDas Backend sendet nichts.", "log")
+					yield ("\nVersuch es nochmal.", "log")
+					yield ("Das Backend sendet nichts.", "error")
+					return
+			else:
+				if timed_out > 0:
+					if char_before_timeout == "\n":
+						yield ("\n", "log")
+					else:
+						yield (" ", "log")
+				timed_out = 0
+				if "success" in resp:
+					if resp["success"]:
+						yield ("Anfrage erfolgreich beendet\n", "log")
+						ai.lastest_version().compiled = True
+						db.session.commit()
+					else:
+						ai.lastest_version().compiled = False
+						db.session.commit()
+						yield ("Kompilierung fehlgeschlagen\n", "log")
+						if "exception" in resp:
+							yield (resp["exception"], "log")
+						yield ("Kompilierung fehlgeschlagen", "error")
+					return
+				elif "status" in resp:
+					if resp["status"] == "processed":
+						yield ("Anfrage angefangen\n", "log")
+				elif "compilelog" in resp:
+					yield (resp["compilelog"], "log")
+					if len(resp["compilelog"]) > 0:
+						char_before_timeout = resp["compilelog"][-1]
+				else:
+					# Falls die Antwort vom Backend nicht verstanden wurde.
+					yield ("B: " + str(resp) + "\n", "log")
+
+
 	def request_game(self, ais):
 		reqid = self.lastest_request_id
 		self.lastest_request_id += 1

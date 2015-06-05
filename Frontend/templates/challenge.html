@@ -11,7 +11,7 @@ Deine:
 	</div>
 	<div class="menu transition hidden">
 	{% for ai in own %}
-		<div class="item" data-value="{{ ai.id }}">
+		<div class="{% if allfirst.id == ai.id %}disabled{% endif %} item" data-value="{{ ai.id }}">
 			<img class="ui mini avatar image" src="/api/ai/{{ ai.id }}/icon">
 			{{ ai.name }}
 		</div>
@@ -49,6 +49,16 @@ Gegen:
 	$("#own_dropdown").on("change", function() {
 		$("#all_dropdown .menu .item").each(function () {
 			if ($(this).attr("data-value") == $("#ai1").val()) {
+				$(this).addClass("disabled")
+			} else {
+				$(this).removeClass("disabled")
+			}
+		})
+	})
+
+	$("#all_dropdown").on("change", function() {
+		$("#own_dropdown .menu .item").each(function () {
+			if ($(this).attr("data-value") == $("#ai2").val()) {
 				$(this).addClass("disabled")
 			} else {
 				$(this).removeClass("disabled")

@@ -122,6 +122,16 @@ def file_browser(id, path=""):
 		return render_template("ai_file_browser.html", connected=False, ai=ai)
 
 
+@profile.route("/ai/<int:id>/qualify")
+@authenticated_web
+def qualify_ai(id):
+	ai = AI.query.get(id)
+	if not ai:
+		abort(404)
+	if not current_user.can_access(ai):
+		abort(401)
+
+	return render_template(ai.type.viz, ai=ai, qualify=True)
 
 
 @profile.route("/ais/challenge")

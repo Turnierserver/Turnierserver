@@ -155,7 +155,7 @@
 					{% if version.qualified %}
 					<i class="large green checkmark icon"></i>
 					{% elif version.compiled and version.current %}
-					<button class="ui basic teal button">Qualifizieren</button>
+					<a class="ui basic teal button" href="{{url_for("profile.qualify_ai", id=ai.id)}}">Qualifizieren</a>
 					{% else %}
 					<i class="large red remove icon"></i>
 					{% endif %}
@@ -180,7 +180,7 @@
 			{% endfor %}
 			<tr>
 				<td class="three wide center aligned">
-					<button id="new_version" class="ui large basic teal button">Neue Version</button>
+					<button id="new_version" class="ui large basic {% if not ai.version_list[-1].frozen %}disabled{% endif %} teal button">Neue Version</button>
 					<script>
 					$("#new_version").on("click", function() {
 						$.post("/api/ai/{{ai.id}}/new_version", {}, function () {

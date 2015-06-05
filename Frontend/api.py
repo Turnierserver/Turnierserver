@@ -603,48 +603,7 @@ def api_ai_compile(id):
 	ai.lastest_version().compiled = True
 	db.session.commit()
 
-	reqid = backend.request_compile(ai)
-	yield ("compiling", "status")
-	yield ("F: Kompilierung mit ID {} angefangen.\n".format(reqid), "set_text")
-
-	timed_out = 0
-	while True:
-		resp = backend.lock_for_req(reqid, timeout=5)
-		b_req = backend.request(reqid)
-		if not resp:
-			#yield ("F: backend timeout\n", "log")
-			yield (".", "log")
-			timed_out += 1
-			if timed_out > 20:
-				yield ("\nDas Backend sendet nichts.", "log")
-				yield ("\nVersuch es nochmal.", "log")
-				return
-		else:
-			if timed_out > 0:
-				yield ("\n", "log")
-			timed_out = 0
-			if "success" in resp:
-				if resp["success"]:
-					yield ("Anfrage erfolgreich beendet\n", "log")
-					ai.lastest_version().compiled = True
-					db.session.commit()
-				else:
-					ai.lastest_version().compiled = False
-					db.session.commit()
-					yield ("Kompilierung fehlgeschlagen\n", "log")
-					if "exception" in resp:
-						yield (resp["exception"], "log")
-				return
-			elif "status" in resp:
-				if resp["status"] == "processed":
-					yield ("Anfrage angefangen\n", "log")
-			elif "compilelog" in resp:
-				yield (resp["compilelog"], "log")
-			else:
-				# Falls die Antwort vom Backend nicht verstanden wurde.
-				yield ("B: " + str(resp) + "\n", "log")
-
-
+	yield from backend.compile(ai)
 
 @api.route("/ai/<int:id>/compile_blocking", methods=["GET"])
 @authenticated
@@ -661,43 +620,15 @@ def api_ai_compile_blocking(id):
 	ai.lastest_version().compiled = True
 	db.session.commit()
 
-	reqid = backend.request_compile(ai)
-
 	compile_log = ""
 
-	error = None
-	while True:
-		resp = backend.lock_for_req(reqid, timeout=5*20)
-		b_req = backend.request(reqid)
-		if not resp:
-			compile_log += "\nDas Backend sendet nichts."
-			compile_log += "\nVersuch es nochmal."
-			error = "Das Backend sendet nichts."
-			break
-		else:
-			if "success" in resp:
-				if resp["success"]:
-					compile_log += "Anfrage erfolgreich beendet\n"
-					ai.lastest_version().compiled = True
-					db.session.commit()
-				else:
-					ai.lastest_version().compiled = False
-					db.session.commit()
-					compile_log += "Kompilierung fehlgeschlagen\n"
-					if "exception" in resp:
-						compile_log += resp["exception"]
-					error = "Kompilierung fehlgeschlagen"
-				break
-			elif "status" in resp:
-				if resp["status"] == "processed":
-					compile_log += "Anfrage angefangen\n"
-			elif "compilelog" in resp:
-				compile_log += resp["compilelog"]
-			else:
-				# Falls die Antwort vom Backend nicht verstanden wurde.
-				compile_log += "B: " + str(resp) + "\n"
+	for data, event in backend.compile(ai):
+		if event == "log":
+			compile_log += data
+		if event == "error":
+			return {"error": data, "compilelog": copmile_log}
 
-	return {"error": error, "compilelog": compile_log}, 200
+	return {"error": None, "compilelog": compile_log}, 200
 
 
 @api.route("/ai/<int:id>/qualify", methods=["GET"])
@@ -727,6 +658,8 @@ def ai_new_version(id):
 	if not current_user.can_access(ai):
 		return CommonErrors.NO_ACCESS
 
+	if any([not v.frozen for v in ai.version_list]):
+		return {"error": "You need to freeze all prior versions to create a new one."}, 400
 	ai.new_version()
 	return {"error": False}, 200
 
@@ -740,6 +673,8 @@ def ai_new_version_from_zip(id):
 	if not current_user.can_access(ai):
 		return CommonErrors.NO_ACCESS
 
+	if any([not v.frozen for v in ai.version_list]):
+		return {"error": "You need to freeze all prior versions to create a new one."}, 400
 	ai.new_version()
 
 
@@ -939,7 +874,7 @@ def admin_ftp_sync():
 	Activity(current_user.name + " hat FTP-Sync ausgelöst.")
 	for ai in AI.query.all():
 		try:
-			ai.ftp_sync()
+			ai.updated()
 		except ftp.err:
 			print("failed to Sync " + ai.name)
 	return {"error": False}

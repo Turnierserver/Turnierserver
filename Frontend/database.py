@@ -273,6 +273,8 @@ class AI(db.Model):
 
 	def __init__(self, *args, **kwargs):
 		super(AI, self).__init__(*args, **kwargs)
+		db.session.add(self)
+		db.session.commit()
 		self.lastest_version()
 		self.updated(True)
 
@@ -315,6 +317,8 @@ class AI(db.Model):
 			self.ftp_sync()
 		except ftp.err:
 			pass
+		if any([not v.frozen for v in self.version_list]):
+			return False
 		self.version_list.append(AI_Version(version_id = len(self.version_list) + 1))
 		if len(self.version_list) > 1:
 			## copy AI code from prev version...
@@ -444,6 +448,9 @@ class AI_Version(db.Model):
 	@property
 	def current(self):
 		return self.ai.lastest_version() == self
+
+	def freeze(self):
+		self.frozen = True
 
 	def __repr__(self):
 		return "<AI_Version(id={}, version_id={}, ai_id={}>".format(self.id, self.version_id, self.ai_id)
