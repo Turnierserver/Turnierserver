@@ -188,6 +188,7 @@ public class Patcher implements Runnable
 				{
 					for (GHCommit.File file : commit.getFiles())
 					{
+						System.out.println(file.getFileName());
 						directoriesModified.add(file.getFileName().split("/")[4]);
 					}
 				}
