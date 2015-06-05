@@ -149,7 +149,7 @@ public class ControllerGameManagement {
 						List<Version> players = new ArrayList<>();
 						players.add(lvPlayer1.getSelectionModel().getSelectedItem().lastVersion());
 						players.add(lvPlayer2.getSelectionModel().getSelectedItem().lastVersion());
-						game.play(players);
+						runningGame.play(players);
 						return true;
 					}
 				};

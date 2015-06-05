@@ -180,7 +180,6 @@ public class CodrGame
 	
 	public void play (List<Version> opponents)
 	{
-		
 		try
 		{
 			game = new CodrGameImpl(this, opponents);
