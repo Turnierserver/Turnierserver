@@ -390,8 +390,8 @@ public class Patcher implements Runnable
 	{
 		if (git(repoFolder, "checkout", "HEAD").waitFor() != 0)
 			return false;
-		if (git(repoFolder, "pull").waitFor() != 0)
-			return false;
+//		if (git(repoFolder, "pull").waitFor() != 0)
+//			return false;
 		if (release)
 		{
 			if (git(repoFolder, "checkout", repo.listReleases().asList().get(0).getName()).waitFor() != 0)
