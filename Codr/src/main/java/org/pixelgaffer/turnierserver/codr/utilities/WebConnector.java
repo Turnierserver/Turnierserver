@@ -242,11 +242,13 @@ public class WebConnector {
 	
 	public void uploadVersion(Version version, int id) throws ZipException, IOException {
 		HttpPost post = new HttpPost("ai/" + id + "/new_version_from_zip");
-		ZipFile zip = new ZipFile(Files.createTempFile(version.ai.title + "v" + version.number + System.currentTimeMillis(), ".zip").toFile());
+		File file = Files.createTempFile(version.ai.title + "v" + version.number + System.currentTimeMillis(), ".zip").toFile();
+		ZipFile zip = new ZipFile(file);
 		ZipParameters params = new ZipParameters();
 		params.setIncludeRootFolder(false);
-		zip.createZipFileFromFolder(new File(Paths.version(version)), params, false, -1);
+		zip.addFolder(new File(Paths.version(version)), params);
 		post.setEntity(new ByteArrayEntity(FileUtils.readFileToByteArray(zip.getFile())));
+		file.delete();
 		HttpResponse response = http.execute(post);
 		if (getOutput(response.getEntity().getContent()) == null) {
 			throw new IOException("Konnte nicht zum Server verbinden");
