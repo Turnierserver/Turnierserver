@@ -113,7 +113,7 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 			}
 		}
 		logger.info("Alle Ais haben verloren, das Spiel wird nun beendet!");
-		gameFinished();
+		endGame();
 	}
 	
 	@Override
@@ -188,7 +188,6 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	
 	private void check() {
 		if(finished.size() != game.getAis().size()) {
-			gameFinished();
 			return;
 		}
 		

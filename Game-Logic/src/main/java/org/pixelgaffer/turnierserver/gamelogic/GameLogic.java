@@ -191,6 +191,8 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * Beendet das Spiel (Die scores müssen davor gesetzt werden!)
 	 */
 	public void endGame() {
+		gameFinished();
+		
 		GameFinished message = new GameFinished();
 		message.leftoverMillis = new HashMap<>();
 		message.scores = new HashMap<>();
