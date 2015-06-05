@@ -23,7 +23,7 @@ public class CodrAiServer extends Thread
 		super("CodrAiServer");
 		game = gameImpl;
 		
-		server = new ServerSocket(0, 0, InetAddress.getLocalHost());
+		server = new ServerSocket(0, 0, InetAddress.getLoopbackAddress());
 		// Port 0 heißt dass irgendein Port benutzt wird
 	}
 	
@@ -35,7 +35,7 @@ public class CodrAiServer extends Thread
 			try
 			{
 				Socket s = server.accept();
-				if (!s.getInetAddress().equals(InetAddress.getLocalHost()))
+				if (!s.getInetAddress().equals(InetAddress.getLoopbackAddress()))
 				{
 					ErrorLog.write(s.getInetAddress()
 							+ " hat sich mit dem lokalen AiServer verbunden. Verbindung getötet.");

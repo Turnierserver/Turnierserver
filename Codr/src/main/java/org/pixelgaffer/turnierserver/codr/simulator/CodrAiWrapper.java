@@ -2,6 +2,7 @@ package org.pixelgaffer.turnierserver.codr.simulator;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
 import java.util.UUID;
 
 import lombok.Getter;
@@ -30,8 +31,11 @@ public class CodrAiWrapper implements Ai
 	
 	/** Gibt an ob sich die KI schon verbunden hat. */
 	@Getter
-	@Setter
 	private boolean connected = false;
+	
+	/** Der {@link CodrAiServerConnectionHandler} dieser KI. */
+	@Getter
+	private CodrAiServerConnectionHandler connectionHandler;
 	
 	/** Die Version der KI. */
 	@Getter
@@ -57,28 +61,39 @@ public class CodrAiWrapper implements Ai
 	@Getter
 	private Process process;
 	
-	public void executeAi () throws IOException
+	public void executeAi (String propertiesFile) throws IOException
 	{
-		ProcessBuilder pb = new ProcessBuilder(getVersion().executeCommand.split("\\s"));
+		ProcessBuilder pb = new ProcessBuilder((getVersion().executeCommand + " " + propertiesFile).split("\\s"));
 		pb.directory(new File(Paths.versionBin(getVersion())));
+		System.out.println(pb.directory() + "$ " + pb.command());
+		pb.redirectError(Redirect.INHERIT);
+		pb.redirectOutput(Redirect.INHERIT);
 		process = pb.start();
 		ErrorLog.write("Die KI " + id + " wurde aufgerufen.");
 	}
 	
 	public void receiveMessage (byte message[])
 	{
-		throw new UnsupportedOperationException();
+		System.out.println("Empfange: " + new String(message));
+		game.getLogic().receiveMessage(message, this);
 	}
 	
 	@Override
 	public void sendMessage (byte[] message) throws IOException
 	{
-		throw new UnsupportedOperationException();
+		connectionHandler.send(message);
 	}
 	
 	@Override
 	public void disconnect () throws IOException
 	{
-		throw new UnsupportedOperationException();
+		connectionHandler.close();
+	}
+	
+	public void connected (@NonNull CodrAiServerConnectionHandler handler)
+	{
+		connectionHandler = handler;
+		connected = true;
+		game.aiConnected();
 	}
 }

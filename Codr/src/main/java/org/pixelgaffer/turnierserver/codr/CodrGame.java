@@ -52,6 +52,7 @@ public class CodrGame
 		else if (mode == GameMode.playing)
 		{
 			logic = idOrLogic;
+			getNewID();
 		}
 	}
 	
@@ -182,6 +183,14 @@ public class CodrGame
 			CodrGameImpl game = new CodrGameImpl(this, opponents);
 			CodrAiServer server = new CodrAiServer(game);
 			server.start();
+			
+			Properties p = new Properties();
+			p.put("turnierserver.worker.host", "localhost");
+			p.put("turnierserver.worker.server.port", Integer.toString(server.getPort()));
+			p.put("turnierserver.worker.server.aichar", "");
+			p.put("turnierserver.serializer.compress.worker", "false");
+			System.out.println(p);
+			game.startAis(p);
 		}
 		catch (IOException | ReflectiveOperationException e)
 		{

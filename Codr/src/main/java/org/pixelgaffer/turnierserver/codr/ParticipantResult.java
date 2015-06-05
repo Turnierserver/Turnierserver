@@ -8,13 +8,13 @@ import javafx.beans.property.SimpleStringProperty;
 public class ParticipantResult {
 	
 	public final CodrGame game;
-	public SimpleStringProperty number;
-	public SimpleStringProperty playerName;
-	public SimpleStringProperty kiName;
-	public SimpleStringProperty duration;
-	public SimpleStringProperty moveCount;
-	public SimpleStringProperty points;
-	public SimpleStringProperty won;
+	public SimpleStringProperty number = new SimpleStringProperty();
+	public SimpleStringProperty playerName = new SimpleStringProperty();
+	public SimpleStringProperty kiName = new SimpleStringProperty();
+	public SimpleStringProperty duration = new SimpleStringProperty();
+	public SimpleStringProperty moveCount = new SimpleStringProperty();
+	public SimpleStringProperty points = new SimpleStringProperty();
+	public SimpleStringProperty won = new SimpleStringProperty();
 	
 	
 	public ParticipantResult(CodrGame ggame, String pplayerName, String kkiName, String dduration, String mmoveCount, String ppoints, String wwon) {

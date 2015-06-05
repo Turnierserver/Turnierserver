@@ -6,10 +6,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -39,7 +42,6 @@ public class CodrGameImpl implements Game, Frontend
 		JarFile jarFile = new JarFile(jar);
 		Manifest mf = jarFile.getManifest();
 		String classname = mf.getMainAttributes().getValue("Logic-Class");
-		System.out.println(classname);
 		jarFile.close();
 		
 		// klasse laden
@@ -49,6 +51,9 @@ public class CodrGameImpl implements Game, Frontend
 		return (GameLogic<?, ?>)clazz.newInstance();
 	}
 	
+	@Getter
+	private boolean started;
+	
 	private Map<UUID, CodrAiWrapper> aiWrappers = new HashMap<>();
 	
 	public CodrAiWrapper getAi (UUID uuid)
@@ -57,7 +62,7 @@ public class CodrGameImpl implements Game, Frontend
 	}
 	
 	@Getter
-	private List<CodrAiWrapper> ais;
+	private List<CodrAiWrapper> ais = new ArrayList<>();
 	
 	UUID randomUUID ()
 	{
@@ -65,7 +70,8 @@ public class CodrGameImpl implements Game, Frontend
 		do
 		{
 			uuid = UUID.randomUUID();
-		} while (!aiWrappers.containsKey(uuid));
+		}
+		while (aiWrappers.containsKey(uuid));
 		return uuid;
 	}
 	
@@ -87,7 +93,6 @@ public class CodrGameImpl implements Game, Frontend
 			aiw.setVersion(v);
 			ais.add(aiw);
 			aiWrappers.put(aiw.getUuid(), aiw);
-			aiw.executeAi();
 		}
 	}
 	
@@ -105,6 +110,40 @@ public class CodrGameImpl implements Game, Frontend
 			renderData.close();
 		}
 		throw new UnsupportedOperationException();
+	}
+	
+	public void startAis (Properties p) throws IOException
+	{
+		for (CodrAiWrapper aiw : ais)
+		{
+			p.put("turnierserver.ai.uuid", aiw.getUuid().toString());
+			System.out.println(p);
+			File f = Files.createTempFile("ai", ".prop").toFile();
+			p.store(new FileOutputStream(f), null);
+			aiw.executeAi(f.getAbsolutePath());
+		}
+	}
+	
+	public synchronized void aiConnected ()
+	{
+		if (!isStarted())
+		{
+			boolean start = true;
+			for (CodrAiWrapper aiw : ais)
+			{
+				if (!aiw.isConnected())
+				{
+					start = false;
+					break;
+				}
+			}
+			if (start)
+			{
+				System.out.println("Alle KIs verbunden, das Spiel wird gestartet");
+				logic.startGame(this);
+				started = true;
+			}
+		}
 	}
 	
 	// Frontend iface

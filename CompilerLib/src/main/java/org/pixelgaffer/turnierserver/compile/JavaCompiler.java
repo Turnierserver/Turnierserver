@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
@@ -108,6 +109,13 @@ public class JavaCompiler extends Compiler
 		PrintWriter script = new PrintWriter(new FileOutputStream(scriptFile));
 		script.println("#!/bin/sh");
 		String mainclass = p.getProperty("mainclass");
+		if (!Pattern.matches("[a-zA-Z0-9_\\.]+", mainclass))
+		{
+			output.println(mainclass + " ist keine valide Klasse");
+			script.println("echo keine valide mainclass angegeben");
+			script.close();
+			return false;
+		}
 		if (mainclass == null)
 		{
 			output.println("failed");
@@ -119,11 +127,10 @@ public class JavaCompiler extends Compiler
 			script.close();
 			return false;
 		}
-		String command = "java -classpath '" + classpath + "' -Xmx500M '"
-				+ mainclass.replace("'", "\\'") + "' ${@}";
+		String command = "java -classpath " + classpath + " -Xmx500M " + mainclass;
 		setCommand(command);
 		script.println("echo \"" + command + "\"");
-		script.println(command);
+		script.println(command + " ${@}");
 		script.close();
 		output.println("done");
 		

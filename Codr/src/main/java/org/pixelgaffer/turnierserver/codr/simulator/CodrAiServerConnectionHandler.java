@@ -25,6 +25,18 @@ public class CodrAiServerConnectionHandler extends Thread
 	private UUID uuid;
 	private CodrAiWrapper aiw;
 	
+	public void send (byte b[]) throws IOException
+	{
+		System.out.println("Sende " + new String(b, UTF_8));
+		client.getOutputStream().write(b);
+		client.getOutputStream().flush();
+	}
+	
+	public void close () throws IOException
+	{
+		client.close();
+	}
+	
 	@Override
 	public void run ()
 	{
@@ -44,9 +56,10 @@ public class CodrAiServerConnectionHandler extends Thread
 				
 				r = buf.readLine();
 				if (r != null)
-					uuid = UUID.fromString(new String(r, UTF_8));
+					uuid = UUID.fromString(new String(r, UTF_8).trim());
 			}
 			aiw = game.getAi(uuid);
+			aiw.connected(this);
 			
 			// den Rest an die Spiellogik weiterleiten
 			while (true)
@@ -59,6 +72,7 @@ public class CodrAiServerConnectionHandler extends Thread
 				int read = in.read(line);
 				if (read < 0)
 					throw new EOFException();
+				System.out.println("Habe " + read + " Bytes empfangen");
 				buf.add(line, 0, read);
 			}
 		}

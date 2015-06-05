@@ -139,7 +139,7 @@ public class ControllerGameManagement {
 	@FXML void clickStartGame() {
 		if (btOffline.isSelected()) {
 			if (lvPlayer1.getSelectionModel().getSelectedItem() != null && lvPlayer2.getSelectionModel().getSelectedItem() != null) {
-				CodrGame game = new CodrGame(Paths.gameLogic(MainApp.actualGameType.toString()), GameMode.playing);
+				CodrGame game = new CodrGame(MainApp.actualGameType.get(), GameMode.playing);
 				List<Version> players = new ArrayList<>();
 				players.add(lvPlayer1.getSelectionModel().getSelectedItem().lastVersion());
 				players.add(lvPlayer2.getSelectionModel().getSelectedItem().lastVersion());

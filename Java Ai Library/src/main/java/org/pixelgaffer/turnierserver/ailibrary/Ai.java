@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.ailibrary;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -98,6 +99,8 @@ public abstract class Ai<E, R> implements Runnable {
 					System.exit(0);
 				}
 				String line = in.readLine();
+				if (line == null)
+					throw new EOFException();
 				logger.info("JSON erhalten: " + line);
 				R updates = Parsers.getWorker().parse(Parsers.escape(line.getBytes("UTF-8")), token.getType());
 				logger.info("Geparsed zu: " + updates);
@@ -108,7 +111,8 @@ public abstract class Ai<E, R> implements Runnable {
 				}
 			}
 		} catch (IOException e) {
-			System.exit(0);
+			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 
