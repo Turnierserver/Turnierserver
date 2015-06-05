@@ -103,13 +103,14 @@ public class CodrGameImpl implements Game, Frontend
 	}
 	
 	@Override
-	public void finishGame () throws IOException
+	public synchronized void finishGame () throws IOException
 	{
 		synchronized (renderData)
 		{
 			renderData.close();
 		}
-		throw new UnsupportedOperationException();
+		for (CodrAiWrapper aiw : ais)
+			aiw.disconnect();
 	}
 	
 	public void startAis (Properties p) throws IOException

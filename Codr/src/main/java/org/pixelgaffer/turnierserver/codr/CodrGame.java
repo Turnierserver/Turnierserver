@@ -14,6 +14,7 @@ import java.util.Properties;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import lombok.Getter;
 
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.codr.simulator.CodrAiServer;
@@ -174,13 +175,15 @@ public class CodrGame
 		ErrorLog.write("GetNewID-ERROR: Mehr als 10.000 Spielordner wurden ausprobiert: Möglicherweise gibt es keine Zugriffsberechtigung.");
 	}
 	
+	@Getter
+	private CodrGameImpl game;
 	
 	public void play (List<Version> opponents)
 	{
 		
 		try
 		{
-			CodrGameImpl game = new CodrGameImpl(this, opponents);
+			game = new CodrGameImpl(this, opponents);
 			CodrAiServer server = new CodrAiServer(game);
 			server.start();
 			

@@ -88,6 +88,7 @@ public class CodrAiWrapper implements Ai
 	public void disconnect () throws IOException
 	{
 		connectionHandler.close();
+		getProcess().destroyForcibly();
 	}
 	
 	public void connected (@NonNull CodrAiServerConnectionHandler handler)
