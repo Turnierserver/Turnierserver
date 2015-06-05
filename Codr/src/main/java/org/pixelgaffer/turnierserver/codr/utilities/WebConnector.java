@@ -245,7 +245,7 @@ public class WebConnector {
 		ZipFile zip = new ZipFile(Files.createTempFile(version.ai.title + "v" + version.number + System.currentTimeMillis(), ".zip").toFile());
 		ZipParameters params = new ZipParameters();
 		params.setIncludeRootFolder(false);
-		zip.addFolder(new File(Paths.version(version)), params);  //TODO: propablyNotAZipFile
+		zip.createZipFileFromFolder(new File(Paths.version(version)), params, false, -1);
 		post.setEntity(new ByteArrayEntity(FileUtils.readFileToByteArray(zip.getFile())));
 		HttpResponse response = http.execute(post);
 		if (getOutput(response.getEntity().getContent()) == null) {
