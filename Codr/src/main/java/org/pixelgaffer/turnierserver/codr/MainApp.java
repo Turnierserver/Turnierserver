@@ -177,8 +177,7 @@ public class MainApp extends Application {
 					webConnector.updateGametypes();
 				} catch (NewException e) {
 					gametypes = e.newValues;
-				} catch (UpdateException e) {
-				} catch (NothingDoneException e) {
+				} catch (NothingDoneException | UpdateException e) {
 				} catch (IOException e) {
 					ErrorLog.write("Bitte stellen Sie beim ersten Start eine Verbindung zum Internet her");
 					for (int i = 10; i >= 0; i--) {

@@ -36,10 +36,8 @@ public final class Exceptions {
 	
 	public static class CompileException extends Exception {
 		public String compileOutput;
-		public String errorMessage;
-		public CompileException(String compileOutput, String errorMesage) {
+		public CompileException(String compileOutput) {
 			this.compileOutput = compileOutput;
-			this.errorMessage = errorMesage;
 		}
 	}
 	

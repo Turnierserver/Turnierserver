@@ -242,11 +242,13 @@ public class WebConnector {
 	
 	public void uploadVersion(Version version, int id) throws ZipException, IOException {
 		HttpPost post = new HttpPost("ai/" + id + "/new_version_from_zip");
-		ZipFile zip = new ZipFile(Files.createTempFile(version.ai.title + "v" + version.number + System.currentTimeMillis(), ".zip").toFile());
+		File file = Files.createTempFile(version.ai.title + "v" + version.number + System.currentTimeMillis(), ".zip").toFile();
+		ZipFile zip = new ZipFile(file);
 		ZipParameters params = new ZipParameters();
 		params.setIncludeRootFolder(false);
-		zip.addFolder(new File(Paths.version(version)), params);  //TODO: propablyNotAZipFile
+		zip.addFolder(new File(Paths.version(version)), params);
 		post.setEntity(new ByteArrayEntity(FileUtils.readFileToByteArray(zip.getFile())));
+		file.delete();
 		HttpResponse response = http.execute(post);
 		if (getOutput(response.getEntity().getContent()) == null) {
 			throw new IOException("Konnte nicht zum Server verbinden");
@@ -270,16 +272,16 @@ public class WebConnector {
 	}
 	
 	
-	public String compile(Version version) throws IOException, CompileException {
-		String json = toString(sendGet("ai/" + version.ai.id + "/compile_blocking"));
+	public String compile(int id) throws IOException, CompileException {
+		String json = toString(sendGet("ai/" + id + "/compile_blocking"));
 		if (json == null) {
 			throw new IOException("Fehler bei der Verbindung mit dem Server");
 		}
 		JSONObject result = new JSONObject(json);
-		if (result.getString("error") != null) {
-			throw new CompileException(result.getString("compileoutput"), result.getString("error"));
+		if (!result.isNull("error")) {
+			throw new CompileException(result.getString("compilelog"));
 		}
-		return result.getString("compileoutput");
+		return result.getString("compilelog");
 	}
 	
 	

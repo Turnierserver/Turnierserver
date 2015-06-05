@@ -99,7 +99,7 @@ public class ControllerStartPage {
 		cbGameTypes.setItems(MainApp.gametypes);
 		cbGameTypes.getSelectionModel().selectLast();
 		
-		tbPassword.addEventHandler(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
+		tbPassword.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
 			
 			@Override public void handle(KeyEvent event) {
 				if (event.getCode() == KeyCode.ENTER) {
