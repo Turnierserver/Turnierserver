@@ -953,8 +953,8 @@ def upload_game_logic(id):
 def game_logic(id):
 	@ftp.failsafe_locked
 	def f():
-		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/Java/ailib/gamelogic.jar"):
-			return ftp.send_file("Games/"+secure_filename(str(id))+"/Java/ailib/gamelogic.jar")
+		if ftp.ftp_host.path.isfile("Games/"+secure_filename(str(id))+"/Logic.jar"):
+			return ftp.send_file("Games/"+secure_filename(str(id))+"/Logic.jar")
 		else:
 			abort(503)
 	return f()
