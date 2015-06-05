@@ -18,10 +18,18 @@ public class DataBuffer
 	/**
 	 * Fügt die gelesenen Bytes dem Buffer hinzu.
 	 */
+	public void add (byte read[], int off, int len)
+	{
+		for (int i = off; i < off + len; i++)
+			add(read[i]);
+	}
+	
+	/**
+	 * Fügt die gelesenen Bytes dem Buffer hinzu.
+	 */
 	public void add (byte read[])
 	{
-		for (byte b : read)
-			add(b);
+		add(read, 0, read.length);
 	}
 	
 	/**
