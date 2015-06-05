@@ -107,13 +107,6 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 				check();
 			}
 		}
-		for(Ai aiWrapper : game.getAis()) {
-			if(!getUserObject(aiWrapper).lost) {
-				return;
-			}
-		}
-		logger.info("Alle Ais haben verloren, das Spiel wird nun beendet!");
-		endGame();
 	}
 	
 	@Override
