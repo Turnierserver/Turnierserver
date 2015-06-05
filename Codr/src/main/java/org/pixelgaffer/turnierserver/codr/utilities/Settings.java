@@ -21,6 +21,8 @@ public class Settings {
 	
 	ControllerStartPage cStart;
 	
+	public static String webUrl = "localhost:5000";
+	
 	
 	public Settings(ControllerStartPage c) {
 		cStart = c;
@@ -31,11 +33,15 @@ public class Settings {
 	public void store() {
 		Properties prop = new Properties();
 		
-		prop.setProperty("theme", cStart.btTheme.isSelected() + "");
-		prop.setProperty("fontSize", cStart.slFontSize.getValue() + "");
-		prop.setProperty("scrollSpeed", cStart.slScrollSpeed.getValue() + "");
-		prop.setProperty("pythonInterpreter", cStart.tbPythonInterpreter.getText());
-		prop.setProperty("cplusplusCompiler", cStart.tbCplusplusCompiler.getText());
+		prop.setProperty("webUrl", webUrl);
+		try {
+			prop.setProperty("theme", cStart.btTheme.isSelected() + "");
+			prop.setProperty("fontSize", cStart.slFontSize.getValue() + "");
+			prop.setProperty("scrollSpeed", cStart.slScrollSpeed.getValue() + "");
+			prop.setProperty("pythonInterpreter", cStart.tbPythonInterpreter.getText());
+			prop.setProperty("cplusplusCompiler", cStart.tbCplusplusCompiler.getText());
+		} catch (NullPointerException e1) {
+		}
 		
 		try {
 			Writer writer = new FileWriter(Paths.settings());
@@ -54,6 +60,11 @@ public class Settings {
 			prop.load(reader);
 			reader.close();
 			
+			String newUrl = prop.getProperty("webUrl");
+			if (newUrl != null) {
+				webUrl = newUrl;
+			}
+			
 			cStart.btTheme.setSelected(Boolean.parseBoolean(prop.getProperty("theme")));
 			cStart.slFontSize.setValue(Double.parseDouble(prop.getProperty("fontSize")));
 			cStart.slScrollSpeed.setValue(Double.parseDouble(prop.getProperty("scrollSpeed")));
@@ -61,6 +72,7 @@ public class Settings {
 			cStart.tbCplusplusCompiler.setText(prop.getProperty("cplusplusCompiler"));
 		} catch (IOException e) {
 			ErrorLog.write("Fehler bei Laden aus der settings.txt");
+		} catch (NullPointerException e) {
 		}
 	}
 	

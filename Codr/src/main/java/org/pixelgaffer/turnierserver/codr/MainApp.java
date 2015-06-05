@@ -7,6 +7,8 @@ import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -59,9 +61,7 @@ public class MainApp extends Application {
 	public static Settings settings;
 	
 	
-	public static final String webUrl = "192.168.178.43:5000";
-	
-	public static WebConnector webConnector = new WebConnector("http://" + webUrl + "/api/");// "http://thuermchen.com/api/");
+	public static WebConnector webConnector;
 	public GameManager gameManager = new GameManager();
 	public AiManager aiManager = new AiManager();
 	
@@ -91,6 +91,9 @@ public class MainApp extends Application {
 		ErrorLog.write("Programm startet...", true);
 		
 		stage = new Stage(StageStyle.DECORATED);
+		
+		settings = new Settings(cStart);
+		webConnector = new WebConnector("http://" + Settings.webUrl + "/api/");
 		
 		gametypes = webConnector.loadGametypesFromFile();
 		languages = webConnector.loadLangsFromFile();
@@ -124,39 +127,73 @@ public class MainApp extends Application {
 			
 			@Override protected Object call() throws InterruptedException {
 				
-				updateMessage("Gametypen werden geladen");
 				try {
 					webConnector.updateGametypes();
 				} catch (NewException e) {
-					gametypes = e.newValues;
-					if (Dialog.okAbort("Neue Spieltypen sind verfügbar. Wollen Sie zum aktuellen wechseln?")) {
-						cStart.cbGameTypes.getSelectionModel().selectLast();
-					}
+					//gametypes = e.newValues;
+					updateValue(e.newValues);
+					updateMessage("neue Spieltypen");
 				} catch (UpdateException e) {
 				} catch (NothingDoneException e) {
 				} catch (IOException e) {
 				}
-
-				updateMessage("Sprachen werden geladen");
+				
 				
 				try {
 					webConnector.updateLanguages();
 				} catch (NewException e) {
-					languages = e.newValues;
-					Dialog.info("Neue Sprachen sind verfügbar");
+					//languages = e.newValues;
+					updateValue(e.newValues);
+					updateMessage("neue Sprachen");
 				} catch (NothingDoneException e) {
 				} catch (IOException e) {
 				}
+				System.out.println("Laden fertig");
 				return null;
 			}
 		};
+
+		updateTask.valueProperty().addListener(new ChangeListener<String>() {
+			
+			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				onlineResourcesFinished(newValue);
+			}
+		});
+		updateTask.messageProperty().addListener(new ChangeListener<String>() {
+			
+			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				onlineResourcesFinished(newValue);
+			}
+		});
+		
+		if (cStart != null)
+			cStart.prOnlineResources.setVisible(true);
 		
 		new Thread(updateTask).start();
 	}
 	
+	 
+	public void onlineResourcesFinished(String text){
+		switch (text){
+			case "neue Spieltypen":
+				if (Dialog.okAbort("Neue Spieltypen sind verfügbar. Wollen Sie zum aktuellen wechseln?")) {
+					cStart.cbGameTypes.getSelectionModel().selectLast();
+				}
+				break;
+			case "neue Sprachen":
+				//languages = ;
+				Dialog.info("Neue Sprachen sind verfügbar");
+				break;
+			case "laden fertig":
+				if (cStart != null)
+					cStart.prOnlineResources.setVisible(false);
+				break;
+		}
+	}
+	
 	
 	public static void loadOnlineAis() {
-		ObservableList<CodrAi> newOwnOnline = null;  //MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+		ObservableList<CodrAi> newOwnOnline = null;  // MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
 		ObservableList<CodrAi> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
 		
 		if (newOwnOnline != null)
@@ -255,7 +292,8 @@ public class MainApp extends Application {
 			ErrorLog.write("RootLayout konnte nicht geladen werden (FXML-Fehler): " + e);
 			e.printStackTrace();
 		}
-		settings = new Settings(cStart);
+		
+		settings.load();
 		
 		stage.setTitle("Codr");
 		stage.getIcons().add(Resources.codrIcon());

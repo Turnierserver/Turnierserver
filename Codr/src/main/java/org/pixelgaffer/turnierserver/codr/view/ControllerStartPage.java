@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -30,6 +31,7 @@ import javafx.scene.web.WebView;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.codr.utilities.Settings;
 
 
 
@@ -51,6 +53,9 @@ public class ControllerStartPage {
 	@FXML public ChoiceBox<String> cbGameTypes;
 	@FXML Button btTryOnline;
 	@FXML Label lbIsOnline;
+
+	@FXML public ProgressIndicator prOnlineResources;
+	@FXML public ProgressIndicator prLogin;
 	
 	@FXML public ToggleButton btTheme;
 	@FXML public Slider slFontSize;
@@ -149,7 +154,7 @@ public class ControllerStartPage {
 	
 	
 	@FXML void clickRegister() {
-		openWebPage("http://" + MainApp.webUrl + "/");
+		openWebPage("http://" + Settings.webUrl + "/");
 	}
 	
 	
@@ -181,7 +186,7 @@ public class ControllerStartPage {
 	
 	
 	@FXML void clickForgotPassword() {
-		openWebPage("http://" + MainApp.webUrl + "/");
+		openWebPage("http://" + Settings.webUrl + "/");
 	}
 	
 	

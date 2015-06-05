@@ -20,6 +20,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -455,36 +456,46 @@ public class ControllerAiManagement {
 		CodrAi result = Dialog.selectOwnVersion();
 		if (result == null)
 			return;
-		int id = result.id;
-		if (result.title.equals("<Neue KI>")) {
-			String name = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
-			if (name == null)
-				return;
-			id = MainApp.webConnector.createAi(ai, name);
-			if (id == -1) {
-				Dialog.error("Konnte keine neue ID erstellen");
-				return;
+		
+		new Thread(new Task<Object>() {
+			public Object call() {
+				
+				int id = result.id;
+				if (result.title.equals("<Neue KI>")) {
+					String name = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
+					if (name == null)
+						return null;
+					id = MainApp.webConnector.createAi(ai, name);
+					if (id == -1) {
+						Dialog.error("Konnte keine neue ID erstellen");
+						return null;
+					}
+				}
+				
+				try {
+					MainApp.webConnector.uploadVersion(version, id);
+				} catch (ZipException | IOException e) {
+					Dialog.error("Fehler beim Hochladen: " + e, "Verbindungsfehler");
+					e.printStackTrace();
+					return null;
+				}
+				
+				try {
+					String compileOutput = MainApp.webConnector.compile(id);
+					Dialog.info(compileOutput, "Kompilierung erfolgeich");
+				} catch (IOException e) {
+					Dialog.error("Fehler bei der Verbindung mit dem Server", "Verbindungsfehler");
+					return null;
+				} catch (CompileException e) {
+					Dialog.error("Fehler beim Kompilieren auf dem Server:\n\n" + e.compileOutput, "Kompilierungsfehler");
+					return null;
+				}
+				
+				
+				return null;
 			}
-		}
+		}).start();
 		
-		try {
-			MainApp.webConnector.uploadVersion(version, id);
-		} catch (ZipException | IOException e) {
-			Dialog.error("Fehler beim Hochladen: " + e, "Verbindungsfehler");
-			e.printStackTrace();
-			return;
-		}
-		
-		try {
-			String compileOutput = MainApp.webConnector.compile(id);
-			Dialog.info(compileOutput, "Kompilierung erfolgeich");
-		} catch (IOException e) {
-			Dialog.error("Fehler bei der Verbindung mit dem Server", "Verbindungsfehler");
-			return;
-		} catch (CompileException e) {
-			Dialog.error("Fehler beim Kompilieren auf dem Server:\n\n" + e.compileOutput, "Kompilierungsfehler");
-			return;
-		}
 		
 		
 		
