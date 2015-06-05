@@ -119,7 +119,8 @@ public class CodrAi {
 	
 	private void loadPicture(JSONObject json, WebConnector connector) {
 		try {
-			setPicture(connector.getImage(json.getInt("id")));
+			Image img = connector.getImage(json.getInt("id"));
+			setPicture(img);
 		} catch (IOException e) {
 			ErrorLog.write("ERROR: Konnte das Bild der AI " + json.getString("name") + " nicht laden (" + e.getLocalizedMessage() + ")!");
 		}

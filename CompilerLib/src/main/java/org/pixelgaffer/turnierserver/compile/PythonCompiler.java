@@ -27,9 +27,9 @@ public class PythonCompiler extends Compiler
 		// den wrapper laden
 		if (libraryDownloader == null) {
 			try {
-				output.println("> downloading game_wrapper.py");
+				output.println("> Lade game_wrapper.py herunter ...");
 				DatastoreFtpClient.retrieveAiLibrary(getGame(), "Python", bindir);
-				output.println("> downloading wrapper.py");
+				output.println("> Lade wrapper.py herunter ...");
 				DatastoreFtpClient.retrieveLibrary("wrapper", "Python", bindir);
 				output.println("done");
 			} catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
@@ -38,19 +38,19 @@ public class PythonCompiler extends Compiler
 				return false;
 			}
 		} else {
-			output.println("> no connection to FTP");
+			output.println("> Keine Verbindung zum FTP-Server");
 			libraryDownloader.getAiLibFile("Python", "game_wrapper.py");
 			libraryDownloader.getFile("Python", "wrapper", "wrapper.py");
 		}
 		
 		// das script zum starten erzeugen
-		output.println("> creating startup script ... ");
+		output.println("> Erstelle ein Skript zum Starten der KI ... ");
 		File scriptFile = new File(bindir, "start.sh");
 		scriptFile.createNewFile();
 		scriptFile.setExecutable(true);
 		if (!scriptFile.canExecute())
 		{
-			output.println("failed to mark file as executable");
+			output.println("Konnte das Skript nicht als ausführbar markieren!");
 			return false;
 		}
 		PrintWriter script = new PrintWriter(new FileOutputStream(scriptFile));

@@ -127,6 +127,9 @@ public abstract class Compiler
 			FTPAbortedException, FTPListParseException
 	{
 		// source runterladen
+		if (backend != null)
+			backend.sendAnswer(new WorkerCommandAnswer(WorkerCommand.COMPILE, WorkerCommandAnswer.MESSAGE,
+					getUuid(), "> Lade Quelltext herunter ...\n"));
 		File srcdir = DatastoreFtpClient.retrieveAiSource(getAi(), getVersion());
 		
 		// zeugs anlegen
@@ -138,7 +141,16 @@ public abstract class Compiler
 		
 		// properties lesen
 		Properties p = new Properties();
-		p.load(new FileInputStream(new File(srcdir, "settings.prop")));
+		try
+		{
+			p.load(new FileInputStream(new File(srcdir, "settings.prop")));
+		}
+		catch (IOException ioe)
+		{
+			pw.println("> Fehler beim Lesen der Datei settings.prop: " + ioe);
+			pw.close();
+			return new CompileResult(false, output);
+		}
 		
 		// compilieren
 		boolean success = compile(srcdir, bindir, p, pw, null);
@@ -160,6 +172,9 @@ public abstract class Compiler
 			System.out.println(execute(bindir, pw, cmd));
 			
 			// hochladen
+			if (backend != null)
+				backend.sendAnswer(new WorkerCommandAnswer(WorkerCommand.COMPILE, WorkerCommandAnswer.MESSAGE,
+						getUuid(), "> Lade kompilierte KI hoch ...\n"));
 			DatastoreFtpClient.storeAi(getAi(), getVersion(), new FileInputStream(archive));
 			
 			// aufräumen
@@ -176,7 +191,7 @@ public abstract class Compiler
 	/**
 	 * Diese Methode kompiliert den Quelltext einer KI aus srcdir nach bindir.
 	 * In der Datei properties stehen die zur KI gehörenden Eigenschaften wie
-	 * z.B. die Main-Klasse in Java. 
+	 * z.B. die Main-Klasse in Java.
 	 */
 	public String compile (File srcdir, File bindir, File properties, LibraryDownloader libs)
 			throws IOException, InterruptedException, CompileFailureException

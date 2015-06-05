@@ -31,7 +31,8 @@ public class JavaCompiler extends Compiler
 		String classpath = ".";
 		
 		// die AiLibrary laden
-		output.print("> downloading ai library ... ");
+		output.print("> Lade Ai Bibliothek herunter ... ");
+		output.flush();
 		File libdir = new File(bindir, "AiLibrary");
 		libdir.mkdir();
 		try
@@ -64,7 +65,8 @@ public class JavaCompiler extends Compiler
 			if ((line.length() == 0) || line.startsWith("#"))
 				continue;
 			
-			output.print("> downloading library " + line + " ... ");
+			output.print("> Lade Bibliothek " + line + " herunter ... ");
+			output.flush();
 			libdir = new File(bindir, line);
 			libdir.mkdir();
 			try
@@ -94,13 +96,13 @@ public class JavaCompiler extends Compiler
 			return false;
 		
 		// das script zum starten erzeugen
-		output.print("> creating startup script ... ");
+		output.print("> Erstelle ein Skript zum Starten der KI ... ");
 		File scriptFile = new File(bindir, "start.sh");
 		scriptFile.createNewFile();
 		scriptFile.setExecutable(true);
 		if (!scriptFile.canExecute())
 		{
-			output.println("failed to mark file as executable");
+			output.println("Konnte das Skript nicht als ausführbar markieren!");
 			return false;
 		}
 		PrintWriter script = new PrintWriter(new FileOutputStream(scriptFile));
