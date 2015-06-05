@@ -81,6 +81,11 @@ public class MainApp extends Application {
 	}
 	
 	
+	public MainApp() {
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> exit()));
+	}
+	
+	
 	/**
 	 * start-Methode (wegen: extends Application)
 	 */
@@ -110,7 +115,7 @@ public class MainApp extends Application {
 	}
 	
 	
-	public void stop() {
+	public void exit() {
 		if (cAi.version != null)
 			cAi.version.saveCode();
 		if (settings != null) {
@@ -118,6 +123,7 @@ public class MainApp extends Application {
 		}
 		ErrorLog.write("Programm beendet", true);
 	}
+	
 	
 	
 	public void loadOnlineResources() {

@@ -196,22 +196,36 @@ public class ControllerStartPage {
 	
 	
 	@FXML void clickLogin() {
-		Task<Boolean> updateL = new Task<Boolean>() {
-			public Boolean call() {
+		Task<String> updateL = new Task<String>() {
+			public String call() {
 				try {
-					if (!mainApp.webConnector.login(tbEmail.getText(), tbPassword.getText())) {
-						Dialog.error("Falsches Passwort oder Email", "Login fehlgeschlagen");
+					if (!MainApp.webConnector.login(tbEmail.getText(), tbPassword.getText())) {
+						return "wrongPassword";
 					} else {
-						updateLoggedIn();
-						Dialog.info("Login erfolgreich!");
+						return "success";
 					}
 				} catch (IOException e) {
-					Dialog.error("Login fehlgeschlagen: ERROR", "Login fehlgeschlagen");
-					ErrorLog.write("Login fehlgeschlagen: " + e.getMessage());
+					return "error";
 				}
-				return null;
 			}
 		};
+		
+		updateL.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			switch (newValue){
+			case "success":
+				updateLoggedIn();
+				Dialog.info("Login erfolgreich!");
+				break;
+			case "wrongPassword":
+				Dialog.error("Falsches Passwort oder Email", "Login fehlgeschlagen");
+				break;
+			case "error":
+				Dialog.error("Login fehlgeschlagen: ERROR", "Login fehlgeschlagen");
+				ErrorLog.write("Login fehlgeschlagen");
+				break;
+			}
+		});
+		
 		prLogin.setVisible(true);
 		new Thread(updateL).start();
 		updateLoggedIn();
