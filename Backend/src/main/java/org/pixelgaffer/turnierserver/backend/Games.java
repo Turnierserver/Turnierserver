@@ -175,8 +175,18 @@ public class Games
 		@Override
 		public void finishGame () throws IOException
 		{
+			System.out.println("finishGame() wurde aufgerufen");
+			try
+			{
+				throw new Exception();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 			for (AiWrapper ai : ais)
 				ai.disconnect();
+			System.out.println("alle kis disconnected, sende success an frontend");
 			BackendFrontendConnectionHandler.getFrontend().sendMessage(
 					Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), true)));
 			games.remove(getUuid());

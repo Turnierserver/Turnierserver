@@ -103,6 +103,7 @@ public class BackendClient implements SocketObserver, Backend
 			try
 			{
 				WorkerCommand cmd = Parsers.getWorker().parse(line, WorkerCommand.class);
+				WorkerMain.getLogger().info("BackendClient: Empfangen: " + cmd);
 				if (cmd.getAction() == COMPILE)
 					CompileQueue.addJob(cmd);
 				else if (cmd.getAction() == STARTAI)
