@@ -127,6 +127,9 @@ public abstract class Compiler
 			FTPAbortedException, FTPListParseException
 	{
 		// source runterladen
+		if (backend != null)
+			backend.sendAnswer(new WorkerCommandAnswer(WorkerCommand.COMPILE, WorkerCommandAnswer.MESSAGE,
+					getUuid(), "> Lade Quelltext herunter ...\n"));
 		File srcdir = DatastoreFtpClient.retrieveAiSource(getAi(), getVersion());
 		
 		// zeugs anlegen
@@ -160,6 +163,9 @@ public abstract class Compiler
 			System.out.println(execute(bindir, pw, cmd));
 			
 			// hochladen
+			if (backend != null)
+				backend.sendAnswer(new WorkerCommandAnswer(WorkerCommand.COMPILE, WorkerCommandAnswer.MESSAGE,
+						getUuid(), "> Lade kompilierte KI hoch ...\n"));
 			DatastoreFtpClient.storeAi(getAi(), getVersion(), new FileInputStream(archive));
 			
 			// aufräumen
