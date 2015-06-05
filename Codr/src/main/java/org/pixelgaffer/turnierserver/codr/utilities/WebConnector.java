@@ -270,16 +270,16 @@ public class WebConnector {
 	}
 	
 	
-	public String compile(Version version) throws IOException, CompileException {
-		String json = toString(sendGet("ai/" + version.ai.id + "/compile_blocking"));
+	public String compile(int id) throws IOException, CompileException {
+		String json = toString(sendGet("ai/" + id + "/compile_blocking"));
 		if (json == null) {
 			throw new IOException("Fehler bei der Verbindung mit dem Server");
 		}
 		JSONObject result = new JSONObject(json);
-		if (result.getString("error") != null) {
-			throw new CompileException(result.getString("compileoutput"), result.getString("error"));
+		if (!result.isNull("error")) {
+			throw new CompileException(result.getString("compilelog"));
 		}
-		return result.getString("compileoutput");
+		return result.getString("compilelog");
 	}
 	
 	

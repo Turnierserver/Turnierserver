@@ -90,6 +90,7 @@ public class Dialog {
 	
 	
 	public static boolean error(String text, String title) {
+		ErrorLog.write("Dialog.ERROR:" + text);
 		return generalDialog(text, title, AlertType.ERROR);
 	}
 	
@@ -123,8 +124,9 @@ public class Dialog {
 	
 	public static String textInput(String text, String title) {
 		TextInputDialog dialog = new TextInputDialog("");
-		dialog.setTitle("Text Input Dialog");
-		dialog.setContentText("Please enter your name:");
+		dialog.setTitle(title);
+		dialog.setHeaderText(null);
+		dialog.setContentText(text);
 		
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
@@ -189,19 +191,18 @@ public class Dialog {
 	}
 	
 	
-	public static String selectOwnVersion() {
+	public static CodrAi selectOwnVersion() {
 		ObservableList<CodrAi> ownAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
-		List<String> ownAiStrings = ownAis.stream().map((ai) -> ai.title).collect(Collectors.toList());
-		ownAiStrings.add("<neue KI>");
+		ownAis.add(new CodrAi());
 		
-		ChoiceDialog<String> dialog = new ChoiceDialog<>();
-		dialog.getItems().addAll(ownAiStrings);
+		ChoiceDialog<CodrAi> dialog = new ChoiceDialog<>();
+		dialog.getItems().addAll(ownAis);
+		dialog.setSelectedItem(ownAis.get(0));
 		dialog.setTitle("Version hochladen");
 		dialog.setHeaderText("Wähle bitte eine KI aus, zu dem die Version hochgeladen werden soll.");
 		dialog.setContentText("KI:");
 		
-		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
+		Optional<CodrAi> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			return result.get();
 		}

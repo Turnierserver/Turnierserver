@@ -11,6 +11,7 @@ import org.pixelgaffer.turnierserver.codr.CodrAi.AiMode;
 import org.pixelgaffer.turnierserver.codr.CodrAi.NewVersionType;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
 
@@ -451,31 +452,42 @@ public class ControllerAiManagement {
 	 * Button: Hochladen
 	 */
 	@FXML void clickUpload() {
-		String result = Dialog.selectOwnVersion();
+		CodrAi result = Dialog.selectOwnVersion();
 		if (result == null)
 			return;
-		if (result.equals("<neue KI>")) {
+		int id = result.id;
+		if (result.title.equals("<Neue KI>")) {
 			String name = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
 			if (name == null)
 				return;
-			int id = MainApp.webConnector.createAi(ai, name);
+			id = MainApp.webConnector.createAi(ai, name);
 			if (id == -1) {
-				ErrorLog.write("Konnte keine neue ID erstellen");
 				Dialog.error("Konnte keine neue ID erstellen");
 				return;
 			}
-			
-			try {
-				MainApp.webConnector.uploadVersion(version, id);
-			} catch (IOException | ZipException e) {
-				ErrorLog.write("Fehler beim Kompilieren: " + e);
-				Dialog.error("Fehler beim Kompilieren: " + e);
-				e.printStackTrace();
-				return;
-			}
-		} else {
-			// MainApp.webConnector.uploadVersion(version, result);
 		}
+		
+//		try {
+//			MainApp.webConnector.uploadVersion(version, id);
+//		} catch (ZipException | IOException e) {
+//			Dialog.error("Fehler beim Hochladen: " + e, "Verbindungsfehler");
+//			e.printStackTrace();
+//			return;
+//		}
+		
+		try {
+			String compileOutput = MainApp.webConnector.compile(id);
+			Dialog.info(compileOutput, "Kompilierung erfolgeich");
+		} catch (IOException e) {
+			Dialog.error("Fehler bei der Verbindung mit dem Server", "Verbindungsfehler");
+			return;
+		} catch (CompileException e) {
+			Dialog.error("Fehler beim Kompilieren auf dem Server:\n\n" + e.compileOutput, "Kompilierungsfehler");
+			return;
+		}
+		
+		
+		
 	}
 	
 	
