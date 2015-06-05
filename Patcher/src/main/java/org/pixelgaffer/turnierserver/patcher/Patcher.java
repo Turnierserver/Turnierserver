@@ -364,6 +364,7 @@ public class Patcher implements Runnable
 		
 		for (GHCommit commit : repo.listCommits())
 		{
+			System.out.println(commit.getSHA1());
 			if (!lastReleaseHit)
 			{
 				lastReleaseHit = lastRelease.getSHA1().equals(commit.getSHA1());
@@ -375,11 +376,13 @@ public class Patcher implements Runnable
 			}
 			if (since.getSHA1().equals(commit.getSHA1()))
 			{
+				System.out.println("beim aktuellen commit angekommen");
 				break;
 			}
 			commits.add(commit);
 		}
 		
+		System.out.println("neue commits: " + commits.size());
 		return commits;
 	}
 	
