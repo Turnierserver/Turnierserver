@@ -467,13 +467,13 @@ public class ControllerAiManagement {
 			}
 		}
 		
-//		try {
-//			MainApp.webConnector.uploadVersion(version, id);
-//		} catch (ZipException | IOException e) {
-//			Dialog.error("Fehler beim Hochladen: " + e, "Verbindungsfehler");
-//			e.printStackTrace();
-//			return;
-//		}
+		try {
+			MainApp.webConnector.uploadVersion(version, id);
+		} catch (ZipException | IOException e) {
+			Dialog.error("Fehler beim Hochladen: " + e, "Verbindungsfehler");
+			e.printStackTrace();
+			return;
+		}
 		
 		try {
 			String compileOutput = MainApp.webConnector.compile(id);
