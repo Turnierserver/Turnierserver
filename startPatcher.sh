@@ -26,8 +26,8 @@ do
 	# das Patcher-Verzeichnis betreten
 	cd $directory 2&>1 >>$logfile || exit 1
 	# aufräumen
-	echo "[$(date)] Cleaning old package of the patcher" >>$logfile
-	mvn clean &>>$logfile || exit 1
+#	echo "[$(date)] Cleaning old package of the patcher" >>$logfile
+#	mvn clean &>>$logfile || exit 1
 	# bauen
 	echo "[$(date)] Building the patcher" >>$logfile
 	mvn package &>>$logfile || exit 1
@@ -39,6 +39,7 @@ do
 	cd $dirback &>>$logfile || exit 1
 	# den Patcher starten
 	echo "[$(date)] Starting the Patcher" >>$logfile
+	echo "[$(date)] Starting the Patcher"
 	java -cp "$directory/target/*:$directory/target/dependency/*" $mainclass ${@} &>>$logfile || exit 1
 	
 	# zurück ins aufruf-verzeichnis gehen
