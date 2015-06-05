@@ -149,6 +149,8 @@ public abstract class Compiler
 		{
 			pw.println("> Fehler beim Lesen der Datei settings.prop: " + ioe);
 			pw.close();
+			srcdir.delete();
+			bindir.delete();
 			return new CompileResult(false, output);
 		}
 		
