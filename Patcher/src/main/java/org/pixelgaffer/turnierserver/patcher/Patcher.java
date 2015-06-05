@@ -145,10 +145,12 @@ public class Patcher implements Runnable
 		
 		while (true)
 		{
+			System.out.println("bin in der while-schleife der run-methode");
 			try
 			{
 				List<String> filesModified = new ArrayList<>();
 				
+				System.out.println("hohle mir die commits des config-repos");
 				for (GHCommit commit : getCommitsSince(lastConfigCommit, config))
 				{
 					for (GHCommit.File file : commit.getFiles())
@@ -156,6 +158,7 @@ public class Patcher implements Runnable
 						filesModified.add(file.getFileName());
 					}
 				}
+				System.out.println("bearbeitete dateien: " + filesModified);
 				
 				boolean pulled = false;
 				
@@ -184,6 +187,7 @@ public class Patcher implements Runnable
 						.listCommits().asList().get(0);
 				
 				List<String> directoriesModified = new ArrayList<>();
+				System.out.println("hole mir die commits des turnierserver-repos");
 				for (GHCommit commit : getCommitsSince(lastTurnierserverCommit, turnierserver))
 				{
 					for (GHCommit.File file : commit.getFiles())
@@ -192,6 +196,7 @@ public class Patcher implements Runnable
 						directoriesModified.add(file.getFileName().split("/")[4]);
 					}
 				}
+				System.out.println("veränderte verzeichnisse: " + directoriesModified);
 				
 				pulled = false;
 				
