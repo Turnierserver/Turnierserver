@@ -242,7 +242,7 @@ public class WebConnector {
 	
 	public void uploadVersion(Version version, int id) throws ZipException, IOException {
 		HttpPost post = new HttpPost("ai/" + id + "/new_version_from_zip");
-		File file = Files.createTempFile(version.ai.title + "v" + version.number + System.currentTimeMillis(), ".zip").toFile();
+		File file = new File(System.getProperty("java.io.tmpdir"), version.ai.title + "v" + version.number +".zip");
 		ZipFile zip = new ZipFile(file);
 		ZipParameters params = new ZipParameters();
 		params.setIncludeRootFolder(false);
