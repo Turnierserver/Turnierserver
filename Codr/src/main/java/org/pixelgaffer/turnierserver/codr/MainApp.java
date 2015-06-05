@@ -45,8 +45,8 @@ import org.pixelgaffer.turnierserver.codr.view.ControllerStartPage;
 import org.pixelgaffer.turnierserver.codr.view.ControllerSubmission;
 
 
-public class MainApp extends Application
-{
+
+public class MainApp extends Application {
 	
 	public Stage stage;
 	public ControllerRoot cRoot;
@@ -76,23 +76,20 @@ public class MainApp extends Application
 	 * 
 	 * @param args Argumente
 	 */
-	public static void main (String[] args)
-	{
+	public static void main(String[] args) {
 		launch(args);
 	}
 	
 	
-	public MainApp ()
-	{
-		Runtime.getRuntime().addShutdownHook(new Thread( () -> exit()));
+	public MainApp() {
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> exit()));
 	}
 	
 	
 	/**
 	 * start-Methode (wegen: extends Application)
 	 */
-	public void start (Stage _stage) throws Exception
-	{
+	public void start(Stage _stage) throws Exception {
 		ErrorLog.clear();
 		ErrorLog.write("Programm startet...", true);
 		
@@ -106,12 +103,9 @@ public class MainApp extends Application
 		
 		CodeEditor.writeAce();
 		
-		if (gametypes == null || languages == null)
-		{
+		if (gametypes == null || languages == null) {
 			showSplashStage(_stage);
-		}
-		else
-		{
+		} else {
 			loadOnlineResources();
 			showMainStage();
 		}
@@ -121,22 +115,16 @@ public class MainApp extends Application
 	}
 	
 	
-	public void exit ()
-	{
+	public void exit() {
 		if (cAi.version != null)
 			cAi.version.saveCode();
-		if (settings != null)
-		{
+		if (settings != null) {
 			settings.store();
 		}
-		if (cGame.runningGame != null)
-		{
-			try
-			{
+		if (cGame.runningGame != null) {
+			try {
 				cGame.runningGame.getGame().finishGame();
-			}
-			catch (IOException e)
-			{
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -144,47 +132,28 @@ public class MainApp extends Application
 	}
 	
 	
-	public void loadOnlineResources ()
-	{
+	public void loadOnlineResources() {
 		final Task updateTask = new Task() {
 			
-			@Override
-			protected Object call () throws InterruptedException
-			{
+			@Override protected Object call() throws InterruptedException {
 				
-				try
-				{
+				try {
 					webConnector.updateGametypes();  // TODO: Timeout
-				}
-				catch (NewException e)
-				{
+				} catch (NewException e) {
 					gametypes = e.newValues;
 					updateMessage("neue Spieltypen");
-				}
-				catch (UpdateException e)
-				{
-				}
-				catch (NothingDoneException e)
-				{
-				}
-				catch (IOException e)
-				{
+				} catch (UpdateException e) {
+				} catch (NothingDoneException e) {
+				} catch (IOException e) {
 				}
 				
-				try
-				{
+				try {
 					webConnector.updateLanguages();  // TODO: Timeout
-				}
-				catch (NewException e)
-				{
+				} catch (NewException e) {
 					languages = e.newValues;
 					updateMessage("neue Sprachen");
-				}
-				catch (NothingDoneException e)
-				{
-				}
-				catch (IOException e)
-				{
+				} catch (NothingDoneException e) {
+				} catch (IOException e) {
 				}
 				
 				updateMessage("laden fertig");
@@ -194,9 +163,7 @@ public class MainApp extends Application
 		
 		updateTask.messageProperty().addListener(new ChangeListener<String>() {
 			
-			@Override
-			public void changed (ObservableValue<? extends String> observable, String oldValue, String newValue)
-			{
+			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				onlineResourcesFinished(newValue);
 			}
 		});
@@ -208,39 +175,32 @@ public class MainApp extends Application
 	}
 	
 	
-	public void onlineResourcesFinished (String text)
-	{
-		switch (text)
-		{
-			case "neue Spieltypen":
-				if (Dialog.okAbort("Neue Spieltypen sind verfügbar. Wollen Sie zum aktuellen wechseln?"))
-				{
-					cStart.cbGameTypes.getSelectionModel().selectLast();
-				}
-				break;
-			case "neue Sprachen":
-				// languages = ;
-				Dialog.info("Neue Sprachen sind verfügbar");
-				break;
-			case "laden fertig":
-				if (cStart != null)
-				{
-					cStart.prOnlineResources.setVisible(false);
-				}
-				break;
+	public void onlineResourcesFinished(String text) {
+		switch (text) {
+		case "neue Spieltypen":
+			if (Dialog.okAbort("Neue Spieltypen sind verfügbar. Wollen Sie zum aktuellen wechseln?")) {
+				cStart.cbGameTypes.getSelectionModel().selectLast();
+			}
+			break;
+		case "neue Sprachen":
+			// languages = ;
+			Dialog.info("Neue Sprachen sind verfügbar");
+			break;
+		case "laden fertig":
+			if (cStart != null) {
+				cStart.prOnlineResources.setVisible(false);
+			}
+			break;
 		}
 	}
 	
 	
-	public static void loadOnlineAis ()
-	{
+	public static void loadOnlineAis() {
 		new Thread(new Task<Object>() {
 			
-			public Object call ()
-			{
+			public Object call() {
 				ObservableList<CodrAi> newOwnOnline = null;
-				if (MainApp.webConnector.isLoggedIn())
-				{
+				if (MainApp.webConnector.isLoggedIn()) {
 					newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
 				}
 				ObservableList<CodrAi> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
@@ -255,32 +215,21 @@ public class MainApp extends Application
 	}
 	
 	
-	public void showSplashStage (Stage splashStage)
-	{
+	public void showSplashStage(Stage splashStage) {
 		
 		final Task<Object> updateTask = new Task<Object>() {
 			
-			@Override
-			protected Object call () throws InterruptedException
-			{
+			@Override protected Object call() throws InterruptedException {
 				
 				updateMessage("Gametypen werden geladen");
-				try
-				{
+				try {
 					webConnector.updateGametypes();
-				}
-				catch (NewException e)
-				{
+				} catch (NewException e) {
 					gametypes = e.newValues;
-				}
-				catch (NothingDoneException | UpdateException e)
-				{
-				}
-				catch (IOException e)
-				{
+				} catch (NothingDoneException | UpdateException e) {
+				} catch (IOException e) {
 					ErrorLog.write("Bitte stellen Sie beim ersten Start eine Verbindung zum Internet her");
-					for (int i = 10; i >= 0; i--)
-					{
+					for (int i = 10; i >= 0; i--) {
 						updateMessage("Keine Internetverbindung (" + i + ")");
 						Thread.sleep(1000);
 					}
@@ -288,22 +237,14 @@ public class MainApp extends Application
 				}
 				updateMessage("Sprachen werden geladen");
 				
-				try
-				{
+				try {
 					webConnector.updateLanguages();
-				}
-				catch (NewException e)
-				{
+				} catch (NewException e) {
 					languages = e.newValues;
-				}
-				catch (NothingDoneException e)
-				{
-				}
-				catch (IOException e)
-				{
+				} catch (NothingDoneException e) {
+				} catch (IOException e) {
 					ErrorLog.write("Bitte stellen Sie beim ersten Start eine Verbindung zum Internet her");
-					for (int i = 10; i >= 0; i--)
-					{
+					for (int i = 10; i >= 0; i--) {
 						updateMessage("Keine Internetverbindung (" + i + ")");
 						Thread.sleep(1000);
 					}
@@ -319,12 +260,11 @@ public class MainApp extends Application
 		loadProgress.setPrefWidth(400 - 20);
 		Label progressText = new Label("Die Spiellogiken werden heruntergeladen . . .");
 		Pane splashLayout = new VBox();
-		((VBox)splashLayout).setSpacing(5);
-		((VBox)splashLayout).setAlignment(Pos.CENTER);
+		((VBox) splashLayout).setSpacing(5);
+		((VBox) splashLayout).setAlignment(Pos.CENTER);
 		splashLayout.getChildren().addAll(img, loadProgress, progressText);
 		progressText.setAlignment(Pos.CENTER);
-		splashLayout.setStyle("-fx-padding: 10; " + "-fx-border-color: derive(black, 90%); " + "-fx-border-width:1; "
-				+ "-fx-background-color: white;");
+		splashLayout.setStyle("-fx-padding: 10; " + "-fx-border-color: derive(black, 90%); " + "-fx-border-width:1; " + "-fx-background-color: white;");
 		progressText.textProperty().bind(updateTask.messageProperty());
 		splashLayout.setEffect(new DropShadow());
 		
@@ -336,9 +276,8 @@ public class MainApp extends Application
 		splashStage.setY(bounds.getMinY() + bounds.getHeight() / 2 - 200);
 		splashStage.show();
 		
-		updateTask.stateProperty().addListener( (observableValue, oldState, newState) -> {
-			if (newState == Worker.State.SUCCEEDED)
-			{
+		updateTask.stateProperty().addListener((observableValue, oldState, newState) -> {
+			if (newState == Worker.State.SUCCEEDED) {
 				FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1), splashLayout);
 				fadeSplash.setFromValue(1.0);
 				fadeSplash.setToValue(0);
@@ -353,19 +292,15 @@ public class MainApp extends Application
 	}
 	
 	
-	public void showMainStage ()
-	{
+	public void showMainStage() {
 		
 		BorderPane root = new BorderPane();
-		try
-		{
+		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("view/RootLayout.fxml"));
-			root = (BorderPane)loader.load();
-			((ControllerRoot)loader.getController()).setMainApp(this);
-		}
-		catch (IOException e)
-		{
+			root = (BorderPane) loader.load();
+			((ControllerRoot) loader.getController()).setMainApp(this);
+		} catch (IOException e) {
 			ErrorLog.write("RootLayout konnte nicht geladen werden (FXML-Fehler): " + e);
 			e.printStackTrace();
 		}
