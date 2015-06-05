@@ -1,10 +1,12 @@
 package org.pixelgaffer.turnierserver.codr.view;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -48,6 +50,8 @@ public class ControllerGameManagement {
 	@FXML public TextArea tbOutput1;
 	@FXML public TextArea tbOutput2;
 	@FXML public TableView<ParticipantResult> tableResult;
+	
+	@FXML public CodrGame runningGame;
 	
 	MainApp mainApp;
 	
@@ -139,11 +143,18 @@ public class ControllerGameManagement {
 	@FXML void clickStartGame() {
 		if (btOffline.isSelected()) {
 			if (lvPlayer1.getSelectionModel().getSelectedItem() != null && lvPlayer2.getSelectionModel().getSelectedItem() != null) {
-				CodrGame game = new CodrGame(MainApp.actualGameType.get(), GameMode.playing);
-				List<Version> players = new ArrayList<>();
-				players.add(lvPlayer1.getSelectionModel().getSelectedItem().lastVersion());
-				players.add(lvPlayer2.getSelectionModel().getSelectedItem().lastVersion());
-				game.play(players);
+				Task<Boolean> play = new Task<Boolean>() {
+					public Boolean call() {
+						runningGame = new CodrGame(MainApp.actualGameType.get(), GameMode.playing);
+						List<Version> players = new ArrayList<>();
+						players.add(lvPlayer1.getSelectionModel().getSelectedItem().lastVersion());
+						players.add(lvPlayer2.getSelectionModel().getSelectedItem().lastVersion());
+						game.play(players);
+						return true;
+					}
+				};
+				
+				new Thread(play).start();
 			} else {
 				Dialog.error("Bitte erst die KIs auswählen");
 			}

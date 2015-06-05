@@ -101,7 +101,8 @@ public class CodeEditor {
 	
 	
 	public String getCode() {
-		return (String) codeView.getEngine().executeScript("editor.getValue();");
+		return "";
+		//return (String) codeView.getEngine().executeScript("editor.getValue();");
 	}
 	
 	

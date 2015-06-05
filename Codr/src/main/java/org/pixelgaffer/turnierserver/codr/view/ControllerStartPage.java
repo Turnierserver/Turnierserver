@@ -181,17 +181,22 @@ public class ControllerStartPage {
 		Task<Boolean> updateL = new Task<Boolean>() {
 			public Boolean call() {
 				try {
-					// TODO: Thread
 					mainApp.webConnector.logout();
 				} catch (IOException e) {
-					ErrorLog.write("Logout fehlgeschlagen");
+					return false;
 				}
-				return null;
+				return true;
 			}
 		};
+		updateL.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			if (newValue) {
+				updateLoggedIn();
+			}else{
+				ErrorLog.write("Logout fehlgeschlagen");
+			}
+		});
 		prLogin.setVisible(true);
 		new Thread(updateL).start();
-		updateLoggedIn();
 	}
 	
 	
