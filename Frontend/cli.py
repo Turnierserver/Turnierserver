@@ -1,5 +1,6 @@
 from flask.ext.script import prompt_bool, prompt, prompt_pass
 from database import db, populate, AI, User, GameType, ftp
+from backend import backend
 
 import os
 import shutil
@@ -124,3 +125,47 @@ def manage(manager, app):
 			print("Invalid ID.")
 
 		gt.updated()
+
+
+	@manager.command
+	def recompile_ais():
+		all = prompt_bool("Compile all?")
+		for ai in AI.query.all():
+			if all or prompt_bool("Compile '"+ai.name + "' by " + ai.user.name):
+				if ai.lastest_version().frozen:
+					print("AI_Version is frozen")
+					continue
+				ai.lastest_version().compiled = True
+				print("Compiling", ai.name)
+				reqid = backend.request_compile(ai)
+
+				while True:
+					resp = backend.lock_for_req(reqid, timeout=5*20)
+					b_req = backend.request(reqid)
+					if not resp:
+						print("\nDas Backend sendet nichts.")
+						print("\nVersuch es nochmal.")
+						error = "Das Backend sendet nichts."
+						break
+					else:
+						if "success" in resp:
+							if resp["success"]:
+								print("Anfrage erfolgreich beendet\n")
+								ai.lastest_version().compiled = True
+								db.session.commit()
+							else:
+								ai.lastest_version().compiled = False
+								db.session.commit()
+								print("Kompilierung fehlgeschlagen\n")
+								if "exception" in resp:
+									print(resp["exception"])
+								error = "Kompilierung fehlgeschlagen"
+							break
+						elif "status" in resp:
+							if resp["status"] == "processed":
+								print("Anfrage angefangen\n")
+						elif "compilelog" in resp:
+							print(resp["compilelog"])
+						else:
+							# Falls die Antwort vom Backend nicht verstanden wurde.
+							print("B: " + str(resp) + "\n")

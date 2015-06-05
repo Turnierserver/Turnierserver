@@ -416,7 +416,7 @@ def api_ai_create():
 	lang = Lang.query.get(lang)
 
 	if not lang:
-		return {'error', 'Invalid Language'}, 404
+		return {'error': 'Invalid Language'}, 404
 
 	type = request.args.get('type')
 	if type:
