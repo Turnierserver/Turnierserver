@@ -236,7 +236,12 @@ public class WebConnector {
 	 * @throws IOException
 	 */
 	public Image getImage(int id) throws IOException {
-		return new Image(new ByteArrayInputStream(sendGet("ai/" + id + "/icon")));
+		try {
+			return new Image(new ByteArrayInputStream(sendGet("ai/" + id + "/icon")));
+		} catch (NullPointerException e) {
+			ErrorLog.write("Konnte das Bild von " + id + " nicht empfangen.");
+			return null;
+		}
 	}
 	
 	
@@ -294,6 +299,8 @@ public class WebConnector {
 	
 	public ObservableList<CodrAi> getOwnAis(String game) {
 		String user = getUserName();
+		if (user == null)
+			return null;
 		return FXCollections.observableArrayList(getAis(game).stream().filter((CodrAi ai) -> ai.userName.equals(user)).collect(Collectors.toList()));
 	}
 	
@@ -756,7 +763,7 @@ public class WebConnector {
 		byte[] responseArray = getOutput(response.getEntity().getContent());
 		
 		if (response.getStatusLine().getStatusCode() != 200) {
-			ErrorLog.write("ERROR: Executing get request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + toString(responseArray));
+			ErrorLog.write("ERROR: Executing get request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode());// + ", ErrorMessage: " + toString(responseArray));
 			return null;
 		}
 		

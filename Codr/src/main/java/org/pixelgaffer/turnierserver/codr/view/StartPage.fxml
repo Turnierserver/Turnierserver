@@ -46,6 +46,7 @@
                                                          </HBox.margin>
                                                       </Label>
                                                       <Button fx:id="btTryOnline" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickTryOnline" text="Erneut versuchen" />
+                                                      <ProgressIndicator fx:id="prOnlineResources" prefHeight="26.0" prefWidth="26.0" />
                                                    </children>
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="10.0">
@@ -78,10 +79,11 @@
                                           <VBox fx:id="vbLogin" layoutX="61.0" layoutY="-30.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
                                                 <Label fx:id="lbLogin" prefWidth="588.0" text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua." wrapText="true" />
-                                                <GridPane fx:id="gpLogin" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="103.0" prefWidth="364.0" vgap="5.0">
+                                                <GridPane fx:id="gpLogin" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="103.0" prefWidth="402.0" vgap="5.0">
                                                   <columnConstraints>
-                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="274.0" minWidth="10.0" prefWidth="142.0" />
-                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="533.0" minWidth="10.0" prefWidth="222.0" />
+                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="274.0" minWidth="10.0" prefWidth="167.0" />
+                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="533.0" minWidth="10.0" prefWidth="245.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="533.0" minWidth="10.0" prefWidth="62.0" />
                                                   </columnConstraints>
                                                   <rowConstraints>
                                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -108,6 +110,7 @@
                                                             <Button fx:id="btLogin" mnemonicParsing="false" onAction="#clickLogin" text="Anmelden" />
                                                          </children>
                                                       </HBox>
+                                                      <ProgressIndicator fx:id="prLogin" prefHeight="26.0" prefWidth="26.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                                                    </children>
                                                 </GridPane>
                                                 <Button fx:id="btLogout" mnemonicParsing="false" onAction="#clickLogout" text="Abmelden" />

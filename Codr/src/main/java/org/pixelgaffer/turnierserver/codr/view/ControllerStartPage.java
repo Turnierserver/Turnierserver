@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -30,6 +31,7 @@ import javafx.scene.web.WebView;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.codr.utilities.Settings;
 
 
 
@@ -51,6 +53,9 @@ public class ControllerStartPage {
 	@FXML public ChoiceBox<String> cbGameTypes;
 	@FXML Button btTryOnline;
 	@FXML Label lbIsOnline;
+	
+	@FXML public ProgressIndicator prOnlineResources;
+	@FXML public ProgressIndicator prLogin;
 	
 	@FXML public ToggleButton btTheme;
 	@FXML public Slider slFontSize;
@@ -79,27 +84,19 @@ public class ControllerStartPage {
 		updateLoggedIn();
 		updateConnected();
 		
-		
-		btTheme.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			
-			@Override public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				clickTheme(newValue);
-			}
+		btTheme.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+			clickTheme(newValue);
 		});
 		
-		cbGameTypes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-			
-			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				MainApp.actualGameType.set(newValue);
-				mainApp.aiManager.loadAis();
-			}
+		cbGameTypes.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+			MainApp.actualGameType.set(newValue);
+			mainApp.aiManager.loadAis();
 		});
 		
 		cbGameTypes.setItems(MainApp.gametypes);
 		cbGameTypes.getSelectionModel().selectLast();
 		
 		tbPassword.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
-			
 			@Override public void handle(KeyEvent event) {
 				if (event.getCode() == KeyCode.ENTER) {
 					clickLogin();
@@ -111,35 +108,62 @@ public class ControllerStartPage {
 	
 	
 	public void updateConnected() {
-		if (mainApp.webConnector.ping()) {
-			lbIsOnline.setText("Es besteht eine Internetverbindung");
-			btTryOnline.setText("nach Aktualisierungen suchen");
-			vbLogin.setDisable(false);
-		} else {
-			lbIsOnline.setText("Momentan besteht keine Internetverbindung");
-			btTryOnline.setText("Erneut versuchen");
-			vbLogin.setDisable(true);
-		}
+		Task<Boolean> updateC = new Task<Boolean>() {
+			public Boolean call() {
+				if (MainApp.webConnector.ping()) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		};
+		
+		prLogin.setVisible(true);
+		
+		updateC.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			prLogin.setVisible(false);
+			if (newValue) {
+				lbIsOnline.setText("Es besteht eine Internetverbindung");
+				btTryOnline.setText("nach Aktualisierungen suchen");
+				vbLogin.setDisable(false);
+			} else {
+				lbIsOnline.setText("Momentan besteht keine Internetverbindung");
+				btTryOnline.setText("Erneut versuchen");
+				vbLogin.setDisable(true);
+			}
+		});
+		
+		new Thread(updateC).start();
 	}
 	
 	
 	public void updateLoggedIn() {
-		new Thread(new Task<Object>() {
-			
-			public Object call() {
-				if (MainApp.webConnector.isLoggedIn()) {
-					vbLogin.getChildren().clear();
-					vbLogin.getChildren().add(lbLogin);
-					vbLogin.getChildren().add(btLogout);
-				} else {
-					vbLogin.getChildren().clear();
-					vbLogin.getChildren().add(lbLogin);
-					vbLogin.getChildren().add(gpLogin);
-				}
-				return null;
-			}
-		}).start();
 		
+		Task<Boolean> updateL = new Task<Boolean>() {
+			public Boolean call() {
+				if (MainApp.webConnector.isLoggedIn()) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		};
+		
+		prLogin.setVisible(true);
+		
+		updateL.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			if (newValue) {
+				vbLogin.getChildren().clear();
+				vbLogin.getChildren().add(lbLogin);
+				vbLogin.getChildren().add(btLogout);
+			} else {
+				vbLogin.getChildren().clear();
+				vbLogin.getChildren().add(lbLogin);
+				vbLogin.getChildren().add(gpLogin);
+			}
+		});
+		
+		new Thread(updateL).start();
 	}
 	
 	
@@ -149,39 +173,53 @@ public class ControllerStartPage {
 	
 	
 	@FXML void clickRegister() {
-		openWebPage("http://" + MainApp.webUrl + "/");
+		openWebPage("http://" + Settings.webUrl + "/");
 	}
 	
 	
 	@FXML void clickLogout() {
-		try {
-			mainApp.webConnector.logout();
-		} catch (IOException e) {
-			ErrorLog.write("Logout fehlgeschlagen");
-		}
+		Task<Boolean> updateL = new Task<Boolean>() {
+			public Boolean call() {
+				try {
+					// TODO: Thread
+					mainApp.webConnector.logout();
+				} catch (IOException e) {
+					ErrorLog.write("Logout fehlgeschlagen");
+				}
+				return null;
+			}
+		};
+		prLogin.setVisible(true);
+		new Thread(updateL).start();
 		updateLoggedIn();
 	}
 	
 	
 	@FXML void clickLogin() {
-		
-		try {
-			if (!mainApp.webConnector.login(tbEmail.getText(), tbPassword.getText())) {
-				Dialog.error("Falsches Passwort oder Email", "Login fehlgeschlagen");
-			} else {
-				updateLoggedIn();
-				Dialog.info("Login erfolgreich!");
+		Task<Boolean> updateL = new Task<Boolean>() {
+			public Boolean call() {
+				try {
+					if (!mainApp.webConnector.login(tbEmail.getText(), tbPassword.getText())) {
+						Dialog.error("Falsches Passwort oder Email", "Login fehlgeschlagen");
+					} else {
+						updateLoggedIn();
+						Dialog.info("Login erfolgreich!");
+					}
+				} catch (IOException e) {
+					Dialog.error("Login fehlgeschlagen: ERROR", "Login fehlgeschlagen");
+					ErrorLog.write("Login fehlgeschlagen: " + e.getMessage());
+				}
+				return null;
 			}
-		} catch (IOException e) {
-			Dialog.error("Login fehlgeschlagen: ERROR", "Login fehlgeschlagen");
-			ErrorLog.write("Login fehlgeschlagen: " + e.getMessage());
-		}
+		};
+		prLogin.setVisible(true);
+		new Thread(updateL).start();
 		updateLoggedIn();
 	}
 	
 	
 	@FXML void clickForgotPassword() {
-		openWebPage("http://" + MainApp.webUrl + "/");
+		openWebPage("http://" + Settings.webUrl + "/");
 	}
 	
 	

@@ -193,6 +193,8 @@ public class Dialog {
 	
 	public static CodrAi selectOwnVersion() {
 		ObservableList<CodrAi> ownAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+		if (ownAis == null)
+			return null;
 		ownAis.add(new CodrAi());
 		
 		ChoiceDialog<CodrAi> dialog = new ChoiceDialog<>();
