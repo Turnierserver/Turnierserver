@@ -247,7 +247,7 @@ public class WebConnector {
 	
 	public void uploadVersion(Version version, int id) throws ZipException, IOException {
 		HttpPost post = new HttpPost("ai/" + id + "/new_version_from_zip");
-		File file = new File(System.getProperty("java.io.tmpdir"), version.ai.title + "v" + version.number + System.currentTimeMillis()  + ".zip");
+		File file = new File(System.getProperty("java.io.tmpdir"), version.ai.title + "v" + version.number + System.currentTimeMillis() + ".zip");
 		ZipFile zip = new ZipFile(file);
 		ZipParameters params = new ZipParameters();
 		params.setIncludeRootFolder(false);
@@ -608,8 +608,7 @@ public class WebConnector {
 			List<Cookie> cookies = this.cookies.getCookies();
 			
 			p.setProperty("session.cookies", Integer.toString(cookies.size()));
-			for (int i = 0; i < cookies.size(); i++)
-			{
+			for (int i = 0; i < cookies.size(); i++) {
 				Cookie c = cookies.get(i);
 				p.setProperty("session.cookies." + i + ".domain", c.getDomain());
 				if (c.getExpiryDate() != null)
@@ -642,8 +641,7 @@ public class WebConnector {
 			p.load(new FileInputStream(file));
 			
 			int cookies = Integer.parseInt(p.getProperty("session.cookies"));
-			for (int i = 0; i < cookies; i++)
-			{
+			for (int i = 0; i < cookies; i++) {
 				String name = p.getProperty("session.cookies." + i + ".name");
 				String value = p.getProperty("session.cookies." + i + ".value");
 				BasicClientCookie c = new BasicClientCookie(name, value);
@@ -654,7 +652,7 @@ public class WebConnector {
 					c.setExpiryDate(null);
 				c.setPath(p.getProperty("session.cookies." + i + ".path"));
 				c.setVersion(Integer.parseInt(p.getProperty("session.cookies." + i + ".version")));
-				System.out.println("Cookie geladen: " + c);
+				
 				this.cookies.addCookie(c);
 			}
 			
