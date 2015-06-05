@@ -125,8 +125,8 @@ public class ControllerStartPage {
 	
 	public void updateLoggedIn() {
 		new Thread(new Task<Object>() {
+			
 			public Object call() {
-				System.out.println("logintest");
 				if (MainApp.webConnector.isLoggedIn()) {
 					vbLogin.getChildren().clear();
 					vbLogin.getChildren().add(lbLogin);
@@ -136,7 +136,6 @@ public class ControllerStartPage {
 					vbLogin.getChildren().add(lbLogin);
 					vbLogin.getChildren().add(gpLogin);
 				}
-				System.out.println("logintest fertig");
 				return null;
 			}
 		}).start();
