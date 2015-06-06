@@ -24,8 +24,6 @@ from cli import manage
 from time import time
 
 
-
-
 app = Flask("Turnierserver - Frontend")
 app.config.from_object("_cfg.env")
 login_manager.init_app(app)

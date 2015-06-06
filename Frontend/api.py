@@ -152,14 +152,17 @@ def api_game_log(id):
 @api.route("/game/inprogress/<int:id>/log")
 @sse_stream
 def api_game_inprogress_log(id):
-	game = None
-	if game:
-		##
-		for chunk in []:
-			yield chunk
-	else:
+	gen = backend.inprogress_log(id)
+	try:
+		next(gen)
+	except StopIteration:
 		return CommonErrors.INVALID_ID
-
+	for data in gen:
+		if "data" in d:
+			yield d["data"]
+		else:
+			print(d)
+			yield d
 
 
 @api.route("/users", methods=["GET"])
@@ -969,3 +972,14 @@ def esu_container(game_id):
 		else:
 			abort(503)
 	return f()
+
+@api.route("/make_data_container/<int:game_id>")
+@json_out
+@admin_required
+def make_data_container(game_id):
+	from cli import _make_data_container
+	if not GameType.query.get(game_id):
+		return CommonErrors.INVALID_ID
+	_make_data_container(str(game_id))
+	return {"error": False}, 200
+
