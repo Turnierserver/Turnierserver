@@ -13,6 +13,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
@@ -69,7 +70,30 @@ public class CodrAi {
 			newVersion(versions.getJSONObject(i));
 		}
 		
-		new Thread(() -> loadPicture(json, connector), "Image Loader").start();
+		
+		Task<Image> updateC = new Task<Image>() {
+			public Image call() {
+				try {
+					Image img = connector.getImage(json.getInt("id"));
+					return img;
+				} catch (IOException e) {
+					return null;
+				}
+			}
+		};
+		
+		updateC.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			if (newValue != null)
+				setPicture(newValue);
+			else
+				ErrorLog.write("ERROR: Konnte das Bild der AI " + json.getString("name") + " nicht laden.");
+		});
+		
+		
+		
+		Thread thread = new Thread(() -> loadPicture(json, connector), "Image Loader");
+		thread.setDaemon(true);
+		thread.start();
 	}
 	
 	
@@ -118,12 +142,7 @@ public class CodrAi {
 	
 	
 	private void loadPicture(JSONObject json, WebConnector connector) {
-		try {
-			Image img = connector.getImage(json.getInt("id"));
-			setPicture(img);
-		} catch (IOException e) {
-			ErrorLog.write("ERROR: Konnte das Bild der AI " + json.getString("name") + " nicht laden (" + e.getLocalizedMessage() + ")!");
-		}
+		
 	}
 	
 	

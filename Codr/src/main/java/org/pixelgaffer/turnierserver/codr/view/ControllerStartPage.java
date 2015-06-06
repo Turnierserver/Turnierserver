@@ -132,8 +132,10 @@ public class ControllerStartPage {
 				vbLogin.setDisable(true);
 			}
 		});
-		
-		new Thread(updateC).start();
+
+		Thread thread = new Thread(updateC);
+		thread.setDaemon(true);
+		thread.start();
 	}
 	
 	
@@ -162,8 +164,10 @@ public class ControllerStartPage {
 				vbLogin.getChildren().add(gpLogin);
 			}
 		});
-		
-		new Thread(updateL).start();
+
+		Thread thread = new Thread(updateL);
+		thread.setDaemon(true);
+		thread.start();
 	}
 	
 	
@@ -196,7 +200,10 @@ public class ControllerStartPage {
 			}
 		});
 		prLogin.setVisible(true);
-		new Thread(updateL).start();
+		
+		Thread thread = new Thread(updateL);
+		thread.setDaemon(true);
+		thread.start();
 	}
 	
 	
@@ -230,9 +237,12 @@ public class ControllerStartPage {
 				break;
 			}
 		});
-		
 		prLogin.setVisible(true);
-		new Thread(updateL).start();
+		
+		Thread thread = new Thread(updateL);
+		thread.setDaemon(true);
+		thread.start();
+		
 		updateLoggedIn();
 	}
 	

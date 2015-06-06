@@ -153,8 +153,10 @@ public class ControllerGameManagement {
 						return true;
 					}
 				};
-				
-				new Thread(play).start();
+
+				Thread thread = new Thread(play);
+				thread.setDaemon(true);
+				thread.start();
 			} else {
 				Dialog.error("Bitte erst die KIs auswählen");
 			}
