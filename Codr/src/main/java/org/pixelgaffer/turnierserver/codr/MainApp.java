@@ -95,7 +95,8 @@ public class MainApp extends Application {
 		
 		stage = new Stage(StageStyle.DECORATED);
 		
-		settings = new Settings(cStart);
+		settings = new Settings();
+		settings.loadUrl();
 		webConnector = new WebConnector("http://" + Settings.webUrl + "/api/");
 		
 		gametypes = webConnector.loadGametypesFromFile();
@@ -115,12 +116,17 @@ public class MainApp extends Application {
 	}
 	
 	
-	public void exit() {
+	public void stop() {
+		if (settings != null)
+			settings.store(cStart);
 		if (cAi.version != null)
 			cAi.version.saveCode();
-		if (settings != null) {
-			settings.store();
-		}
+	}
+	
+	
+	public void exit() {
+		
+		ErrorLog.write("Programm wird beendet...", true);
 		if (cGame.runningGame != null) {
 			try {
 				cGame.runningGame.getGame().finishGame();
@@ -305,7 +311,7 @@ public class MainApp extends Application {
 			e.printStackTrace();
 		}
 		
-		settings.load();
+		settings.load(cStart);
 		
 		stage.setTitle("Codr");
 		stage.getIcons().add(Resources.codrIcon());
