@@ -13,6 +13,7 @@ Codr/settings.txt
 test.db
 gen/
 GameBuilder/Makefile
+startServer.bat
 
 # java müll
 .settings/
