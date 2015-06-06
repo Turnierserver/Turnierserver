@@ -56,6 +56,7 @@ public class ControllerStartPage {
 	
 	@FXML public ProgressIndicator prOnlineResources;
 	@FXML public ProgressIndicator prLogin;
+	@FXML public ProgressIndicator prLogin1;
 	
 	@FXML public ToggleButton btTheme;
 	@FXML public Slider slFontSize;
@@ -119,8 +120,10 @@ public class ControllerStartPage {
 		};
 		
 		prLogin.setVisible(true);
+		prLogin1.setVisible(true);
 		
 		updateC.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			prLogin1.setVisible(false);
 			prLogin.setVisible(false);
 			if (newValue) {
 				lbIsOnline.setText("Es besteht eine Internetverbindung");
@@ -132,7 +135,7 @@ public class ControllerStartPage {
 				vbLogin.setDisable(true);
 			}
 		});
-
+		
 		Thread thread = new Thread(updateC);
 		thread.setDaemon(true);
 		thread.start();
@@ -152,6 +155,7 @@ public class ControllerStartPage {
 		};
 		
 		prLogin.setVisible(true);
+		prLogin1.setVisible(true);
 		
 		updateL.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue) {
@@ -164,7 +168,7 @@ public class ControllerStartPage {
 				vbLogin.getChildren().add(gpLogin);
 			}
 		});
-
+		
 		Thread thread = new Thread(updateL);
 		thread.setDaemon(true);
 		thread.start();
@@ -195,7 +199,7 @@ public class ControllerStartPage {
 		updateL.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue) {
 				updateLoggedIn();
-			}else{
+			} else {
 				ErrorLog.write("Logout fehlgeschlagen");
 			}
 		});
@@ -223,7 +227,7 @@ public class ControllerStartPage {
 		};
 		
 		updateL.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-			switch (newValue){
+			switch (newValue) {
 			case "success":
 				updateLoggedIn();
 				Dialog.info("Login erfolgreich!");

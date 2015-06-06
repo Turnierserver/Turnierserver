@@ -453,52 +453,62 @@ public class ControllerAiManagement {
 	 * Button: Hochladen
 	 */
 	@FXML void clickUpload() {
-		CodrAi result = Dialog.selectOwnVersion();
-		if (result == null)
-			return;
 		
-		new Thread(new Task<Object>() {
-			public Object call() {
+		Task<String> upload = new Task<String>() {
+			public String call() {
+				CodrAi result = Dialog.selectOwnVersion();
+				if (result == null)
+					return "userAbort";
 				
 				int id = result.id;
 				if (result.title.equals("<Neue KI>")) {
 					String name = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
 					if (name == null)
-						return null;
+						return "userAbort";
 					id = MainApp.webConnector.createAi(ai, name);
 					if (id == -1) {
-						Dialog.error("Konnte keine neue ID erstellen");
-						return null;
+						return "errorConnection";
 					}
 				}
 				
 				try {
 					MainApp.webConnector.uploadVersion(version, id);
 				} catch (ZipException | IOException e) {
-					Dialog.error("Fehler beim Hochladen: " + e, "Verbindungsfehler");
-					e.printStackTrace();
-					return null;
+					return "errorConnection";
 				}
 				
 				try {
-					String compileOutput = MainApp.webConnector.compile(id);
-					Dialog.info(compileOutput, "Kompilierung erfolgeich");
+					MainApp.webConnector.compile(id);
+					return "finished";
 				} catch (IOException e) {
-					Dialog.error("Fehler bei der Verbindung mit dem Server", "Verbindungsfehler");
-					return null;
+					return "errorConnection";
 				} catch (CompileException e) {
-					Dialog.error("Fehler beim Kompilieren auf dem Server:\n\n" + e.compileOutput, "Kompilierungsfehler");
-					return null;
+					return "Fehler beim Kompilieren auf dem Server:\n\n" + e.compileOutput;
 				}
 				
-				
-				return null;
 			}
-		}).start();
+		};
 		
+		upload.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			switch (newValue) {
+			case "errorConnection":
+				Dialog.error("Fehler bei der Verbindung mit dem Server.\nMöglicherweise ist Codr nicht eingeloggt.", "Verbindungsfehler");
+				break;
+			case "finished":
+				Dialog.info("Die KI wurde erfolgreich hochgeladen, kompiliert (und qualifiziert).", "Upload fertig");
+				break;
+			case "userAbort":
+				break;
+			default:
+				Dialog.error(newValue, "Fehler");
+				break;
+			}
+		});
 		
-		
-		
+
+		Thread thread = new Thread(upload);
+		thread.setDaemon(true);
+		thread.start();
 	}
 	
 	
