@@ -117,6 +117,7 @@ class Backend(threading.Thread):
 		self.requests[reqid] = d
 		self.send_dict(d)
 		self.requests[reqid]["queue"] = Queue()
+		self.requests[reqid]["queues"] = WeakSet()
 		self.requests[reqid]["ai0"] = ais[0]
 		self.requests[reqid]["ai1"] = ais[1]
 		self.requests[reqid]["states"] = []
@@ -160,6 +161,9 @@ class Backend(threading.Thread):
 
 		self.requests[reqid].update(d)
 		self.requests[reqid]["queue"].put(d)
+		if "queues" in self.requests[reqid]:
+			for q in self.requests[reqid]["queues"]:
+				q.put(d)
 
 		if self.requests[reqid]["action"] == "start":
 			for q in self.game_update_queues:
@@ -215,6 +219,24 @@ class Backend(threading.Thread):
 				inqueue=r["status"] == "processed"
 			))
 		return games
+
+
+	def inprogress_log(self, id):
+		if not id in self.requests:
+			return False
+		if not "queues" in self.requests[id]:
+			return False
+
+		for d in self.requests[id]["data"]:
+			yield d
+
+		q = Queue()
+		while True:
+			try:
+				yield q.get(timeout=60)
+			except Empty:
+				return
+
 
 
 	def run(self):

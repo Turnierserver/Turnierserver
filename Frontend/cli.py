@@ -21,6 +21,75 @@ def zipdir(path, ziph):
 			ziph.write(os.path.join(root, file))
 
 
+def _make_data_container(game_id):
+	clean_tmp()
+	@ftp.safe
+	def f():
+		langs = [d for d in ftp.ftp_host.listdir("Games/"+game_id) if ftp.ftp_host.path.isdir("Games/"+game_id+"/"+d)]
+
+		os.mkdir("tmp/AiLibraries")
+		for lang in langs:
+			path = "Games/{}/{}/ailib".format(game_id, lang)
+			os.mkdir("tmp/AiLibraries/"+lang)
+			for root, dirs, files in ftp.ftp_host.walk(path):
+				new_path = root.replace(path, "tmp/AiLibraries/"+lang)
+				#make dirs
+				for dir in dirs:
+					print("MKDIR:", new_path + "/" + dir)
+					os.mkdir(new_path + "/" + dir)
+
+				#load files
+				for file in files:
+					print(root+"/"+file, "->", new_path+"/"+file)
+					ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
+
+
+		os.mkdir("tmp/SimplePlayers")
+		for lang in langs:
+			path = "Games/{}/{}/example_ai".format(game_id, lang)
+			os.mkdir("tmp/SimplePlayers/"+lang)
+			for root, dirs, files in ftp.ftp_host.walk(path):
+				if root.endswith("/example_ai"):
+					new_path = root.replace(path, "tmp/SimplePlayers/"+lang+"/")
+				else:
+					new_path = root.replace(path, "tmp/SimplePlayers/"+lang)
+				#make dirs
+				for dir in dirs:
+					print("MKDIR:", new_path + "/" + dir)
+					os.mkdir(new_path + "/" + dir)
+
+				#load files
+				for file in files:
+					print(root+"/"+file, "->", new_path+"/"+file)
+					ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
+
+		print("Games/"+game_id+"/info.pdf", "->", "tmp/info.pdf")
+		ftp.ftp_host.download("Games/"+game_id+"/info.pdf", "tmp/info.pdf")
+
+		zipf = zipfile.ZipFile('tmp/data_container.zip', 'w')
+		os.chdir("tmp")
+		zipdir('AiLibraries', zipf)
+		zipdir('SimplePlayers', zipf)
+		zipf.write("info.pdf")
+		os.chdir("..")
+		zipf.close()
+
+		ftp.ftp_host.upload("tmp/data_container.zip", "Games/"+game_id+"/data_container.zip")
+		print("Uploaded ZIP to 'Games/"+game_id+"/data_container.zip'")
+
+
+	try:
+		f()
+	except ftp.err:
+		print("Failed...")
+
+	gt = GameType.query.get(game_id)
+	if not gt:
+		print("Invalid ID.")
+
+	gt.updated()
+
+
 def manage(manager, app):
 	@manager.command
 	def clean_db():
@@ -59,72 +128,7 @@ def manage(manager, app):
 	@manager.command
 	def make_data_container(game_id):
 		"Packt die Beispiel-KIs und AILibs in einen data_container.zip zusammen"
-		clean_tmp()
-		@ftp.safe
-		def f():
-			langs = [d for d in ftp.ftp_host.listdir("Games/"+game_id) if ftp.ftp_host.path.isdir("Games/"+game_id+"/"+d)]
-
-			os.mkdir("tmp/AiLibraries")
-			for lang in langs:
-				path = "Games/{}/{}/ailib".format(game_id, lang)
-				os.mkdir("tmp/AiLibraries/"+lang)
-				for root, dirs, files in ftp.ftp_host.walk(path):
-					new_path = root.replace(path, "tmp/AiLibraries/"+lang)
-					#make dirs
-					for dir in dirs:
-						print("MKDIR:", new_path + "/" + dir)
-						os.mkdir(new_path + "/" + dir)
-
-					#load files
-					for file in files:
-						print(root+"/"+file, "->", new_path+"/"+file)
-						ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
-
-
-			os.mkdir("tmp/SimplePlayers")
-			for lang in langs:
-				path = "Games/{}/{}/example_ai".format(game_id, lang)
-				os.mkdir("tmp/SimplePlayers/"+lang)
-				for root, dirs, files in ftp.ftp_host.walk(path):
-					if root.endswith("/example_ai"):
-						new_path = root.replace(path, "tmp/SimplePlayers/"+lang+"/")
-					else:
-						new_path = root.replace(path, "tmp/SimplePlayers/"+lang)
-					#make dirs
-					for dir in dirs:
-						print("MKDIR:", new_path + "/" + dir)
-						os.mkdir(new_path + "/" + dir)
-
-					#load files
-					for file in files:
-						print(root+"/"+file, "->", new_path+"/"+file)
-						ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
-
-			print("Games/"+game_id+"/info.pdf", "->", "tmp/info.pdf")
-			ftp.ftp_host.download("Games/"+game_id+"/info.pdf", "tmp/info.pdf")
-
-			zipf = zipfile.ZipFile('tmp/data_container.zip', 'w')
-			os.chdir("tmp")
-			zipdir('AiLibraries', zipf)
-			zipdir('SimplePlayers', zipf)
-			zipf.write("info.pdf")
-			os.chdir("..")
-			zipf.close()
-
-			ftp.ftp_host.upload("tmp/data_container.zip", "Games/"+game_id+"/data_container.zip")
-			print("Uploaded ZIP to 'Games/"+game_id+"/data_container.zip'")
-
-
-		try:
-			f()
-		except ftp.err:
-			print("Failed...")
-
-		gt = GameType.query.get(game_id)
-		if not gt:
-			print("Invalid ID.")
-
-		gt.updated()
+		_make_data_container(game_id)
 
 
 	@manager.command
