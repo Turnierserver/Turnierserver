@@ -19,28 +19,23 @@ import org.pixelgaffer.turnierserver.codr.view.ControllerStartPage;
 
 public class Settings {
 	
-	ControllerStartPage cStart;
 	
 	public static String webUrl = "localhost:5000";
 	
 	
-	public Settings(ControllerStartPage c) {
-		cStart = c;
-		load();
-	}
 	
-	
-	public void store() {
+	public void store(ControllerStartPage cStart) {
 		Properties prop = new Properties();
-		
 		prop.setProperty("webUrl", webUrl);
-		try {
+		
+		if (cStart == null) {
+			System.out.println("Konnte Einstellungen nicht speichern");
+		} else {
 			prop.setProperty("theme", cStart.btTheme.isSelected() + "");
 			prop.setProperty("fontSize", cStart.slFontSize.getValue() + "");
 			prop.setProperty("scrollSpeed", cStart.slScrollSpeed.getValue() + "");
 			prop.setProperty("pythonInterpreter", cStart.tbPythonInterpreter.getText());
 			prop.setProperty("cplusplusCompiler", cStart.tbCplusplusCompiler.getText());
-		} catch (NullPointerException e1) {
 		}
 		
 		try {
@@ -49,33 +44,61 @@ public class Settings {
 			writer.close();
 		} catch (IOException e) {
 			ErrorLog.write("Es kann keine Settings-Datei angelegt werden.");
+			return;
 		}
 	}
 	
 	
-	public void load() {
+	public void loadUrl() {
+		Properties prop = new Properties();
+		
 		try {
 			Reader reader = new FileReader(Paths.settings());
-			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
 			
-			String newUrl = prop.getProperty("webUrl");
-			if (newUrl != null) {
-				webUrl = newUrl;
-			}
-			
-			cStart.btTheme.setSelected(Boolean.parseBoolean(prop.getProperty("theme")));
-			cStart.slFontSize.setValue(Double.parseDouble(prop.getProperty("fontSize")));
-			cStart.slScrollSpeed.setValue(Double.parseDouble(prop.getProperty("scrollSpeed")));
-			cStart.tbPythonInterpreter.setText(prop.getProperty("pythonInterpreter"));
-			cStart.tbCplusplusCompiler.setText(prop.getProperty("cplusplusCompiler"));
 		} catch (IOException e) {
 			ErrorLog.write("Fehler bei Laden aus der settings.txt");
-		} catch (NullPointerException e) {
+			return;
+		}
+		
+		String newUrl = prop.getProperty("webUrl");
+		if (newUrl != null) {
+			webUrl = newUrl;
 		}
 	}
 	
 	
+	public void load(ControllerStartPage cStart) {
+		Properties prop = new Properties();
+		
+		try {
+			Reader reader = new FileReader(Paths.settings());
+			prop.load(reader);
+			reader.close();
+		} catch (IOException e) {
+			ErrorLog.write("Fehler bei Laden aus der settings.txt");
+			return;
+		}
+		String newUrl = prop.getProperty("webUrl");
+		if (newUrl != null) {
+			webUrl = newUrl;
+		}
+		
+		if (cStart == null) {
+			System.out.println("Konnte Einstellungen nicht laden  (Fatal ERROR)");
+		} else {
+			try {
+				cStart.btTheme.setSelected(Boolean.parseBoolean(prop.getProperty("theme")));
+				cStart.slFontSize.setValue(Double.parseDouble(prop.getProperty("fontSize")));
+				cStart.slScrollSpeed.setValue(Double.parseDouble(prop.getProperty("scrollSpeed")));
+				cStart.tbPythonInterpreter.setText(prop.getProperty("pythonInterpreter"));
+				cStart.tbCplusplusCompiler.setText(prop.getProperty("cplusplusCompiler"));
+				
+			} catch (NullPointerException e) {
+				System.out.println("Konnte Einstellungen nicht laden");
+			}
+		}
+	}
 	
 }
