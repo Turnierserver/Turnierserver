@@ -116,17 +116,13 @@ public class MainApp extends Application {
 	}
 	
 	
-	public void stop() {
+	
+	public void exit() {
 		if (settings != null)
 			settings.store(cStart);
 		if (cAi.version != null)
 			cAi.version.saveCode();
-	}
-	
-	
-	public void exit() {
 		
-		ErrorLog.write("Programm wird beendet...", true);
 		if (cGame.runningGame != null) {
 			try {
 				cGame.runningGame.getGame().finishGame();
@@ -177,7 +173,9 @@ public class MainApp extends Application {
 		if (cStart != null)
 			cStart.prOnlineResources.setVisible(true);
 		
-		new Thread(updateTask).start();
+		Thread thread = new Thread(updateTask);
+		thread.setDaemon(true);
+		thread.start();
 	}
 	
 	
@@ -202,8 +200,7 @@ public class MainApp extends Application {
 	
 	
 	public static void loadOnlineAis() {
-		new Thread(new Task<Object>() {
-			
+		Task<Object> updateTask = new Task<Object>() {
 			public Object call() {
 				ObservableList<CodrAi> newOwnOnline = null;
 				if (MainApp.webConnector.isLoggedIn()) {
@@ -216,8 +213,11 @@ public class MainApp extends Application {
 					onlineAis = newOnline;
 				return null;
 			}
-		}).start();
+		};
 		
+		Thread thread = new Thread(updateTask);
+		thread.setDaemon(true);
+		thread.start();
 	}
 	
 	
@@ -294,7 +294,9 @@ public class MainApp extends Application {
 			}
 		});
 		
-		new Thread(updateTask).start();
+		Thread thread = new Thread(updateTask);
+		thread.setDaemon(true);
+		thread.start();
 	}
 	
 	
