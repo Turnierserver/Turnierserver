@@ -71,7 +71,7 @@ public class CodrAi {
 		}
 		
 		
-		Task<Image> updateC = new Task<Image>() {
+		Task<Image> imageLoader = new Task<Image>() {
 			public Image call() {
 				try {
 					Image img = connector.getImage(json.getInt("id"));
@@ -82,7 +82,7 @@ public class CodrAi {
 			}
 		};
 		
-		updateC.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+		imageLoader.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue != null)
 				setPicture(newValue);
 			else
@@ -91,7 +91,7 @@ public class CodrAi {
 		
 		
 		
-		Thread thread = new Thread(() -> loadPicture(json, connector), "Image Loader");
+		Thread thread = new Thread(imageLoader, "Image Loader");
 		thread.setDaemon(true);
 		thread.start();
 	}
@@ -140,10 +140,6 @@ public class CodrAi {
 		}
 	}
 	
-	
-	private void loadPicture(JSONObject json, WebConnector connector) {
-		
-	}
 	
 	
 	/**
