@@ -2,7 +2,6 @@ from database import db
 from flask import abort, render_template
 from flask.ext.login import current_user
 from flask.ext.cache import Cache
-from flask.ext.bcrypt import Bcrypt
 from functools import wraps
 
 
@@ -48,4 +47,3 @@ def authenticated_web(f):
 	return wrapper
 
 cache = Cache(config={'CACHE_TYPE': 'simple'})
-bcrypt = Bcrypt()
