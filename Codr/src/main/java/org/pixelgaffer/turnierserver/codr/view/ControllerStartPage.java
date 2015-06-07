@@ -120,12 +120,10 @@ public class ControllerStartPage {
 			}
 		};
 		
-		prLogin.setVisible(true);
-		prLogin1.setVisible(true);
+		prOnlineResources.setVisible(true);
 		
 		updateC.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-			prLogin1.setVisible(false);
-			prLogin.setVisible(false);
+			prOnlineResources.setVisible(false);
 			if (newValue) {
 				lbIsOnline.setText("Es besteht eine Internetverbindung");
 				btTryOnline.setText("nach Aktualisierungen suchen");
@@ -137,7 +135,7 @@ public class ControllerStartPage {
 			}
 		});
 		
-		Thread thread = new Thread(updateC);
+		Thread thread = new Thread(updateC, "updateConnected");
 		thread.setDaemon(true);
 		thread.start();
 	}
@@ -172,7 +170,7 @@ public class ControllerStartPage {
 			prLogin1.setVisible(false);
 		});
 		
-		Thread thread = new Thread(updateL);
+		Thread thread = new Thread(updateL, "updateLoggedIn");
 		thread.setDaemon(true);
 		thread.start();
 	}
@@ -213,7 +211,7 @@ public class ControllerStartPage {
 			prLogin1.setVisible(false);
 		});
 		
-		Thread thread = new Thread(updateL);
+		Thread thread = new Thread(updateL, "updateLoggedIn");
 		thread.setDaemon(true);
 		thread.start();
 	}
@@ -251,7 +249,7 @@ public class ControllerStartPage {
 		});
 		prLogin.setVisible(true);
 		
-		Thread thread = new Thread(updateL);
+		Thread thread = new Thread(updateL, "updateLoggedIn");
 		thread.setDaemon(true);
 		thread.start();
 		

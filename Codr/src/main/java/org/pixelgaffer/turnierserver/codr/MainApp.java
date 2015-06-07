@@ -170,7 +170,7 @@ public class MainApp extends Application {
 		if (cStart != null)
 			cStart.prOnlineResources.setVisible(true);
 		
-		Thread thread = new Thread(updateTask);
+		Thread thread = new Thread(updateTask, "updateOnlineResources");
 		thread.setDaemon(true);
 		thread.start();
 	}
@@ -204,10 +204,14 @@ public class MainApp extends Application {
 					newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
 				
 				ObservableList<CodrAi> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
-				if (newOwnOnline != null)
-					ownOnlineAis = newOwnOnline;
-				if (newOnline != null)
-					onlineAis = newOnline;
+				if (newOwnOnline != null){
+					ownOnlineAis.clear();
+					ownOnlineAis.addAll(newOwnOnline);
+				}
+				if (newOnline != null){
+					onlineAis.clear();
+					onlineAis.addAll(newOnline);
+				}
 				return 1;
 			}
 		};
@@ -215,13 +219,13 @@ public class MainApp extends Application {
 		updateTask.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (finishTask == null)
 				return;
-			Thread thread = new Thread(finishTask);
+			Thread thread = new Thread(finishTask, "finishTask");
 			thread.setDaemon(true);
 			thread.start();
 		});
 		
 		
-		Thread thread = new Thread(updateTask);
+		Thread thread = new Thread(updateTask, "updateOnlineAis");
 		thread.setDaemon(true);
 		thread.start();
 	}
@@ -305,7 +309,7 @@ public class MainApp extends Application {
 			}
 		});
 		
-		Thread thread = new Thread(updateTask);
+		Thread thread = new Thread(updateTask, "splashUpdate");
 		thread.setDaemon(true);
 		thread.start();
 	}

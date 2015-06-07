@@ -110,13 +110,13 @@
                                                             <Button fx:id="btLogin" mnemonicParsing="false" onAction="#clickLogin" text="Anmelden" />
                                                          </children>
                                                       </HBox>
-                                                      <ProgressIndicator fx:id="prLogin" prefHeight="26.0" prefWidth="26.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                                      <ProgressIndicator fx:id="prLogin" prefHeight="26.0" prefWidth="26.0" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                                                    </children>
                                                 </GridPane>
                                                 <HBox fx:id="hbLogout" alignment="CENTER_LEFT" spacing="10.0">
                                                    <children>
                                                       <Button mnemonicParsing="false" onAction="#clickLogout" text="Abmelden" />
-                                                      <ProgressIndicator fx:id="prLogin1" prefHeight="26.0" prefWidth="26.0" />
+                                                      <ProgressIndicator fx:id="prLogin1" prefHeight="26.0" prefWidth="26.0" visible="false" />
                                                    </children>
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
