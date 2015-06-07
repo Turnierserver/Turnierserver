@@ -26,20 +26,28 @@ QitHubFile::QitHubFile(QitHubAPI *client, const QitHubCommit &commit, const QStr
 	, _commit(commit)
 	, _filename(filename)
 {
-	QNetworkRequest req = api->createRequest("/repos/" + commit.repo().user() + "/" + commit.repo().repo() + "/contents/" + filename + "?ref=" + commit.sha());
+}
+
+QJsonObject QitHubFile::info()
+{
+	if (!_info.isEmpty())
+		return _info;
+	
+	QNetworkRequest req = api->createRequest("/repos/" + commit().repo().user() + "/" + commit().repo().repo() + "/contents/" + filename() + "?ref=" + commit().sha());
 	QNetworkReply *reply = api->sendGet(req);
 	
 	QJsonDocument json = QJsonDocument::fromJson(reply->readAll());
-	info = json.object();
+	_info = json.object();
 	
 	if (reply->error() != QNetworkReply::NoError)
-	fprintf(stderr, "Fehler beim Herunterladen von Informationen für %s/%s %s: %s\n", qPrintable(commit.repo().user()), qPrintable(commit.repo().repo()), qPrintable(filename), qPrintable(info.value("message").toString(reply->errorString())));
+		fprintf(stderr, "Fehler beim Herunterladen von Informationen für %s/%s %s: %s\n", qPrintable(commit().repo().user()), qPrintable(commit().repo().repo()), qPrintable(filename()), qPrintable(_info.value("message").toString(reply->errorString())));
 	
 	delete reply;
+	return _info;
 }
 
-QByteArray QitHubFile::content() const
+QByteArray QitHubFile::content()
 {
-	QByteArray base64 = info.value("content").toVariant().toByteArray();
+	QByteArray base64 = info().value("content").toVariant().toByteArray();
 	return QByteArray::fromBase64(base64);
 }

@@ -37,14 +37,17 @@ public:
 	QitHubRepository repo () const { return _repo; }
 	QString name () const { return _name; }
 	
-	QitHubCommit latestCommit () const;
+	QitHubCommit latestCommit ();
+	
+protected:
+	QJsonObject info();
 	
 private:
 	QitHubAPI *api;
 	QitHubRepository _repo;
 	QString _name;
 	
-	QJsonObject info;
+	QJsonObject _info;
 	
 };
 
