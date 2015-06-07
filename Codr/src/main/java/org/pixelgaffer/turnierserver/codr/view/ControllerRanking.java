@@ -62,64 +62,56 @@ public class ControllerRanking {
 		loadOnlineAis();
 		
 		TableColumn<CodrAi, Image> col0 = new TableColumn<CodrAi, Image>("Bild");
+		col0.setMaxWidth(60);
+		col0.setMinWidth(60);
 		TableColumn<CodrAi, String> col1 = new TableColumn<CodrAi, String>("Name");
 		TableColumn<CodrAi, String> col2 = new TableColumn<CodrAi, String>("Besitzer");
 		TableColumn<CodrAi, String> col3 = new TableColumn<CodrAi, String>("ELO");
+		col3.setMaxWidth(60);
+		col3.setMinWidth(60);
 		
 		col0.setCellValueFactory(new Callback<CellDataFeatures<CodrAi, Image>, ObservableValue<Image>>() {
-			
 			@Override public ObservableValue<Image> call(CellDataFeatures<CodrAi, Image> arg0) {
 				return arg0.getValue().getPicture();
 			}
 		});
-		
-		col0.setCellValueFactory(new PropertyValueFactory<CodrAi, Image>("onlinePicture"));
 		col0.setCellFactory(new Callback<TableColumn<CodrAi, Image>, TableCell<CodrAi, Image>>() {
-			
 			@Override public TableCell<CodrAi, Image> call(TableColumn<CodrAi, Image> param) {
-				// Set up the ImageView
 				final ImageView imageview = new ImageView();
 				imageview.setFitHeight(50);
 				imageview.setFitWidth(50);
 				
-				// Set up the Table
 				TableCell<CodrAi, Image> cell = new TableCell<CodrAi, Image>() {
-					
 					public void updateItem(Image item, boolean empty) {
 						if (item != null)
 							imageview.imageProperty().set(item);
 					}
 				};
-				
-				// Attach the imageview to the cell
 				cell.setGraphic(imageview);
-				
-				
 				return cell;
 			}
 			
 		});
-		
-		
-		
 		col1.setCellValueFactory(new Callback<CellDataFeatures<CodrAi, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<CodrAi, String> p) {
 				return new SimpleStringProperty(p.getValue().title);
 			}
 		});
 		col2.setCellValueFactory(new Callback<CellDataFeatures<CodrAi, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<CodrAi, String> p) {
 				return new SimpleStringProperty(p.getValue().userName);
 			}
 		});
 		col3.setCellValueFactory(new Callback<CellDataFeatures<CodrAi, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<CodrAi, String> p) {
 				return new SimpleStringProperty(p.getValue().elo);
 			}
 		});
+		
+		col0.setStyle("-fx-alignment: CENTER-LEFT;");
+		col1.setStyle("-fx-alignment: CENTER-LEFT;");
+		col2.setStyle("-fx-alignment: CENTER-LEFT;");
+		col3.setStyle("-fx-alignment: CENTER-LEFT;");
 		
 		tvAis.getColumns().add(col0);
 		tvAis.getColumns().add(col1);
@@ -132,13 +124,11 @@ public class ControllerRanking {
 		TableColumn<Version, String> colV3 = new TableColumn<>("Fertiggestellt");
 		
 		colV0.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
 				return new SimpleStringProperty(p.getValue().number + "");
 			}
 		});
 		colV1.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
 				if (p.getValue().compiled)
 					return new SimpleStringProperty("Ja");
@@ -147,7 +137,6 @@ public class ControllerRanking {
 			}
 		});
 		colV2.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
 				if (p.getValue().qualified)
 					return new SimpleStringProperty("Ja");
@@ -156,7 +145,6 @@ public class ControllerRanking {
 			}
 		});
 		colV3.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
 				if (p.getValue().finished)
 					return new SimpleStringProperty("Ja");
@@ -164,6 +152,11 @@ public class ControllerRanking {
 					return new SimpleStringProperty("Nein");
 			}
 		});
+
+		colV0.setStyle("-fx-alignment: CENTER;");
+		colV1.setStyle("-fx-alignment: CENTER;");
+		colV2.setStyle("-fx-alignment: CENTER;");
+		colV3.setStyle("-fx-alignment: CENTER;");
 		
 		tvVersions.getColumns().add(colV0);
 		tvVersions.getColumns().add(colV1);
@@ -211,7 +204,8 @@ public class ControllerRanking {
 	
 	
 	@FXML public void clickChallenge() {
-		
+		tvAis.setItems(MainApp.onlineAis);
+		tvAis.getSelectionModel().selectFirst();
 	}
 	
 	

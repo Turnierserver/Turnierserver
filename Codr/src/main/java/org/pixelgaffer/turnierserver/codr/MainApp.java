@@ -133,11 +133,10 @@ public class MainApp extends Application {
 	
 	public void loadOnlineResources() {
 		final Task updateTask = new Task() {
-			
 			@Override protected Object call() throws InterruptedException {
 				
 				try {
-					webConnector.updateGametypes();  // TODO: Timeout
+					webConnector.updateGametypes();
 				} catch (NewException e) {
 					gametypes = e.newValues;
 					updateMessage("neue Spieltypen");
@@ -147,7 +146,7 @@ public class MainApp extends Application {
 				}
 				
 				try {
-					webConnector.updateLanguages();  // TODO: Timeout
+					webConnector.updateLanguages();
 				} catch (NewException e) {
 					languages = e.newValues;
 					updateMessage("neue Sprachen");
@@ -161,7 +160,6 @@ public class MainApp extends Application {
 		};
 		
 		updateTask.messageProperty().addListener(new ChangeListener<String>() {
-			
 			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				onlineResourcesFinished(newValue);
 			}
@@ -196,43 +194,41 @@ public class MainApp extends Application {
 	}
 	
 	
-	public void loadOnlineAis(Task finishTask) {
-		Task<Object> updateTask = new Task<Object>() {
-			public Object call() {
-				ObservableList<CodrAi> newOwnOnline = null;
-				if (MainApp.webConnector.isLoggedIn())
-					newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
-				
+	private boolean localOnlineSynced = false;
+	public void loadOnlineAis() {
+		
+		Task<ObservableList<CodrAi>> updateTask = new Task<ObservableList<CodrAi>>() {
+			public ObservableList<CodrAi> call() {
 				ObservableList<CodrAi> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
-				if (newOwnOnline != null){
-					ownOnlineAis.clear();
-					ownOnlineAis.addAll(newOwnOnline);
-				}
-				if (newOnline != null){
-					onlineAis.clear();
-					onlineAis.addAll(newOnline);
-				}
-				return 1;
+				updateValue(newOnline);
+				
+				ObservableList<CodrAi> newOwnOnline = null;
+				if (MainApp.webConnector.isLoggedIn())		
+					newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+				return newOwnOnline;
 			}
 		};
 		
 		updateTask.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-			if (finishTask == null)
-				return;
-			Thread thread = new Thread(finishTask, "finishTask");
-			thread.setDaemon(true);
-			thread.start();
+			if (!localOnlineSynced){
+				if (newValue != null){
+					onlineAis.clear();
+					onlineAis.addAll(newValue);
+				}
+				localOnlineSynced = true;
+			}
+			else{
+				if (newValue != null){
+					ownOnlineAis.clear();
+					ownOnlineAis.addAll(newValue);
+				}
+			}
 		});
 		
 		
 		Thread thread = new Thread(updateTask, "updateOnlineAis");
 		thread.setDaemon(true);
 		thread.start();
-	}
-	
-	
-	public void loadOnlineAis() {
-		loadOnlineAis(null);
 	}
 	
 	
