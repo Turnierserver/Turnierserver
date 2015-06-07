@@ -36,6 +36,7 @@ public class Settings {
 			prop.setProperty("scrollSpeed", cStart.slScrollSpeed.getValue() + "");
 			prop.setProperty("pythonInterpreter", cStart.tbPythonInterpreter.getText());
 			prop.setProperty("cplusplusCompiler", cStart.tbCplusplusCompiler.getText());
+			prop.setProperty("email", cStart.tbEmail.getText());
 		}
 		
 		try {
@@ -94,9 +95,10 @@ public class Settings {
 				cStart.slScrollSpeed.setValue(Double.parseDouble(prop.getProperty("scrollSpeed")));
 				cStart.tbPythonInterpreter.setText(prop.getProperty("pythonInterpreter"));
 				cStart.tbCplusplusCompiler.setText(prop.getProperty("cplusplusCompiler"));
+				cStart.tbEmail.setText(prop.getProperty("email"));
 				
 			} catch (NullPointerException e) {
-				System.out.println("Konnte Einstellungen nicht laden");
+				System.out.println("Konnte Einstellungen nicht laden (Dies ist beim ersten Start normal)");
 			}
 		}
 	}

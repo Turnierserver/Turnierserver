@@ -113,7 +113,7 @@
                                                       <ProgressIndicator fx:id="prLogin" prefHeight="26.0" prefWidth="26.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                                                    </children>
                                                 </GridPane>
-                                                <HBox fx:id="btLogout" alignment="CENTER_LEFT" spacing="10.0">
+                                                <HBox fx:id="hbLogout" alignment="CENTER_LEFT" spacing="10.0">
                                                    <children>
                                                       <Button mnemonicParsing="false" onAction="#clickLogout" text="Abmelden" />
                                                       <ProgressIndicator fx:id="prLogin1" prefHeight="26.0" prefWidth="26.0" />

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -192,14 +193,17 @@ public class Dialog {
 	
 	
 	public static CodrAi selectOwnVersion() {
-		ObservableList<CodrAi> ownAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
-		if (ownAis == null)
+		
+		if (MainApp.ownOnlineAis == null)
 			return null;
-		ownAis.add(new CodrAi());
+		
+		ObservableList<CodrAi> list = FXCollections.observableArrayList();
+		list.addAll(MainApp.ownOnlineAis);
+		list.add(new CodrAi());
 		
 		ChoiceDialog<CodrAi> dialog = new ChoiceDialog<>();
-		dialog.getItems().addAll(ownAis);
-		dialog.setSelectedItem(ownAis.get(0));
+		dialog.getItems().addAll(list);
+		dialog.setSelectedItem(list.get(0));
 		dialog.setTitle("Version hochladen");
 		dialog.setHeaderText("Wähle bitte eine KI aus, zu dem die Version hochgeladen werden soll.");
 		dialog.setContentText("KI:");
