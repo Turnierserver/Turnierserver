@@ -124,7 +124,7 @@ public class ControllerGameManagement {
 	
 	
 	@FXML void clickOnline() {
-		MainApp.loadOnlineAis();
+		mainApp.loadOnlineAis();
 		lvPlayer1.setItems(MainApp.ownOnlineAis);
 		lvPlayer2.setItems(MainApp.onlineAis);
 		lvPlayer1.getSelectionModel().selectFirst();

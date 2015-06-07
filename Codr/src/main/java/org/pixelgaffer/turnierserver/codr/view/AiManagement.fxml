@@ -81,14 +81,15 @@
                                           </TitledPane>
                                           <AnchorPane prefHeight="140.0" prefWidth="293.0">
                                              <children>
-                                                <Button fx:id="btCompile" mnemonicParsing="false" onAction="#clickCompile" text="Kompilieren" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                <Button fx:id="btCompile" mnemonicParsing="false" onAction="#clickCompile" prefWidth="105.0" text="Kompilieren" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                 <Label fx:id="lbCompiled" layoutX="110.0" layoutY="5.0" text="bereits kompiliert" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="5.0" />
-                                                <Button fx:id="btQualify" layoutY="36.0" mnemonicParsing="false" onAction="#clickQualify" text="Qualifizieren" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="36.0" />
-                                                <Button fx:id="btFinish" layoutX="1.0" layoutY="72.0" mnemonicParsing="false" onAction="#clickFinish" prefHeight="31.0" prefWidth="103.0" text="Fertigstellen" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="72.0" />
-                                                <Button fx:id="btUpload" layoutX="1.0" layoutY="108.0" mnemonicParsing="false" onAction="#clickUpload" prefHeight="31.0" prefWidth="103.0" text="Hochladen" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="108.0" />
+                                                <Button fx:id="btQualify" layoutY="36.0" mnemonicParsing="false" onAction="#clickQualify" prefWidth="105.0" text="Qualifizieren" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="36.0" />
+                                                <Button fx:id="btFinish" layoutX="1.0" layoutY="72.0" mnemonicParsing="false" onAction="#clickFinish" prefWidth="105.0" text="Fertigstellen" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="72.0" />
+                                                <Button fx:id="btUpload" layoutX="1.0" layoutY="108.0" mnemonicParsing="false" onAction="#clickUpload" prefWidth="105.0" text="Hochladen" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="108.0" />
                                                 <Label fx:id="lbUploaded" layoutX="110.0" layoutY="113.0" text="bereits hochgeladen" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="113.0" />
                                                 <Label fx:id="lbFinished" layoutX="110.0" layoutY="77.0" text="bereits fertiggestellt" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="77.0" />
                                                 <Hyperlink fx:id="hlShowQualified" layoutX="105.0" layoutY="37.0" onAction="#clickShowQualified" text="Spiel anzeigen" />
+                                                <ProgressIndicator fx:id="prUpload" layoutX="111.0" layoutY="111.0" prefHeight="26.0" prefWidth="26.0" visible="false" />
                                              </children>
                                           </AnchorPane>
                                        </children>

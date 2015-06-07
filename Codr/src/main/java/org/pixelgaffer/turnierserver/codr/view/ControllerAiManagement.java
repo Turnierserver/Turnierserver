@@ -33,34 +33,35 @@ import javafx.scene.web.WebView;
 public class ControllerAiManagement {
 	
 	
-	@FXML public Button btAbort;
-	@FXML public Button btEdit;
-	@FXML public Button btNewVersion;
-	@FXML public Button btCompile;
-	@FXML public Button btQualify;
-	@FXML public Button btFinish;
-	@FXML public Button btUpload;
-	@FXML public Button btToActual;
-	@FXML public Button btChangeImage;
-	@FXML public Button btDeleteImage;
-	@FXML public Label lbName;
-	@FXML public Label lbLanguage;
-	@FXML public Label lbCompiled;
-	@FXML public Label lbFinished;
-	@FXML public Label lbUploaded;
-	@FXML public RadioButton rbSimple;
-	@FXML public RadioButton rbContinue;
-	@FXML public RadioButton rbFromFile;
-	@FXML public TextField tbFile;
-	@FXML public TextField tbName;
-	@FXML public TextArea tbOutput;
-	@FXML public TextArea tbDescription;
-	@FXML public ChoiceBox<Version> cbVersion;
-	@FXML public ChoiceBox<String> cbLanguage;
-	@FXML public ListView<CodrAi> lvAis;
-	@FXML public ImageView image;
-	@FXML public TabPane tpCode;
-	@FXML public Hyperlink hlShowQualified;
+	@FXML Button btAbort;
+	@FXML Button btEdit;
+	@FXML Button btNewVersion;
+	@FXML Button btCompile;
+	@FXML Button btQualify;
+	@FXML Button btFinish;
+	@FXML Button btUpload;
+	@FXML Button btToActual;
+	@FXML Button btChangeImage;
+	@FXML Button btDeleteImage;
+	@FXML Label lbName;
+	@FXML Label lbLanguage;
+	@FXML Label lbCompiled;
+	@FXML Label lbFinished;
+	@FXML Label lbUploaded;
+	@FXML RadioButton rbSimple;
+	@FXML RadioButton rbContinue;
+	@FXML RadioButton rbFromFile;
+	@FXML TextField tbFile;
+	@FXML TextField tbName;
+	@FXML TextArea tbOutput;
+	@FXML TextArea tbDescription;
+	@FXML ChoiceBox<Version> cbVersion;
+	@FXML ChoiceBox<String> cbLanguage;
+	@FXML ListView<CodrAi> lvAis;
+	@FXML ImageView image;
+	@FXML TabPane tpCode;
+	@FXML Hyperlink hlShowQualified;
+	@FXML ProgressIndicator prUpload;
 	public Tab infoTab;
 	public Tab newFileTab;
 	
@@ -449,66 +450,99 @@ public class ControllerAiManagement {
 	}
 	
 	
+	private String nameOfNewAi = "";
+	
+	
 	/**
 	 * Button: Hochladen
 	 */
 	@FXML void clickUpload() {
 		
-		Task<String> upload = new Task<String>() {
-			public String call() {
-				CodrAi result = Dialog.selectOwnVersion();
-				if (result == null)
-					return "userAbort";
-				
-				int id = result.id;
-				if (result.title.equals("<Neue KI>")) {
-					String name = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
-					if (name == null)
-						return "userAbort";
-					id = MainApp.webConnector.createAi(ai, name);
-					if (id == -1) {
-						return "errorConnection";
-					}
-				}
-				
-				try {
-					MainApp.webConnector.uploadVersion(version, id);
-				} catch (ZipException | IOException e) {
-					return "errorConnection";
-				}
-				
-				try {
-					MainApp.webConnector.compile(id);
-					return "finished";
-				} catch (IOException e) {
-					return "errorConnection";
-				} catch (CompileException e) {
-					return "Fehler beim Kompilieren auf dem Server:\n\n" + e.compileOutput;
-				}
-				
+		Task<Boolean> getOwn = new Task<Boolean>() {
+			public Boolean call() {
+				System.out.println("Angekommenerst1");
+				if (MainApp.webConnector.isLoggedIn())
+					MainApp.ownOnlineAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+				System.out.println("Angekommenerst");
+				return true;
 			}
 		};
 		
-		upload.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-			switch (newValue) {
-			case "errorConnection":
-				Dialog.error("Fehler bei der Verbindung mit dem Server.\nMöglicherweise ist Codr nicht eingeloggt.", "Verbindungsfehler");
-				break;
-			case "finished":
-				Dialog.info("Die KI wurde erfolgreich hochgeladen, kompiliert (und qualifiziert).", "Upload fertig");
-				break;
-			case "userAbort":
-				break;
-			default:
-				Dialog.error(newValue, "Fehler");
-				break;
+		
+		getOwn.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			
+			System.out.println("Angekommen");
+			if (MainApp.ownOnlineAis == null) {
+				Dialog.error("Bitte erst Anmelden");
+				return;
 			}
+			
+			CodrAi result = Dialog.selectOwnVersion();
+			if (result == null) {
+				return;
+			}
+			
+			if (result.title.equals("<Neue KI>")) {
+				nameOfNewAi = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
+				if (nameOfNewAi == null)
+					return;
+			}
+			
+			Task<String> upload = new Task<String>() {
+				public String call() {
+					
+					int id = result.id;
+					id = MainApp.webConnector.createAi(ai, nameOfNewAi);
+					if (id == -1) {
+						return "errorConnection";
+					}
+					
+					try {
+						MainApp.webConnector.uploadVersion(version, id);
+					} catch (ZipException | IOException e) {
+						e.printStackTrace();
+						return "errorConnection";
+					}
+					
+					try {
+						MainApp.webConnector.compile(id);
+						return "finished";
+					} catch (IOException e) {
+						e.printStackTrace();
+						return "errorConnection";
+					} catch (CompileException e) {
+						return "Fehler beim Kompilieren auf dem Server:\n\n" + e.compileOutput;
+					}
+				}
+			};
+			
+			prUpload.setVisible(true);
+			
+			upload.valueProperty().addListener((observableValue1, oldValue1, newValue1) -> {
+				prUpload.setVisible(false);
+				switch (newValue1) {
+				case "errorConnection":
+					Dialog.error("Fehler bei der Verbindung mit dem Server.", "Verbindungsfehler");
+					break;
+				case "finished":
+					Dialog.info("Die KI wurde erfolgreich hochgeladen, kompiliert (und qualifiziert).", "Upload fertig");
+					break;
+				default:
+					Dialog.error(newValue1, "Fehler");
+					break;
+				}
+			});
+			
+			Thread thread = new Thread(upload);
+			thread.setDaemon(true);
+			thread.start();
 		});
 		
-
-		Thread thread = new Thread(upload);
+		System.out.println("Angekommenerst0");
+		Thread thread = new Thread(getOwn);
 		thread.setDaemon(true);
 		thread.start();
+		
 	}
 	
 	

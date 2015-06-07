@@ -81,10 +81,6 @@ public class MainApp extends Application {
 	}
 	
 	
-	public MainApp() {
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> exit()));
-	}
-	
 	
 	/**
 	 * start-Methode (wegen: extends Application)
@@ -92,6 +88,7 @@ public class MainApp extends Application {
 	public void start(Stage _stage) throws Exception {
 		ErrorLog.clear();
 		ErrorLog.write("Programm startet...", true);
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> exit()));
 		
 		stage = new Stage(StageStyle.DECORATED);
 		
@@ -120,10 +117,10 @@ public class MainApp extends Application {
 	public void exit() {
 		if (settings != null)
 			settings.store(cStart);
-		if (cAi.version != null)
+		if (cAi != null && cAi.version != null)
 			cAi.version.saveCode();
 		
-		if (cGame.runningGame != null) {
+		if (cGame != null && cGame.runningGame != null) {
 			try {
 				cGame.runningGame.getGame().finishGame();
 			} catch (IOException e) {
@@ -199,25 +196,39 @@ public class MainApp extends Application {
 	}
 	
 	
-	public static void loadOnlineAis() {
+	public void loadOnlineAis(Task finishTask) {
 		Task<Object> updateTask = new Task<Object>() {
 			public Object call() {
 				ObservableList<CodrAi> newOwnOnline = null;
-				if (MainApp.webConnector.isLoggedIn()) {
+				if (MainApp.webConnector.isLoggedIn())
 					newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
-				}
+				
 				ObservableList<CodrAi> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
 				if (newOwnOnline != null)
 					ownOnlineAis = newOwnOnline;
 				if (newOnline != null)
 					onlineAis = newOnline;
-				return null;
+				return 1;
 			}
 		};
+		
+		updateTask.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			if (finishTask == null)
+				return;
+			Thread thread = new Thread(finishTask);
+			thread.setDaemon(true);
+			thread.start();
+		});
+		
 		
 		Thread thread = new Thread(updateTask);
 		thread.setDaemon(true);
 		thread.start();
+	}
+	
+	
+	public void loadOnlineAis() {
+		loadOnlineAis(null);
 	}
 	
 	

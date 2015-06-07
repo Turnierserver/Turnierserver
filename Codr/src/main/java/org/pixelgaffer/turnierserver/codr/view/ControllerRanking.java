@@ -174,7 +174,7 @@ public class ControllerRanking {
 	
 	
 	public void loadOnlineAis() {
-		MainApp.loadOnlineAis();
+		mainApp.loadOnlineAis();
 		tvAis.setItems(MainApp.onlineAis);
 		tvAis.getSelectionModel().selectFirst();
 	}

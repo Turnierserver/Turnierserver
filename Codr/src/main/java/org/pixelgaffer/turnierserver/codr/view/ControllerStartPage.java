@@ -24,6 +24,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -41,7 +42,7 @@ public class ControllerStartPage {
 	@FXML Button btInfo;
 	@FXML Button btRegister;
 	@FXML Button btLogin;
-	@FXML TextField tbEmail;
+	@FXML public TextField tbEmail;
 	@FXML PasswordField tbPassword;
 	@FXML TitledPane tpLogic;
 	@FXML TitledPane tpRegister;
@@ -49,7 +50,7 @@ public class ControllerStartPage {
 	@FXML VBox vbLogin;
 	@FXML GridPane gpLogin;
 	@FXML Label lbLogin;
-	@FXML Button btLogout;
+	@FXML HBox hbLogout;
 	@FXML public ChoiceBox<String> cbGameTypes;
 	@FXML Button btTryOnline;
 	@FXML Label lbIsOnline;
@@ -161,12 +162,14 @@ public class ControllerStartPage {
 			if (newValue) {
 				vbLogin.getChildren().clear();
 				vbLogin.getChildren().add(lbLogin);
-				vbLogin.getChildren().add(btLogout);
+				vbLogin.getChildren().add(hbLogout);
 			} else {
 				vbLogin.getChildren().clear();
 				vbLogin.getChildren().add(lbLogin);
 				vbLogin.getChildren().add(gpLogin);
 			}
+			prLogin.setVisible(false);
+			prLogin1.setVisible(false);
 		});
 		
 		Thread thread = new Thread(updateL);
@@ -189,21 +192,26 @@ public class ControllerStartPage {
 		Task<Boolean> updateL = new Task<Boolean>() {
 			public Boolean call() {
 				try {
-					mainApp.webConnector.logout();
+					MainApp.webConnector.logout();
 				} catch (IOException e) {
 					return false;
 				}
 				return true;
 			}
 		};
+		
+		prLogin.setVisible(true);
+		prLogin1.setVisible(true);
+		
 		updateL.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue) {
 				updateLoggedIn();
 			} else {
 				ErrorLog.write("Logout fehlgeschlagen");
 			}
+			prLogin.setVisible(false);
+			prLogin1.setVisible(false);
 		});
-		prLogin.setVisible(true);
 		
 		Thread thread = new Thread(updateL);
 		thread.setDaemon(true);
@@ -274,7 +282,6 @@ public class ControllerStartPage {
 		if (result != null)
 			tbCplusplusCompiler.setText(result.getPath());
 	}
-	
 	
 	
 	void clickTheme(Boolean isSelected) {
