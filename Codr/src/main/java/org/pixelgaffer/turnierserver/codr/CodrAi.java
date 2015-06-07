@@ -89,8 +89,6 @@ public class CodrAi {
 				ErrorLog.write("ERROR: Konnte das Bild der AI " + json.getString("name") + " nicht laden.");
 		});
 		
-		
-		
 		Thread thread = new Thread(imageLoader, "imageLoader");
 		thread.setDaemon(true);
 		thread.start();
