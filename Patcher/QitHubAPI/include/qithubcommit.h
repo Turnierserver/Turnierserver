@@ -38,15 +38,18 @@ public:
 	QitHubRepository repo () const { return _repo; }
 	QString sha () const { return _sha; }
 	
-	QList<QitHubCommit> parentCommits () const;
-	QList<QitHubFile> modifiedFiles () const;
+	QList<QitHubCommit> parentCommits ();
+	QList<QitHubFile> modifiedFiles ();
+	
+protected:
+	QJsonObject info();
 	
 private:
 	QitHubAPI *api;
 	QitHubRepository _repo;
 	QString _sha;
 	
-	QJsonObject info;
+	QJsonObject _info;
 	
 };
 

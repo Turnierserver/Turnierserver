@@ -28,21 +28,29 @@ QitHubCommit::QitHubCommit(QitHubAPI *client, const QitHubRepository &repo, cons
 	, _repo(repo)
 	, _sha(sha)
 {
-	QNetworkRequest req = api->createRequest("/repos/" + repo.user() + "/" + repo.repo() + "/commits/" + sha);
+}
+
+QJsonObject QitHubCommit::info()
+{
+	if (!_info.isEmpty())
+		return _info;
+	
+	QNetworkRequest req = api->createRequest("/repos/" + repo().user() + "/" + repo().repo() + "/commits/" + sha());
 	QNetworkReply *reply = api->sendGet(req);
 	
 	QJsonDocument json = QJsonDocument::fromJson(reply->readAll());
-	info = json.object();
+	_info = json.object();
 	
 	if (reply->error() != QNetworkReply::NoError)
-	fprintf(stderr, "Fehler beim Herunterladen von Informationen für %s/%s %s: %s\n", qPrintable(repo.user()), qPrintable(repo.repo()), qPrintable(sha), qPrintable(info.value("message").toString(reply->errorString())));
+		fprintf(stderr, "Fehler beim Herunterladen von Informationen für %s/%s %s: %s\n", qPrintable(repo().user()), qPrintable(repo().repo()), qPrintable(sha()), qPrintable(_info.value("message").toString(reply->errorString())));
 	
 	delete reply;
+	return _info;
 }
 
-QList<QitHubCommit> QitHubCommit::parentCommits() const
+QList<QitHubCommit> QitHubCommit::parentCommits()
 {
-	QJsonArray parents = info.value("parents").toArray();
+	QJsonArray parents = info().value("parents").toArray();
 	QList<QitHubCommit> commits;
 	for (int i = 0; i < parents.size(); i++)
 	{
@@ -51,15 +59,15 @@ QList<QitHubCommit> QitHubCommit::parentCommits() const
 	return commits;
 }
 
-QList<QitHubFile> QitHubCommit::modifiedFiles() const
+QList<QitHubFile> QitHubCommit::modifiedFiles()
 {
-	QJsonArray files = info.value("files").toArray();
+	QJsonArray files = info().value("files").toArray();
 	QList<QitHubFile> modified;
 	for (int i = 0; i < files.size(); i++)
 	{
 		QJsonObject file = files[i].toObject();
-		if (file.value("status").toString() == "modified")
-			modified << QitHubFile(api, *this, file.value("filename").toString());
+		// if (file.value("status").toString() == "modified") // würde nur modified, aber nicht added usw zurückgeben
+		modified << QitHubFile(api, *this, file.value("filename").toString());
 	}
 	return modified;
 }

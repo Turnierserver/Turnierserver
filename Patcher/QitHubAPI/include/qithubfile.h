@@ -34,14 +34,17 @@ public:
 	QitHubCommit commit () const { return _commit; }
 	QString filename () const { return _filename; }
 	
-	QByteArray content () const;
+	QByteArray content ();
+	
+protected:
+	QJsonObject info();
 	
 private:
 	QitHubAPI *api;
 	QitHubCommit _commit;
 	QString _filename;
 	
-	QJsonObject info;
+	QJsonObject _info;
 	
 };
 

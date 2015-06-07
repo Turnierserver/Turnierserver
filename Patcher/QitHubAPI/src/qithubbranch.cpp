@@ -26,20 +26,28 @@ QitHubBranch::QitHubBranch(QitHubAPI *client, const QitHubRepository &repo, cons
 	, _repo(repo)
 	, _name(name)
 {
-	QNetworkRequest req = api->createRequest("/repos/" + repo.user() + "/" + repo.repo() + "/branches/" + name);
+}
+
+QJsonObject QitHubBranch::info()
+{
+	if (!_info.isEmpty())
+		return _info;
+	
+	QNetworkRequest req = api->createRequest("/repos/" + repo().user() + "/" + repo().repo() + "/branches/" + name());
 	QNetworkReply *reply = api->sendGet(req);
 	
 	QJsonDocument json = QJsonDocument::fromJson(reply->readAll());
-	info = json.object();
+	_info = json.object();
 	
 	if (reply->error() != QNetworkReply::NoError)
-	fprintf(stderr, "Fehler beim Herunterladen von Informationen für %s/%s [%s]: %s\n", qPrintable(repo.user()), qPrintable(repo.repo()), qPrintable(name), qPrintable(info.value("message").toString(reply->errorString())));
+		fprintf(stderr, "Fehler beim Herunterladen von Informationen für %s/%s [%s]: %s\n", qPrintable(repo().user()), qPrintable(repo().repo()), qPrintable(name()), qPrintable(_info.value("message").toString(reply->errorString())));
 	
 	delete reply;
+	return _info;
 }
 
-QitHubCommit QitHubBranch::latestCommit() const
+QitHubCommit QitHubBranch::latestCommit()
 {
-	QJsonObject commit = info.value("commit").toObject();
+	QJsonObject commit = info().value("commit").toObject();
 	return QitHubCommit(api, repo(), commit.value("sha").toString());
 }
