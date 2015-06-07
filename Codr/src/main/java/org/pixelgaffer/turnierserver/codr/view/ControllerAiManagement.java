@@ -533,13 +533,13 @@ public class ControllerAiManagement {
 				}
 			});
 			
-			Thread thread = new Thread(upload);
+			Thread thread = new Thread(upload, "upload");
 			thread.setDaemon(true);
 			thread.start();
 		});
 		
 		System.out.println("Angekommenerst0");
-		Thread thread = new Thread(getOwn);
+		Thread thread = new Thread(getOwn, "getOwn");
 		thread.setDaemon(true);
 		thread.start();
 		

@@ -154,7 +154,7 @@ public class ControllerGameManagement {
 					}
 				};
 
-				Thread thread = new Thread(play);
+				Thread thread = new Thread(play, "play");
 				thread.setDaemon(true);
 				thread.start();
 			} else {

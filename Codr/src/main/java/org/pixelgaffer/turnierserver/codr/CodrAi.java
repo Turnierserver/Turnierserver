@@ -91,7 +91,7 @@ public class CodrAi {
 		
 		
 		
-		Thread thread = new Thread(imageLoader, "Image Loader");
+		Thread thread = new Thread(imageLoader, "imageLoader");
 		thread.setDaemon(true);
 		thread.start();
 	}
