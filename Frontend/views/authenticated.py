@@ -6,9 +6,9 @@ from activityfeed import activity_feed
 from errorhandling import error
 import ftputil
 
-profile = Blueprint("profile", __name__)
+authenticated_blueprint = Blueprint("authenticated", __name__)
 
-@profile.route("/profile")
+@authenticated_blueprint.route("/profile")
 @authenticated_web
 def current_profile():
 	user = current_user
@@ -16,7 +16,7 @@ def current_profile():
 	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
 	return render_template("profile.html", columns=columns, user=user)
 
-@profile.route("/profile/<int:id>")
+@authenticated_blueprint.route("/profile/<int:id>")
 @authenticated_web
 def profile_id(id):
 	user = User.query.get(id)
@@ -31,7 +31,7 @@ def profile_id(id):
 
 
 
-@profile.route("/create_ai")
+@authenticated_blueprint.route("/create_ai")
 @authenticated_web
 def create_ai():
 	ai = AI(user=current_user, name="Unbenannte KI",
@@ -39,9 +39,9 @@ def create_ai():
 			type=GameType.query.first())
 	## current gametype
 	db.session.commit()
-	return redirect(url_for("profile.edit_ai", id=ai.id))
+	return redirect(url_for("authenticated.edit_ai", id=ai.id))
 
-@profile.route("/ai/<int:id>/edit")
+@authenticated_blueprint.route("/ai/<int:id>/edit")
 @authenticated_web
 def edit_ai(id):
 	ai = AI.query.get(id)
@@ -51,7 +51,7 @@ def edit_ai(id):
 		abort(401)
 	return render_template("edit_ai.html", ai=ai, langs=Lang.query.all())
 
-@profile.route("/ai/<int:id>/compile")
+@authenticated_blueprint.route("/ai/<int:id>/compile")
 @authenticated_web
 def compile_ai(id):
 	ai = AI.query.get(id)
@@ -61,9 +61,9 @@ def compile_ai(id):
 		abort(401)
 	return render_template("compile_ai.html", ai=ai)
 
-@profile.route("/ai/<int:id>/files/<path:path>")
-@profile.route("/ai/<int:id>/files/")
-@profile.route("/ai/<int:id>/files")
+@authenticated_blueprint.route("/ai/<int:id>/files/<path:path>")
+@authenticated_blueprint.route("/ai/<int:id>/files/")
+@authenticated_blueprint.route("/ai/<int:id>/files")
 @authenticated_web
 def file_browser(id, path=""):
 
@@ -78,13 +78,13 @@ def file_browser(id, path=""):
 
 	## cleanup?
 
-	curr_url = url_for("profile.file_browser", id=id, path=path)
+	curr_url = url_for("authenticated.file_browser", id=id, path=path)
 	if not curr_url.endswith("/"):
 		curr_url += "/"
 
 	ftp_url = "AIs/{}/v{}/{}".format(id, ai.lastest_version().version_id, path)
 
-	root_url = url_for("profile.file_browser", id=id, path="")
+	root_url = url_for("authenticated.file_browser", id=id, path="")
 	path_url = [(ai.name, root_url)]
 	url = root_url[:-1]
 	for p in path.split("/"):
@@ -122,7 +122,7 @@ def file_browser(id, path=""):
 		return render_template("ai_file_browser.html", connected=False, ai=ai)
 
 
-@profile.route("/ai/<int:id>/qualify")
+@authenticated_blueprint.route("/ai/<int:id>/qualify")
 @authenticated_web
 def qualify_ai(id):
 	ai = AI.query.get(id)
@@ -134,7 +134,7 @@ def qualify_ai(id):
 	return render_template(ai.type.viz, ai=ai, qualify=True)
 
 
-@profile.route("/ais/challenge")
+@authenticated_blueprint.route("/ais/challenge")
 @authenticated_web
 def ais_challenge():
 	gametype = GameType.query.first()
@@ -152,13 +152,13 @@ def ais_challenge():
 	return render_template("challenge.html", own=own, all=all, ownfirst=own[0], allfirst=all[0])
 
 
-@profile.route("/activityfeed")
+@authenticated_blueprint.route("/activityfeed")
 @authenticated_web
 def activityfeed():
 	if not current_user.admin: abort(401)
 	return render_template("activityfeed.html", activities=activity_feed.feed[::-1])
 
-@profile.route("/admin")
+@authenticated_blueprint.route("/admin")
 @authenticated_web
 def admin():
 	if not current_user.admin: abort(401)

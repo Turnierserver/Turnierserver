@@ -5,11 +5,11 @@
 ]%}
 
 {% if current_user and current_user.is_authenticated() %}
-	{% do nav_menu.append((url_for("profile.ais_challenge"), "challenge", "Herausfordern")) %}
+	{% do nav_menu.append((url_for("authenticated.ais_challenge"), "challenge", "Herausfordern")) %}
 	{% if current_user.admin %}
-		{% do nav_menu.append((url_for("profile.admin"), "admin", "Admin-Interface")) %}
+		{% do nav_menu.append((url_for("authenticated.admin"), "admin", "Admin-Interface")) %}
 	{% endif %}
-	{% do nav_menu.append((url_for("profile.current_profile"), "profile", current_user.name)) %}
+	{% do nav_menu.append((url_for("authenticated.current_profile"), "profile", current_user.name)) %}
 {% endif %}
 
 {% set active_page = active_page | default('index')%}

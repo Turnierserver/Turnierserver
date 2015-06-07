@@ -5,6 +5,7 @@ from activityfeed import Activity
 from io import BytesIO
 from functools import wraps
 from threading import Lock
+from werkzeug.security import generate_password_hash, check_password_hash
 import mail
 import ftputil
 import socket
@@ -213,15 +214,12 @@ class User(db.Model):
 			raise RuntimeError("Invalid Type: "+str(type(obj)))
 
 	def check_pw(self, password):
-		from commons import bcrypt
-		## Unschoener Import
 		if not self.pw_hash:
 			return False
-		return bcrypt.check_password_hash(self.pw_hash, password)
+		return check_password_hash(self.pw_hash, password)
 
 	def set_pw(self, password):
-		from commons import bcrypt
-		self.pw_hash = bcrypt.generate_password_hash(password)
+		self.pw_hash = generate_password_hash(password)
 
 	def delete(self):
 		db.session.delete(self)
@@ -600,14 +598,14 @@ def populate(count=20):
 	gametypes = [minesweeper]
 	db_save(gametypes)
 
-	users = []
-	for i in r:
-		p = fake.simple_profile()
-		users.append(User(name=p["username"], email=p["mail"], firstname=fake.first_name(), lastname=fake.last_name()))
-	db_save(users)
-	random.shuffle(users)
-	ais = [AI(user=users[i-1], name=fake.word(), desc=fake.text(50), lang=random.choice(langs), type=minesweeper) for i in r]
-	db_save(ais)
+	#users = []
+	#for i in r:
+	#	p = fake.simple_profile()
+	#	users.append(User(name=p["username"], email=p["mail"], firstname=fake.first_name(), lastname=fake.last_name()))
+	#db_save(users)
+	#random.shuffle(users)
+	#ais = [AI(user=users[i-1], name=fake.word(), desc=fake.text(50), lang=random.choice(langs), type=minesweeper) for i in r]
+	#db_save(ais)
 
 	admin = User(name="admin", admin=True, email="admin@ad.min")
 	admin.set_pw("admin")

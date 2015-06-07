@@ -13,7 +13,7 @@ import os
 
 from database import AI, User, Game, Lang, GameType, db, populate, ftp
 from backend import backend
-from commons import authenticated, cache, CommonErrors, bcrypt
+from commons import authenticated, cache, CommonErrors
 from _cfg import env
 from activityfeed import Activity
 from sse import sse_stream

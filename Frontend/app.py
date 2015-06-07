@@ -9,12 +9,12 @@ from flask.ext.login import current_user
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 
-from commons import cache, bcrypt
+from commons import cache
 
 
 from api import api, login_manager
-from anonymous import anonymous
-from profile import profile
+from views.anonymous import anonymous_blueprint
+from views.authenticated import authenticated_blueprint
 from database import db, populate, AI, User, ftp
 from backend import backend
 from _cfg import env
@@ -39,8 +39,8 @@ manager.add_command('db', MigrateCommand)
 app.jinja_env.add_extension("jinja2.ext.do")
 
 app.register_blueprint(api)
-app.register_blueprint(anonymous)
-app.register_blueprint(profile)
+app.register_blueprint(anonymous_blueprint)
+app.register_blueprint(authenticated_blueprint)
 handle_errors(app)
 
 if env.airbrake:
@@ -54,7 +54,6 @@ if env.airbrake:
 
 
 cache.init_app(app)
-bcrypt.init_app(app)
 backend.app = app
 
 @app.context_processor
