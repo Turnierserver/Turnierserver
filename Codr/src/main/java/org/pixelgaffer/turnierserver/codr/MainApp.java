@@ -194,41 +194,43 @@ public class MainApp extends Application {
 	}
 	
 	
-	private boolean localOnlineSynced = false;
 	public void loadOnlineAis() {
 		
-		Task<ObservableList<CodrAi>> updateTask = new Task<ObservableList<CodrAi>>() {
+		Task<ObservableList<CodrAi>> loadOnline = new Task<ObservableList<CodrAi>>() {
 			public ObservableList<CodrAi> call() {
 				ObservableList<CodrAi> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
-				updateValue(newOnline);
-				
+				return newOnline;
+			}
+		};
+		Task<ObservableList<CodrAi>> loadOwn = new Task<ObservableList<CodrAi>>() {
+			public ObservableList<CodrAi> call() {
 				ObservableList<CodrAi> newOwnOnline = null;
 				if (MainApp.webConnector.isLoggedIn())		
 					newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
 				return newOwnOnline;
 			}
 		};
-		
-		updateTask.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-			if (!localOnlineSynced){
+
+		loadOnline.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 				if (newValue != null){
 					onlineAis.clear();
 					onlineAis.addAll(newValue);
 				}
-				localOnlineSynced = true;
-			}
-			else{
+		});
+		loadOwn.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 				if (newValue != null){
 					ownOnlineAis.clear();
 					ownOnlineAis.addAll(newValue);
 				}
-			}
 		});
+
+		Thread thread1 = new Thread(loadOnline, "loadOnlineAis");
+		thread1.setDaemon(true);
+		thread1.start();
 		
-		
-		Thread thread = new Thread(updateTask, "updateOnlineAis");
-		thread.setDaemon(true);
-		thread.start();
+		Thread thread2 = new Thread(loadOwn, "loadOwnOnlineAis");
+		thread2.setDaemon(true);
+		thread2.start();
 	}
 	
 	

@@ -36,10 +36,13 @@ public class CodrAi {
 	public String userName = "";
 	public String language;
 	public String description = "(keine Beschreibung)";
-	public String elo = "leere Elo";
-	public int id;
 	public ObjectProperty<Image> onlinePicture = new SimpleObjectProperty<Image>();
 	public ObservableList<Version> versions = FXCollections.observableArrayList();
+	
+	//Nur Online
+	public int id;
+	public String elo = "leere Elo";
+	public ObservableList<CodrGame> onlineGames = FXCollections.observableArrayList();
 	
 	
 	public static enum AiMode {
@@ -61,7 +64,8 @@ public class CodrAi {
 		title = json.getString("name");
 		mode = AiMode.online;
 		userName = json.getString("author");
-		description = json.getString("description");
+		if (!json.isNull("description"))
+			description = json.getString("description");
 		gametype = json.getJSONObject("gametype").getString("name");
 		language = json.getJSONObject("lang").getString("name");
 		id = json.getInt("id");

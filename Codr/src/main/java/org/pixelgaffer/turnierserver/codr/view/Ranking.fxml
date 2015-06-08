@@ -10,7 +10,7 @@
 
 <AnchorPane prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pixelgaffer.turnierserver.codr.view.ControllerRanking">
    <children>
-      <SplitPane dividerPositions="0.3679417122040073" prefHeight="710.0" prefWidth="1110.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <SplitPane dividerPositions="0.40437158469945356" prefHeight="710.0" prefWidth="1110.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <items>
             <AnchorPane minWidth="300" prefHeight="160.0" prefWidth="100.0">
                <children>
@@ -25,52 +25,66 @@
                   </BorderPane>
                </children>
             </AnchorPane>
-            <AnchorPane prefHeight="652.0" prefWidth="317.0">
-               <children>
-                  <AnchorPane prefHeight="318.0" prefWidth="319.0">
+            <ScrollPane fitToWidth="true">
+               <content>
+                  <AnchorPane>
                      <children>
-                        <Label layoutX="14.0" layoutY="60.0" text="Beschreibung:" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="60.0" />
-                        <TextArea fx:id="tbDescription" editable="false" layoutX="14.0" layoutY="86.0" prefHeight="97.0" prefWidth="299.0" text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet." wrapText="true" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="86.0" />
-                        <GridPane layoutX="17.0" layoutY="188.0" prefWidth="299.0">
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="145.0" minWidth="10.0" prefWidth="110.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="189.0" minWidth="10.0" prefWidth="189.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                          </rowConstraints>
+                        <AnchorPane prefHeight="287.0" prefWidth="319.0">
                            <children>
-                              <Label text="Besitzer:" />
-                              <Label fx:id="lbUser" text="Label" GridPane.columnIndex="1" />
-                              <Label text="ELO:" GridPane.rowIndex="1" />
-                              <Label fx:id="lbElo" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Label text="Sprache:" GridPane.rowIndex="2" />
-                              <Label fx:id="lbLanguage" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label layoutX="13.0" layoutY="60.0" text="Beschreibung:" AnchorPane.leftAnchor="13.0" AnchorPane.topAnchor="60.0" />
+                              <TextArea fx:id="tbDescription" editable="false" layoutX="11.0" layoutY="86.0" prefHeight="97.0" prefWidth="299.0" text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet." wrapText="true" AnchorPane.leftAnchor="11.0" AnchorPane.topAnchor="86.0" />
+                              <GridPane layoutX="13.0" layoutY="188.0" prefWidth="299.0" AnchorPane.leftAnchor="13.0" AnchorPane.topAnchor="188.0">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="145.0" minWidth="10.0" prefWidth="110.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="189.0" minWidth="10.0" prefWidth="189.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label text="Besitzer:" />
+                                    <Label fx:id="lbUser" text="Label" GridPane.columnIndex="1" />
+                                    <Label text="ELO:" GridPane.rowIndex="1" />
+                                    <Label fx:id="lbElo" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label text="Sprache:" GridPane.rowIndex="2" />
+                                    <Label fx:id="lbLanguage" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                 </children>
+                              </GridPane>
+                              <HBox alignment="CENTER_LEFT" layoutX="13.0" layoutY="13.0" spacing="10.0" AnchorPane.leftAnchor="13.0" AnchorPane.topAnchor="13.0">
+                                 <children>
+                                    <Label fx:id="lbName" text="Name">
+                                       <font>
+                                          <Font size="30.0" />
+                                       </font>
+                                    </Label>
+                                    <Button fx:id="btChallenge" mnemonicParsing="false" onAction="#clickChallenge" text="Herausfordern" />
+                                 </children>
+                              </HBox>
                            </children>
-                        </GridPane>
-                        <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="14.0" spacing="10.0">
+                        </AnchorPane>
+                        <ImageView fx:id="imageView" fitHeight="250.0" fitWidth="250.0" layoutX="438.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="14.0" />
+                        <VBox layoutX="13.0" layoutY="285.0" scaleZ="-1.0" spacing="5.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="295.0">
                            <children>
-                              <Label fx:id="lbName" text="Name">
-                                 <font>
-                                    <Font size="30.0" />
-                                 </font>
-                              </Label>
-                              <Button fx:id="btChallenge" mnemonicParsing="false" text="Herausfordern" />
+                              <Label text="Spiele:" />
+                              <TableView fx:id="tvGames" prefHeight="60.0">
+                                 <columnResizePolicy>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                 </columnResizePolicy>
+                              </TableView>
+                              <Label text="Versionen:" />
+                              <TableView fx:id="tvVersions" prefHeight="60.0">
+                                 <columnResizePolicy>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                 </columnResizePolicy>
+                              </TableView>
                            </children>
-                        </HBox>
+                        </VBox>
                      </children>
                   </AnchorPane>
-                  <TableView fx:id="tvVersions" layoutX="14.0" layoutY="348.0" prefHeight="348.0" prefWidth="676.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="348.0">
-                     <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                     </columnResizePolicy>
-                  </TableView>
-                  <ImageView fx:id="imageView" fitHeight="250.0" fitWidth="250.0" layoutX="438.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="14.0" />
-                  <Label layoutX="17.0" layoutY="322.0" text="Versionen:" />
-               </children>
-            </AnchorPane>
+               </content>
+            </ScrollPane>
          </items>
       </SplitPane>
    </children>
