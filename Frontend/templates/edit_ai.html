@@ -111,17 +111,17 @@
 		<div id="submit" class="ui teal labeled icon submit button">
 			<i class="save outline icon"></i> Speichern
 		</div>
-		<a class="ui labeled icon submit button" href="{{url_for("authenticated.compile_ai", id=ai.id)}}">
-			<i class="file code outline icon"></i> Kompilieren
-		</a>
-		<a class="ui labeled icon submit button" href="{{url_for("authenticated.file_browser", id=ai.id, path="")}}">
-			<i class="disk outline icon"></i> Dateibrowser
-		</a>
 		<div id="copy_code" class="ui labeled icon button">
 			<i class="copy outline icon"></i> SimplePlayer kopieren
 		</div>
+		<a class="ui labeled icon submit button" href="{{url_for("authenticated.file_browser", id=ai.id, path="")}}">
+			<i class="disk outline icon"></i> Code bearbeiten
+		</a>
+		<a class="ui labeled icon submit button" href="{{url_for("authenticated.compile_ai", id=ai.id)}}">
+			<i class="file code outline icon"></i> Kompilieren
+		</a>
 		<div id="delete" class="ui red labeled icon button">
-			<i class="trash outline icon"></i> KI löschen
+			<i class="trash outline icon"></i> Löschen
 		</div>
 	</div>
 </form>
@@ -222,6 +222,34 @@
 </div>
 
 
+<div id="copy_simple_player_modal" class="ui basic modal">
+	<i class="close icon"></i>
+	<div class="header">
+		BeispielKI kopieren
+	</div>
+	<div class="content">
+		<div class="image">
+			<i class="copy outline icon"></i>
+		</div>
+		<div class="description">
+			<p>Das kopieren des Beispielcodes wird deine aktuelle Version (Version {{ai.lastest_version().version_id}}) überschreiben! Bist du dir sicher?</p>
+		</div>
+	</div>
+	<div class="actions">
+		<div class="two fluid ui inverted buttons">
+			<div class="ui red basic inverted cancel button">
+				<i class="remove icon"></i>
+				Nein
+			</div>
+			<div class="ui green basic inverted ok button">
+				<i class="checkmark icon"></i>
+				Ja
+			</div>
+		</div>
+	</div>
+</div>
+
+
 
 <script>
 
@@ -257,14 +285,18 @@ var f = function() {
 $("#submit").on("click", f)
 
 $("#copy_code").on("click", function() {
-	$('#form').addClass('loading')
-	$.post("/api/ai/{{ai.id}}/copy_example_code", {}).done(function(data) {
-		console.log("Code copied.")
-		location.reload();
-	}).fail(function(xhr, textStatus, errorThrown) {
-		console.log(xhr.responseText.error)
-		alert(JSON.parse(xhr.responseText).error)
-	})
+	$('#copy_simple_player_modal').modal({
+		onApprove: function() {
+			$('#form').addClass('loading')
+			$.post("/api/ai/{{ai.id}}/copy_example_code").done(function(data) {
+				console.log("Code copied.")
+				location.reload();
+			}).fail(function(xhr, textStatus, errorThrown) {
+				console.log(xhr.responseText.error)
+				alert(JSON.parse(xhr.responseText).error)
+			})
+		}
+	}).modal('show')
 });
 
 
