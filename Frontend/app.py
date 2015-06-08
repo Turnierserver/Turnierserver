@@ -4,7 +4,6 @@ print("Turnierserver - Frontend - ", arrow.utcnow().to('local').format("HH:mm:ss
 print("-"*36 + "\n"*2)
 
 from flask import Flask, got_request_exception
-from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import current_user
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
@@ -15,13 +14,12 @@ from commons import cache
 from api import api, login_manager
 from views.anonymous import anonymous_blueprint
 from views.authenticated import authenticated_blueprint
-from database import db, populate, AI, User, ftp
+from database import db, AI, User, ftp
 from backend import backend
 from _cfg import env
-from activityfeed import activity_feed, Activity
+from activityfeed import Activity
 from errorhandling import handle_errors
 from cli import manage
-from time import time
 
 
 app = Flask("Turnierserver - Frontend")

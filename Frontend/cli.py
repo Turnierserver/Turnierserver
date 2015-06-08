@@ -97,8 +97,8 @@ def manage(manager, app):
 		if prompt_bool("Sicher, die DB zu leeren?"):
 			with app.app_context():
 				db.drop_all()
-				if prompt_bool("Mit Fakedaten füllen"):
-					populate(5)
+				if prompt_bool("Mit Daten füllen"):
+					populate()
 
 	@manager.command
 	def sync_ftp():

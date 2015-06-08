@@ -153,7 +153,7 @@ class SyncedFTP:
 ftp = SyncedFTP()
 
 def db_obj_init_msg(obj):
-	import inspect, pprint
+	import inspect
 	callername = inspect.getouterframes(inspect.currentframe(), 2)[5][3]
 	Activity(str(obj) + " erschafft.", extratext="Aufgerufen von '" + callername + "'.")
 
@@ -206,9 +206,9 @@ class User(db.Model):
 			return ftp.send_file("Users/default.png")
 
 	def can_access(self, obj):
-		if type(obj) == AI:
+		if isinstance(obj, AI):
 			return obj in self.ai_list or self.admin
-		elif type(obj) == User:
+		elif isinstance(obj, User):
 			return obj == self or self.admin
 		else:
 			raise RuntimeError("Invalid Type: "+str(type(obj)))
@@ -250,7 +250,7 @@ class AI_Game_Assoc(db.Model):
 	#role = db.relationship("GameTypeRole", backref="assocs")
 
 	def __repr__(self):
-		return "<AI_Game_Assoc(game={}, ai={})".format(game.id, ai.name)
+		return "<AI_Game_Assoc(game={}, ai={})".format(self.game.id, self.ai.name)
 
 
 class AI(db.Model):
@@ -317,7 +317,7 @@ class AI(db.Model):
 			pass
 		if any([not v.frozen for v in self.version_list]):
 			return False
-		self.version_list.append(AI_Version(version_id = len(self.version_list) + 1))
+		self.version_list.append(AI_Version(version_id=len(self.version_list) + 1))
 		if len(self.version_list) > 1:
 			## copy AI code from prev version...
 			new_path = "AIs/{}/v{}".format(self.id, self.version_list[-1].version_id)
@@ -389,7 +389,7 @@ class AI(db.Model):
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(
-			self.id, self.name,self.user_id, self.lang.name, self.type.name, self.last_modified
+			self.id, self.name, self.user_id, self.lang.name, self.type.name, self.last_modified
 		)
 
 class AI_Version(db.Model):
@@ -494,6 +494,10 @@ class Game(db.Model):
 	def log(self):
 		return json.loads(self._log)
 
+	@log.setter
+	def set_log(self, log):
+		self._log = json.dumps(log)
+
 	def time(self, locale):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
 
@@ -510,7 +514,7 @@ class Game(db.Model):
 		print(ais)
 		print(ais[0] == ais[1])
 		g = Game(type=ais[0].type)
-		g._log = json.dumps(d["states"])
+		g.log = d["states"]
 		db.session.add(g)
 		db.session.commit()
 		g.ai_assocs = [AI_Game_Assoc(game_id=g.id, ai_id=ai.id) for ai in ais]
@@ -571,15 +575,11 @@ class GameType(db.Model):
 class GameTypeRole(db.Model):
 	__tablename__ = 't_gametyperoles'
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-	name=db.Column(db.Text, nullable=False)
+	name = db.Column(db.Text, nullable=False)
 	gametype_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
 
 
-def populate(count=20):
-	r = list(range(1, count+1))
-	import random
-	from faker import Faker
-	fake = Faker()
+def populate():
 	db.create_all()
 
 	def db_save(o):
@@ -598,23 +598,6 @@ def populate(count=20):
 	gametypes = [minesweeper]
 	db_save(gametypes)
 
-	#users = []
-	#for i in r:
-	#	p = fake.simple_profile()
-	#	users.append(User(name=p["username"], email=p["mail"], firstname=fake.first_name(), lastname=fake.last_name()))
-	#db_save(users)
-	#random.shuffle(users)
-	#ais = [AI(user=users[i-1], name=fake.word(), desc=fake.text(50), lang=random.choice(langs), type=minesweeper) for i in r]
-	#db_save(ais)
-
 	admin = User(name="admin", admin=True, email="admin@ad.min")
 	admin.set_pw("admin")
 	admin.validate(admin.validation_code)
-	users.append(admin)
-	db_save(users)
-
-if __name__ == '__main__':
-	populate(99)
-	for user in db.query(User).all():
-		print(user)
-		print(user.info())

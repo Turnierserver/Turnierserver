@@ -317,17 +317,17 @@ def api_login():
 		if remember:
 			remember = True
 	else:
-		return { 'error': "Wrong Content-Type, must be application/json or application/x-www-form-urlencoded"}, 400
+		return {'error': "Wrong Content-Type, must be application/json or application/x-www-form-urlencoded"}, 400
 	if not email or not password:
-		return { 'error': 'Missing email or password' }, 400
+		return {'error': 'Missing email or password'}, 400
 
 	user = User.query.filter(User.email.ilike(email)).first()
 
 	if not user:
-		return { 'error': 'Invalid email.' }, 404
+		return {'error': 'Invalid email.'}, 404
 
 	if not user.validated:
-		return { 'error': 'Account not activated.' }, 400
+		return {'error': 'Account not activated.'}, 400
 
 	if not user.check_pw(password):
 		return {'error': 'Wrong password.'}, 400
@@ -337,7 +337,7 @@ def api_login():
 
 	Activity(user.name + " hat sich erfolgreich eingeloggt.")
 
-	return { 'error': False }
+	return {'error': False}
 
 @api.route("/logout", methods=["GET", "POST"])
 @json_out
@@ -345,7 +345,7 @@ def api_logout():
 	if not current_user.is_authenticated():
 		return {'error': 'Not logged in.'}
 	logout_user()
-	return { 'error': False }
+	return {'error': False}
 
 @api.route("/loggedin", methods=['GET', 'POST'])
 @json_out
@@ -373,7 +373,7 @@ def api_user_create():
 	else:
 		return {"error": "Wrong Content-Type, must be application/json or application/x-www-form-urlencoded"}, 400
 	if not username or not password or not email:
-		return { 'error': 'Missing username, password or email' }, 400
+		return {'error': 'Missing username, password or email'}, 400
 
 	try:
 		User.query.filter(User.name.ilike(username)).one()
@@ -629,7 +629,7 @@ def api_ai_compile_blocking(id):
 		if event == "log":
 			compile_log += data
 		if event == "error":
-			return {"error": data, "compilelog": copmile_log}
+			return {"error": data, "compilelog": compile_log}
 
 	return {"error": None, "compilelog": compile_log}, 200
 

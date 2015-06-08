@@ -1,7 +1,6 @@
 import requests
 from jinja2 import Template
 from pprint import pformat
-from _cfg import env
 
 baseurl = "http://localhost:5000"
 

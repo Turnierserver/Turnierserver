@@ -4,7 +4,6 @@ from database import AI, User, Game, Lang, GameType, db, ftp
 from commons import authenticated_web
 from activityfeed import activity_feed
 from errorhandling import error
-import ftputil
 
 authenticated_blueprint = Blueprint("authenticated", __name__)
 
@@ -109,8 +108,8 @@ def file_browser(id, path=""):
 			objs.append(dict(
 				name=f,
 				isfile=ftp.ftp_host.path.isfile(ftp_url+"/"+f),
-				url = curr_url + f,
-				timestamp = tmps
+				url=curr_url + f,
+				timestamp=tmps
 			))
 		return render_template("ai_file_browser.html", ai=ai, objs=objs,
 								path=path_url, connected=True, submit_path=path)
@@ -155,11 +154,13 @@ def ais_challenge():
 @authenticated_blueprint.route("/activityfeed")
 @authenticated_web
 def activityfeed():
-	if not current_user.admin: abort(401)
+	if not current_user.admin:
+		abort(401)
 	return render_template("activityfeed.html", activities=activity_feed.feed[::-1])
 
 @authenticated_blueprint.route("/admin")
 @authenticated_web
 def admin():
-	if not current_user.admin: abort(401)
+	if not current_user.admin:
+		abort(401)
 	return render_template("admin.html")
