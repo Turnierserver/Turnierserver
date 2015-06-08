@@ -1,5 +1,5 @@
 from database import db
-from flask import abort, render_template
+from flask import abort
 from flask.ext.login import current_user
 from flask.ext.cache import Cache
 from functools import wraps

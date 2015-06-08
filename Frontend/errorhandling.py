@@ -1,5 +1,4 @@
 from flask import render_template
-from flask.ext.login import current_user
 
 errors = {
 	401: ('unauthorized', 'Du hast nicht genug Rechte, um diese Aktion auszufueren.'),

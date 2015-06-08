@@ -6,13 +6,13 @@ from activityfeed import Activity
 import threading
 from queue import Queue, Empty
 from weakref import WeakSet
-from database import db, AI, Game
+from database import db, Game
 
 from pprint import pprint
 
 
 class Backend(threading.Thread):
-	daemon=True
+	daemon = True
 	game_update_queues = WeakSet()
 	def __init__(self):
 		threading.Thread.__init__(self)
