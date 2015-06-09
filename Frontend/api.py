@@ -134,12 +134,11 @@ def api_game(id):
 @api.route("/game/<int:id>/log")
 @sse_stream
 def api_game_log(id):
-	import random
 	game = Game.query.get(id)
 	if game:
 		for i, chunk in enumerate(game.log):
 			info = dict(
-				data = chunk,
+				data=chunk,
 				progress=i/len(game.log)
 			)
 			yield json.dumps(info), "state"
@@ -157,7 +156,7 @@ def api_game_inprogress_log(id):
 		next(gen)
 	except StopIteration:
 		return CommonErrors.INVALID_ID
-	for data in gen:
+	for d in gen:
 		if "data" in d:
 			yield d["data"]
 		else:
@@ -225,6 +224,8 @@ def api_user_update(id):
 def api_user_password_reset():
 	username = request.form.get('username')
 	email = request.form.get('email')
+	if not username or not email:
+		return {"error": "No email or username specified."}, 400
 	user = User.query.filter(User.email.ilike(email)).filter(User.name.ilike(username)).first()
 	if not user:
 		return {"error": "Invalid email or username."}, 400
@@ -648,7 +649,7 @@ def api_ai_qualify(id):
 	if not ai.lastest_version().compiled:
 		return {"error": "AI_Version isnt compiled"}, 400
 
-	backend.request_qualify()
+	backend.request_qualify(ai)
 
 
 @api.route("/ai/<int:id>/new_version", methods=["POST"])
@@ -888,7 +889,7 @@ def admin_ftp_sync():
 def admin_clear_db():
 	Activity(current_user.name + " hat Datenbanklöschung ausgelöst.")
 	db.drop_all()
-	populate(5)
+	populate()
 	return {"error": False}
 
 
