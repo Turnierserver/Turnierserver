@@ -14,7 +14,7 @@ from commons import cache
 from api import api, login_manager
 from views.anonymous import anonymous_blueprint
 from views.authenticated import authenticated_blueprint
-from database import db, AI, User, ftp
+from database import db
 from backend import backend
 from _cfg import env
 from activityfeed import Activity

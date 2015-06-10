@@ -1,22 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
 
-{% if not qualify %}
-Spiel ID: {{ game.id }}
-<br />
-Typ: {{ game.type.name }}
-<br />
-Wann: {{ game.time(locale="de_DE") }}
-
-<br />
-Von:
-<ul>
-{% for assoc in game.ai_assocs %}
-	<li><a href="{{ url_for("anonymous.ai", id=assoc.ai.id) }}"> {{ assoc.ai.name }}</a></li>
-{% endfor %}
-</ul>
-{% endif %}
-
 {% block viz %}
 {% endblock %}
 

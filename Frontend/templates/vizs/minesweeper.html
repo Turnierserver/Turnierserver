@@ -2,21 +2,37 @@
 
 {% block viz %}
 
-{% macro render_rail(ai, side, desc) -%}
+<style type="text/css">
+canvas {
+	width: 100%;
+	background: green;
+}
+</style>
+
+<script>
+	console.log("hio", $)
+	$(window).on("resize", function() {
+		console.log("resize")
+		$("canvas").each(function() {
+			$(this).height($(this).width() + "px;")
+			console.log(this)
+		})
+	})
+</script>
+
+{% macro render_output(ai, side, desc) -%}
 	{% if logged_in %}
 	{% if current_user.can_access(ai) -%}
-		<div class="ui {{side}} close rail">
-			<div class="ui segment">
-				Debugausgaben von "{{ai.name}}":
-				<textarea id="ai_{{desc}}_output" style="width: 100%; height: auto; min-height: 25em;"></textarea>
-			</div>
-		</div>
+	<div class="ui segment">
+		Debugausgaben von "{{ai.name}}":
+		<textarea id="ai_{{desc}}_output" style="width: 100%; height: auto; min-height: 20em;"></textarea>
+	</div>
 	{%- endif %}
 	{% endif %}
 {%- endmacro %}
 
-
-<div class="ui segment">
+{% macro render_part(ai, side, desc) -%}
+	<!--
 	<div class="ui right floated main menu">
 		<a id="play_button" class="play popup icon item" data-content="Spiel abspielen">
 			<i class="play icon"></i>
@@ -24,22 +40,39 @@
 		<a id="pause_button" class="pause popup icon item" data-content="Pausieren">
 			<i class="pause icon"></i>
 		</a>
-	</div>
-	{% if not qualify %}
-	{{render_rail(ai0, "left", "left")}}
-	{% else %}
-	{{render_rail(ai, "left", "left")}}
-	{% endif %}
-	<canvas id="canvas" style="width: 100%; height: 800px;">
-		<h1>Du musst Javascript aktiviert haben, um Spiele zu sehen.</h1>
-	</canvas>
-	<input id="step_slider" class="ui input" type="range" min="0" max="0" value="0" step="1" style="width: 100%" />
-	<div id="download_progress" class="ui bottom attached progress" data-percent="0">
+	</div> -->
+	<center>
+		<canvas id="canvas_{{desc}}">
+			<h1>Du musst Javascript aktiviert haben, um Spiele zu sehen.</h1>
+		</canvas>
+	</center>
+	<input id="step_slider_{{desc}}" class="ui input" type="range" min="0" max="0" value="0" step="1" style="width: 100%" />
+	{{render_output(ai, side, desc)}}
+{%- endmacro %}
+
+
+{% macro render_progress(ai, side, desc) -%}
+	<div id="download_progress_{{desc}}" class="ui bottom attached progress" data-percent="0">
 		<div class="bar" style="transition-duration: 300ms; width: 0%;"></div>
 	</div>
-	{% if not qualify %}
-	{{render_rail(ai0, "right", "right")}}
-	{% endif %}
+{%- endmacro %}
+
+
+<div class="ui segment">
+	<div class="ui two column grid">
+		<div class="column">
+			<div class="ui horizontal segment">
+				{{render_part(ai0, "left", "left")}}
+			</div>
+			{{render_progress(ai0, "left", "left")}}
+		</div>
+		<div class="column">
+			<div class="ui horizontal segment">
+				{{render_part(ai1, "right", "right")}}
+			</div>
+			{{render_progress(ai1, "right", "right")}}
+		</div>
+	</div>
 </div>
 
 <script>
