@@ -144,6 +144,7 @@ public class Games
 		{
 			this.gameId = gameId;
 			this.uuid = uuid;
+			this.requestId = requestId;
 			// die KIs erstellen
 			for (String ai : ais)
 			{
