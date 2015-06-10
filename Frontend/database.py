@@ -601,3 +601,5 @@ def populate():
 	admin = User(name="admin", admin=True, email="admin@ad.min")
 	admin.set_pw("admin")
 	admin.validate(admin.validation_code)
+
+	db_save([admin])

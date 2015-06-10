@@ -912,6 +912,11 @@ def game_list_sse():
 			if "status" in update:
 				if update["status"] == "processed":
 					yield ("", "new_game")
+			if "update" in update:
+				yield (json.dumps({
+					"id": update["requestid"],
+					"status": "## Schritt "+str(update["update"])
+				}), "update")
 		except Empty:
 			# falls es keine Verbindung mehr gibt wird der Generator hier beendet.
 			yield None
