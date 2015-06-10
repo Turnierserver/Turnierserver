@@ -9,7 +9,6 @@ import magic
 import time
 import zipfile
 import tempfile
-import os
 
 from database import AI, User, Game, Lang, GameType, db, populate, ftp
 from backend import backend
@@ -137,10 +136,7 @@ def api_game_log(id):
 	game = Game.query.get(id)
 	if game:
 		for i, chunk in enumerate(game.log):
-			info = dict(
-				data=chunk,
-				progress=i/len(game.log)
-			)
+			info = {"data": chunk, "progress": i/len(game.log)}
 			yield json.dumps(info), "state"
 			time.sleep(2.5)
 		yield "", "finished_transmitting"
@@ -388,8 +384,7 @@ def api_user_create():
 	except NoResultFound:
 		pass
 
-	user = User(name=username, firstname=firstname,
-				lastname=lastname, email=email)
+	user = User(name=username, firstname=firstname, lastname=lastname, email=email)
 	user.set_pw(password)
 
 	db.session.add(user)

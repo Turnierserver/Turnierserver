@@ -1,13 +1,11 @@
 var CELL_TYPE = {
-	BOMB: 0,
-	EMPTY: 1,
 	COVERED: "COVERED",
 	EMPTY: "EMPTY"
-}
+};
+
 var FIELD_SIZE = 3;
 
-var data = [
-]
+var data = [];
 
 var step = 0;
 var god_mode = false;
@@ -44,7 +42,7 @@ function drawEmpty(c_x, c_y, c_sx, c_sy, edgesize, nearby_bombs) {
 	ctx.fillRect(c_x+c_sx*edgesize*0.5, c_y+c_sy*edgesize*0.5, c_sx-c_sx*edgesize, c_sy-c_sy*edgesize);
 	if (nearby_bombs >= 1) {
 		ctx.fillStyle = "black";
-		ctx.fillText(nearby_bombs, c_x+(c_sx/2), c_y+(c_sy/2))
+		ctx.fillText(nearby_bombs, c_x+(c_sx/2), c_y+(c_sy/2));
 	}
 }
 
@@ -66,20 +64,20 @@ function drawFlagged(c_x, c_y, c_sx, c_sy, edgesize) {
 
 
 function draw() {
-	update()
+	update();
 
 
-	canvas.width = $("#canvas").width()
-	canvas.height = $("#canvas").height()
+	canvas.width = $("#canvas").width();
+	canvas.height = $("#canvas").height();
 
-	var SX = canvas.width
-	var SY = canvas.height
+	var SX = canvas.width;
+	var SY = canvas.height;
 
 
-	var c_sx = (SX/FIELD_SIZE)
-	var c_sy = (SY/FIELD_SIZE)
+	var c_sx = (SX/FIELD_SIZE);
+	var c_sy = (SY/FIELD_SIZE);
 
-	var edgesize = 0.1
+	var edgesize = 0.1;
 
 	if (data.length < 1) {return;}
 
@@ -87,24 +85,24 @@ function draw() {
 
 	for (var x = FIELD_SIZE - 1; x >= 0; x--) {
 		for (var y = FIELD_SIZE - 1; y >= 0; y--) {
-			var c_x = x * c_sx
-			var c_y = y * c_sy
+			var c_x = x * c_sx;
+			var c_y = y * c_sy;
 			switch (d.field[x][y].type) {
 				case CELL_TYPE.BOMB:
-					drawBomb()(c_x, c_y, c_sx, c_sy, edgesize)
+					drawBomb()(c_x, c_y, c_sx, c_sy, edgesize);
 					break;
 				case CELL_TYPE.EMPTY:
-					drawEmpty(c_x, c_y, c_sx, c_sy, edgesize, d.field[x][y].bombsAround)
+					drawEmpty(c_x, c_y, c_sx, c_sy, edgesize, d.field[x][y].bombsAround);
 					break;
 				case CELL_TYPE.COVERED:
-					drawCovered(c_x, c_y, c_sx, c_sy, edgesize)
+					drawCovered(c_x, c_y, c_sx, c_sy, edgesize);
 					break;
 			}
 			if (d.field[x][y].flagged) {
-				drawFlagged(c_x, c_y, c_sx, c_sy, edgesize)
+				drawFlagged(c_x, c_y, c_sx, c_sy, edgesize);
 			}
-		};
-	};
+		}
+	}
 
 }
 
@@ -115,11 +113,11 @@ function update() {
 	//$("#ai_right_output").val(d.ai_logs[1])
 
 	if (is_playing) {
-		$("#play_button").addClass("active")
-		$("#pause_button").removeClass("active")
+		$("#play_button").addClass("active");
+		$("#pause_button").removeClass("active");
 	} else {
-		$("#play_button").removeClass("active")
-		$("#pause_button").addClass("active")
+		$("#play_button").removeClass("active");
+		$("#pause_button").addClass("active");
 	}
 }
 
@@ -127,39 +125,40 @@ function update() {
 var evtSrc = new EventSource(window.location.origin + "/api/game/1/log");
 
 evtSrc.onerror = function () {
-	console.log("SSE Err")
-	evtSrc.close()
+	console.log("SSE Err");
+	evtSrc.close();
 };
 
 evtSrc.addEventListener("state", function(e) {
-	console.log(e.data)
-	d = JSON.parse(e.data)
-	console.log(d)
-	data.push(d.data)
+	console.log(e.data);
+	d = JSON.parse(e.data);
+	console.log(d);
+	data.push(d.data);
 	$('#download_progress').progress({
 		percent: d.progress*100
 	});
-	$("#step_slider").attr("max", data.length-1)
+	$("#step_slider").attr("max", data.length-1);
 	draw();
-})
+});
+
 
 evtSrc.addEventListener("stream_stopped", function (e) {
 	console.log(e);
-	console.log("stream_stopped")
-	evtSrc.close()
-})
+	console.log("stream_stopped");
+	evtSrc.close();
+});
 
 evtSrc.addEventListener("finished_transmitting", function(e) {
-	console.log("finished_transmitting")
+	console.log("finished_transmitting");
 	$("#download_progress").progress({
 		percent: 100
-	})
-})
+	});
+});
 
 $(document).ready(function () {
 	$("#step_slider").change(function (e) {
-		console.log($(e.target).val())
+		console.log($(e.target).val());
 		step = $(e.target).val();
-		draw()
-	})
-})
+		draw();
+	});
+});

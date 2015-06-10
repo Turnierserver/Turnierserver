@@ -153,7 +153,8 @@ class Backend(threading.Thread):
 		reqid = d["requestid"]
 
 		if not reqid in self.requests:
-			print("Requestid isnt known")
+			print("Requestid isnt known ({})".format(reqid))
+			pprint(d)
 			return
 
 		#Activity("Backend [{}]: {}".format(reqid, d))

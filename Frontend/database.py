@@ -495,7 +495,7 @@ class Game(db.Model):
 		return json.loads(self._log)
 
 	@log.setter
-	def set_log(self, log):
+	def log(self, log):
 		self._log = json.dumps(log)
 
 	def time(self, locale):
