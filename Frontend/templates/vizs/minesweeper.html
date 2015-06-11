@@ -10,13 +10,18 @@ canvas {
 </style>
 
 <script>
-	console.log("hio", $)
-	$(window).on("resize", function() {
-		console.log("resize")
+
+	function onresize () {
 		$("canvas").each(function() {
-			$(this).height($(this).width() + "px;")
-			console.log(this)
+			$(this).height($(this).width())
 		})
+	}
+
+
+	$(document).ready(onresize)
+
+	$(window).on("resize", function() {
+		onresize();
 	})
 </script>
 
