@@ -1,80 +1,35 @@
 {% extends "base.html" %}
 {% set active_page = "game_list" %}
+
+{% macro render_inprogress_game(game) %}
+<tr id="inprogress_{{game.id}}">
+	<td class="left aligned">
+		<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai0.id)}}">
+			<img class="ui right spaced image" src="/api/ai/{{ game.ai0.id }}/icon">
+			{{ game.ai0.name }}
+		</a>
+	</td>
+	<td class="left aligned">
+		1337
+	</td>
+	<td class="center aligned">
+		<a class="content" href="{{url_for("anonymous.inprogress_game", id=game.id)}}">
+			<div class="header" id="progress">{% if game.inqueue %}In Warteschlange{% else %}{{ game.status }}{% endif %}</div>
+		</a>
+	</td>
+	<td class="right aligned">
+		1337
+	</td>
+	<td class="right aligned">
+		<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai1.id)}}">
+			{{ game.ai1.name }}
+			<img class="ui left spaced image" src="/api/ai/{{ game.ai1.id }}/icon">
+		</a>
+	</td>
+</tr>
+{% endmacro %}
+
 {% block body %}
-
-
-<div id="new_game_msg" class="ui hidden floating message">
-	<p>Ein neues Spiel hat angefangen, lad die Seite neu, um es zu sehen.</p>
-</div>
-
-{% if in_progress_games %}
-<table class="ui very basic table">
-	<thead>
-		<tr>
-		<th class="left aligned three wide">KI</th>
-		<th class="left aligned two wide">Punkte</th>
-		<th class="center aligned six wide">Status</th>
-		<th class="right aligned two wide">Punkte</th>
-		<th class="right aligned three wide">KI</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for game in in_progress_games %}
-		<tr id="inprogress_{{game.id}}">
-			<td class="left aligned">
-				<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai0.id)}}">
-					<img class="ui right spaced image" src="/api/ai/{{ game.ai0.id }}/icon">
-					{{ game.ai0.name }}
-				</a>
-			</td>
-			<td class="left aligned">
-				1337
-			</td>
-			<td class="center aligned">
-				<a class="content" href="{{url_for("anonymous.inprogress_game", id=game.id)}}">
-					<div class="header" id="progress">{% if game.inqueue %}In Warteschlange{% else %}{{ game.status }}{% endif %}</div>
-				</a>
-			</td>
-			<td class="right aligned">
-				1337
-			</td>
-			<td class="right aligned">
-				<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai1.id)}}">
-					{{ game.ai1.name }}
-					<img class="ui left spaced image" src="/api/ai/{{ game.ai1.id }}/icon">
-				</a>
-			</td>
-		</tr>
-		{% endfor %}
-	</tbody>
-</table>
-{% endif %}
-
-<script>
-var evtSrc = new EventSource("/api/game_list_sse");
-
-evtSrc.onerror = function () {
-	console.log("SSE Err")
-	evtSrc.close()
-};
-
-evtSrc.addEventListener("update", function(e) {
-	console.log(e.data)
-	d = JSON.parse(e.data)
-	console.log(d)
-	$("#inprogress_"+d.id).find("#progress").text(d.status)
-})
-
-evtSrc.addEventListener("new_game", function(e) {$("#new_game_msg").removeClass("hidden")})
-
-
-evtSrc.addEventListener("stream_stopped", function (e) {
-	console.log(e);
-	console.log("stream_stopped")
-	evtSrc.close()
-})
-</script>
-
 
 <table class="ui very basic table">
 	<thead>
@@ -86,7 +41,10 @@ evtSrc.addEventListener("stream_stopped", function (e) {
 		<th class="right aligned three wide">KI</th>
 		</tr>
 	</thead>
-	<tbody>
+	<tbody id="games_tbody">
+		{% for game in in_progress_games %}
+		{{render_inprogress_game(game)}}
+		{% endfor %}
 		{% for game in game_list %}
 		<tr>
 			<td class="left aligned">
@@ -116,5 +74,33 @@ evtSrc.addEventListener("stream_stopped", function (e) {
 		{% endfor %}
 	</tbody>
 </table>
+
+<script>
+var evtSrc = new EventSource("/api/game_list_sse");
+
+evtSrc.onerror = function () {
+	console.log("SSE Err");
+	evtSrc.close();
+};
+
+evtSrc.addEventListener("update", function(e) {
+	console.log(e.data);
+	d = JSON.parse(e.data);
+	console.log(d);
+	$("#inprogress_"+d.id).find("#progress").text(d.status);
+});
+
+evtSrc.addEventListener("new_game", function(e) {
+	$("#games_tbody").prepend(e.data);
+	$("#games_tbody > tr").first().transition("pulse");
+});
+
+
+evtSrc.addEventListener("stream_stopped", function (e) {
+	console.log(e);
+	console.log("stream_stopped");
+	evtSrc.close();
+});
+</script>
 
 {% endblock %}

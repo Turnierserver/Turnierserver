@@ -218,7 +218,7 @@ class Backend(threading.Thread):
 				id=r["requestid"],
 				ai0=r["ai0"],
 				ai1=r["ai1"],
-				status="1/8392",
+				status="angefangen...",
 				inqueue=r["status"] == "processed"
 			))
 		return games
