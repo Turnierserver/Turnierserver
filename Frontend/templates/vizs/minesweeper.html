@@ -1,7 +1,8 @@
 {% extends "game.html" %}
 
 {% block viz %}
-
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<link href="//code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" rel="stylesheet">
 <style type="text/css">
 canvas {
 	width: 100%;
@@ -51,7 +52,8 @@ canvas {
 			<h1>Du musst Javascript aktiviert haben, um Spiele zu sehen.</h1>
 		</canvas>
 	</center>
-	<input id="step_slider_{{desc}}" class="ui input" type="range" min="0" max="0" value="0" step="1" style="width: 100%" />
+	<!-- <input id="step_slider_{{desc}}" class="ui input" type="range" min="0" max="0" value="0" step="1" style="width: 100%" /> -->
+	<div id="step_slider_{{desc}}"></div>
 	{{render_output(ai, side, desc)}}
 {%- endmacro %}
 
