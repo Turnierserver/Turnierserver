@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request, abort, redirect, flash
+from flask import Blueprint, Response, request, abort, redirect, flash, get_template_attribute
 from flask.ext.login import current_user, login_user, logout_user, LoginManager, UserMixin
 from functools import wraps
 from queue import Empty
@@ -10,7 +10,7 @@ import time
 import zipfile
 import tempfile
 
-from database import AI, User, Game, Lang, GameType, db, populate, ftp
+from database import AI, User, Game, Lang, GameType, db, populate, ftp, Game_inprogress
 from backend import backend
 from commons import authenticated, cache, CommonErrors
 from _cfg import env
@@ -136,9 +136,8 @@ def game_log(id):
 	game = Game.query.get(id)
 	if game:
 		for i, chunk in enumerate(game.log):
-			info = {"data": chunk, "progress": i/len(game.log)}
-			yield json.dumps(info), "state"
-			time.sleep(2.5)
+			chunk["progress"] = i/len(game.log)
+			yield json.dumps(chunk), "state"
 		yield "", "finished_transmitting"
 
 	else:
@@ -908,7 +907,18 @@ def game_list_sse():
 			print("SSE:", update)
 			if "status" in update:
 				if update["status"] == "processed":
-					yield ("", "new_game")
+					render_inprogress_game = get_template_attribute("game_list.html", "render_inprogress_game")
+					r = backend.request(update["requestid"])
+					html = render_inprogress_game(
+						dict(
+							id=r["requestid"],
+							ai0=r["ai0"],
+							ai1=r["ai1"],
+							status="angefangen...",
+							inqueue=r["status"] == "processed"
+						)
+					)
+					yield (html, "new_game")
 			if "update" in update:
 				yield (json.dumps({
 					"id": update["requestid"],

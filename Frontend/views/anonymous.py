@@ -37,7 +37,7 @@ def user(id):
 
 @anonymous_blueprint.route("/game_list")
 def game_list():
-	return render_template("game_list.html", game_list=Game.query.all(), in_progress_games=backend.inprogress_games())
+	return render_template("game_list.html", game_list=Game.query.order_by(Game.id.desc()).all(), in_progress_games=backend.inprogress_games())
 
 @anonymous_blueprint.route("/game/<int:id>")
 def game(id):
