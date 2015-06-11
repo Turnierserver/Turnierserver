@@ -25,18 +25,28 @@ function add_pane(name) {
 
 	d.aiID = $("#canvas_"+name).attr("aiID");
 
-	$("#step_slider_"+name).change(function (e) {
-		d.step = parseInt($(e.target).val());
-		draw_panes();
+	$("#step_slider_"+name).slider({
+		range: "max",
+		min: 0,
+		max: 0,
+		value: 0,
+		step: 1,
+		slide: function (event, ui) {
+			d.step = ui.value;
+			draw_panes();
+		}
 	});
+
+	// $("#step_slider_"+name).change(function (e) {
+	// 	d.step = parseInt($(e.target).val());
+	// 	draw_panes();
+	// });
 
 	panes_lookup[d.aiID] = panes.length;
 	panes.push(d);
 	return d;
 }
 
-add_pane('left');
-add_pane('right');
 
 
 
@@ -134,7 +144,9 @@ function draw_panes() {
 
 function update(pane) {
 	var d = pane.data[pane.step];
-	$("#ai_"+pane.name+"_output").val(d.output);
+	if (d !== undefined) {
+		$("#ai_"+pane.name+"_output").val(d.output);
+	}
 
 	if (pane.is_playing) {
 		$("#play_button_"+pane.name).addClass("active");
@@ -146,6 +158,9 @@ function update(pane) {
 }
 
 $(document).ready(function () {
+	add_pane('left');
+	add_pane('right');
+
 	console.log("Streaming game data from", window.location.origin + $("#game_script").attr("stream"));
 	var evtSrc = new EventSource(window.location.origin + $("#game_script").attr("stream"));
 
@@ -164,7 +179,7 @@ $(document).ready(function () {
 		$('#download_progress_'+pane.name).progress({
 			percent: d.progress*100
 		});
-		$("#step_slider_"+pane.name).attr("max", pane.data.length-1);
+		$("#step_slider_"+pane.name).slider("option", "max", pane.data.length-1);
 		draw_panes();
 	});
 

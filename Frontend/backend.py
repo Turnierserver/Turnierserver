@@ -230,16 +230,18 @@ class Backend(threading.Thread):
 		if not "queues" in self.requests[id]:
 			return False
 
-		print("SATATES:")
 		for d in self.requests[id]["states"]:
 			yield d
-			pprint(d)
 
 		q = Queue()
 		self.requests[id]["queues"].add(q)
 		while True:
 			try:
-				yield q.get(timeout=120)
+				d = q.get(timeout=120)
+				if "data" in d:
+					yield d["data"]
+				else:
+					print("no data in frame.", d)
 			except Empty:
 				return
 

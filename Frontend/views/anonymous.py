@@ -54,6 +54,9 @@ def inprogress_game(id):
 	## inpgrogress type
 	if not backend.request(id):
 		abort(404)
+	if not backend.request(id)["action"] == "start":
+		print("Invalid gameid!")
+		abort(404)
 	game = Game_inprogress(id, backend.request(id))
 
 	stream = url_for("api.game_inprogress_log", id=game.id)
