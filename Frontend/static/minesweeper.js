@@ -7,21 +7,32 @@ var FIELD_SIZE = 3;
 
 var data = [];
 
-var step = 0;
-var god_mode = false;
-var is_playing = false;
-var play_speed = 100;
-var play_timeout;
+
+var panes = []
+
+function add_pane(name) {
+	d = {
+		step: 0,
+		data: [],
+		name: name,
+		is_playing: false,
+		canvas: document.getElementById('canvas_'+name)
+	}
+	d.ctx = d.canvas.getContext('2d');
+
+	d.ctx.font = "75px serif";
+	d.ctx.textAlign = 'center';
+	d.ctx.textBaseline = 'middle';
+
+	panes.push(d)
+}
+
+add_pane('left');
+add_pane('right');
 
 
-var canvas = document.getElementById('canvas');
-var ctx = canvas.getContext('2d');
-ctx.font = "75px serif";
-ctx.textAlign = 'center';
-ctx.textBaseline = 'middle';
 
-
-function drawBomb(c_x, c_y, c_sx, c_sy, edgesize) {
+function drawBomb(ctx, c_x, c_y, c_sx, c_sy, edgesize) {
 	ctx.fillStyle = "rgb(200, 200, 200)";
 	ctx.fillRect(c_x, c_y, c_sx, c_sy);
 	ctx.fillStyle = "rgb(220, 220, 220)";
@@ -35,7 +46,7 @@ function drawBomb(c_x, c_y, c_sx, c_sy, edgesize) {
 	ctx.stroke();
 }
 
-function drawEmpty(c_x, c_y, c_sx, c_sy, edgesize, nearby_bombs) {
+function drawEmpty(ctx, c_x, c_y, c_sx, c_sy, edgesize, nearby_bombs) {
 	ctx.fillStyle = "rgb(200, 200, 200)";
 	ctx.fillRect(c_x, c_y, c_sx, c_sy);
 	ctx.fillStyle = "rgb(220, 220, 220)";
@@ -46,14 +57,14 @@ function drawEmpty(c_x, c_y, c_sx, c_sy, edgesize, nearby_bombs) {
 	}
 }
 
-function drawCovered(c_x, c_y, c_sx, c_sy, edgesize) {
+function drawCovered(ctx, c_x, c_y, c_sx, c_sy, edgesize) {
 	ctx.fillStyle = "rgb(200, 200, 200)";
 	ctx.fillRect(c_x, c_y, c_sx, c_sy);
 	ctx.fillStyle = "black";
 	ctx.fillRect(c_x+c_sx*edgesize*0.5, c_y+c_sy*edgesize*0.5, c_sx-c_sx*edgesize, c_sy-c_sy*edgesize);
 }
 
-function drawFlagged(c_x, c_y, c_sx, c_sy, edgesize) {
+function drawFlagged(ctx, c_x, c_y, c_sx, c_sy, edgesize) {
 	ctx.fillStyle = "rgba(0, 255, 0, 0.75)";
 	ctx.beginPath();
 	ctx.moveTo(c_x + c_sx, c_y);
@@ -63,16 +74,14 @@ function drawFlagged(c_x, c_y, c_sx, c_sy, edgesize) {
 }
 
 
-function draw() {
-	update();
+function draw(pane) {
+	update(pane);
 
+	pane.canvas.width = $("#canvas_" + pane.name).width();
+	pane.canvas.height = $("#canvas_" + pane.name).height();
 
-	canvas.width = $("#canvas").width();
-	canvas.height = $("#canvas").height();
-
-	var SX = canvas.width;
-	var SY = canvas.height;
-
+	var SX = pane.canvas.width;
+	var SY = pane.canvas.height;
 
 	var c_sx = (SX/FIELD_SIZE);
 	var c_sy = (SY/FIELD_SIZE);
@@ -81,7 +90,7 @@ function draw() {
 
 	if (data.length < 1) {return;}
 
-	var d = data[step];
+	var d = pane.data[pane.step];
 
 	for (var x = FIELD_SIZE - 1; x >= 0; x--) {
 		for (var y = FIELD_SIZE - 1; y >= 0; y--) {
@@ -106,13 +115,19 @@ function draw() {
 
 }
 
+function draw_panes() {
+	for (var i = panes.length - 1; i >= 0; i--) {
+		draw(panes[i]);
+	};
+}
 
-function update() {
-	var d = data[step];
+
+function update(pane) {
+	var d = pane.data[pane.step];
 	//$("#ai_left_output").val(d.ai_logs[0])
 	//$("#ai_right_output").val(d.ai_logs[1])
 
-	if (is_playing) {
+	if (pane.is_playing) {
 		$("#play_button").addClass("active");
 		$("#pause_button").removeClass("active");
 	} else {
@@ -133,12 +148,13 @@ evtSrc.addEventListener("state", function(e) {
 	console.log(e.data);
 	d = JSON.parse(e.data);
 	console.log(d);
+	console.log(d.aiID)
 	data.push(d.data);
 	$('#download_progress').progress({
 		percent: d.progress*100
 	});
 	$("#step_slider").attr("max", data.length-1);
-	draw();
+	draw_panes();
 });
 
 

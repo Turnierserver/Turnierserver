@@ -11,3 +11,4 @@ fake-factory>=0.5.1
 python-magic>=0.4.6
 Flask-Migrate>=1.4.0
 psycopg2>=2.6
+gunicorn>=19.3.0
