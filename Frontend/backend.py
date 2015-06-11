@@ -120,6 +120,7 @@ class Backend(threading.Thread):
 		self.requests[reqid]["queues"] = WeakSet()
 		self.requests[reqid]["ai0"] = ais[0]
 		self.requests[reqid]["ai1"] = ais[1]
+		self.requests[reqid]["ai_objs"] = ais
 		self.requests[reqid]["states"] = []
 		Activity("Backend[{}]: Spiel mit {} gestartet".format(reqid, [ai.name for ai in ais]))
 		return reqid
@@ -181,7 +182,8 @@ class Backend(threading.Thread):
 
 
 	def request(self, reqid):
-		return self.requests[reqid]
+		if reqid in self.requests:
+			return self.requests[reqid]
 
 	def lock_for_req(self, reqid, timeout=30):
 		try:
@@ -228,13 +230,16 @@ class Backend(threading.Thread):
 		if not "queues" in self.requests[id]:
 			return False
 
-		for d in self.requests[id]["data"]:
+		print("SATATES:")
+		for d in self.requests[id]["states"]:
 			yield d
+			pprint(d)
 
 		q = Queue()
+		self.requests[id]["queues"].add(q)
 		while True:
 			try:
-				yield q.get(timeout=60)
+				yield q.get(timeout=120)
 			except Empty:
 				return
 
