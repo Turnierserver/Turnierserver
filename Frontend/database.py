@@ -525,14 +525,17 @@ class Game(db.Model):
 		return "<Game(id={}, type={})>".format(self.id, self.type.name)
 
 class Game_inprogress:
-	id = 0
 	ais = []
 	status = "1/2378"
 
-	def __init__(self):
+	def __init__(self, id, d=None):
 		self.type = GameType.lastest()
 		self.timestamp = timestamp()
-		self.ais = [AI.query.first(), AI.query.first()]
+		self.id = id
+		if d:
+			self.ais = d["ai_objs"]
+		else:
+			raise RuntimeError("Invalid backend request.")
 
 	def time(self, locale):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, abort, flash
+from flask import Blueprint, render_template, abort, flash, url_for
 from flask.ext.login import current_user
 from database import AI, User, Game, GameType, Game_inprogress
 from activityfeed import Activity
@@ -45,11 +45,16 @@ def game(id):
 	if not game:
 		abort(404)
 
-	return render_template(game.type.viz, game=game, inprogress=False, ai0=game.ais[0], ai1=game.ais[1])
+	stream = url_for("api.game_log", id=id)
+
+	return render_template(game.type.viz, game=game, inprogress=False, ai0=game.ais[0], ai1=game.ais[1], stream=stream)
 
 @anonymous_blueprint.route("/game/inprogress/<int:id>")
 def inprogress_game(id):
 	## inpgrogress type
-	t = GameType.query.first()
-	game = Game_inprogress()
-	return render_template(game.type.viz, game=game, inprogress=True, ai0=game.ais[0], ai1=game.ais[1])
+	if not backend.request(id):
+		abort(404)
+	game = Game_inprogress(id, backend.request(id))
+
+	stream = url_for("api.game_inprogress_log", id=game.id)
+	return render_template(game.type.viz, game=game, inprogress=True, ai0=game.ais[0], ai1=game.ais[1], stream=stream)

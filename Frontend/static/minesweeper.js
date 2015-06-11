@@ -1,30 +1,38 @@
 var CELL_TYPE = {
 	COVERED: "COVERED",
-	EMPTY: "EMPTY"
+	EMPTY: "EMPTY",
+	BOMB: "BOMB"
 };
 
 var FIELD_SIZE = 3;
 
-var data = [];
-
-
-var panes = []
+var panes = [];
+var panes_lookup = {};
 
 function add_pane(name) {
-	d = {
+	var d = {
 		step: 0,
 		data: [],
 		name: name,
 		is_playing: false,
 		canvas: document.getElementById('canvas_'+name)
-	}
+	};
 	d.ctx = d.canvas.getContext('2d');
 
 	d.ctx.font = "75px serif";
 	d.ctx.textAlign = 'center';
 	d.ctx.textBaseline = 'middle';
 
-	panes.push(d)
+	d.aiID = $("#canvas_"+name).attr("aiID");
+
+	$("#step_slider_"+name).change(function (e) {
+		d.step = parseInt($(e.target).val());
+		draw_panes();
+	});
+
+	panes_lookup[d.aiID] = panes.length;
+	panes.push(d);
+	return d;
 }
 
 add_pane('left');
@@ -86,9 +94,11 @@ function draw(pane) {
 	var c_sx = (SX/FIELD_SIZE);
 	var c_sy = (SY/FIELD_SIZE);
 
+	var ctx = pane.ctx;
+
 	var edgesize = 0.1;
 
-	if (data.length < 1) {return;}
+	if (pane.data.length < 1) {return;}
 
 	var d = pane.data[pane.step];
 
@@ -98,17 +108,17 @@ function draw(pane) {
 			var c_y = y * c_sy;
 			switch (d.field[x][y].type) {
 				case CELL_TYPE.BOMB:
-					drawBomb()(c_x, c_y, c_sx, c_sy, edgesize);
+					drawBomb(ctx, c_x, c_y, c_sx, c_sy, edgesize);
 					break;
 				case CELL_TYPE.EMPTY:
-					drawEmpty(c_x, c_y, c_sx, c_sy, edgesize, d.field[x][y].bombsAround);
+					drawEmpty(ctx, c_x, c_y, c_sx, c_sy, edgesize, d.field[x][y].bombsAround);
 					break;
 				case CELL_TYPE.COVERED:
-					drawCovered(c_x, c_y, c_sx, c_sy, edgesize);
+					drawCovered(ctx, c_x, c_y, c_sx, c_sy, edgesize);
 					break;
 			}
 			if (d.field[x][y].flagged) {
-				drawFlagged(c_x, c_y, c_sx, c_sy, edgesize);
+				drawFlagged(ctx, c_x, c_y, c_sx, c_sy, edgesize);
 			}
 		}
 	}
@@ -118,63 +128,57 @@ function draw(pane) {
 function draw_panes() {
 	for (var i = panes.length - 1; i >= 0; i--) {
 		draw(panes[i]);
-	};
+	}
 }
 
 
 function update(pane) {
 	var d = pane.data[pane.step];
-	//$("#ai_left_output").val(d.ai_logs[0])
-	//$("#ai_right_output").val(d.ai_logs[1])
+	$("#ai_"+pane.name+"_output").val(d.output);
 
 	if (pane.is_playing) {
-		$("#play_button").addClass("active");
-		$("#pause_button").removeClass("active");
+		$("#play_button_"+pane.name).addClass("active");
+		$("#pause_button_"+pane.name).removeClass("active");
 	} else {
-		$("#play_button").removeClass("active");
-		$("#pause_button").addClass("active");
+		$("#play_button_"+pane.name).removeClass("active");
+		$("#pause_button_"+pane.name).addClass("active");
 	}
 }
 
-
-var evtSrc = new EventSource(window.location.origin + "/api/game/1/log");
-
-evtSrc.onerror = function () {
-	console.log("SSE Err");
-	evtSrc.close();
-};
-
-evtSrc.addEventListener("state", function(e) {
-	console.log(e.data);
-	d = JSON.parse(e.data);
-	console.log(d);
-	console.log(d.aiID)
-	data.push(d.data);
-	$('#download_progress').progress({
-		percent: d.progress*100
-	});
-	$("#step_slider").attr("max", data.length-1);
-	draw_panes();
-});
-
-
-evtSrc.addEventListener("stream_stopped", function (e) {
-	console.log(e);
-	console.log("stream_stopped");
-	evtSrc.close();
-});
-
-evtSrc.addEventListener("finished_transmitting", function(e) {
-	console.log("finished_transmitting");
-	$("#download_progress").progress({
-		percent: 100
-	});
-});
-
 $(document).ready(function () {
-	$("#step_slider").change(function (e) {
-		console.log($(e.target).val());
-		step = $(e.target).val();
-		draw();
+	console.log("Streaming game data from", window.location.origin + $("#game_script").attr("stream"));
+	var evtSrc = new EventSource(window.location.origin + $("#game_script").attr("stream"));
+
+	evtSrc.onerror = function () {
+		console.log("SSE Err");
+		evtSrc.close();
+	};
+
+	evtSrc.addEventListener("state", function(e) {
+		console.log(e.data);
+		d = JSON.parse(e.data);
+		console.log(d);
+		console.log(d.aiID);
+		var pane = panes[panes_lookup[d.aiID]];
+		pane.data.push(d);
+		$('#download_progress_'+pane.name).progress({
+			percent: d.progress*100
+		});
+		$("#step_slider_"+pane.name).attr("max", pane.data.length-1);
+		draw_panes();
+	});
+
+
+	evtSrc.addEventListener("stream_stopped", function (e) {
+		console.log(e);
+		console.log("stream_stopped");
+		evtSrc.close();
+	});
+
+	evtSrc.addEventListener("finished_transmitting", function(e) {
+		console.log("finished_transmitting");
+		$("#download_progress").progress({
+			percent: 100
+		});
 	});
 });

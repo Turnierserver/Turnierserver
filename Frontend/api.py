@@ -132,7 +132,7 @@ def api_game(id):
 
 @api.route("/game/<int:id>/log")
 @sse_stream
-def api_game_log(id):
+def game_log(id):
 	game = Game.query.get(id)
 	if game:
 		for i, chunk in enumerate(game.log):
@@ -146,18 +146,15 @@ def api_game_log(id):
 
 @api.route("/game/inprogress/<int:id>/log")
 @sse_stream
-def api_game_inprogress_log(id):
+def game_inprogress_log(id):
 	gen = backend.inprogress_log(id)
 	try:
-		next(gen)
+		yield json.dumps(next(gen)), "state"
 	except StopIteration:
 		return CommonErrors.INVALID_ID
+
 	for d in gen:
-		if "data" in d:
-			yield d["data"]
-		else:
-			print(d)
-			yield d
+		yield json.dumps(d), "state"
 
 
 @api.route("/users", methods=["GET"])
