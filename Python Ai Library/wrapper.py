@@ -3,11 +3,7 @@ import socket
 import json
 from io import StringIO
 from importlib import import_module
-from game_wrapper import GameWrapper
 from pprint import pprint
-
-URL = "127.0.0.1"
-PORT = 1337
 
 def properties_to_dict(s):
 	d = {}
@@ -87,15 +83,14 @@ class AIWrapper:
 
 
 if __name__ == '__main__':
+	from game_wrapper import GameWrapper
 	print(sys.argv)
 	# __name__ aifile propfile
 	with open(sys.argv[2], "r") as f:
 		props = properties_to_dict(f.read())
 	print("properties:")
 	pprint(props)
-	if not "filename" in props:
-		raise RuntimeError("No filename specified.")
-	usermodule = import_module(props["filename"])
+	usermodule = import_module(".".join(sys.argv[1].split(".")[:-1]))
 	print(usermodule)
 	pprint(vars(usermodule))
 	gw = GameWrapper(usermodule.AI, props)
