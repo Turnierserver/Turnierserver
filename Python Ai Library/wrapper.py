@@ -59,11 +59,15 @@ class AIWrapper:
 		self.connect()
 		while True:
 			r = self.sock.recv(1024*1024).decode("utf-8")
+			if not r or r == "\n":
+				continue
 			print("Empfangen:", r)
 			updates = json.loads(r)
-			pprint("Geparsed:", updates)
+			print("Geparsed:")
+			pprint(updates)
 			resp = self.update(self.getState(updates))
-			pprint("Antwort:", resp)
+			print("Antwort:")
+			pprint(resp)
 			if resp:
 				self.send(json.dumps(resp))
 				print("Gesendet.")
@@ -91,7 +95,7 @@ if __name__ == '__main__':
 	print("properties:")
 	pprint(props)
 	usermodule = import_module(".".join(sys.argv[1].split(".")[:-1]))
-	print(usermodule)
-	pprint(vars(usermodule))
+	if not hasattr(usermodule, "AI"):
+		raise RuntimeError("No AI class in " + sys.argv[1])
 	gw = GameWrapper(usermodule.AI, props)
 	gw.run()
