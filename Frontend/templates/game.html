@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block body %}
 
+{% if inprogress %}
+<div id="finished_message" class="ui message" style="display: none;">
+	Dieses Spiel ist jetzt fertig.
+	Du kannst es <a href="#">hier</a> permanent sehen.
+</div>
+{% endif %}
+
 {% block viz %}
 {% endblock %}
 

@@ -520,6 +520,7 @@ class Game(db.Model):
 		g.ai_assocs = [AI_Game_Assoc(game_id=g.id, ai_id=ai.id) for ai in ais]
 		db.session.add(g)
 		db.session.commit()
+		return g
 
 	def __repr__(self):
 		return "<Game(id={}, type={})>".format(self.id, self.type.name)

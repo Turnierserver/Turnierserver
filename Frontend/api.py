@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request, abort, redirect, flash, get_template_attribute
+from flask import Blueprint, Response, request, abort, redirect, flash, get_template_attribute, url_for
 from flask.ext.login import current_user, login_user, logout_user, LoginManager, UserMixin
 from functools import wraps
 from queue import Empty
@@ -9,6 +9,7 @@ import magic
 import time
 import zipfile
 import tempfile
+from pprint import pprint
 
 from database import AI, User, Game, Lang, GameType, db, populate, ftp, Game_inprogress
 from backend import backend
@@ -148,12 +149,18 @@ def game_log(id):
 def game_inprogress_log(id):
 	gen = backend.inprogress_log(id)
 	try:
-		yield json.dumps(next(gen)), "state"
+		d, s = next(gen)
+		yield json.dumps(d), s
 	except StopIteration:
 		return CommonErrors.INVALID_ID
 
-	for d in gen:
-		yield json.dumps(d), "state"
+	for data, data_type in gen:
+		if data_type == "state":
+			yield json.dumps(data), data_type
+		elif data_type == "finished_game_obj":
+			yield url_for("anonymous.game", id=data.id), "game_finished"
+		else:
+			print("invalid log_sse type:", data_type, data)
 
 
 @api.route("/users", methods=["GET"])
@@ -904,7 +911,13 @@ def game_list_sse():
 	while True:
 		try:
 			update = q.get(timeout=15)
-			print("SSE:", update)
+			d = backend.request(update["requestid"])
+			print("------SSE------")
+			pprint(update)
+			print("------SSE------")
+			pprint(d)
+			print("------SSE------")
+
 			if "status" in update:
 				if update["status"] == "processed":
 					render_inprogress_game = get_template_attribute("game_list.html", "render_inprogress_game")
@@ -924,6 +937,13 @@ def game_list_sse():
 					"id": update["requestid"],
 					"status": "## Schritt "+str(update["update"])
 				}), "update")
+
+			if "finished_game_obj" in d:
+				yield (json.dumps({
+					"url": url_for("anonymous.game", id=d["finished_game_obj"].id),
+					"id": d["requestid"],
+					"status": repr(d["finished_game_obj"])
+				}), "finished_game")
 		except Empty:
 			# falls es keine Verbindung mehr gibt wird der Generator hier beendet.
 			yield None

@@ -13,7 +13,7 @@
 		1337
 	</td>
 	<td class="center aligned">
-		<a class="content" href="{{url_for("anonymous.inprogress_game", id=game.id)}}">
+		<a id="link" class="content" href="{{url_for("anonymous.inprogress_game", id=game.id)}}">
 			<div class="header" id="progress">{% if game.inqueue %}In Warteschlange{% else %}{{ game.status }}{% endif %}</div>
 		</a>
 	</td>
@@ -85,7 +85,7 @@ evtSrc.onerror = function () {
 
 evtSrc.addEventListener("update", function(e) {
 	console.log(e.data);
-	d = JSON.parse(e.data);
+	var d = JSON.parse(e.data);
 	console.log(d);
 	$("#inprogress_"+d.id).find("#progress").text(d.status);
 });
@@ -95,6 +95,13 @@ evtSrc.addEventListener("new_game", function(e) {
 	$("#games_tbody > tr").first().transition("pulse");
 });
 
+evtSrc.addEventListener("finished_game", function(e) {
+	var d = JSON.parse(e.data);
+	console.log(d);
+	$("#inprogress_"+d.id).find("#progress").text(d.status);
+	$("#inprogress_"+d.id).find("#link").attr("href", d.url);
+	$("#inprogress_"+d.id).transition("pulse");
+});
 
 evtSrc.addEventListener("stream_stopped", function (e) {
 	console.log(e);
