@@ -190,6 +190,13 @@ $(document).ready(function () {
 		evtSrc.close();
 	});
 
+	// ## in ne generelle lib verschieben
+	evtSrc.addEventListener("game_finished", function(e) {
+		console.log("game_finished", e.data);
+		$("#finished_message").show();
+		$("#finished_message").find("a").attr("href", e.data);
+	});
+
 	evtSrc.addEventListener("finished_transmitting", function(e) {
 		console.log("finished_transmitting");
 		$("#download_progress").progress({

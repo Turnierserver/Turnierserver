@@ -163,22 +163,27 @@ class Backend(threading.Thread):
 
 		self.requests[reqid].update(d)
 		self.requests[reqid]["queue"].put(d)
-		if "queues" in self.requests[reqid]:
-			for q in self.requests[reqid]["queues"]:
-				q.put(d)
 
 		if self.requests[reqid]["action"] == "start":
-			for q in self.game_update_queues:
-				q.put(d)
 			if "success" in d:
 				if not self.app:
 					raise RuntimeError("Spiel vor verbindung mit App")
 				with self.app.app_context():
-					Game.from_inprogress(self.requests[reqid])
-					return
+					print("game finished!")
+					g = Game.from_inprogress(self.requests[reqid])
+					print(g)
+					self.requests[reqid]["finished_game_obj"] = g
+					pprint(self.requests[reqid])
 
 			if "data" in d:
 				self.requests[reqid]["states"].append(d["data"])
+
+			for q in self.game_update_queues:
+				q.put(d)
+
+		if "queues" in self.requests[reqid]:
+			for q in self.requests[reqid]["queues"]:
+				q.put(d)
 
 
 	def request(self, reqid):
@@ -231,17 +236,20 @@ class Backend(threading.Thread):
 			return False
 
 		for d in self.requests[id]["states"]:
-			yield d
+			yield d, "state"
 
 		q = Queue()
 		self.requests[id]["queues"].add(q)
 		while True:
 			try:
-				d = q.get(timeout=120)
-				if "data" in d:
-					yield d["data"]
+				update = q.get(timeout=120)
+				d = self.request(id)
+				if "data" in update:
+					yield update["data"], "state"
 				else:
-					print("no data in frame.", d)
+					print("no data in frame.", update)
+				if "finished_game_obj" in d:
+					yield (d["finished_game_obj"], "finished_game_obj")
 			except Empty:
 				return
 
