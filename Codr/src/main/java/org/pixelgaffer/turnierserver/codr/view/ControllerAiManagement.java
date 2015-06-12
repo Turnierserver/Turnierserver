@@ -62,6 +62,10 @@ public class ControllerAiManagement {
 	@FXML TabPane tpCode;
 	@FXML Hyperlink hlShowQualified;
 	@FXML ProgressIndicator prUpload;
+	
+	@FXML BorderPane bpAis;
+	@FXML TreeView<File> tvFiles;
+	
 	public Tab infoTab;
 	public Tab newFileTab;
 	
@@ -241,10 +245,13 @@ public class ControllerAiManagement {
 	 * Lädt mithilfe der CodeEditoren der anzuzeigenden Version alle Dateien der Version in die Tab-Leiste
 	 */
 	private void setVersionTabs() {
+		
+		tvFiles.setRoot(version.rootFile);
+		
 		tpCode.getTabs().clear();
 		tpCode.getTabs().add(infoTab);
-		for (int i = 0; i < version.files.size(); i++) {
-			Tab tab = version.files.get(i).getView();
+		for (CodeEditor file : version.files) {
+			Tab tab = file.getView();
 			if (version.finished) {
 				if (tab.getContent() != null)
 					tab.getContent().setDisable(true);
@@ -265,8 +272,21 @@ public class ControllerAiManagement {
 	 * @param newTab der neu ausgewählte Tab
 	 */
 	void clickTabSelection(Tab oldTab, Tab newTab) {
+		
+		// TreeView
+		if (newTab == infoTab) {
+			tvFiles.setVisible(false);
+			bpAis.setVisible(true);
+		} else {
+			tvFiles.setVisible(true);
+			bpAis.setVisible(false);
+		}
+		
+		// Speichern
 		if (version != null && !version.finished)
 			version.saveCode();
+		
+		// NewFile +
 		if (newTab == newFileTab && newTab != oldTab) {
 			tpCode.getSelectionModel().select(oldTab);
 			if (version == null) {
