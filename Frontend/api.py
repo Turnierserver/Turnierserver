@@ -854,6 +854,7 @@ def start_game():
 				print("Nen Gegen die selben KIs")
 				print(ais)
 				return {"error": "No duplicate AIs allowed."}, 400
+
 	ais = [AI.query.get(ai) for ai in ais]
 	print(ais)
 	if not all(ais):
@@ -861,6 +862,9 @@ def start_game():
 
 	if not any([current_user.can_access(ai) for ai in ais]):
 		return CommonErrors.NO_ACCESS
+
+	if not all([ai.lastest_version().compiled for ai in ais]):
+		return {"error": "All AIs have to be compiled"}, 400
 
 	backend.request_game(ais)
 

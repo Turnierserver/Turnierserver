@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 
 public class PythonCompiler extends Compiler
@@ -27,11 +28,12 @@ public class PythonCompiler extends Compiler
 		// den wrapper laden
 		if (libraryDownloader == null) {
 			try {
-				output.println("> Lade game_wrapper.py herunter ...");
+				output.print("> Lade game_wrapper.py herunter ... ");
 				DatastoreFtpClient.retrieveAiLibrary(getGame(), "Python", bindir);
-				output.println("> Lade wrapper.py herunter ...");
+				output.println("fertig");
+				output.print("> Lade wrapper.py herunter ... ");
 				DatastoreFtpClient.retrieveLibrary("wrapper", "Python", bindir);
-				output.println("done");
+				output.println("fertig");
 			} catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
 					| FTPAbortedException | FTPListParseException ioe) {
 				output.println(ioe.getMessage());
@@ -43,8 +45,13 @@ public class PythonCompiler extends Compiler
 			libraryDownloader.getFile("Python", "wrapper", "wrapper.py");
 		}
 		
+
+		output.print("> Kopiere Quelltext ... ");
+		FileUtils.copyDirectory(srcdir, bindir);
+		output.println("fertig");
+		
 		// das script zum starten erzeugen
-		output.println("> Erstelle ein Skript zum Starten der KI ... ");
+		output.print("> Erstelle ein Skript zum Starten der KI ... ");
 		File scriptFile = new File(bindir, "start.sh");
 		scriptFile.createNewFile();
 		scriptFile.setExecutable(true);
@@ -59,7 +66,7 @@ public class PythonCompiler extends Compiler
 		script.println("python3 wrapper.py \"" + p.getProperty("filename") + "\" ${@}");
 		script.close();
 		setCommand("python3 wrapper.py \"" + p.getProperty("filename"));
-		output.println("done");
+		output.println("fertig");
 		
 		return true;
 	}
