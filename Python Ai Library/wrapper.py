@@ -2,6 +2,9 @@ import sys
 import socket
 import json
 from io import StringIO
+from importlib import import_module
+from game_wrapper import GameWrapper
+from pprint import pprint
 
 URL = "127.0.0.1"
 PORT = 1337
@@ -40,50 +43,60 @@ class Rerouted_Output():
 		self.buffer.truncate()
 
 
-class AI:
-	output = Rerouted_Output()
-
-	def __init__(self, properties):
-		print(properties)
-		self._props = properties_to_dict(properties)
-		print(self._props)
+class AIWrapper:
+	def __init__(self, cls, properties):
+		self.props = properties
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.ai = cls()
+		self.output = Rerouted_Output()
 
-	def _connect(self):
-		addr = (self._props["turnierserver.worker.host"], self._props["turnierserver.worker.server.port"])
+	def connect(self):
+		addr = (self.props["turnierserver.worker.host"], self.props["turnierserver.worker.server.port"])
 		self.sock.connect(addr)
 		print("Sende handschütteln")
-		self._send(self._props["turnierserver.worker.server.aichar"] + self._props["turnierserver.ai.uuid"])
+		self.send(self.props["turnierserver.worker.server.aichar"] + self.props["turnierserver.ai.uuid"])
 
-	def _send(self, s):
+	def send(self, s):
 		self.sock.sendall(bytes(s + "\n", "utf-8"))
 
-	def _run(self):
-		self._connect()
+	def run(self):
+		self.connect()
 		while True:
 			r = self.sock.recv(1024*1024).decode("utf-8")
 			print("Empfangen:", r)
 			updates = json.loads(r)
-			print("Geparsed:", updates)
+			pprint("Geparsed:", updates)
 			resp = self.update(self.getState(updates))
-			print("Antwort:", resp)
+			pprint("Antwort:", resp)
 			if resp:
-				self._send(json.dumps(resp))
+				self.send(json.dumps(resp))
 				print("Gesendet.")
 
-	def surrender(self):
-		"""ACHTUNG: Mit dieser Methode gibt die KI auf"""
-		self._send("SURRENDER")
-		raise RuntimeError("SURRENDERED")
+	def getState(self, updates):
+		"""In dieser Methode werden die empfangenen Daten zu einem Zustand verarbeitet."""
+		raise NotImplementedError()
 
 	def update(self, zustand):
 		"""Diese Methode wird aufgerufen, wenn der Server ein Zustands-Update sendet."""
-		pass
+		raise NotImplementedError()
+
+	def surrender(self):
+		"""ACHTUNG: Mit dieser Methode gibt die KI auf"""
+		self.send("SURRENDER")
+		raise RuntimeError("SURRENDERED")
+
 
 if __name__ == '__main__':
 	print(sys.argv)
 	# __name__ aifile propfile
 	with open(sys.argv[2], "r") as f:
-		prop = f.read()
-	ai = AI(prop)
-	ai._run()
+		props = properties_to_dict(f.read())
+	print("properties:")
+	pprint(props)
+	if not "filename" in props:
+		raise RuntimeError("No filename specified.")
+	usermodule = import_module(props["filename"])
+	print(usermodule)
+	pprint(vars(usermodule))
+	gw = GameWrapper(usermodule.AI, props)
+	gw.run()

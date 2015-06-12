@@ -37,11 +37,6 @@ function add_pane(name) {
 		}
 	});
 
-	// $("#step_slider_"+name).change(function (e) {
-	// 	d.step = parseInt($(e.target).val());
-	// 	draw_panes();
-	// });
-
 	panes_lookup[d.aiID] = panes.length;
 	panes.push(d);
 	return d;
