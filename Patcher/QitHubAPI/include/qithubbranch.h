@@ -39,6 +39,9 @@ public:
 	
 	QitHubCommit latestCommit ();
 	
+public slots:
+	void update() { _info = QJsonObject(); }
+	
 protected:
 	QJsonObject info();
 	

@@ -40,7 +40,10 @@ QJsonObject QitHubBranch::info()
 	_info = json.object();
 	
 	if (reply->error() != QNetworkReply::NoError)
+	{
 		fprintf(stderr, "Fehler beim Herunterladen von Informationen für %s/%s [%s]: %s\n", qPrintable(repo().user()), qPrintable(repo().repo()), qPrintable(name()), qPrintable(_info.value("message").toString(reply->errorString())));
+		_info = QJsonObject();
+	}
 	
 	delete reply;
 	return _info;
