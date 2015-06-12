@@ -33,9 +33,10 @@ public class Settings {
 		} else {
 			prop.setProperty("theme", cStart.btTheme.isSelected() + "");
 			prop.setProperty("fontSize", cStart.slFontSize.getValue() + "");
-			prop.setProperty("scrollSpeed", cStart.slScrollSpeed.getValue() + "");
 			prop.setProperty("pythonInterpreter", cStart.tbPythonInterpreter.getText());
 			prop.setProperty("cplusplusCompiler", cStart.tbCplusplusCompiler.getText());
+			prop.setProperty("cplusplusCompilerType", cStart.cbCplusplusCompilerType.getValue());
+			prop.setProperty("jdkHome", cStart.tbJDK.getText());
 			prop.setProperty("email", cStart.tbEmail.getText());
 		}
 		
@@ -92,9 +93,11 @@ public class Settings {
 			try {
 				cStart.btTheme.setSelected(Boolean.parseBoolean(prop.getProperty("theme")));
 				cStart.slFontSize.setValue(Double.parseDouble(prop.getProperty("fontSize")));
-				cStart.slScrollSpeed.setValue(Double.parseDouble(prop.getProperty("scrollSpeed")));
 				cStart.tbPythonInterpreter.setText(prop.getProperty("pythonInterpreter"));
 				cStart.tbCplusplusCompiler.setText(prop.getProperty("cplusplusCompiler"));
+				if (prop.getProperty("cplusplusCompilerType") != null)
+					cStart.cbCplusplusCompilerType.getSelectionModel().select(prop.getProperty("cplusplusCompilerType"));
+				cStart.tbJDK.setText(prop.getProperty("jdkHome"));
 				cStart.tbEmail.setText(prop.getProperty("email"));
 				
 			} catch (NullPointerException e) {

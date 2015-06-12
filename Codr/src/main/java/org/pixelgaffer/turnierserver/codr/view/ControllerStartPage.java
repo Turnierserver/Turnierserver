@@ -49,7 +49,6 @@ public class ControllerStartPage {
 	@FXML WebView wfNews;
 	@FXML VBox vbLogin;
 	@FXML GridPane gpLogin;
-	@FXML Label lbLogin;
 	@FXML HBox hbLogout;
 	@FXML public ChoiceBox<String> cbGameTypes;
 	@FXML Button btTryOnline;
@@ -61,9 +60,10 @@ public class ControllerStartPage {
 	
 	@FXML public ToggleButton btTheme;
 	@FXML public Slider slFontSize;
-	@FXML public Slider slScrollSpeed;
 	@FXML public TextField tbPythonInterpreter;
 	@FXML public TextField tbCplusplusCompiler;
+	@FXML public ChoiceBox<String> cbCplusplusCompilerType;
+	@FXML public TextField tbJDK;
 	
 	WebEngine webEngine;
 	
@@ -97,6 +97,11 @@ public class ControllerStartPage {
 		
 		cbGameTypes.setItems(MainApp.gametypes);
 		cbGameTypes.getSelectionModel().selectLast();
+
+		cbCplusplusCompilerType.getItems().add("gcc");
+		cbCplusplusCompilerType.getItems().add("clang");
+		cbCplusplusCompilerType.getItems().add("g++");
+		cbCplusplusCompilerType.getSelectionModel().select(0);
 		
 		tbPassword.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
 			@Override public void handle(KeyEvent event) {
@@ -159,11 +164,9 @@ public class ControllerStartPage {
 		updateL.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue) {
 				vbLogin.getChildren().clear();
-				vbLogin.getChildren().add(lbLogin);
 				vbLogin.getChildren().add(hbLogout);
 			} else {
 				vbLogin.getChildren().clear();
-				vbLogin.getChildren().add(lbLogin);
 				vbLogin.getChildren().add(gpLogin);
 			}
 			prLogin.setVisible(false);
@@ -282,6 +285,13 @@ public class ControllerStartPage {
 	}
 	
 	
+	@FXML void clickJDK() {
+		File result = Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner auswählen");
+		if (result != null)
+			tbJDK.setText(result.getPath());
+	}
+	
+	
 	void clickTheme(Boolean isSelected) {
 		if (isSelected) {
 			btTheme.setText("Dark");
@@ -303,4 +313,6 @@ public class ControllerStartPage {
 			}
 		}
 	}
+
+
 }
