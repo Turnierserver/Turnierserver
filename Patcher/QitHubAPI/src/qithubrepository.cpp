@@ -43,7 +43,7 @@ QitHubRepository::QitHubRepository(QitHubAPI *client, const QString &user, const
 
 QitHubBranch QitHubRepository::defaultBranch() const
 {
-	return QitHubBranch(api, *this, info.value("default_branch").toString());
+	return QitHubBranch(api, *this, QString::fromUtf8(info.value("default_branch").toVariant().toByteArray()));
 }
 
 QList<QitHubBranch> QitHubRepository::branches() const // muss paginated werden
@@ -66,7 +66,7 @@ QList<QitHubBranch> QitHubRepository::branches() const // muss paginated werden
 	for (int i = 0; i < branches.size(); i++)
 	{
 		QJsonObject branch = branches[i].toObject();
-		allBranches << QitHubBranch(api, *this, branch.value("name").toString());
+		allBranches << QitHubBranch(api, *this, QString::fromUtf8(branch.value("name").toVariant().toByteArray()));
 	}
 	
 	delete reply;
@@ -81,7 +81,7 @@ QList<QitHubCommit> QitHubRepository::commits() const // muss paginated werden
 	for (int i = 0; i < commits.size(); i++)
 	{
 		QJsonObject branch = commits[i].toObject();
-		allCommits << QitHubCommit(api, *this, branch.value("sha").toString());
+		allCommits << QitHubCommit(api, *this, QString::fromUtf8(branch.value("sha").toVariant().toByteArray()));
 	}
 	
 	return allCommits;

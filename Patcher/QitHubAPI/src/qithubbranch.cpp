@@ -49,5 +49,5 @@ QJsonObject QitHubBranch::info()
 QitHubCommit QitHubBranch::latestCommit()
 {
 	QJsonObject commit = info().value("commit").toObject();
-	return QitHubCommit(api, repo(), commit.value("sha").toString());
+	return QitHubCommit(api, repo(), QString::fromUtf8(commit.value("sha").toVariant().toByteArray()));
 }

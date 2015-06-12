@@ -35,7 +35,13 @@ int main(int argc, char *argv[])
 	
 	QCommandLineParser parser;
 	parser.addHelpOption();
-	parser.addPositionalArgument("config-file", "Die Konfigurationsdatei für den Patcher.", "[<config-file>]");
+	QCommandLineOption backendOption(QStringList() << "b" << "backend", "Wenn angegeben wird das Backend gestartet");
+	parser.addOption(backendOption);
+	QCommandLineOption workerOption(QStringList() << "w" << "worker", "Wenn angegeben wird die angegebene Anzahl an Workern gestartet", "Anzahl", "0");
+	parser.addOption(workerOption);
+	QCommandLineOption frontendOption(QStringList() << "f" << "frontend", "Wenn angegeben wird das Frontend gestartet.");
+	parser.addOption(frontendOption);
+	parser.addPositionalArgument("config-file", QString::fromUtf8("Die Konfigurationsdatei für den Patcher."), "[<config-file>]");
 	parser.process(app);
 	QStringList args = parser.positionalArguments();
 	

@@ -41,7 +41,7 @@ public:
 	bool isPrivate () const { return info.value("private").toBool(); }
 	bool isFork () const { return info.value("fork").toBool(); }
 	
-	QString description () const { return info.value("description").toString(); }
+	QString description () const { return QString::fromUtf8(info.value("description").toVariant().toByteArray()); }
 	
 	QitHubBranch defaultBranch () const;
 	QList<QitHubBranch> branches () const;

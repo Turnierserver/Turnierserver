@@ -54,7 +54,7 @@ QList<QitHubCommit> QitHubCommit::parentCommits()
 	QList<QitHubCommit> commits;
 	for (int i = 0; i < parents.size(); i++)
 	{
-		commits << QitHubCommit(api, repo(), parents[i].toObject().value("sha").toString());
+		commits << QitHubCommit(api, repo(), QString::fromUtf8(parents[i].toObject().value("sha").toVariant().toByteArray()));
 	}
 	return commits;
 }
@@ -67,7 +67,7 @@ QList<QitHubFile> QitHubCommit::modifiedFiles()
 	{
 		QJsonObject file = files[i].toObject();
 		// if (file.value("status").toString() == "modified") // würde nur modified, aber nicht added usw zurückgeben
-		modified << QitHubFile(api, *this, file.value("filename").toString());
+		modified << QitHubFile(api, *this, QString::fromUtf8(file.value("filename").toVariant().toByteArray()));
 	}
 	return modified;
 }
