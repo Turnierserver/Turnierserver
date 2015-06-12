@@ -38,21 +38,27 @@ public:
 	QString user () const { return _user; }
 	QString repo () const { return _repo; }
 	
-	bool isPrivate () const { return info.value("private").toBool(); }
-	bool isFork () const { return info.value("fork").toBool(); }
+	bool isPrivate () { return info().value("private").toBool(); }
+	bool isFork () { return info().value("fork").toBool(); }
 	
-	QString description () const { return QString::fromUtf8(info.value("description").toVariant().toByteArray()); }
+	QString description () { return QString::fromUtf8(info().value("description").toVariant().toByteArray()); }
 	
-	QitHubBranch defaultBranch () const;
-	QList<QitHubBranch> branches () const;
-	QList<QitHubCommit> commits () const;
+	QitHubBranch defaultBranch ();
+	QList<QitHubBranch> branches ();
+	QList<QitHubCommit> commits ();
+	
+public slots:
+	void update() { _info = QJsonObject(); }
+	
+protected:
+	QJsonObject info();
 	
 private:
 	QitHubAPI *api;
 	QString _user;
 	QString _repo;
 	
-	QJsonObject info;
+	QJsonObject _info;
 	
 };
 

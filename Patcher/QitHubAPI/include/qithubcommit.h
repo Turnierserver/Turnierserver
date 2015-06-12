@@ -41,6 +41,9 @@ public:
 	QList<QitHubCommit> parentCommits ();
 	QList<QitHubFile> modifiedFiles ();
 	
+public slots:
+	void update() { _info = QJsonObject(); }
+	
 protected:
 	QJsonObject info();
 	

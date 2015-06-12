@@ -29,24 +29,35 @@ QitHubRepository::QitHubRepository(QitHubAPI *client, const QString &user, const
 	, _user(user)
 	, _repo(repo)
 {
-	QNetworkRequest req = api->createRequest("/repos/" + user + "/" + repo);
+}
+
+QJsonObject QitHubRepository::info()
+{
+	if (!_info.isEmpty())
+		return _info;
+	
+	QNetworkRequest req = api->createRequest("/repos/" + user() + "/" + repo());
 	QNetworkReply *reply = api->sendGet(req);
 	
 	QJsonDocument json = QJsonDocument::fromJson(reply->readAll());
-	info = json.object();
+	_info = json.object();
 	
 	if (reply->error() != QNetworkReply::NoError)
-		fprintf(stderr, "Fehler beim Herunterladen von Informationen für %s/%s: %s\n", qPrintable(user), qPrintable(repo), qPrintable(info.value("message").toString(reply->errorString())));
+	{
+		fprintf(stderr, "Fehler beim Herunterladen von Informationen für %s/%s: %s\n", qPrintable(user()), qPrintable(repo()), qPrintable(_info.value("message").toString(reply->errorString())));
+		_info = QJsonObject();
+	}
 	
 	delete reply;
+	return _info;
 }
 
-QitHubBranch QitHubRepository::defaultBranch() const
+QitHubBranch QitHubRepository::defaultBranch()
 {
-	return QitHubBranch(api, *this, QString::fromUtf8(info.value("default_branch").toVariant().toByteArray()));
+	return QitHubBranch(api, *this, QString::fromUtf8(info().value("default_branch").toVariant().toByteArray()));
 }
 
-QList<QitHubBranch> QitHubRepository::branches() const // muss paginated werden
+QList<QitHubBranch> QitHubRepository::branches() // muss paginated werden
 {
 	QNetworkRequest req = api->createRequest("/repos/" + user() + "/" + repo() + "/branches");
 	QNetworkReply *reply = api->sendGet(req);
@@ -73,7 +84,7 @@ QList<QitHubBranch> QitHubRepository::branches() const // muss paginated werden
 	return allBranches;
 }
 
-QList<QitHubCommit> QitHubRepository::commits() const // muss paginated werden
+QList<QitHubCommit> QitHubRepository::commits() // muss paginated werden
 {
 	QJsonArray commits = api->sendPaginetedGet("/repos/" + user() + "/" + repo() + "/commits");
 	QList<QitHubCommit> allCommits;
