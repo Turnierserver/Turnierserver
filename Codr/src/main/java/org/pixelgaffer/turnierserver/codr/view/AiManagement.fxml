@@ -13,11 +13,12 @@
    <children>
       <SplitPane dividerPositions="0.23497267759562843" prefHeight="700.0" prefWidth="1100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
-          <AnchorPane maxWidth="400.0" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+            <StackPane prefHeight="150.0" prefWidth="200.0">
                <children>
-                  <BorderPane layoutX="32.0" layoutY="222.0" prefHeight="698.0" prefWidth="323.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TreeView fx:id="tvFiles" prefWidth="200.0" />
+                  <BorderPane fx:id="bpAis" prefWidth="200.0">
                      <top>
-                        <AnchorPane prefHeight="41.0" prefWidth="323.0" BorderPane.alignment="CENTER">
+                        <AnchorPane prefWidth="200.0" BorderPane.alignment="CENTER">
                            <children>
                               <Button layoutX="258.0" mnemonicParsing="false" onAction="#clickNewAi" text="Neu" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                               <ChoiceBox fx:id="cbLanguage" layoutX="125.0" prefHeight="31.0" prefWidth="99.0" AnchorPane.rightAnchor="53.0" AnchorPane.topAnchor="0.0" />
@@ -29,11 +30,11 @@
                         </AnchorPane>
                      </top>
                      <center>
-                        <ListView fx:id="lvAis" onKeyTyped="#clickChangeAi" onMouseClicked="#clickChangeAi" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                        <ListView fx:id="lvAis" onKeyTyped="#clickChangeAi" onMouseClicked="#clickChangeAi" prefWidth="200.0" BorderPane.alignment="CENTER" />
                      </center>
                   </BorderPane>
                </children>
-            </AnchorPane>
+            </StackPane>
             <TabPane fx:id="tpCode" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab text="Info">

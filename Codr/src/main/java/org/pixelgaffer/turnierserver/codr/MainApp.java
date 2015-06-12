@@ -48,13 +48,13 @@ import org.pixelgaffer.turnierserver.codr.view.ControllerSubmission;
 
 public class MainApp extends Application {
 	
-	public Stage stage;
-	public ControllerRoot cRoot;
-	public ControllerStartPage cStart;
-	public ControllerAiManagement cAi;
-	public ControllerGameManagement cGame;
-	public ControllerRanking cRanking;
-	public ControllerSubmission cSubmission;
+	public static Stage stage;
+	public static ControllerRoot cRoot;
+	public static ControllerStartPage cStart;
+	public static ControllerAiManagement cAi;
+	public static ControllerGameManagement cGame;
+	public static ControllerRanking cRanking;
+	public static ControllerSubmission cSubmission;
 	
 	public static Settings settings;
 	

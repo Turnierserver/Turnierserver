@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javafx.scene.control.TreeItem;
+
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.codr.CodrAi.AiMode;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
@@ -42,6 +44,7 @@ public class Version {
 	public String compileOutput = "";
 	public String qualifyOutput = "";
 	public List<CodeEditor> files = new ArrayList<CodeEditor>();
+	public TreeItem<File> rootFile = null;
 	
 	
 	public Version(CodrAi p, int n, JSONObject json) {
@@ -142,14 +145,40 @@ public class Version {
 			ErrorLog.write("dies ist kein lesbares Objekt (findCode)");
 			return;
 		}
-		File srcDir = new File(Paths.versionSrc(this));
+//		File srcDir = new File(Paths.versionSrc(this));
 		
-		VersionVisitor visitor = new VersionVisitor(srcDir.toPath());
-		try {
-			Files.walkFileTree(srcDir.toPath(), visitor);
-			files = visitor.files;
-		} catch (IOException e) {
-			ErrorLog.write("Dateien der Version konnten nicht geladen werden.");
+		rootFile = new TreeItem<File>(new File(Paths.versionSrc(this)));
+		recursiveFileBuild(rootFile);
+		
+//		VersionVisitor visitor = new VersionVisitor(srcDir);
+//		try {
+//			Files.walkFileTree(srcDir.toPath(), visitor);
+//			files = visitor.files;
+//		} catch (IOException e) {
+//			ErrorLog.write("Dateien der Version konnten nicht geladen werden.");
+//		}
+	}
+	
+	
+	private void recursiveFileBuild(TreeItem<File> item){
+		File[] underFiles = item.getValue().listFiles();
+		
+		if (underFiles == null)
+			return;
+		
+		for (File file : underFiles){
+			if (file.getName().startsWith(".")) {
+				continue;
+			}
+			
+			TreeItem<File> actual = new TreeItem<File>(file); 
+			item.getChildren().add(actual);
+			if (file.isDirectory()){
+				recursiveFileBuild(actual);
+			}
+			else{
+				files.add(new CodeEditor(file));
+			}
 		}
 	}
 	
@@ -344,12 +373,12 @@ public class Version {
 	 */
 	public static class VersionVisitor extends SimpleFileVisitor<Path> {
 		
-		private final Path path;
+		public TreeItem<File> rootFile;
 		public List<CodeEditor> files = new ArrayList<CodeEditor>();
 		
 		
-		public VersionVisitor(Path _path) {
-			path = _path;
+		public VersionVisitor(File file) {
+			rootFile = new TreeItem<>(file);
 		}
 		
 		
