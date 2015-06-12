@@ -200,7 +200,7 @@ public class WebConnector {
 			}
 			return result;
 		} catch (IOException e) {
-			ErrorLog.write("Fehler bei der Abfrage des Loginstatuses: " + e.getLocalizedMessage());
+			ErrorLog.write("Fehler bei der Abfrage des Loginstatuses: " + e);
 			return false;
 		}
 	}
@@ -355,7 +355,7 @@ public class WebConnector {
 		try {
 			json = toString(sendGet("langs"));
 		} catch (IOException e) {
-			ErrorLog.write("Die Sprachen konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
+			ErrorLog.write("Die Sprachen konnten nicht heruntergeladen werden: " + e);
 		}
 		if (json == null) {
 			throw new IOException("Keine oder böse Antwort vom Server");
@@ -366,7 +366,7 @@ public class WebConnector {
 		try {
 			langsInFile = FileUtils.readLines(langsFile);
 		} catch (IOException e) {
-			ErrorLog.write("Konnte Sprachen nicht aus Datei lesen. Dies ist beim ersten Start zu erwarten: " + e.getLocalizedMessage());
+			ErrorLog.write("Konnte Sprachen nicht aus Datei lesen. Dies ist beim ersten Start zu erwarten: " + e);
 		}
 		
 		boolean newLangs = false;
@@ -416,7 +416,7 @@ public class WebConnector {
 		try {
 			json = toString(sendGet("gametypes"));
 		} catch (IOException e) {
-			ErrorLog.write("Die Spieltypen konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
+			ErrorLog.write("Die Spieltypen konnten nicht heruntergeladen werden: " + e);
 		}
 		if (json == null) {
 			throw new IOException("Keine oder böse Antwort vom Server");
@@ -428,7 +428,7 @@ public class WebConnector {
 		try {
 			fileLines = FileUtils.readLines(new File(Paths.gameTypesFile()));
 		} catch (IOException e) {
-			ErrorLog.write("Die Spieltypen konnten nicht aus der Datei gelesen werden: " + e.getLocalizedMessage());
+			ErrorLog.write("Die Spieltypen konnten nicht aus der Datei gelesen werden: " + e);
 			ErrorLog.write("Es werden nun alle Spieltypen geladen!");
 		}
 		
