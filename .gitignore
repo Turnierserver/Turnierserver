@@ -31,6 +31,10 @@ delombok/
 build-*/
 *.pro.user
 *.o
+*.so
+*.so.*
+# makefiles werden aktuell durch qmake generiert
+Makefile
 
 # Möglicherweise IntelliJ Zeugs
 .idea
