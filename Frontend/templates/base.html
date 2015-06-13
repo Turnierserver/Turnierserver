@@ -36,18 +36,18 @@
 			<div class="item"><button id="logout" class="ui green button">Ausloggen</button></div>
 			<script>
 				$("#logout").on("click", function() {
-					$.post("/api/logout").done(function() { window.location.href = "/" })
+					$.post("/api/logout").done(function() { window.location.href = "/"; });
 				});
 			</script>
 			{% else %}
 			<div class="item">
 				<div class="ui input">
-					<input id="email" type="text" placeholder="Email">
+					<input id="email" name="email" type="text" placeholder="Email">
 				</div>
 			</div>
 			<div class="item">
 				<div class="ui input">
-					<input id="password" type="password" placeholder="Passwort">
+					<input id="password" name="password" type="password" placeholder="Passwort">
 				</div>
 			</div>
 			<div class="item">
@@ -61,23 +61,23 @@
 			</div>
 			<script>
 				var f = function() {
-					console.log("Logging in...")
-					var pw = $("#password").val()
-					var email = $("#email").val()
-					var remember = $("#remember-me").prop("checked")
+					console.log("Logging in...");
+					var pw = $("#password").val();
+					var email = $("#email").val();
+					var remember = $("#remember-me").prop("checked");
 					$.post("/api/login", {email: email, password: pw, remember: remember}).done(function(data) {
-						console.log("Logged in.")
+						console.log("Logged in.");
 						location.reload();
 					}).fail(function(xhr, textStatus, errorThrown) {
-						console.log(xhr.responseText.error)
-						alert(JSON.parse(xhr.responseText).error)
-					})
+						console.log(xhr.responseText.error);
+						alert(JSON.parse(xhr.responseText).error);
+					});
 				}
 				$("#login").on("click", f)
 				$('#email, #password').keypress(function(event){
 					var keycode = (event.keyCode ? event.keyCode : event.which);
 						if(keycode == '13'){
-							f()
+							f();
 						}
 				});
 				$('#login').popup({

@@ -18,11 +18,6 @@ function add_pane(name) {
 		canvas: document.getElementById('canvas_'+name)
 	};
 	d.ctx = d.canvas.getContext('2d');
-
-	d.ctx.font = "75px serif";
-	d.ctx.textAlign = 'center';
-	d.ctx.textBaseline = 'middle';
-
 	d.aiID = $("#canvas_"+name).attr("aiID");
 
 	$("#step_slider_"+name).slider({
@@ -78,11 +73,11 @@ function drawCovered(ctx, c_x, c_y, c_sx, c_sy, edgesize) {
 }
 
 function drawFlagged(ctx, c_x, c_y, c_sx, c_sy, edgesize) {
-	ctx.fillStyle = "rgba(0, 255, 0, 0.75)";
+	ctx.fillStyle = "rgba(0, 255, 0, 0.8)";
 	ctx.beginPath();
 	ctx.moveTo(c_x + c_sx, c_y);
-	ctx.lineTo(c_x + c_sx, c_y + c_sx * (edgesize*2));
-	ctx.lineTo(c_x + c_sx * (1 - edgesize*2), c_y);
+	ctx.lineTo(c_x + c_sx, c_y + c_sx * (edgesize*3));
+	ctx.lineTo(c_x + c_sx * (1 - edgesize*3), c_y);
 	ctx.fill();
 }
 
@@ -100,6 +95,9 @@ function draw(pane) {
 	var c_sy = (SY/FIELD_SIZE);
 
 	var ctx = pane.ctx;
+	ctx.font = (SX*0.25) + "px serif";
+	ctx.textAlign = 'center';
+	ctx.textBaseline = 'middle';
 
 	var edgesize = 0.1;
 
