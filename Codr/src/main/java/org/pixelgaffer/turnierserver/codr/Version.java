@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.control.TreeItem;
 
 import org.json.JSONObject;
@@ -145,18 +148,11 @@ public class Version {
 			ErrorLog.write("dies ist kein lesbares Objekt (findCode)");
 			return;
 		}
-//		File srcDir = new File(Paths.versionSrc(this));
 		
+		files.clear();
 		rootFile = new TreeItem<File>(new File(Paths.versionSrc(this)));
+		rootFile.setExpanded(true);
 		recursiveFileBuild(rootFile);
-		
-//		VersionVisitor visitor = new VersionVisitor(srcDir);
-//		try {
-//			Files.walkFileTree(srcDir.toPath(), visitor);
-//			files = visitor.files;
-//		} catch (IOException e) {
-//			ErrorLog.write("Dateien der Version konnten nicht geladen werden.");
-//		}
 	}
 	
 	
@@ -171,7 +167,8 @@ public class Version {
 				continue;
 			}
 			
-			TreeItem<File> actual = new TreeItem<File>(file); 
+			TreeItem<File> actual = new TreeItem<File>(file);
+			actual.setExpanded(true);
 			item.getChildren().add(actual);
 			if (file.isDirectory()){
 				recursiveFileBuild(actual);

@@ -119,12 +119,11 @@ public class Dialog {
 	 * @return den eingegebenen Text
 	 */
 	public static String textInput(String text) {
-		return textInput(text, "Bitte Text eingeben");
+		return textInput(text, "Bitte Text eingeben", "");
 	}
-	
-	
-	public static String textInput(String text, String title) {
-		TextInputDialog dialog = new TextInputDialog("");
+
+	public static String textInput(String text, String title, String defaultText) {
+		TextInputDialog dialog = new TextInputDialog(defaultText);
 		dialog.setTitle(title);
 		dialog.setHeaderText(null);
 		dialog.setContentText(text);
@@ -134,6 +133,10 @@ public class Dialog {
 			return result.get();
 		}
 		return null;
+	}
+	
+	public static String textInput(String text, String title) {
+		return textInput(text, title, "");
 	}
 	
 	
