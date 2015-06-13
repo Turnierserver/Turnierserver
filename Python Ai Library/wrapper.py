@@ -4,6 +4,7 @@ import json
 from io import StringIO
 from importlib import import_module
 from pprint import pprint
+from copy import deepcopy
 
 def properties_to_dict(s):
 	d = {}
@@ -32,7 +33,9 @@ class Rerouted_Output():
 		self.buffer.write = new_write
 
 	def read(self):
-		return self.buffer.getvalue()
+		buf = self.buffer.getvalue()
+		self.clear()
+		return buf
 
 	def clear(self):
 		self.buffer.seek(0)
@@ -67,10 +70,11 @@ class AIWrapper:
 			pprint(updates)
 			resp = self.update(self.getState(updates))
 			print("Antwort:")
-			pprint(resp)
-			if resp:
-				self.send(json.dumps(resp))
-				print("Gesendet.")
+			fakeresp = deepcopy(resp)
+			self.del_output(fakeresp)
+			pprint(fakeresp)
+			resp[list(resp.keys())[0]]["output"] += self.output.read()
+			self.send(json.dumps(resp))
 
 	def getState(self, updates):
 		"""In dieser Methode werden die empfangenen Daten zu einem Zustand verarbeitet."""
@@ -84,6 +88,10 @@ class AIWrapper:
 		"""ACHTUNG: Mit dieser Methode gibt die KI auf"""
 		self.send("SURRENDER")
 		raise RuntimeError("SURRENDERED")
+
+	def del_output(self, d):
+		"""Diese Methode nimmt eine Antwort und entfernt das Output, um sie anzuzeigen."""
+		raise NotImplementedError()
 
 
 if __name__ == '__main__':

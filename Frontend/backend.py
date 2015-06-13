@@ -64,12 +64,12 @@ class Backend(threading.Thread):
 		timed_out = 0
 		char_before_timeout = None
 		while True:
-			resp = backend.lock_for_req(reqid, timeout=2)
+			resp = backend.lock_for_req(reqid, timeout=1)
 			b_req = backend.request(reqid)
 			if not resp:
 				yield (".", "log")
 				timed_out += 1
-				if timed_out > 50:
+				if timed_out > 60:
 					yield ("\nDas Backend sendet nichts.", "log")
 					yield ("\nVersuch es nochmal.", "log")
 					yield ("Das Backend sendet nichts.", "error")
