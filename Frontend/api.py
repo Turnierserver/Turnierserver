@@ -58,6 +58,8 @@ rate_limit_dict = defaultdict(lambda: [0, 9999])
 def rate_limited(f):
 	@wraps(f)
 	def wrapper(*args, **kwargs):
+		if current_user.admin:
+			return f(*args, **kwargs)
 		rate, per = 100, 30*60
 		current = timestamp()
 		time_passed = current - rate_limit_dict[current_user.id][0]
