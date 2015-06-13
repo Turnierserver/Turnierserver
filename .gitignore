@@ -40,7 +40,6 @@ Makefile
 .idea
 *.iml
 META-INF
-Frontend/migrations
 Frontend/tmp
 
 # anderer müll
