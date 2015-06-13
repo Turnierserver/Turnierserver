@@ -38,6 +38,6 @@ do
 	cd ../..
 done
 
-echo -e "#!/bin/sh\nif [ \$UID != 0 ]; then\n  echo Die Sandbox benötigt root-Rechte\n  echo \"su -c '\$0 \${@}'\"\n  su -c \"\$0 \${@}\"\n  exit \$?\nfi\nPATH=\`dirname \$0\`:\$PATH\nsandboxd \${@}" > build/sandbox.sh
+echo -e "#!/bin/sh\nif [ \$UID != 0 ]; then\n  echo Die Sandbox benötigt root-Rechte\n  echo \"sudo '\$0 \${@}'\"\n  sudo \"\$0 \${@}\"\n  exit \$?\nfi\nPATH=\`dirname \$0\`:\$PATH\nsandboxd \${@}" > build/sandbox.sh
 
 chmod +x build/*.sh
