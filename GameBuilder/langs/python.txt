@@ -1,0 +1,3 @@
+extends default
+
+for FILES as FILE deploy: upload "${SOURCES}/${FILE}" to "/api/upload_game_libs/${GAMEID}/Python"

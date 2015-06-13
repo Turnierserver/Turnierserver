@@ -4,5 +4,6 @@
 		<file alias="java">java.txt</file>
         <file alias="javadef">javadef.txt</file>
 		<file alias="logic">logic.txt</file>
+		<file alias="python">python.txt</file>
     </qresource>
 </RCC>
