@@ -33,7 +33,8 @@ DISTFILES += \
     examples/game.txt \
     langs/logic.txt \
 	langs/java.txt \
-    langs/javadef.txt
+    langs/javadef.txt \
+    langs/python.txt
 
 RESOURCES += \
     langs/langs.qrc \
