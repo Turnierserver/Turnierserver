@@ -150,7 +150,10 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 		}
 		if(result.changes != null) {
 			try {
-				sendToAi(result.changes, ai);
+				BuilderSolverChange<Object> change = new BuilderSolverChange<>();
+				change.change = result.changes;
+				change.building = building;
+				sendToAi(change, ai);
 				getUserObject(ai).startCalculationTimer(10);
 			} catch (IOException e) {
 				logger.severe("Die Antwort konnte nicht gesendet werden, die AI wird nun Automatisch verlieren");
