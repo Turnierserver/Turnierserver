@@ -10,8 +10,9 @@ import time
 import zipfile
 import tempfile
 from pprint import pprint
+from collections import defaultdict
 
-from database import AI, User, Game, Lang, GameType, db, populate, ftp, Game_inprogress
+from database import AI, User, Game, Lang, GameType, db, populate, ftp, Game_inprogress, timestamp
 from backend import backend
 from commons import authenticated, cache, CommonErrors
 from _cfg import env
@@ -52,7 +53,24 @@ def admin_required(f):
 		return CommonErrors.NO_ACCESS
 	return wrapper
 
+rate_limit_dict = defaultdict(lambda: [0, 9999])
 
+def rate_limited(f):
+	@wraps(f)
+	def wrapper(*args, **kwargs):
+		rate, per = 100, 30*60
+		current = timestamp()
+		time_passed = current - rate_limit_dict[current_user.id][0]
+		rate_limit_dict[current_user.id][0] = current
+		rate_limit_dict[current_user.id][1] += time_passed * (rate/per)
+		if rate_limit_dict[current_user.id][1] > rate:
+			rate_limit_dict[current_user.id][1] = rate
+		if rate_limit_dict[current_user.id][1] < 1.0:
+			return {"error": "Too many requests."}, 419
+		else:
+			rate_limit_dict[current_user.id][1] -= 1
+			return f(*args, **kwargs)
+	return wrapper
 
 login_manager = LoginManager()
 @login_manager.user_loader
@@ -591,6 +609,7 @@ def api_ai_delete(id):
 
 @api.route("/ai/<int:id>/compile", methods=["GET"])
 @authenticated
+@rate_limited
 @sse_stream
 def api_ai_compile(id):
 	ai = AI.query.get(id)
@@ -842,6 +861,7 @@ def ai_download_zip(id, version_id):
 @api.route("/games/start", methods=["POST"])
 @json_out
 @authenticated
+@rate_limited
 def start_game():
 	if not 'ai[]' in request.form:
 		return CommonErrors.INVALID_ID
@@ -916,11 +936,6 @@ def game_list_sse():
 		try:
 			update = q.get(timeout=15)
 			d = backend.request(update["requestid"])
-			print("------SSE------")
-			pprint(update)
-			print("------SSE------")
-			pprint(d)
-			print("------SSE------")
 
 			if "status" in update:
 				if update["status"] == "processed":
