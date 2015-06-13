@@ -40,20 +40,20 @@ var editor = ace.edit("editor");
 editor.getSession().setMode("ace/mode/text");
 editor.setReadOnly(true);
 document.getElementById('editor').style.fontSize='16px';
-editor.$blockScrolling = Infinity
+editor.$blockScrolling = Infinity;
 
 {% if compiling %}
-$("#button-dimmer").dimmer("show")
+$("#button-dimmer").dimmer("show");
 {% else %}
-$("#log-dimmer").dimmer("show")
+$("#log-dimmer").dimmer("show");
 {% endif %}
 
 
 $("#button").on("click", function() {
-	$("#button-dimmer").dimmer("show")
-	$("#log-dimmer").dimmer("hide")
-	$("#button").addClass("disabled")
-	compile()
+	$("#button-dimmer").dimmer("show");
+	$("#log-dimmer").dimmer("hide");
+	$("#button").addClass("disabled");
+	compile();
 })
 
 function compile() {
@@ -63,37 +63,39 @@ function compile() {
 		console.log(e.data);
 	};
 	evtSrc.onerror = function () {
-		console.log("SSE Err")
-		evtSrc.close()
+		console.log("SSE Err");
+		evtSrc.close();
 	};
 
 	evtSrc.addEventListener("error", function(e) {
-		if (e.data != undefined) {
-			console.log("error:", e.data)
-			alert(e.data)
+		if (e.data !== undefined) {
+			console.log("error:", e.data);
+			alert(e.data);
+			$("#button-dimmer").dimmer("hide");
+			$("#button").removeClass("disabled");
 		}
-	})
+	});
 
 	evtSrc.addEventListener("log", function(e) {
-		console.log("log:", e.data)
-		editor.setValue(editor.getValue() + e.data, 1)
-		editor.gotoPageDown()
-	})
+		console.log("log:", e.data);
+		editor.setValue(editor.getValue() + e.data, 1);
+		editor.gotoPageDown();
+	});
 
 	evtSrc.addEventListener("set_text", function(e) {
-		console.log("set_text:", e.data)
-		editor.setValue(e.data, 1)
-		editor.gotoPageDown()
-	})
+		console.log("set_text:", e.data);
+		editor.setValue(e.data, 1);
+		editor.gotoPageDown();
+	});
 
 
 	evtSrc.addEventListener("stream_stopped", function (e) {
 		console.log(e);
-		console.log("stream_stopped")
-		evtSrc.close()
-		$("#button-dimmer").dimmer("hide")
-		$("#button").removeClass("disabled")
-	})
+		console.log("stream_stopped");
+		evtSrc.close();
+		$("#button-dimmer").dimmer("hide");
+		$("#button").removeClass("disabled");
+	});
 }
 
 </script>

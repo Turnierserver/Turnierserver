@@ -29,6 +29,7 @@
 
 		<div class="divider"></div>
 		<button id="save" class="ui basic mini {% if readonly %}disabled{% endif %} button" data-content="Du kannst auch speichern, indem du Ctrl + S drückst.">speichern</button>
+		<a id="compile" class="ui basic mini {% if readonly %}disabled{% endif %} button" href="{{url_for("authenticated.compile_ai", id=ai.id)}}">Kompilieren</a>
 	</div>
 	<div id="editor">{{ code }}</div>
 
