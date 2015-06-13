@@ -4,8 +4,6 @@ var CELL_TYPE = {
 	BOMB: "BOMB"
 };
 
-var FIELD_SIZE = 3;
-
 var panes = [];
 var panes_lookup = {};
 
@@ -88,22 +86,24 @@ function draw(pane) {
 	pane.canvas.width = $("#canvas_" + pane.name).width();
 	pane.canvas.height = $("#canvas_" + pane.name).height();
 
+
+	if (pane.data.length < 1) {return;}
+	var d = pane.data[pane.step];
+
 	var SX = pane.canvas.width;
 	var SY = pane.canvas.height;
+
+	var FIELD_SIZE = d.field.length;
 
 	var c_sx = (SX/FIELD_SIZE);
 	var c_sy = (SY/FIELD_SIZE);
 
 	var ctx = pane.ctx;
-	ctx.font = (SX*0.25) + "px serif";
+	ctx.font = (SX/FIELD_SIZE) + "px serif";
 	ctx.textAlign = 'center';
 	ctx.textBaseline = 'middle';
 
 	var edgesize = 0.1;
-
-	if (pane.data.length < 1) {return;}
-
-	var d = pane.data[pane.step];
 
 	for (var x = FIELD_SIZE - 1; x >= 0; x--) {
 		for (var y = FIELD_SIZE - 1; y >= 0; y--) {
