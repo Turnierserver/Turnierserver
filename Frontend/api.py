@@ -916,11 +916,6 @@ def game_list_sse():
 		try:
 			update = q.get(timeout=15)
 			d = backend.request(update["requestid"])
-			print("------SSE------")
-			pprint(update)
-			print("------SSE------")
-			pprint(d)
-			print("------SSE------")
 
 			if "status" in update:
 				if update["status"] == "processed":

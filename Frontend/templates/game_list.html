@@ -9,17 +9,13 @@
 			{{ game.ai0.name }}
 		</a>
 	</td>
-	<td class="left aligned">
-		1337
-	</td>
+	<td class="left aligned"></td>
 	<td class="center aligned">
 		<a id="link" class="content" href="{{url_for("anonymous.inprogress_game", id=game.id)}}">
 			<div class="header" id="progress">{% if game.inqueue %}In Warteschlange{% else %}{{ game.status }}{% endif %}</div>
 		</a>
 	</td>
-	<td class="right aligned">
-		1337
-	</td>
+	<td class="right aligned"></td>
 	<td class="right aligned">
 		<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai1.id)}}">
 			{{ game.ai1.name }}
@@ -54,7 +50,7 @@
 				</a>
 			</td>
 			<td class="left aligned">
-				1337
+				{{ game.ai_assocs[0].score }}
 			</td>
 			<td class="center aligned">
 				<a class="content" href="{{url_for("anonymous.game", id=game.id)}}">
@@ -62,7 +58,7 @@
 				</a>
 			</td>
 			<td class="right aligned">
-				1337
+				{{ game.ai_assocs[1].score }}
 			</td>
 			<td class="right aligned">
 				<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[1].ai.id)}}">
