@@ -4,16 +4,7 @@ package org.pixelgaffer.turnierserver.codr.view;
 import java.io.File;
 import java.io.IOException;
 
-import net.lingala.zip4j.exception.ZipException;
-
-import org.pixelgaffer.turnierserver.codr.*;
-import org.pixelgaffer.turnierserver.codr.CodrAi.AiMode;
-import org.pixelgaffer.turnierserver.codr.CodrAi.NewVersionType;
-import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
-import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
-import org.pixelgaffer.turnierserver.codr.utilities.Paths;
-import org.pixelgaffer.turnierserver.codr.utilities.Resources;
+import javax.swing.event.DocumentEvent.EventType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
@@ -21,12 +12,39 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeView;
+import javafx.scene.control.TreeView.EditEvent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.web.WebView;
+import javafx.util.Callback;
+import net.lingala.zip4j.exception.ZipException;
+
+import org.pixelgaffer.turnierserver.codr.CodeEditor;
+import org.pixelgaffer.turnierserver.codr.CodrAi;
+import org.pixelgaffer.turnierserver.codr.CodrAi.AiMode;
+import org.pixelgaffer.turnierserver.codr.CodrAi.NewVersionType;
+import org.pixelgaffer.turnierserver.codr.MainApp;
+import org.pixelgaffer.turnierserver.codr.Version;
+import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
+import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
+import org.pixelgaffer.turnierserver.codr.utilities.Paths;
+import org.pixelgaffer.turnierserver.codr.utilities.Resources;
 
 
 
@@ -245,8 +263,32 @@ public class ControllerAiManagement {
 	 * Lädt mithilfe der CodeEditoren der anzuzeigenden Version alle Dateien der Version in die Tab-Leiste
 	 */
 	private void setVersionTabs() {
+		version.findCode();
 		
 		tvFiles.setRoot(version.rootFile);
+		
+		tvFiles.setEditable(true);
+		tvFiles.setCellFactory(new Callback<TreeView<File>, TreeCell<File>>() {
+			@Override public TreeCell<File> call(TreeView<File> p) {
+				return new TreeFileCell();
+			}
+		});
+//		tvFiles.getRoot().graphicProperty().addListener((observableValue, oldValue, newValue) -> {
+//			System.out.println(newValue);
+//		});
+//		tvFiles.addEventHandler(EventType.EDIT_COMMIT_EVENT, new EventHandler() {
+//			@Override public void handle(Event event) {
+//				if (event.getClass() == new EditEvent(tvFiles, null, null, event, event).getClass())
+//				System.out.println("aösdflj");
+//			}
+//		});
+		
+		tvFiles.setOnEditCommit(new EventHandler<EditEvent<File>>() {
+			@Override public void handle(EditEvent<File> event) {
+				System.out.println("adaödsklf");
+				setVersionTabs();
+			}
+	    });
 		
 		tpCode.getTabs().clear();
 		tpCode.getTabs().add(infoTab);
