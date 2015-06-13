@@ -72,7 +72,7 @@ Gegen:
 		$("#challenge").addClass('disabled');
 		$.post("/api/games/start", {"ai": ais}).done(function(data) {
 			console.log("Challenge started.");
-			setTimeout(function(){ location.href = "/game_list"; }, 250);
+			setTimeout(function(){ location.href = "/game_list"; }, 500);
 		}).fail(function(xhr, textStatus, errorThrown) {
 			console.log(xhr.responseText.error);
 			alert(JSON.parse(xhr.responseText).error);

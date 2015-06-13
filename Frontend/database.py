@@ -246,6 +246,7 @@ class AI_Game_Assoc(db.Model):
 	game = db.relationship("Game", cascade="all, delete, delete-orphan", single_parent=True)
 	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'))
 	ai = db.relationship("AI")
+	score = db.Column(db.Integer)
 	#role_id = db.Column(db.Integer, db.ForeignKey('t_gametyperoles.id'), primary_key=True)
 	#role = db.relationship("GameTypeRole", backref="assocs")
 
@@ -518,6 +519,11 @@ class Game(db.Model):
 		db.session.add(g)
 		db.session.commit()
 		g.ai_assocs = [AI_Game_Assoc(game_id=g.id, ai_id=ai.id) for ai in ais]
+		db.session.add(g)
+		db.session.commit()
+		for ai, score in d["scores"].items():
+			ai = AI.query.get(int(ai.split("v")[0]))
+			AI_Game_Assoc.query.filter(AI_Game_Assoc.game == g).filter(AI_Game_Assoc.ai == ai).one().score = score
 		db.session.add(g)
 		db.session.commit()
 		return g

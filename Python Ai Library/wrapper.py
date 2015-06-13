@@ -64,9 +64,8 @@ class AIWrapper:
 			r = self.sock.recv(1024*1024).decode("utf-8")
 			if not r or r == "\n":
 				continue
-			print("Empfangen:", r)
 			updates = json.loads(r)
-			print("Geparsed:")
+			print("Empfangen:")
 			pprint(updates)
 			resp = self.update(self.getState(updates))
 			print("Antwort:")

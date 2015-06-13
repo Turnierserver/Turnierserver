@@ -213,8 +213,8 @@ class Backend(threading.Thread):
 				continue
 			if not "status" in r:
 				continue
-			if not r["status"] in ["processed", "started"]:
-				continue
+			#if not r["status"] in ["processed", "started"]:
+			#	continue
 
 			if "success" in r:
 				continue
@@ -223,7 +223,7 @@ class Backend(threading.Thread):
 				id=r["requestid"],
 				ai0=r["ai0"],
 				ai1=r["ai1"],
-				status="angefangen...",
+				status="## Status?...",
 				inqueue=r["status"] == "processed"
 			))
 		return games
