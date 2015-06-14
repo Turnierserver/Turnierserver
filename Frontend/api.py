@@ -914,8 +914,8 @@ def start_game():
 	if not any([current_user.can_access(ai) for ai in ais]):
 		return CommonErrors.NO_ACCESS
 
-	if not all([ai.lastest_version().compiled for ai in ais]):
-		return {"error": "All AIs have to be compiled"}, 400
+	if not all([ai.lastest_qualified_version() for ai in ais]):
+		return {"error": "All AIs have to be qualified"}, 400
 
 	backend.request_game(ais)
 
