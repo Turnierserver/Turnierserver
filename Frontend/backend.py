@@ -6,7 +6,7 @@ from activityfeed import Activity
 import threading
 from queue import Queue, Empty
 from weakref import WeakSet
-from database import db, Game
+from database import db, Game, AI
 
 from pprint import pprint
 
@@ -133,6 +133,11 @@ class Backend(threading.Thread):
 		self.requests[reqid] = d
 		self.send_dict(d)
 		self.requests[reqid]["queue"] = Queue()
+		self.requests[reqid]["queues"] = WeakSet()
+		self.requests[reqid]["ai0"] = ai
+		self.requests[reqid]["ai1"] = AI.query.get(-ai.type.id)
+		self.requests[reqid]["ai_objs"] = [ai, AI.query.get(-ai.type.id)]
+		self.requests[reqid]["states"] = []
 		Activity("Backend[{}]: Quali-Spiel mit '{}' gestartet".format(reqid, ai.name))
 		return reqid
 
@@ -164,8 +169,8 @@ class Backend(threading.Thread):
 		self.requests[reqid].update(d)
 		self.requests[reqid]["queue"].put(d)
 
-		if self.requests[reqid]["action"] == "start":
-			if "success" in d:
+		if self.requests[reqid]["action"] in ["start", "qualify"]:
+			if "success" in d and self.requests[reqid]["action"] == "start":
 				if not self.app:
 					raise RuntimeError("Spiel vor verbindung mit App")
 				with self.app.app_context():
@@ -246,6 +251,8 @@ class Backend(threading.Thread):
 				d = self.request(id)
 				if "data" in update:
 					yield update["data"], "state"
+				elif "success" in update:
+					yield update, "success"
 				else:
 					print("no data in frame.", update)
 				if "finished_game_obj" in d:
