@@ -144,16 +144,26 @@ def ais_challenge():
 	gametype = GameType.query.first()
 	## current gametype
 
-	# own = current_user.ai_list.filter(AI.type==gametype).order_by(AI.last_modified.desc()).all()
-	# aus irgend nem komischen grund funkioniert order_by bei der ai_list von current_user nicht
-	own = AI.query.filter(AI.user == current_user).filter(AI.type == gametype).filter(AI.id >= 0).order_by(AI.last_modified.desc()).all()
-	if len(own) < 1:
+	own_ais = AI.query.filter(AI.user == current_user).filter(AI.type == gametype).filter(AI.id >= 0).order_by(AI.last_modified.desc()).all()
+	if len(own_ais) < 1:
 		return error(403, body="Du hast nicht genug eigene KIs.")
-	all = AI.query.filter(AI.id >= 0).order_by(AI.id).all()
-	if len(all) < 1:
-		return error(403, body="Es gibt noch nicht genug AIs!")
+
+	own_ais = [ai for ai in own_ais if ai.lastest_version().qualified]
+
+	if len(own_ais) < 1:
+		return error(403, body="Du hast keine qualifizierten KIs.")
+
+	all_ais = AI.query.filter(AI.id >= 0).order_by(AI.id).all()
+	if len(all_ais) < 2:
+		return error(403, body="Es gibt noch nicht genug KIs.")
+
+	print(all_ais)
+	all_ais = [ai for ai in all_ais if ai.lastest_qualified_version()]
+	print(all_ais)
+	if len(all_ais) < 2:
+		return error(403, body="Es gibt nicht genug qualifizierte KIs.")
 	#roles = ["Rolle"+str(i) for i, r in enumerate(gametype.roles)]
-	return render_template("challenge.html", own=own, all=all, ownfirst=own[0], allfirst=all[0])
+	return render_template("challenge.html", own=own_ais, all=all_ais, ownfirst=own_ais[0], allfirst=all_ais[0])
 
 
 @authenticated_blueprint.route("/activityfeed")

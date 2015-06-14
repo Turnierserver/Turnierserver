@@ -311,6 +311,11 @@ class AI(db.Model):
 			return self.new_version()
 		return self.version_list[-1]
 
+	def lastest_qualified_version(self):
+		for v in self.version_list[::-1]:
+			if v.qualified:
+				return v
+
 	def new_version(self):
 		try:
 			self.ftp_sync()
