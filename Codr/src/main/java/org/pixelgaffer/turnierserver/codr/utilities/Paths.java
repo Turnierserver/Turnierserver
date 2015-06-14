@@ -106,7 +106,7 @@ public class Paths {
 	 * Gibt den Pfad zu den Properties eines bestimmten Spiels zurück
 	 */
 	public static String gameProperties(CodrGame game) {
-		return game(game) + "/properties.txt";
+		return game(game) + "/gameProperties.txt";
 	}
 	
 	
@@ -142,7 +142,7 @@ public class Paths {
 	 * Gibt den Pfad zu den Properties eines Spielers zurück
 	 */
 	public static String aiProperties(CodrAi ai) {
-		return ai(ai) + "/properties.txt";
+		return ai(ai) + "/aiProperties.txt";
 	}
 	
 	
@@ -174,7 +174,7 @@ public class Paths {
 	 * Gibt den Pfad zu den Properties einer Version zurück
 	 */
 	public static String versionProperties(Version version) {
-		return version(version) + "/properties.txt";
+		return version(version) + "/versionProperties.txt";
 	}
 	
 	

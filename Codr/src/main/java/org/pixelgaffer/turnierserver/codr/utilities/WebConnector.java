@@ -563,11 +563,11 @@ public class WebConnector {
 				File target = new File(Paths.simplePlayer(gameName, file.getName()) + "/src");
 				FileUtils.deleteDirectory(new File(Paths.simplePlayer(gameName, file.getName())).getParentFile());
 				target.mkdirs();
-				File property = new File(Paths.simplePlayer(gameName, file.getName()) + "/..", "properties.txt");
+				File property = new File(Paths.simplePlayer(gameName, file.getName()) + "/..", "aiProperties.txt");
 				property.createNewFile();
 				FileUtils.write(property, "versionAmount=1" + System.lineSeparator() + "gametype=" + gameName + System.lineSeparator() + "description=Das ist der " + file.getName() + "-SimplePlayer"
 						+ System.lineSeparator() + "language=" + file.getName());
-				property = new File(property.getParent() + "/v0/properties.txt");
+				property = new File(property.getParent() + "/v0/versionProperties.txt");
 				property.createNewFile();
 				FileUtils.write(property, "uploaded=false" + System.lineSeparator() + "compileOutput=" + System.lineSeparator() + "qualifyOutput=" + System.lineSeparator() + "qualified=false"
 						+ System.lineSeparator() + "compiled=false" + System.lineSeparator() + "finished=false" + System.lineSeparator() + "executeCommand=");
