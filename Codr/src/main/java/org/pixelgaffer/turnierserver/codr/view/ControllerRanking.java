@@ -16,7 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 
-import org.pixelgaffer.turnierserver.codr.CodrAi;
+import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.CodrGame;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.Version;
@@ -33,13 +33,13 @@ public class ControllerRanking {
 	@FXML Label lbLanguage;
 	@FXML Button btChallenge;
 	@FXML TextArea tbDescription;
-	@FXML TableView<CodrAi> tvAis;
+	@FXML TableView<AiBase> tvAis;
 	@FXML TableView<Version> tvVersions;
 	@FXML TableView<CodrGame> tvGames;
 	@FXML ImageView imageView;
 	
 	MainApp mainApp;
-	CodrAi ai;
+	AiBase ai;
 	
 	
 	/**
@@ -57,27 +57,27 @@ public class ControllerRanking {
 		mainApp.loadOnlineAis();
 		tvAis.setItems(MainApp.onlineAis);
 		
-		TableColumn<CodrAi, Image> col0 = new TableColumn<CodrAi, Image>("Bild");
+		TableColumn<AiBase, Image> col0 = new TableColumn<AiBase, Image>("Bild");
 		col0.setMaxWidth(60);
 		col0.setMinWidth(60);
-		TableColumn<CodrAi, String> col1 = new TableColumn<CodrAi, String>("Name");
-		TableColumn<CodrAi, String> col2 = new TableColumn<CodrAi, String>("Besitzer");
-		TableColumn<CodrAi, String> col3 = new TableColumn<CodrAi, String>("ELO");
+		TableColumn<AiBase, String> col1 = new TableColumn<AiBase, String>("Name");
+		TableColumn<AiBase, String> col2 = new TableColumn<AiBase, String>("Besitzer");
+		TableColumn<AiBase, String> col3 = new TableColumn<AiBase, String>("ELO");
 		col3.setMaxWidth(60);
 		col3.setMinWidth(60);
 		
-		col0.setCellValueFactory(new Callback<CellDataFeatures<CodrAi, Image>, ObservableValue<Image>>() {
-			@Override public ObservableValue<Image> call(CellDataFeatures<CodrAi, Image> arg0) {
+		col0.setCellValueFactory(new Callback<CellDataFeatures<AiBase, Image>, ObservableValue<Image>>() {
+			@Override public ObservableValue<Image> call(CellDataFeatures<AiBase, Image> arg0) {
 				return arg0.getValue().getPicture();
 			}
 		});
-		col0.setCellFactory(new Callback<TableColumn<CodrAi, Image>, TableCell<CodrAi, Image>>() {
-			@Override public TableCell<CodrAi, Image> call(TableColumn<CodrAi, Image> param) {
+		col0.setCellFactory(new Callback<TableColumn<AiBase, Image>, TableCell<AiBase, Image>>() {
+			@Override public TableCell<AiBase, Image> call(TableColumn<AiBase, Image> param) {
 				final ImageView imageview = new ImageView();
 				imageview.setFitHeight(50);
 				imageview.setFitWidth(50);
 				
-				TableCell<CodrAi, Image> cell = new TableCell<CodrAi, Image>() {
+				TableCell<AiBase, Image> cell = new TableCell<AiBase, Image>() {
 					public void updateItem(Image item, boolean empty) {
 						if (item != null)
 							imageview.imageProperty().set(item);
@@ -88,18 +88,18 @@ public class ControllerRanking {
 			}
 			
 		});
-		col1.setCellValueFactory(new Callback<CellDataFeatures<CodrAi, String>, ObservableValue<String>>() {
-			public ObservableValue<String> call(CellDataFeatures<CodrAi, String> p) {
+		col1.setCellValueFactory(new Callback<CellDataFeatures<AiBase, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<AiBase, String> p) {
 				return new SimpleStringProperty(p.getValue().title);
 			}
 		});
-		col2.setCellValueFactory(new Callback<CellDataFeatures<CodrAi, String>, ObservableValue<String>>() {
-			public ObservableValue<String> call(CellDataFeatures<CodrAi, String> p) {
+		col2.setCellValueFactory(new Callback<CellDataFeatures<AiBase, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<AiBase, String> p) {
 				return new SimpleStringProperty(p.getValue().userName);
 			}
 		});
-		col3.setCellValueFactory(new Callback<CellDataFeatures<CodrAi, String>, ObservableValue<String>>() {
-			public ObservableValue<String> call(CellDataFeatures<CodrAi, String> p) {
+		col3.setCellValueFactory(new Callback<CellDataFeatures<AiBase, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<AiBase, String> p) {
 				return new SimpleStringProperty(p.getValue().elo);
 			}
 		});
@@ -179,7 +179,7 @@ public class ControllerRanking {
 	}
 	
 	
-	public void showAi(CodrAi aai) {
+	public void showAi(AiBase aai) {
 		ai = aai;
 		showAi();
 	}
@@ -249,7 +249,7 @@ public class ControllerRanking {
 	}
 	
 	
-	public void clickChangeAi(CodrAi selected) {
+	public void clickChangeAi(AiBase selected) {
 		showAi(selected);
 	}
 	

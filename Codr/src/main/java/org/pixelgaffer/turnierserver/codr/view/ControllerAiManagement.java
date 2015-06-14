@@ -34,9 +34,9 @@ import javafx.util.Callback;
 import net.lingala.zip4j.exception.ZipException;
 
 import org.pixelgaffer.turnierserver.codr.CodeEditor;
-import org.pixelgaffer.turnierserver.codr.CodrAi;
-import org.pixelgaffer.turnierserver.codr.CodrAi.AiMode;
-import org.pixelgaffer.turnierserver.codr.CodrAi.NewVersionType;
+import org.pixelgaffer.turnierserver.codr.AiBase;
+import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
+import org.pixelgaffer.turnierserver.codr.AiBase.NewVersionType;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
@@ -73,7 +73,7 @@ public class ControllerAiManagement {
 	@FXML TextArea tbDescription;
 	@FXML ChoiceBox<Version> cbVersion;
 	@FXML ChoiceBox<String> cbLanguage;
-	@FXML ListView<CodrAi> lvAis;
+	@FXML ListView<AiBase> lvAis;
 	@FXML ImageView image;
 	@FXML TabPane tpCode;
 	@FXML Hyperlink hlShowQualified;
@@ -86,7 +86,7 @@ public class ControllerAiManagement {
 	public Tab newFileTab;
 	
 	public MainApp mainApp;
-	public CodrAi ai;
+	public AiBase ai;
 	public Version version;
 	
 	
@@ -137,7 +137,7 @@ public class ControllerAiManagement {
 	 * @param p die KI
 	 * @param v die zugehörige Version
 	 */
-	public void showAi(CodrAi p, Version v) {
+	public void showAi(AiBase p, Version v) {
 		ai = p;
 		version = v;
 		showAi();
@@ -365,7 +365,7 @@ public class ControllerAiManagement {
 			}
 		}
 		
-		mainApp.aiManager.ais.add(new CodrAi(title, cbLanguage.getValue()));
+		mainApp.aiManager.ais.add(new AiBase(title, cbLanguage.getValue()));
 		lvAis.getSelectionModel().selectLast();
 	}
 	
@@ -540,7 +540,7 @@ public class ControllerAiManagement {
 				return;
 			}
 			
-			CodrAi result = Dialog.selectOwnVersion();
+			AiBase result = Dialog.selectOwnVersion();
 			if (result == null) {
 				return;
 			}

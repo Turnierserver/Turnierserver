@@ -67,8 +67,8 @@ public class MainApp extends Application {
 	public static ObservableList<String> gametypes = FXCollections.observableArrayList();
 	public static ObservableList<String> languages = FXCollections.observableArrayList();
 	
-	public static ObservableList<CodrAi> onlineAis = FXCollections.observableArrayList();
-	public static ObservableList<CodrAi> ownOnlineAis = FXCollections.observableArrayList();
+	public static ObservableList<AiBase> onlineAis = FXCollections.observableArrayList();
+	public static ObservableList<AiBase> ownOnlineAis = FXCollections.observableArrayList();
 	
 	
 	/**
@@ -196,15 +196,15 @@ public class MainApp extends Application {
 	
 	public void loadOnlineAis() {
 		
-		Task<ObservableList<CodrAi>> loadOnline = new Task<ObservableList<CodrAi>>() {
-			public ObservableList<CodrAi> call() {
-				ObservableList<CodrAi> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
+		Task<ObservableList<AiBase>> loadOnline = new Task<ObservableList<AiBase>>() {
+			public ObservableList<AiBase> call() {
+				ObservableList<AiBase> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
 				return newOnline;
 			}
 		};
-		Task<ObservableList<CodrAi>> loadOwn = new Task<ObservableList<CodrAi>>() {
-			public ObservableList<CodrAi> call() {
-				ObservableList<CodrAi> newOwnOnline = null;
+		Task<ObservableList<AiBase>> loadOwn = new Task<ObservableList<AiBase>>() {
+			public ObservableList<AiBase> call() {
+				ObservableList<AiBase> newOwnOnline = null;
 				if (MainApp.webConnector.isLoggedIn())		
 					newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
 				return newOwnOnline;
