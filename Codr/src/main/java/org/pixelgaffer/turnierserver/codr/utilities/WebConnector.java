@@ -240,7 +240,7 @@ public class WebConnector {
 		try {
 			return new Image(new ByteArrayInputStream(sendGet("ai/" + id + "/icon")));
 		} catch (NullPointerException e) {
-			ErrorLog.write("Konnte das Bild von " + id + " nicht empfangen.");
+			ErrorLog.write("Konnte das Bild der KI " + id + " nicht empfangen.");
 			return null;
 		}
 	}

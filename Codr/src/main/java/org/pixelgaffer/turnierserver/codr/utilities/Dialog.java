@@ -90,7 +90,7 @@ public class Dialog {
 	
 	
 	public static boolean error(String text, String title) {
-		ErrorLog.write("Dialog.ERROR:" + text);
+		ErrorLog.write("Dialog.ERROR: " + text);
 		return generalDialog(text, title, AlertType.ERROR);
 	}
 	
