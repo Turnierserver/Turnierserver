@@ -90,13 +90,13 @@ public class ControllerGameManagement {
 		btOffline.setSelected(true);
 		btOnline.setToggleGroup(group);
 		
-		mainApp.gameManager.loadGames();
+		MainApp.gameManager.loadGames();
 		showGame();
 
 		lvPlayer1.getItems().clear();
 		lvPlayer2.getItems().clear();
-		lvPlayer1.getItems().addAll(mainApp.aiManager.ais);
-		lvPlayer2.getItems().addAll(mainApp.aiManager.ais);
+		lvPlayer1.getItems().addAll(MainApp.aiManager.ais);
+		lvPlayer2.getItems().addAll(MainApp.aiManager.ais);
 	}
 	
 	
@@ -141,8 +141,8 @@ public class ControllerGameManagement {
 	@FXML void clickOffline() {
 		lvPlayer1.getItems().clear();
 		lvPlayer2.getItems().clear();
-		lvPlayer1.getItems().addAll(mainApp.aiManager.ais);
-		lvPlayer2.getItems().addAll(mainApp.aiManager.ais);
+		lvPlayer1.getItems().addAll(MainApp.aiManager.ais);
+		lvPlayer2.getItems().addAll(MainApp.aiManager.ais);
 		lvPlayer1.getSelectionModel().selectFirst();
 		lvPlayer2.getSelectionModel().select(1);
 	}

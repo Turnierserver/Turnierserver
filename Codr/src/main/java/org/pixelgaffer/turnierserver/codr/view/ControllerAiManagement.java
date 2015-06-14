@@ -30,6 +30,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
 import net.lingala.zip4j.exception.ZipException;
 
+import org.apache.commons.io.FileUtils;
 import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
 import org.pixelgaffer.turnierserver.codr.AiBase.NewVersionType;
@@ -41,6 +42,7 @@ import org.pixelgaffer.turnierserver.codr.CodeEditor;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
+import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
@@ -49,7 +51,8 @@ import org.pixelgaffer.turnierserver.codr.utilities.Resources;
 
 public class ControllerAiManagement {
 	
-	
+
+	@FXML Button btDelete;
 	@FXML Button btAbort;
 	@FXML Button btEdit;
 	@FXML Button btNewVersion;
@@ -127,7 +130,7 @@ public class ControllerAiManagement {
 		infoTab = tpCode.getTabs().get(0);
 		newFileTab = tpCode.getTabs().get(1);
 		
-		lvAis.setItems(mainApp.aiManager.ais);
+		lvAis.setItems(MainApp.aiManager.ais);
 		lvAis.getSelectionModel().selectFirst();
 	}
 	
@@ -154,6 +157,7 @@ public class ControllerAiManagement {
 		if (ai != null) {
 			lbName.setText(ai.title);
 			lbLanguage.setText("Sprache: " + ai.language.toString());
+			btDelete.setDisable(false);
 			tbDescription.setText(ai.description);
 			cbVersion.getSelectionModel().clearSelection();
 			cbVersion.setItems(ai.versions);
@@ -179,6 +183,7 @@ public class ControllerAiManagement {
 			lbName.setText("Name");
 			lbLanguage.setText("Sprache: ");
 			tbDescription.setText("Momentan ist kein Spieler ausgew�hlt");
+			btDelete.setDisable(true);
 			cbVersion.getSelectionModel().clearSelection();
 			ObservableList<Version> emptyFill = FXCollections.observableArrayList();
 			cbVersion.setItems(emptyFill);
@@ -242,6 +247,7 @@ public class ControllerAiManagement {
 		
 		if (ai != null) {
 			if (ai.mode == AiMode.simplePlayer) {
+				btDelete.setDisable(true);
 				btEdit.setDisable(true);
 				btNewVersion.setDisable(true);
 				btCompile.setDisable(true);
@@ -346,7 +352,22 @@ public class ControllerAiManagement {
 			}
 		}
 	}
-	
+
+	/**
+	 * Button: KI löschen
+	 */
+	@FXML void clickDelete() {
+		boolean result = Dialog.okAbort("KI wirklich löschen?", "Löschen");
+		if (result){
+			try {
+				FileUtils.deleteDirectory(new File(Paths.ai(ai)));
+				MainApp.aiManager.loadAis();
+				lvAis.getSelectionModel().selectFirst();
+			} catch (IOException e) {
+				ErrorLog.write("Die KI " + ai.title + " konnte nicht gelöscht werden.");
+			}
+		}
+	}
 	
 	/**
 	 * Button: Neue KI anlegen
@@ -366,7 +387,7 @@ public class ControllerAiManagement {
 			}
 		}
 		
-		mainApp.aiManager.ais.add(new AiSaved(title, cbLanguage.getValue()));
+		MainApp.aiManager.ais.add(new AiSaved(title, cbLanguage.getValue()));
 		lvAis.getSelectionModel().selectLast();
 	}
 	

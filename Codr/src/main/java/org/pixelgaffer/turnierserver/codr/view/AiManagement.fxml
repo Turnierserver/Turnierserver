@@ -96,6 +96,7 @@
                                           </AnchorPane>
                                        </children>
                                     </VBox>
+                                    <Button fx:id="btDelete" layoutX="225.0" layoutY="80.0" mnemonicParsing="false" onAction="#clickDelete" text="KI löschen" />
                                  </children>
                               </AnchorPane>
                            </children>
