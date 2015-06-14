@@ -28,11 +28,35 @@ public class TreeFileCell extends TreeCell<File> {
 	private ContextMenu fileMenu = new ContextMenu();
 	private ContextMenu folderMenu = new ContextMenu();
 	
+	private MenuItem addFileItem = new MenuItem("Neue Datei");
+	private MenuItem addFolderItem = new MenuItem("Neuer Ordner");
+	private MenuItem renameItem = new MenuItem("Umbenennen");
+	private MenuItem deleteItem = new MenuItem("Löschen");
+	private MenuItem renameItem2 = new MenuItem("Umbenennen");
+	private MenuItem deleteItem2 = new MenuItem("Löschen");
+	
 	
 	public TreeFileCell() {
 		
+		treeViewProperty().addListener((observableValue, oldValue, newValue) -> {
+			if (newValue != null && !newValue.editableProperty().get()) {
+				addFileItem.setDisable(true);
+				addFolderItem.setDisable(true);
+				renameItem.setDisable(true);
+				deleteItem.setDisable(true);
+				renameItem2.setDisable(true);
+				deleteItem2.setDisable(true);
+			} else {
+				addFileItem.setDisable(false);
+				addFolderItem.setDisable(false);
+				renameItem.setDisable(false);
+				deleteItem.setDisable(false);
+				renameItem2.setDisable(false);
+				deleteItem2.setDisable(false);
+			}
+		});
 		
-		MenuItem addFileItem = new MenuItem("Neue Datei");
+		
 		folderMenu.getItems().add(addFileItem);
 		addFileItem.setOnAction(new EventHandler() {
 			public void handle(Event t) {
@@ -40,7 +64,6 @@ public class TreeFileCell extends TreeCell<File> {
 			}
 		});
 		
-		MenuItem addFolderItem = new MenuItem("Neuer Ordner");
 		folderMenu.getItems().add(addFolderItem);
 		addFolderItem.setOnAction(new EventHandler() {
 			public void handle(Event t) {
@@ -48,7 +71,6 @@ public class TreeFileCell extends TreeCell<File> {
 			}
 		});
 		
-		MenuItem renameItem = new MenuItem("Umbenennen");
 		folderMenu.getItems().add(renameItem);
 		renameItem.setOnAction(new EventHandler() {
 			public void handle(Event t) {
@@ -56,7 +78,6 @@ public class TreeFileCell extends TreeCell<File> {
 			}
 		});
 		
-		MenuItem deleteItem = new MenuItem("Löschen");
 		folderMenu.getItems().add(deleteItem);
 		deleteItem.setOnAction(new EventHandler() {
 			public void handle(Event t) {
@@ -65,7 +86,6 @@ public class TreeFileCell extends TreeCell<File> {
 		});
 		
 		
-		MenuItem renameItem2 = new MenuItem("Umbenennen");
 		fileMenu.getItems().add(renameItem2);
 		renameItem2.setOnAction(new EventHandler() {
 			public void handle(Event t) {
@@ -73,7 +93,6 @@ public class TreeFileCell extends TreeCell<File> {
 			}
 		});
 		
-		MenuItem deleteItem2 = new MenuItem("Löschen");
 		fileMenu.getItems().add(deleteItem2);
 		deleteItem2.setOnAction(new EventHandler() {
 			public void handle(Event t) {
@@ -84,6 +103,7 @@ public class TreeFileCell extends TreeCell<File> {
 	
 	
 	public void addFile() {
+		startEdit();
 		String result = Dialog.textInput("Bitte den Dateinamen eingeben (mit Endung)", "Neue Datei");
 		
 		File file = new File(getItem().getPath() + "/" + result);
@@ -100,12 +120,12 @@ public class TreeFileCell extends TreeCell<File> {
 		} catch (IOException e) {
 			ErrorLog.write("Fehler beim anlegen einer neuen Datei: " + e);
 		}
-		startEdit();
 		commitEdit(new File(""));
 	}
 	
 	
 	public void addFolder() {
+		startEdit();
 		String result = Dialog.textInput("Bitte den Namen eingeben", "Neuer Ordner");
 		
 		File dir = new File(getItem().getPath() + "/" + result);
@@ -116,16 +136,16 @@ public class TreeFileCell extends TreeCell<File> {
 		
 		dir.mkdir();
 		
-		startEdit();
 		commitEdit(new File(""));
 	}
 	
 	
 	public void rename() {
+		startEdit();
 		String result = Dialog.textInput("Bitte den neuen Dateinamen eingeben", "Umbenennen", getItem().getName());
 		
 		File file = new File(getItem().getParent() + "/" + result);
-		if (result.equals(getItem().getName())){
+		if (result.equals(getItem().getName())) {
 			return;
 		}
 		if (file.exists()) {
@@ -136,12 +156,12 @@ public class TreeFileCell extends TreeCell<File> {
 		if (result != null) {
 			getItem().renameTo(file);
 		}
-		startEdit();
 		commitEdit(new File(""));
 	}
 	
 	
 	public void delete() {
+		startEdit();
 		String elementText = "die Datei";
 		if (getItem().isDirectory())
 			elementText = "den Ordner";
@@ -156,8 +176,7 @@ public class TreeFileCell extends TreeCell<File> {
 				getItem().delete();
 			}
 		}
-
-		startEdit();
+		
 		commitEdit(new File(""));
 	}
 	
