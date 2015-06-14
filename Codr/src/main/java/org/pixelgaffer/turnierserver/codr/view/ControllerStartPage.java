@@ -90,7 +90,7 @@ public class ControllerStartPage {
 		
 		cbGameTypes.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
 			MainApp.actualGameType.set(newValue);
-			mainApp.aiManager.loadAis();
+			MainApp.aiManager.loadAis();
 		});
 		
 		cbGameTypes.setItems(MainApp.gametypes);

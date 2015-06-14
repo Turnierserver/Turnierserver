@@ -60,8 +60,8 @@ public class MainApp extends Application {
 	
 	
 	public static WebConnector webConnector;
-	public GameManager gameManager = new GameManager();
-	public AiManager aiManager = new AiManager();
+	public static GameManager gameManager = new GameManager();
+	public static AiManager aiManager = new AiManager();
 	
 	public static StringProperty actualGameType = new SimpleStringProperty(null);
 	public static ObservableList<String> gametypes = FXCollections.observableArrayList();

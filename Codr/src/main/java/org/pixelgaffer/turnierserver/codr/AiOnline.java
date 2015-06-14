@@ -116,7 +116,7 @@ public class AiOnline extends AiBase {
 	 * 
 	 * @param img das zu speichernde Bild
 	 */
-	public void setPicture(Image img) {
+	@Override public void setPicture(Image img) {
 		if (img == null)
 			picture.set(Resources.defaultPicture());
 		else
