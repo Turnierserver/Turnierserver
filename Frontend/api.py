@@ -103,7 +103,7 @@ def api_ais(gametype=None):
 		if not gametype:
 			return CommonErrors.BAD_REQUEST
 
-	return [ai.info() for ai in AI.query.filter(AI.type == gametype).all()]
+	return [ai.info() for ai in AI.query.filter(AI.type == gametype).filter(AI.id >= 0).all()]
 
 @api.route("/ai/<int:id>", methods=["GET"])
 @json_out
@@ -669,7 +669,9 @@ def ai_qualify(id):
 
 
 	if not ai.lastest_version().compiled:
-		return {"error": "AI_Version isnt compiled"}, 400
+		return {"error": "AI_Version isnt compiled."}, 400
+	if ai.lastest_version().frozen:
+		return {"error": "AI_Version is frozen."}, 400
 
 	reqid = backend.request_qualify(ai)
 	for data, event in backend.inprogress_log(reqid):
