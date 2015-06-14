@@ -44,7 +44,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.pixelgaffer.turnierserver.codr.CodrAi;
+import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.CodrGame;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
@@ -206,8 +206,8 @@ public class WebConnector {
 	}
 	
 	
-	public ObservableList<CodrAi> getAis(String game) {
-		ObservableList<CodrAi> result = FXCollections.observableArrayList();
+	public ObservableList<AiBase> getAis(String game) {
+		ObservableList<AiBase> result = FXCollections.observableArrayList();
 		String json;
 		try {
 			json = toString(sendGet("ais/" + getGametypeID(game)));
@@ -220,7 +220,7 @@ public class WebConnector {
 		JSONArray ais = new JSONArray(json);
 		
 		for (int i = 0; i < ais.length(); i++) {
-			result.add(new CodrAi(ais.getJSONObject(i), this));
+			result.add(new AiBase(ais.getJSONObject(i), this));
 		}
 		
 		return result;
@@ -268,7 +268,7 @@ public class WebConnector {
 	}
 	
 	
-	public int createAi(CodrAi ai, String name) {
+	public int createAi(AiBase ai, String name) {
 		try {
 			byte response[] = sendGet("ai/create", "name", name, "desc", ai.description, "lang", getLangID(ai.language) + "", "type", getGametypeID(ai.gametype) + "");
 			if (response == null)
@@ -297,11 +297,11 @@ public class WebConnector {
 	}
 	
 	
-	public ObservableList<CodrAi> getOwnAis(String game) {
+	public ObservableList<AiBase> getOwnAis(String game) {
 		String user = getUserName();
 		if (user == null)
 			return null;
-		return FXCollections.observableArrayList(getAis(game).stream().filter((CodrAi ai) -> ai.userName.equals(user)).collect(Collectors.toList()));
+		return FXCollections.observableArrayList(getAis(game).stream().filter((AiBase ai) -> ai.userName.equals(user)).collect(Collectors.toList()));
 	}
 	
 	

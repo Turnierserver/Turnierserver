@@ -1,12 +1,12 @@
 package org.pixelgaffer.turnierserver.codr.utilities;
 
 
-import org.pixelgaffer.turnierserver.codr.CodrAi;
+import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.CodrGame;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.ParticipantResult;
 import org.pixelgaffer.turnierserver.codr.Version;
-import org.pixelgaffer.turnierserver.codr.CodrAi.AiMode;
+import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
 
 
 
@@ -126,7 +126,7 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zum Ordner eines bestimmten Spielers zurück
 	 */
-	public static String ai(CodrAi ai) {
+	public static String ai(AiBase ai) {
 		if (ai.mode == AiMode.saved) {
 			return aiFolder() + "/" + ai.title;
 		} else if (ai.mode == AiMode.simplePlayer) {
@@ -141,7 +141,7 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zu den Properties eines Spielers zurück
 	 */
-	public static String aiProperties(CodrAi ai) {
+	public static String aiProperties(AiBase ai) {
 		return ai(ai) + "/aiProperties.txt";
 	}
 	
@@ -149,7 +149,7 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zum Bild eines Spielers zurück
 	 */
-	public static String aiPicture(CodrAi ai) {
+	public static String aiPicture(AiBase ai) {
 		return ai(ai) + "/picture.png";
 	}
 	
@@ -165,7 +165,7 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zu einer bestimmten Version zurück
 	 */
-	public static String version(CodrAi ai, int number) {
+	public static String version(AiBase ai, int number) {
 		return ai(ai) + "/v" + number;
 	}
 	

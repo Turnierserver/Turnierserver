@@ -24,7 +24,7 @@ import javafx.event.EventType;
 import javafx.scene.control.TreeItem;
 
 import org.json.JSONObject;
-import org.pixelgaffer.turnierserver.codr.CodrAi.AiMode;
+import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Libraries;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
@@ -35,7 +35,7 @@ import org.pixelgaffer.turnierserver.compile.Compiler;
 
 public class Version {
 	
-	public final CodrAi ai;
+	public final AiBase ai;
 	public final int number;
 	public final AiMode mode;
 	
@@ -50,7 +50,7 @@ public class Version {
 	public TreeItem<File> rootFile = null;
 	
 	
-	public Version(CodrAi p, int n, JSONObject json) {
+	public Version(AiBase p, int n, JSONObject json) {
 		ai = p;
 		number = n;
 		mode = AiMode.online;
@@ -68,7 +68,7 @@ public class Version {
 	 * @param n
 	 *            die Nummer
 	 */
-	public Version(CodrAi p, int n, AiMode mmode) {
+	public Version(AiBase p, int n, AiMode mmode) {
 		ai = p;
 		number = n;
 		mode = mmode;
@@ -87,7 +87,7 @@ public class Version {
 	}
 	
 	
-	public Version(CodrAi p, int n, String path) {
+	public Version(AiBase p, int n, String path) {
 		ai = p;
 		number = n;
 		mode = AiMode.saved;

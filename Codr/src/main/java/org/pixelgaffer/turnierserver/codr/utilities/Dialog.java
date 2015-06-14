@@ -17,7 +17,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import org.pixelgaffer.turnierserver.codr.CodrAi;
+import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 
 
@@ -195,23 +195,23 @@ public class Dialog {
 	}
 	
 	
-	public static CodrAi selectOwnVersion() {
+	public static AiBase selectOwnVersion() {
 		
 		if (MainApp.ownOnlineAis == null)
 			return null;
 		
-		ObservableList<CodrAi> list = FXCollections.observableArrayList();
+		ObservableList<AiBase> list = FXCollections.observableArrayList();
 		list.addAll(MainApp.ownOnlineAis);
-		list.add(new CodrAi());
+		list.add(new AiBase());
 		
-		ChoiceDialog<CodrAi> dialog = new ChoiceDialog<>();
+		ChoiceDialog<AiBase> dialog = new ChoiceDialog<>();
 		dialog.getItems().addAll(list);
 		dialog.setSelectedItem(list.get(0));
 		dialog.setTitle("Version hochladen");
 		dialog.setHeaderText("Wähle bitte eine KI aus, zu dem die Version hochgeladen werden soll.");
 		dialog.setContentText("KI:");
 		
-		Optional<CodrAi> result = dialog.showAndWait();
+		Optional<AiBase> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			return result.get();
 		}
