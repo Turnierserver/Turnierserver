@@ -97,32 +97,22 @@ public class ControllerAiManagement {
 	 */
 	public void setMainApp(MainApp app) {
 		mainApp = app;
-		mainApp.cAi = this;
-		cbVersion.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Version>() {
-			
-			@Override public void changed(ObservableValue<? extends Version> observable, Version oldValue, Version newValue) {
-				clickVersionChange();
-			}
+		MainApp.cAi = this;
+		cbVersion.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+			clickVersionChange();
 		});
-		lvAis.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<CodrAi>() {
-			
-			@Override public void changed(ObservableValue<? extends CodrAi> observable, CodrAi oldValue, CodrAi newValue) {
-				clickChangeAi();
-			}
+		lvAis.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+			clickChangeAi();
 		});
-		tpCode.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
-			@Override public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
-				clickTabSelection(oldValue, newValue);
-			}
+		tpCode.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+			clickTabSelection(oldValue, newValue);
 		});
-		tvFiles.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<File>>() {
-			@Override public void changed(ObservableValue<? extends TreeItem<File>> observable, TreeItem<File> oldValue, TreeItem<File> newValue) {
-				if (newValue.getValue().isFile()){
-					for (Tab tab : tpCode.getTabs()){
-						if (tab.getText().equals(newValue.getValue().getName())){
-							tpCode.getSelectionModel().select(tab);
-							break;
-						}
+		tvFiles.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+			if (newValue != null && newValue.getValue().isFile()) {
+				for (Tab tab : tpCode.getTabs()) {
+					if (tab.getText().equals(newValue.getValue().getName())) {
+						tpCode.getSelectionModel().select(tab);
+						break;
 					}
 				}
 			}
@@ -278,7 +268,11 @@ public class ControllerAiManagement {
 		
 		tvFiles.setRoot(version.rootFile);
 		
-		tvFiles.setEditable(true);
+		if (version.finished || version.ai.mode != AiMode.saved)
+			tvFiles.setEditable(false);
+		else
+			tvFiles.setEditable(true);
+		
 		tvFiles.setCellFactory(new Callback<TreeView<File>, TreeCell<File>>() {
 			@Override public TreeCell<File> call(TreeView<File> p) {
 				return new TreeFileCell();
@@ -289,7 +283,7 @@ public class ControllerAiManagement {
 				System.out.println(event);
 				setVersionTabs();
 			}
-	    });
+		});
 		
 		String oldTabName = tpCode.getSelectionModel().getSelectedItem().getText();
 		tpCode.getTabs().clear();
@@ -303,7 +297,7 @@ public class ControllerAiManagement {
 					tab.setDisable(true);
 			}
 			tpCode.getTabs().add(tab);
-			if (tab.getText().equals(oldTabName)){
+			if (tab.getText().equals(oldTabName)) {
 				tpCode.getSelectionModel().select(tab);
 			}
 		}
@@ -338,14 +332,16 @@ public class ControllerAiManagement {
 			tpCode.getSelectionModel().select(oldTab);
 			if (version == null) {
 				Dialog.error("Bitte legen Sie zuerst eine Version an.", "Keine Version");
+				return;
 			}
-			File result = Dialog.fileSaver(mainApp.stage, "Bitte einen Ort und Dateinamen auswählen", Paths.version(version));
+			File result = Dialog.fileSaver(MainApp.stage, "Bitte einen Ort und Dateinamen auswählen", Paths.version(version));
 			if (result != null) {
 				CodeEditor editor = new CodeEditor(result);
 				editor.forceSave();
 				version.files.add(editor);
 				tpCode.getTabs().add(tpCode.getTabs().size() - 1, editor.getView());
 				tpCode.getSelectionModel().select(tpCode.getTabs().size() - 2);
+				setVersionTabs();
 			}
 		}
 	}
@@ -468,7 +464,7 @@ public class ControllerAiManagement {
 	 * Button: Dateiauswahl wenn "Aus Datei" ausgewählt ist
 	 */
 	@FXML void clickSelectFile() {
-		File result = Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner auswählen");
+		File result = Dialog.folderChooser(MainApp.stage, "Bitte einen Ordner auswählen");
 		if (result != null)
 			tbFile.setText(result.getPath());
 	}
@@ -625,7 +621,7 @@ public class ControllerAiManagement {
 	 * Button: Bild ändern
 	 */
 	@FXML void clickChangeImage() {
-		File result = Dialog.fileChooser(mainApp.stage, "Bild ausw�hlen");
+		File result = Dialog.fileChooser(MainApp.stage, "Bild ausw�hlen");
 		Image img = Resources.imageFromFile(result);
 		if (img != null) {
 			ai.setPicture(Resources.imageFromFile(result));
