@@ -45,6 +45,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.codr.AiBase;
+import org.pixelgaffer.turnierserver.codr.AiOnline;
 import org.pixelgaffer.turnierserver.codr.CodrGame;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
@@ -206,8 +207,8 @@ public class WebConnector {
 	}
 	
 	
-	public ObservableList<AiBase> getAis(String game) {
-		ObservableList<AiBase> result = FXCollections.observableArrayList();
+	public ObservableList<AiOnline> getAis(String game) {
+		ObservableList<AiOnline> result = FXCollections.observableArrayList();
 		String json;
 		try {
 			json = toString(sendGet("ais/" + getGametypeID(game)));
@@ -220,7 +221,7 @@ public class WebConnector {
 		JSONArray ais = new JSONArray(json);
 		
 		for (int i = 0; i < ais.length(); i++) {
-			result.add(new AiBase(ais.getJSONObject(i), this));
+			result.add(new AiOnline(ais.getJSONObject(i), this));
 		}
 		
 		return result;
@@ -297,11 +298,11 @@ public class WebConnector {
 	}
 	
 	
-	public ObservableList<AiBase> getOwnAis(String game) {
+	public ObservableList<AiOnline> getOwnAis(String game) {
 		String user = getUserName();
 		if (user == null)
 			return null;
-		return FXCollections.observableArrayList(getAis(game).stream().filter((AiBase ai) -> ai.userName.equals(user)).collect(Collectors.toList()));
+		return FXCollections.observableArrayList(getAis(game).stream().filter((AiOnline ai) -> ai.userName.equals(user)).collect(Collectors.toList()));
 	}
 	
 	

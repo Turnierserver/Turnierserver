@@ -1,11 +1,9 @@
 package org.pixelgaffer.turnierserver.codr.view;
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -27,7 +25,6 @@ import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.ParticipantResult;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
-import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 
 
 
@@ -65,14 +62,14 @@ public class ControllerGameManagement {
 	 */
 	public void setMainApp(MainApp app) {
 		mainApp = app;
-		mainApp.cGame = this;
+		MainApp.cGame = this;
 		
-		TableColumn col0 = new TableColumn("Spieler");
-		TableColumn col1 = new TableColumn("KI");
-		TableColumn col2 = new TableColumn("gespielte Zeit");
-		TableColumn col3 = new TableColumn("Züge");
-		TableColumn col4 = new TableColumn("Punkte");
-		TableColumn col5 = new TableColumn("Gewonnen?");
+		TableColumn<ParticipantResult, String> col0 = new TableColumn<>("Spieler");
+		TableColumn<ParticipantResult, String> col1 = new TableColumn<>("KI");
+		TableColumn<ParticipantResult, String> col2 = new TableColumn<>("gespielte Zeit");
+		TableColumn<ParticipantResult, String> col3 = new TableColumn<>("Züge");
+		TableColumn<ParticipantResult, String> col4 = new TableColumn<>("Punkte");
+		TableColumn<ParticipantResult, String> col5 = new TableColumn<>("Gewonnen?");
 		
 		col0.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("playerName"));
 		col1.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("kiName"));
@@ -81,7 +78,12 @@ public class ControllerGameManagement {
 		col4.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("points"));
 		col5.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("won"));
 		
-		tableResult.getColumns().addAll(col0, col1, col2, col3, col4, col5);
+		tableResult.getColumns().add(col0);
+		tableResult.getColumns().add(col1);
+		tableResult.getColumns().add(col2);
+		tableResult.getColumns().add(col3);
+		tableResult.getColumns().add(col4);
+		tableResult.getColumns().add(col5);
 		
 		final ToggleGroup group = new ToggleGroup();
 		btOffline.setToggleGroup(group);
@@ -90,9 +92,11 @@ public class ControllerGameManagement {
 		
 		mainApp.gameManager.loadGames();
 		showGame();
-		
-		lvPlayer1.setItems(mainApp.aiManager.ais);
-		lvPlayer2.setItems(mainApp.aiManager.ais);
+
+		lvPlayer1.getItems().clear();
+		lvPlayer2.getItems().clear();
+		lvPlayer1.getItems().addAll(mainApp.aiManager.ais);
+		lvPlayer2.getItems().addAll(mainApp.aiManager.ais);
 	}
 	
 	
@@ -125,16 +129,20 @@ public class ControllerGameManagement {
 	
 	@FXML void clickOnline() {
 		mainApp.loadOnlineAis();
-		lvPlayer1.setItems(MainApp.ownOnlineAis);
-		lvPlayer2.setItems(MainApp.onlineAis);
+		lvPlayer1.getItems().clear();
+		lvPlayer1.getItems().addAll(MainApp.ownOnlineAis);
+		lvPlayer2.getItems().clear();
+		lvPlayer2.getItems().addAll(MainApp.onlineAis);
 		lvPlayer1.getSelectionModel().selectFirst();
 		lvPlayer2.getSelectionModel().select(1);
 	}
 	
 	
 	@FXML void clickOffline() {
-		lvPlayer1.setItems(mainApp.aiManager.ais);
-		lvPlayer2.setItems(mainApp.aiManager.ais);
+		lvPlayer1.getItems().clear();
+		lvPlayer2.getItems().clear();
+		lvPlayer1.getItems().addAll(mainApp.aiManager.ais);
+		lvPlayer2.getItems().addAll(mainApp.aiManager.ais);
 		lvPlayer1.getSelectionModel().selectFirst();
 		lvPlayer2.getSelectionModel().select(1);
 	}

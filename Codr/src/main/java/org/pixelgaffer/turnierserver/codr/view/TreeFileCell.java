@@ -4,21 +4,17 @@ package org.pixelgaffer.turnierserver.codr.view;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream.GetField;
 
-import org.apache.commons.io.FileUtils;
-import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
-import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
-
-import javafx.event.Event;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+
+import org.apache.commons.io.FileUtils;
+import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
+import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 
 
 
@@ -58,44 +54,44 @@ public class TreeFileCell extends TreeCell<File> {
 		
 		
 		folderMenu.getItems().add(addFileItem);
-		addFileItem.setOnAction(new EventHandler() {
-			public void handle(Event t) {
+		addFileItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent t) {
 				addFile();
 			}
 		});
 		
 		folderMenu.getItems().add(addFolderItem);
-		addFolderItem.setOnAction(new EventHandler() {
-			public void handle(Event t) {
+		addFolderItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent t) {
 				addFolder();
 			}
 		});
 		
 		folderMenu.getItems().add(renameItem);
-		renameItem.setOnAction(new EventHandler() {
-			public void handle(Event t) {
+		renameItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent t) {
 				rename();
 			}
 		});
 		
 		folderMenu.getItems().add(deleteItem);
-		deleteItem.setOnAction(new EventHandler() {
-			public void handle(Event t) {
+		deleteItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent t) {
 				delete();
 			}
 		});
 		
 		
 		fileMenu.getItems().add(renameItem2);
-		renameItem2.setOnAction(new EventHandler() {
-			public void handle(Event t) {
+		renameItem2.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent t) {
 				rename();
 			}
 		});
 		
 		fileMenu.getItems().add(deleteItem2);
-		deleteItem2.setOnAction(new EventHandler() {
-			public void handle(Event t) {
+		deleteItem2.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent t) {
 				delete();
 			}
 		});
@@ -210,7 +206,7 @@ public class TreeFileCell extends TreeCell<File> {
 	
 	
 	
-	private String getString() {
+	public String getString() {
 		return getItem() == null ? "" : getItem().getName();
 	}
 	

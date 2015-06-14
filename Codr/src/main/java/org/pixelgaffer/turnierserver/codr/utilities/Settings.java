@@ -8,11 +8,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Properties;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.Tab;
-
-import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
 import org.pixelgaffer.turnierserver.codr.view.ControllerStartPage;
 
 

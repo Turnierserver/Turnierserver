@@ -3,8 +3,6 @@ package org.pixelgaffer.turnierserver.codr.view;
 
 import org.pixelgaffer.turnierserver.codr.MainApp;
 
-import javafx.fxml.FXML;
-
 
 
 public class ControllerSubmission {
@@ -19,6 +17,6 @@ public class ControllerSubmission {
 	 */
 	public void setMainApp(MainApp app) {
 		mainApp = app;
-		mainApp.cSubmission = this;
+		MainApp.cSubmission = this;
 	}
 }

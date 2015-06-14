@@ -6,7 +6,6 @@ import java.io.File;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 
@@ -15,7 +14,7 @@ import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 public class AiManager {
 	
 	
-	public ObservableList<AiBase> ais = FXCollections.observableArrayList();
+	public ObservableList<AiSimple> ais = FXCollections.observableArrayList();
 	
 	
 	/**
@@ -32,7 +31,7 @@ public class AiManager {
 		}
 		for (int i = 0; i < playerDirs.length; i++) {
 			if (playerDirs[i].isDirectory())
-				ais.add(new AiBase(playerDirs[i].getName(), AiMode.saved));
+				ais.add(new AiSaved(playerDirs[i].getName()));
 		}
 		
 		File simpleDir = new File(Paths.simplePlayerFolder(MainApp.actualGameType.get()));
@@ -44,7 +43,7 @@ public class AiManager {
 		}
 		for (int i = 0; i < simpleDirs.length; i++) {
 			if (simpleDirs[i].isDirectory())
-				ais.add(new AiBase(simpleDirs[i].getName(), AiMode.simplePlayer));
+				ais.add(new AiSimple(simpleDirs[i].getName()));
 		}
 	}
 	

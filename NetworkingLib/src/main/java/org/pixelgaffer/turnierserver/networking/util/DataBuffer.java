@@ -1,9 +1,7 @@
 package org.pixelgaffer.turnierserver.networking.util;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Deque;
 import java.util.LinkedList;
-import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 /**
