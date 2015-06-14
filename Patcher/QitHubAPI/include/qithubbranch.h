@@ -39,6 +39,8 @@ public:
 	
 	QitHubCommit latestCommit ();
 	
+	bool download (const QString &filename, const QString &format = "tarball") const;
+	
 public slots:
 	void update() { _info = QJsonObject(); }
 	

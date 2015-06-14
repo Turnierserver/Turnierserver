@@ -19,6 +19,7 @@
 
 #include "qithubbranch.h"
 
+#include <QFile>
 #include <QJsonDocument>
 
 QitHubBranch::QitHubBranch(QitHubAPI *client, const QitHubRepository &repo, const QString &name)
@@ -53,4 +54,34 @@ QitHubCommit QitHubBranch::latestCommit()
 {
 	QJsonObject commit = info().value("commit").toObject();
 	return QitHubCommit(api, repo(), QString::fromUtf8(commit.value("sha").toVariant().toByteArray()));
+}
+
+bool QitHubBranch::download(const QString &filename, const QString &format) const
+{
+	QNetworkRequest req = api->createRequest("/repos/" + repo().user() + "/" + repo().repo() + "/" + format + "/" + name());
+	QNetworkReply *reply = api->sendGet(req);
+	
+	if (reply->error() != QNetworkReply::NoError)
+	{
+		fprintf(stderr, "Fehler beim Herunterladen des %s für %s/%s [%s]: %s\n", qPrintable(format), qPrintable(repo().user()), qPrintable(repo().repo()), qPrintable(name()), qPrintable(reply->errorString()));
+		return false;
+	}
+	
+	QFile out(filename);
+	if (!out.open(QIODevice::WriteOnly))
+	{
+		fprintf(stderr, "Fehler beim Öffnen der Datei %s: %s\n", qPrintable(filename), qPrintable(out.errorString()));
+		return false;
+	}
+	
+	QByteArray buf;
+	while (!reply->atEnd())
+	{
+		buf = reply->read(8192);
+		out.write(buf);
+	}
+	
+	out.close();
+	delete reply;
+	return true;
 }

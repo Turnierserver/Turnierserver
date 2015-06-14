@@ -55,6 +55,16 @@ QNetworkReply * QitHubAPI::sendGet (const QNetworkRequest &req)
 	QNetworkReply *reply = mgr.get(req);
 	loop.exec();
 	_mutex.unlock();
+	
+	QUrl redirect = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+	if (!redirect.isEmpty())
+	{
+		delete reply;
+		QNetworkRequest request = createRequest(redirect.toString());
+		request.setRawHeader("Referer", redirect.host().toLatin1());
+		return sendGet(request);
+	}
+	
 	return reply;
 }
 

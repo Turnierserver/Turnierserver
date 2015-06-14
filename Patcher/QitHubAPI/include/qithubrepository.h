@@ -44,8 +44,8 @@ public:
 	QString description () { return QString::fromUtf8(info().value("description").toVariant().toByteArray()); }
 	
 	QitHubBranch defaultBranch ();
-	QList<QitHubBranch> branches ();
-	QList<QitHubCommit> commits ();
+	QList<QitHubBranch> branches () const;
+	QList<QitHubCommit> commits () const;
 	
 public slots:
 	void update() { _info = QJsonObject(); }
