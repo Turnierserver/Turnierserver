@@ -11,7 +11,7 @@ authenticated_blueprint = Blueprint("authenticated", __name__)
 @authenticated_web
 def current_profile():
 	user = current_user
-	ais = user.ai_list
+	ais = AI.query.filter(AI.user == user).filter(AI.id >= 0).all()
 	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
 	return render_template("profile.html", columns=columns, user=user)
 
@@ -24,7 +24,7 @@ def profile_id(id):
 	if not current_user.can_access(user):
 		abort(403)
 
-	ais = user.ai_list
+	ais = AI.query.filter(AI.user == user).filter(AI.id >= 0).all()
 	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
 	return render_template("profile.html", columns=columns, user=user)
 
@@ -146,10 +146,10 @@ def ais_challenge():
 
 	# own = current_user.ai_list.filter(AI.type==gametype).order_by(AI.last_modified.desc()).all()
 	# aus irgend nem komischen grund funkioniert order_by bei der ai_list von current_user nicht
-	own = AI.query.filter(AI.user == current_user).filter(AI.type == gametype).order_by(AI.last_modified.desc()).all()
+	own = AI.query.filter(AI.user == current_user).filter(AI.type == gametype).filter(AI.id >= 0).order_by(AI.last_modified.desc()).all()
 	if len(own) < 1:
 		return error(403, body="Du hast nicht genug eigene KIs.")
-	all = AI.query.order_by(AI.id).all()
+	all = AI.query.filter(AI.id >= 0).order_by(AI.id).all()
 	if len(all) < 1:
 		return error(403, body="Es gibt noch nicht genug AIs!")
 	#roles = ["Rolle"+str(i) for i, r in enumerate(gametype.roles)]

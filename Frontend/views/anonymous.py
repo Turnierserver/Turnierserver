@@ -13,7 +13,7 @@ def index():
 
 @anonymous_blueprint.route("/ai_list")
 def ai_list():
-	ais = AI.query.all()
+	ais = AI.query.filter(AI.id >= 0).all()
 	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
 	return render_template("ai_list.html", columns=columns)
 
