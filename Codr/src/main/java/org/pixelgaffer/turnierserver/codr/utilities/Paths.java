@@ -1,12 +1,14 @@
 package org.pixelgaffer.turnierserver.codr.utilities;
 
 
+import java.io.File;
+
 import org.pixelgaffer.turnierserver.codr.AiBase;
+import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
 import org.pixelgaffer.turnierserver.codr.CodrGame;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.ParticipantResult;
 import org.pixelgaffer.turnierserver.codr.Version;
-import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
 
 
 
@@ -150,7 +152,18 @@ public class Paths {
 	 * Gibt den Pfad zum Bild eines Spielers zurück
 	 */
 	public static String aiPicture(AiBase ai) {
-		return ai(ai) + "/picture.png";
+		if (new File(ai(ai) + "/picture.png").exists())
+			return ai(ai) + "/picture.png";
+		else if (new File(ai(ai) + "/picture.jpg").exists())
+			return ai(ai) + "/picture.jpg";
+		else if (new File(ai(ai) + "/picture.jpeg").exists())
+			return ai(ai) + "/picture.jpeg";
+		else if (new File(ai(ai) + "/picture.gif").exists())
+			return ai(ai) + "/picture.gif";
+		else if (new File(ai(ai) + "/picture.bmp").exists())
+			return ai(ai) + "/picture.bmp";
+		else
+			return null;
 	}
 	
 	

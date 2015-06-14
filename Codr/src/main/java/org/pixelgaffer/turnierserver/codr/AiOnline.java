@@ -1,5 +1,6 @@
 package org.pixelgaffer.turnierserver.codr;
 
+
 import java.io.IOException;
 
 import javafx.beans.property.ObjectProperty;
@@ -11,20 +12,21 @@ import javafx.scene.image.Image;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
 import org.pixelgaffer.turnierserver.codr.utilities.WebConnector;
 
-public class AiOnline extends AiBase{
 
+
+public class AiOnline extends AiBase {
+	
 	public String userName = "";
 	public int id;
 	public String elo = "leere Elo";
 	private ObjectProperty<Image> picture = new SimpleObjectProperty<Image>();
 	public ObservableList<CodrGame> onlineGames = FXCollections.observableArrayList();
 	
-
+	
 	/**
 	 * Erstellt eine neue Online-Ai aus einem JSONObject
 	 * 
@@ -50,18 +52,22 @@ public class AiOnline extends AiBase{
 			public Image call() {
 				try {
 					Image img = connector.getImage(json.getInt("id"));
-					return img;
+					if (img == null) {
+						img = connector.getImage(json.getInt("id"));  // zweiter Versuch
+						if (img == null) {
+							return Resources.defaultPicture();
+						} else
+							return img;
+					} else
+						return img;
 				} catch (IOException e) {
-					return null;
+					return Resources.defaultPicture();
 				}
 			}
 		};
 		
 		imageLoader.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-			if (newValue != null)
-				setPicture(newValue);
-			else
-				ErrorLog.write("ERROR: Konnte das Bild der AI " + json.getString("name") + " nicht laden.");
+			setPicture(newValue);
 		});
 		
 		Thread thread = new Thread(imageLoader, "imageLoader");
@@ -71,7 +77,6 @@ public class AiOnline extends AiBase{
 	
 	
 	
-
 	/**
 	 * Fügt eine neue Version, die mit JSON erstellt wurde, der Versionsliste hinzu.
 	 * 
@@ -84,7 +89,7 @@ public class AiOnline extends AiBase{
 		return version;
 	}
 	
-
+	
 	/**
 	 * Gibt das gespeicherte Bild des Spielers zurück.
 	 * 
@@ -112,7 +117,10 @@ public class AiOnline extends AiBase{
 	 * @param img das zu speichernde Bild
 	 */
 	public void setPicture(Image img) {
-		picture.set(img);
+		if (img == null)
+			picture.set(Resources.defaultPicture());
+		else
+			picture.set(img);
 	}
 	
 	

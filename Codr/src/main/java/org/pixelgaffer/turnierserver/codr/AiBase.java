@@ -1,10 +1,14 @@
 package org.pixelgaffer.turnierserver.codr;
 
 
+import java.io.File;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
+
+import org.apache.commons.lang.NotImplementedException;
 
 
 
@@ -66,7 +70,7 @@ public class AiBase {
 	 * @return das gespeicherte Bild
 	 */
 	public ObjectProperty<Image> getPicture() {
-		return null;
+		throw new NotImplementedException();
 	}
 	
 	
@@ -76,7 +80,15 @@ public class AiBase {
 	 * @param img das zu speichernde Bild
 	 */
 	public void setPicture(Image img) {
-		return;
+		throw new NotImplementedException();
+	}
+	/**
+	 * Speichert das Bild des Spielers in der Datei picture.png.
+	 * 
+	 * @param img das zu speichernde Bild
+	 */
+	public void setPicture(File file) {
+		throw new NotImplementedException();
 	}
 	
 	

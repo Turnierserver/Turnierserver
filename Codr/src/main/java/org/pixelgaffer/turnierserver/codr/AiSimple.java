@@ -5,15 +5,15 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
-import javax.imageio.ImageIO;
-
+import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
@@ -102,16 +102,33 @@ public class AiSimple extends AiBase {
 	 * 
 	 * @param img das zu speichernde Bild
 	 */
-	public void setPicture(Image img) {
+	@Override public void setPicture(File file) {
+		if (Paths.aiPicture(this) != null)
+			new File(Paths.aiPicture(this)).delete();
+		if (file.getName().equals("")){
+			return;
+		}
+		
+		String ending = null;
+		if (file.getName().endsWith(".png"))
+			ending = "png";
+		if (file.getName().endsWith(".jpg"))
+			ending = "jpg";
+		if (file.getName().endsWith(".jpeg"))
+			ending = "jpeg";
+		if (file.getName().endsWith(".bmp"))
+			ending = "bmp";
+		if (file.getName().endsWith(".gif"))
+			ending = "gif";
+		
+		if (ending == null){
+			Dialog.error("Dieses Bildformat wird nicht unterstützt");
+			return;
+		}
 		try {
-			if (img == null) {
-				File file = new File(Paths.aiPicture(this));
-				file.delete();
-			} else {
-				ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", new File(Paths.aiPicture(this)));
-			}
+			Files.copy(file.toPath(), new File(Paths.ai(this) + "/picture." + ending).toPath(), StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
-			ErrorLog.write("Bild konnte nicht gespeichert werden.");
+			ErrorLog.write("Bild konnte nicht kopiert werden");
 		}
 	}
 	

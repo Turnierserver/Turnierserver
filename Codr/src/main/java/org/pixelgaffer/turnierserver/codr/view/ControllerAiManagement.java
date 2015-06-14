@@ -518,7 +518,7 @@ public class ControllerAiManagement {
 	}
 	
 	
-	private String nameOfNewAi = "";
+	private String localNameOfNewAi = "";
 	
 	
 	/**
@@ -551,8 +551,8 @@ public class ControllerAiManagement {
 			}
 			
 			if (result.getClass() == AiFake.class) {
-				nameOfNewAi = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
-				if (nameOfNewAi == null)
+				localNameOfNewAi = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
+				if (localNameOfNewAi == null)
 					return;
 			}
 			
@@ -560,7 +560,7 @@ public class ControllerAiManagement {
 				public String call() {
 					
 					int id = ((AiOnline) result).id;
-					id = MainApp.webConnector.createAi(ai, nameOfNewAi);
+					id = MainApp.webConnector.createAi(ai, localNameOfNewAi);
 					if (id == -1) {
 						return "errorConnection";
 					}
@@ -626,10 +626,10 @@ public class ControllerAiManagement {
 	 * Button: Bild ändern
 	 */
 	@FXML void clickChangeImage() {
-		File result = Dialog.fileChooser(MainApp.stage, "Bild ausw�hlen");
+		File result = Dialog.fileChooser(MainApp.stage, "Bild auswählen");
 		Image img = Resources.imageFromFile(result);
 		if (img != null) {
-			ai.setPicture(Resources.imageFromFile(result));
+			ai.setPicture(result);
 		}
 		showAi();
 	}
@@ -639,7 +639,7 @@ public class ControllerAiManagement {
 	 * Button: Bild löschen
 	 */
 	@FXML void clickDeleteImage() {
-		ai.setPicture(null);
+		ai.setPicture(new File(""));
 		showAi();
 	}
 	
