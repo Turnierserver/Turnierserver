@@ -31,6 +31,7 @@ public class TreeFileCell extends TreeCell<File> {
 	
 	public TreeFileCell() {
 		
+		
 		MenuItem addFileItem = new MenuItem("Neue Datei");
 		folderMenu.getItems().add(addFileItem);
 		addFileItem.setOnAction(new EventHandler() {
@@ -82,7 +83,6 @@ public class TreeFileCell extends TreeCell<File> {
 	}
 	
 	
-	
 	public void addFile() {
 		String result = Dialog.textInput("Bitte den Dateinamen eingeben (mit Endung)", "Neue Datei");
 		
@@ -100,8 +100,8 @@ public class TreeFileCell extends TreeCell<File> {
 		} catch (IOException e) {
 			ErrorLog.write("Fehler beim anlegen einer neuen Datei: " + e);
 		}
+		startEdit();
 		commitEdit(new File(""));
-		setGraphic(new TextField("Hallo"));
 	}
 	
 	
@@ -115,8 +115,9 @@ public class TreeFileCell extends TreeCell<File> {
 		}
 		
 		dir.mkdir();
+		
+		startEdit();
 		commitEdit(new File(""));
-		setGraphic(new TextField("Hallo"));
 	}
 	
 	
@@ -124,6 +125,9 @@ public class TreeFileCell extends TreeCell<File> {
 		String result = Dialog.textInput("Bitte den neuen Dateinamen eingeben", "Umbenennen", getItem().getName());
 		
 		File file = new File(getItem().getParent() + "/" + result);
+		if (result.equals(getItem().getName())){
+			return;
+		}
 		if (file.exists()) {
 			Dialog.error("Diese Datei existiert schon.");
 			return;
@@ -132,8 +136,8 @@ public class TreeFileCell extends TreeCell<File> {
 		if (result != null) {
 			getItem().renameTo(file);
 		}
+		startEdit();
 		commitEdit(new File(""));
-		setGraphic(new TextField("Hallo"));
 	}
 	
 	
@@ -152,8 +156,9 @@ public class TreeFileCell extends TreeCell<File> {
 				getItem().delete();
 			}
 		}
+
+		startEdit();
 		commitEdit(new File(""));
-		setGraphic(new TextField("Hallo"));
 	}
 	
 	

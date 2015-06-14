@@ -4,15 +4,12 @@ package org.pixelgaffer.turnierserver.codr.view;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.event.DocumentEvent.EventType;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -27,6 +24,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.TreeView.EditEvent;
 import javafx.scene.image.Image;
@@ -113,11 +111,24 @@ public class ControllerAiManagement {
 			}
 		});
 		tpCode.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
-			
 			@Override public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
 				clickTabSelection(oldValue, newValue);
 			}
 		});
+		tvFiles.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<File>>() {
+			@Override public void changed(ObservableValue<? extends TreeItem<File>> observable, TreeItem<File> oldValue, TreeItem<File> newValue) {
+				if (newValue.getValue().isFile()){
+					for (Tab tab : tpCode.getTabs()){
+						if (tab.getText().equals(newValue.getValue().getName())){
+							tpCode.getSelectionModel().select(tab);
+							break;
+						}
+					}
+				}
+			}
+		});
+		
+		tpCode.setStyle("-fx-open-tab-animation: NONE; -fx-close-tab-animation: NONE;");
 		
 		cbLanguage.getItems().addAll(MainApp.languages);
 		cbLanguage.getSelectionModel().selectFirst();
@@ -273,23 +284,14 @@ public class ControllerAiManagement {
 				return new TreeFileCell();
 			}
 		});
-//		tvFiles.getRoot().graphicProperty().addListener((observableValue, oldValue, newValue) -> {
-//			System.out.println(newValue);
-//		});
-//		tvFiles.addEventHandler(EventType.EDIT_COMMIT_EVENT, new EventHandler() {
-//			@Override public void handle(Event event) {
-//				if (event.getClass() == new EditEvent(tvFiles, null, null, event, event).getClass())
-//				System.out.println("aösdflj");
-//			}
-//		});
-		
 		tvFiles.setOnEditCommit(new EventHandler<EditEvent<File>>() {
 			@Override public void handle(EditEvent<File> event) {
-				System.out.println("adaödsklf");
+				System.out.println(event);
 				setVersionTabs();
 			}
 	    });
 		
+		String oldTabName = tpCode.getSelectionModel().getSelectedItem().getText();
 		tpCode.getTabs().clear();
 		tpCode.getTabs().add(infoTab);
 		for (CodeEditor file : version.files) {
@@ -301,6 +303,9 @@ public class ControllerAiManagement {
 					tab.setDisable(true);
 			}
 			tpCode.getTabs().add(tab);
+			if (tab.getText().equals(oldTabName)){
+				tpCode.getSelectionModel().select(tab);
+			}
 		}
 		if (!version.finished)
 			tpCode.getTabs().add(newFileTab);
