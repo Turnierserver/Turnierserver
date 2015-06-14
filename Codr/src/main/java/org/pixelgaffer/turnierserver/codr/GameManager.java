@@ -2,13 +2,13 @@ package org.pixelgaffer.turnierserver.codr;
 
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import org.pixelgaffer.turnierserver.codr.CodrGame.GameMode;
-import org.pixelgaffer.turnierserver.codr.utilities.*;
-
-import javafx.collections.*;
+import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 
 
 

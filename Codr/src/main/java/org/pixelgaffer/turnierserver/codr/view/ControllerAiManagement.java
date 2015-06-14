@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -24,7 +22,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.TreeView.EditEvent;
 import javafx.scene.image.Image;
@@ -33,10 +30,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
 import net.lingala.zip4j.exception.ZipException;
 
-import org.pixelgaffer.turnierserver.codr.CodeEditor;
 import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
 import org.pixelgaffer.turnierserver.codr.AiBase.NewVersionType;
+import org.pixelgaffer.turnierserver.codr.AiFake;
+import org.pixelgaffer.turnierserver.codr.AiOnline;
+import org.pixelgaffer.turnierserver.codr.AiSaved;
+import org.pixelgaffer.turnierserver.codr.AiSimple;
+import org.pixelgaffer.turnierserver.codr.CodeEditor;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
@@ -73,7 +74,7 @@ public class ControllerAiManagement {
 	@FXML TextArea tbDescription;
 	@FXML ChoiceBox<Version> cbVersion;
 	@FXML ChoiceBox<String> cbLanguage;
-	@FXML ListView<AiBase> lvAis;
+	@FXML ListView<AiSimple> lvAis;
 	@FXML ImageView image;
 	@FXML TabPane tpCode;
 	@FXML Hyperlink hlShowQualified;
@@ -86,7 +87,7 @@ public class ControllerAiManagement {
 	public Tab newFileTab;
 	
 	public MainApp mainApp;
-	public AiBase ai;
+	public AiSimple ai;
 	public Version version;
 	
 	
@@ -137,7 +138,7 @@ public class ControllerAiManagement {
 	 * @param p die KI
 	 * @param v die zugehörige Version
 	 */
-	public void showAi(AiBase p, Version v) {
+	public void showAi(AiSimple p, Version v) {
 		ai = p;
 		version = v;
 		showAi();
@@ -365,7 +366,7 @@ public class ControllerAiManagement {
 			}
 		}
 		
-		mainApp.aiManager.ais.add(new AiBase(title, cbLanguage.getValue()));
+		mainApp.aiManager.ais.add(new AiSaved(title, cbLanguage.getValue()));
 		lvAis.getSelectionModel().selectLast();
 	}
 	
@@ -405,7 +406,9 @@ public class ControllerAiManagement {
 			btAbort.setVisible(false);
 			btEdit.setText("Bearbeiten");
 			tbDescription.setEditable(false);
-			ai.setDescription(tbDescription.getText());
+			if (ai.getClass() == AiSaved.class){
+				((AiSaved) ai).setDescription(tbDescription.getText());
+			}
 		}
 	}
 	
@@ -474,12 +477,14 @@ public class ControllerAiManagement {
 	 * Button: neue Version erstellen
 	 */
 	@FXML void clickNewVersion() {
-		if (rbFromFile.isSelected()) {
-			showAi(ai, ai.newVersion(NewVersionType.fromFile, tbFile.getText()));
-		} else if (rbContinue.isSelected()) {
-			showAi(ai, ai.newVersion(NewVersionType.lastVersion));
-		} else {
-			showAi(ai, ai.newVersion(NewVersionType.simplePlayer));
+		if (ai.getClass() == AiSaved.class){
+			if (rbFromFile.isSelected()) {
+				showAi(ai, ((AiSaved) ai).newVersion(NewVersionType.fromFile, tbFile.getText()));
+			} else if (rbContinue.isSelected()) {
+				showAi(ai, ((AiSaved) ai).newVersion(NewVersionType.lastVersion));
+			} else {
+				showAi(ai, ((AiSaved) ai).newVersion(NewVersionType.simplePlayer));
+			}
 		}
 	}
 	
@@ -545,7 +550,7 @@ public class ControllerAiManagement {
 				return;
 			}
 			
-			if (result.title.equals("<Neue KI>")) {
+			if (result.getClass() == AiFake.class) {
 				nameOfNewAi = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
 				if (nameOfNewAi == null)
 					return;
@@ -554,7 +559,7 @@ public class ControllerAiManagement {
 			Task<String> upload = new Task<String>() {
 				public String call() {
 					
-					int id = result.id;
+					int id = ((AiOnline) result).id;
 					id = MainApp.webConnector.createAi(ai, nameOfNewAi);
 					if (id == -1) {
 						return "errorConnection";

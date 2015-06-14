@@ -16,7 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 
-import org.pixelgaffer.turnierserver.codr.AiBase;
+import org.pixelgaffer.turnierserver.codr.AiOnline;
 import org.pixelgaffer.turnierserver.codr.CodrGame;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.Version;
@@ -33,13 +33,13 @@ public class ControllerRanking {
 	@FXML Label lbLanguage;
 	@FXML Button btChallenge;
 	@FXML TextArea tbDescription;
-	@FXML TableView<AiBase> tvAis;
+	@FXML TableView<AiOnline> tvAis;
 	@FXML TableView<Version> tvVersions;
 	@FXML TableView<CodrGame> tvGames;
 	@FXML ImageView imageView;
 	
 	MainApp mainApp;
-	AiBase ai;
+	private AiOnline ai;
 	
 	
 	/**
@@ -49,7 +49,7 @@ public class ControllerRanking {
 	 */
 	public void setMainApp(MainApp app) {
 		mainApp = app;
-		mainApp.cRanking = this;
+		MainApp.cRanking = this;
 		tvAis.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
 			clickChangeAi(newValue);
 		});
@@ -57,27 +57,27 @@ public class ControllerRanking {
 		mainApp.loadOnlineAis();
 		tvAis.setItems(MainApp.onlineAis);
 		
-		TableColumn<AiBase, Image> col0 = new TableColumn<AiBase, Image>("Bild");
+		TableColumn<AiOnline, Image> col0 = new TableColumn<AiOnline, Image>("Bild");
 		col0.setMaxWidth(60);
 		col0.setMinWidth(60);
-		TableColumn<AiBase, String> col1 = new TableColumn<AiBase, String>("Name");
-		TableColumn<AiBase, String> col2 = new TableColumn<AiBase, String>("Besitzer");
-		TableColumn<AiBase, String> col3 = new TableColumn<AiBase, String>("ELO");
+		TableColumn<AiOnline, String> col1 = new TableColumn<AiOnline, String>("Name");
+		TableColumn<AiOnline, String> col2 = new TableColumn<AiOnline, String>("Besitzer");
+		TableColumn<AiOnline, String> col3 = new TableColumn<AiOnline, String>("ELO");
 		col3.setMaxWidth(60);
 		col3.setMinWidth(60);
 		
-		col0.setCellValueFactory(new Callback<CellDataFeatures<AiBase, Image>, ObservableValue<Image>>() {
-			@Override public ObservableValue<Image> call(CellDataFeatures<AiBase, Image> arg0) {
+		col0.setCellValueFactory(new Callback<CellDataFeatures<AiOnline, Image>, ObservableValue<Image>>() {
+			@Override public ObservableValue<Image> call(CellDataFeatures<AiOnline, Image> arg0) {
 				return arg0.getValue().getPicture();
 			}
 		});
-		col0.setCellFactory(new Callback<TableColumn<AiBase, Image>, TableCell<AiBase, Image>>() {
-			@Override public TableCell<AiBase, Image> call(TableColumn<AiBase, Image> param) {
+		col0.setCellFactory(new Callback<TableColumn<AiOnline, Image>, TableCell<AiOnline, Image>>() {
+			@Override public TableCell<AiOnline, Image> call(TableColumn<AiOnline, Image> param) {
 				final ImageView imageview = new ImageView();
 				imageview.setFitHeight(50);
 				imageview.setFitWidth(50);
 				
-				TableCell<AiBase, Image> cell = new TableCell<AiBase, Image>() {
+				TableCell<AiOnline, Image> cell = new TableCell<AiOnline, Image>() {
 					public void updateItem(Image item, boolean empty) {
 						if (item != null)
 							imageview.imageProperty().set(item);
@@ -88,18 +88,18 @@ public class ControllerRanking {
 			}
 			
 		});
-		col1.setCellValueFactory(new Callback<CellDataFeatures<AiBase, String>, ObservableValue<String>>() {
-			public ObservableValue<String> call(CellDataFeatures<AiBase, String> p) {
+		col1.setCellValueFactory(new Callback<CellDataFeatures<AiOnline, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<AiOnline, String> p) {
 				return new SimpleStringProperty(p.getValue().title);
 			}
 		});
-		col2.setCellValueFactory(new Callback<CellDataFeatures<AiBase, String>, ObservableValue<String>>() {
-			public ObservableValue<String> call(CellDataFeatures<AiBase, String> p) {
+		col2.setCellValueFactory(new Callback<CellDataFeatures<AiOnline, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<AiOnline, String> p) {
 				return new SimpleStringProperty(p.getValue().userName);
 			}
 		});
-		col3.setCellValueFactory(new Callback<CellDataFeatures<AiBase, String>, ObservableValue<String>>() {
-			public ObservableValue<String> call(CellDataFeatures<AiBase, String> p) {
+		col3.setCellValueFactory(new Callback<CellDataFeatures<AiOnline, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<AiOnline, String> p) {
 				return new SimpleStringProperty(p.getValue().elo);
 			}
 		});
@@ -179,7 +179,7 @@ public class ControllerRanking {
 	}
 	
 	
-	public void showAi(AiBase aai) {
+	public void showAi(AiOnline aai) {
 		ai = aai;
 		showAi();
 	}
@@ -224,6 +224,7 @@ public class ControllerRanking {
 			lbElo.setText("1000");
 			lbLanguage.setText("Java");
 			btChallenge.setDisable(true);
+			imageView.imageProperty().unbind();
 			imageView.imageProperty().set(Resources.defaultPicture());
 			tvVersions.setItems(null);
 			tvVersions.prefHeightProperty().set(60);
@@ -249,7 +250,7 @@ public class ControllerRanking {
 	}
 	
 	
-	public void clickChangeAi(AiBase selected) {
+	public void clickChangeAi(AiOnline selected) {
 		showAi(selected);
 	}
 	

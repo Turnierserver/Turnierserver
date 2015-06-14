@@ -2,9 +2,7 @@ package org.pixelgaffer.turnierserver.codr.utilities;
 
 
 import java.io.File;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,6 +16,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import org.pixelgaffer.turnierserver.codr.AiBase;
+import org.pixelgaffer.turnierserver.codr.AiFake;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 
 
@@ -202,7 +201,7 @@ public class Dialog {
 		
 		ObservableList<AiBase> list = FXCollections.observableArrayList();
 		list.addAll(MainApp.ownOnlineAis);
-		list.add(new AiBase());
+		list.add(new AiFake());
 		
 		ChoiceDialog<AiBase> dialog = new ChoiceDialog<>();
 		dialog.getItems().addAll(list);

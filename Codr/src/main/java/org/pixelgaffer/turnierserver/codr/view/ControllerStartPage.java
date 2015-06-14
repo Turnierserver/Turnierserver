@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -76,7 +74,7 @@ public class ControllerStartPage {
 	 */
 	public void setMainApp(MainApp app) {
 		mainApp = app;
-		mainApp.cStart = this;
+		MainApp.cStart = this;
 		
 		webEngine = wfNews.getEngine();
 		webEngine.setJavaScriptEnabled(true);
@@ -272,21 +270,21 @@ public class ControllerStartPage {
 	
 	
 	@FXML void clickPythonInterpreter() {
-		File result = Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner auswählen");
+		File result = Dialog.folderChooser(MainApp.stage, "Bitte einen Ordner auswählen");
 		if (result != null)
 			tbPythonInterpreter.setText(result.getPath());
 	}
 	
 	
 	@FXML void clickCplusplusCompiler() {
-		File result = Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner auswählen");
+		File result = Dialog.folderChooser(MainApp.stage, "Bitte einen Ordner auswählen");
 		if (result != null)
 			tbCplusplusCompiler.setText(result.getPath());
 	}
 	
 	
 	@FXML void clickJDK() {
-		File result = Dialog.folderChooser(mainApp.stage, "Bitte einen Ordner auswählen");
+		File result = Dialog.folderChooser(MainApp.stage, "Bitte einen Ordner auswählen");
 		if (result != null)
 			tbJDK.setText(result.getPath());
 	}

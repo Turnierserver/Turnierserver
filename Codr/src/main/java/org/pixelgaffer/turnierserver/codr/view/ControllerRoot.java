@@ -36,7 +36,7 @@ public class ControllerRoot {
 	 */
 	public void setMainApp(MainApp app) {
 		mainApp = app;
-		mainApp.cRoot = this;
+		MainApp.cRoot = this;
 		
 		try {
 			FXMLLoader loader = new FXMLLoader();

@@ -67,8 +67,8 @@ public class MainApp extends Application {
 	public static ObservableList<String> gametypes = FXCollections.observableArrayList();
 	public static ObservableList<String> languages = FXCollections.observableArrayList();
 	
-	public static ObservableList<AiBase> onlineAis = FXCollections.observableArrayList();
-	public static ObservableList<AiBase> ownOnlineAis = FXCollections.observableArrayList();
+	public static ObservableList<AiOnline> onlineAis = FXCollections.observableArrayList();
+	public static ObservableList<AiOnline> ownOnlineAis = FXCollections.observableArrayList();
 	
 	
 	/**
@@ -132,9 +132,8 @@ public class MainApp extends Application {
 	
 	
 	public void loadOnlineResources() {
-		final Task updateTask = new Task() {
+		final Task<Object> updateTask = new Task<Object>() {
 			@Override protected Object call() throws InterruptedException {
-				
 				try {
 					webConnector.updateGametypes();
 				} catch (NewException e) {
@@ -196,15 +195,15 @@ public class MainApp extends Application {
 	
 	public void loadOnlineAis() {
 		
-		Task<ObservableList<AiBase>> loadOnline = new Task<ObservableList<AiBase>>() {
-			public ObservableList<AiBase> call() {
-				ObservableList<AiBase> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
+		Task<ObservableList<AiOnline>> loadOnline = new Task<ObservableList<AiOnline>>() {
+			public ObservableList<AiOnline> call() {
+				ObservableList<AiOnline> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
 				return newOnline;
 			}
 		};
-		Task<ObservableList<AiBase>> loadOwn = new Task<ObservableList<AiBase>>() {
-			public ObservableList<AiBase> call() {
-				ObservableList<AiBase> newOwnOnline = null;
+		Task<ObservableList<AiOnline>> loadOwn = new Task<ObservableList<AiOnline>>() {
+			public ObservableList<AiOnline> call() {
+				ObservableList<AiOnline> newOwnOnline = null;
 				if (MainApp.webConnector.isLoggedIn())		
 					newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
 				return newOwnOnline;
