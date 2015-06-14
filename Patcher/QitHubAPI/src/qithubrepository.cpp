@@ -57,34 +57,21 @@ QitHubBranch QitHubRepository::defaultBranch()
 	return QitHubBranch(api, *this, QString::fromUtf8(info().value("default_branch").toVariant().toByteArray()));
 }
 
-QList<QitHubBranch> QitHubRepository::branches() // muss paginated werden
+QList<QitHubBranch> QitHubRepository::branches() const
 {
-	QNetworkRequest req = api->createRequest("/repos/" + user() + "/" + repo() + "/branches");
-	QNetworkReply *reply = api->sendGet(req);
-	
+	QJsonArray branches = api->sendPaginetedGet("/repos/" + user() + "/" + repo() + "/commits");
 	QList<QitHubBranch> allBranches;
-	QJsonDocument json = QJsonDocument::fromJson(reply->readAll());
 	
-	if (reply->error() != QNetworkReply::NoError)
-	{
-		QJsonObject error = json.object();
-		fprintf(stderr, "Fehler beim Herunterladen von Informationen für %s/%s/branches: %s\n", qPrintable(user()), qPrintable(repo()), qPrintable(error.value("message").toString(reply->errorString())));
-		delete reply;
-		return allBranches;
-	}
-	
-	QJsonArray branches = json.array();
 	for (int i = 0; i < branches.size(); i++)
 	{
 		QJsonObject branch = branches[i].toObject();
 		allBranches << QitHubBranch(api, *this, QString::fromUtf8(branch.value("name").toVariant().toByteArray()));
 	}
 	
-	delete reply;
 	return allBranches;
 }
 
-QList<QitHubCommit> QitHubRepository::commits() // muss paginated werden
+QList<QitHubCommit> QitHubRepository::commits() const
 {
 	QJsonArray commits = api->sendPaginetedGet("/repos/" + user() + "/" + repo() + "/commits");
 	QList<QitHubCommit> allCommits;

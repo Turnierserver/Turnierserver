@@ -19,4 +19,13 @@ LIBS += ../libQitHubAPI.so
 PRE_TARGETDEPS += ../libQitHubAPI.so
 INCLUDEPATH += ../../Patcher/QitHubAPI/include/
 
-SOURCES += main.cpp
+LIBS += -larchive
+
+INCLUDEPATH += include/
+
+SOURCES += \
+    src/main.cpp \
+    src/patcher.cpp
+
+HEADERS += \
+    include/patcher.h
