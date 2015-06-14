@@ -190,6 +190,11 @@ $(document).ready(function () {
 		$("#finished_message").find("a").attr("href", e.data);
 	});
 
+	// ## in ne generelle lib verschieben
+	evtSrc.addEventListener("qualified", function(e) {
+		$("#qualified_message").show();
+	});
+
 	evtSrc.addEventListener("finished_transmitting", function(e) {
 		console.log("finished_transmitting");
 		$("#download_progress").progress({

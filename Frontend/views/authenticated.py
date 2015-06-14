@@ -130,7 +130,12 @@ def qualify_ai(id):
 	if not current_user.can_access(ai):
 		abort(401)
 
-	return render_template(ai.type.viz, ai=ai, qualify=True)
+	quali_ai = AI.query.get(-ai.type.id)
+
+
+	stream = url_for("api.ai_qualify", id=id)
+
+	return render_template(ai.type.viz, qualify=True, ai0=ai, ai1=quali_ai, inprogress=True, stream=stream)
 
 
 @authenticated_blueprint.route("/ais/challenge")

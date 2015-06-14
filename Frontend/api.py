@@ -656,8 +656,9 @@ def api_ai_compile_blocking(id):
 
 @api.route("/ai/<int:id>/qualify", methods=["GET"])
 @authenticated
+@rate_limited
 @sse_stream
-def api_ai_qualify(id):
+def ai_qualify(id):
 	ai = AI.query.get(id)
 	if not ai:
 		return (CommonErrors.INVALID_ID[0]["error"], "error")
@@ -668,7 +669,15 @@ def api_ai_qualify(id):
 	if not ai.lastest_version().compiled:
 		return {"error": "AI_Version isnt compiled"}, 400
 
-	backend.request_qualify(ai)
+	reqid = backend.request_qualify(ai)
+	for data, event in backend.inprogress_log(reqid):
+		if event == "state":
+			yield json.dumps(data), event
+		elif event == "success":
+			yield "", "qualified"
+			ai.lastest_version().compiled = True
+			ai.lastest_version().qualified = True
+			db.session.commit()
 
 
 @api.route("/ai/<int:id>/new_version", methods=["POST"])
