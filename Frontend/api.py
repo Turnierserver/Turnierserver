@@ -624,6 +624,7 @@ def api_ai_compile(id):
 	if ai.lastest_version().frozen:
 		return {"error": "AI_Version is frozen"}, 400
 	ai.lastest_version().compiled = True
+	ai.lastest_version().qualified = False
 	db.session.commit()
 
 	yield from backend.compile(ai)
@@ -641,6 +642,7 @@ def api_ai_compile_blocking(id):
 	if ai.lastest_version().frozen:
 		return {"error": "AI_Version is frozen"}, 400
 	ai.lastest_version().compiled = True
+	ai.lastest_version().qualified = False
 	db.session.commit()
 
 	compile_log = ""
@@ -679,6 +681,22 @@ def ai_qualify(id):
 			ai.lastest_version().qualified = True
 			db.session.commit()
 
+@api.route("/ai/<int:id>/freeze", methods=["POST"])
+@json_out
+@authenticated
+def ai_freeze(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+
+	for version in ai.version_list:
+		if version.compiled and version.qualified:
+			version.frozen = True
+
+	db.session.commit()
+	return {"error": False}, 200
 
 @api.route("/ai/<int:id>/new_version", methods=["POST"])
 @json_out

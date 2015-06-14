@@ -38,25 +38,25 @@
 					console.log(data);
 					if (data.error) {
 						if (data.mimetype) {
-							alert(data.error + ": " + data.mimetype)
+							alert(data.error + ": " + data.mimetype);
 						} else {
-							alert(data.error)
+							alert(data.error);
 						}
 					} else {
-						location.reload()
+						location.reload();
 					}
 				},
 				error: function (xhr, desc, err)
 				{
-					alert(err)
+					alert(err);
 				}
 			});
 		});
 		$("#reset_icon").on("click", function() {
-			console.log("resetting icon")
+			console.log("resetting icon");
 			$.post("/api/ai/{{ai.id}}/reset_icon", {}, function() {
-				location.reload()
-			})
+				location.reload();
+			});
 		})
 	</script>
 </div>
@@ -164,7 +164,7 @@
 					{% if version.frozen %}
 					<i class="large green checkmark icon"></i>
 					{% elif version.qualified and version.current %}
-					<button class="ui basic teal button">Freigeben</button>
+					<button id="freeze_version" class="ui basic teal button">Freigeben</button>
 					{% else %}
 					<i class="large red remove icon"></i>
 					{% endif %}
@@ -258,45 +258,45 @@ $('select.dropdown').dropdown();
 
 
 var f = function() {
-	console.log("Updating AI...")
-	$('#form').addClass('loading')
-	var name = $("#name").val()
-	var lang = $("#lang").val()
-	var desc = $("#desc").val()
-	var extras = $("#extras").val()
+	console.log("Updating AI...");
+	$('#form').addClass('loading');
+	var name = $("#name").val();
+	var lang = $("#lang").val();
+	var desc = $("#desc").val();
+	var extras = $("#extras").val();
 
 	var d = {
 		name: name,
 		lang: lang,
 		description: desc,
 		extra: extras
-	}
-	console.log(name, lang, desc, extras)
+	};
+	console.log(name, lang, desc, extras);
 
 	$.post("/api/ai/{{ai.id}}/update", d).done(function(data) {
-		console.log("AI changed.")
+		console.log("AI changed.");
 		location.reload();
 	}).fail(function(xhr, textStatus, errorThrown) {
-		console.log(xhr.responseText.error)
-		alert(JSON.parse(xhr.responseText).error)
-	})
-}
+		console.log(xhr.responseText.error);
+		alert(JSON.parse(xhr.responseText).error);
+	});
+};
 
-$("#submit").on("click", f)
+$("#submit").on("click", f);
 
 $("#copy_code").on("click", function() {
 	$('#copy_simple_player_modal').modal({
 		onApprove: function() {
-			$('#form').addClass('loading')
+			$('#form').addClass('loading');
 			$.post("/api/ai/{{ai.id}}/copy_example_code").done(function(data) {
-				console.log("Code copied.")
+				console.log("Code copied.");
 				location.reload();
 			}).fail(function(xhr, textStatus, errorThrown) {
-				console.log(xhr.responseText.error)
-				alert(JSON.parse(xhr.responseText).error)
-			})
+				console.log(xhr.responseText.error);
+				alert(JSON.parse(xhr.responseText).error);
+			});
 		}
-	}).modal('show')
+	}).modal('show');
 });
 
 
@@ -304,16 +304,25 @@ $("#delete").on("click", function() {
 	$('#delete_modal').modal({
 		onApprove: function() {
 			$.post("/api/ai/{{ai.id}}/delete").done(function(data) {
-				console.log("AI deleted.")
-				location.href = "/"
+				console.log("AI deleted.");
+				location.href = "/";
 			}).fail(function(xhr, textStatus, errorThrown) {
-				console.log(xhr.responseText.error)
-				alert(JSON.parse(xhr.responseText).error)
-			})
+				console.log(xhr.responseText.error);
+				alert(JSON.parse(xhr.responseText).error);
+			});
 		}
-	}).modal('show')
+	}).modal('show');
 });
 
+$("#freeze_version").on('click', function() {
+	$(this).addClass("disabled");
+	$.post("/api/ai/{{ai.id}}/freeze").done(function(data) {
+		location.reload();
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error);
+		alert(JSON.parse(xhr.responseText).error);
+	});
+});
 
 </script>
 {% endblock %}
