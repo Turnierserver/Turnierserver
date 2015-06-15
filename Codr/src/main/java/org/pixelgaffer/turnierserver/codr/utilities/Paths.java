@@ -5,6 +5,7 @@ import java.io.File;
 
 import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
+import org.pixelgaffer.turnierserver.codr.AiExtern;
 import org.pixelgaffer.turnierserver.codr.CodrGame;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.ParticipantResult;
@@ -76,7 +77,12 @@ public class Paths {
 	 * Gibt den Pfad zum Spieler-Ordner zurück
 	 */
 	public static String aiFolder() {
-		return "AIs";
+		return "AIs/Intern";
+	}
+	
+	
+	public static String aiExternFolder() {
+		return "AIs/Extern";
 	}
 	
 	
@@ -129,13 +135,12 @@ public class Paths {
 	 * Gibt den Pfad zum Ordner eines bestimmten Spielers zurück
 	 */
 	public static String ai(AiBase ai) {
-		if (ai.mode == AiMode.saved) {
-			return aiFolder() + "/" + ai.title;
-		} else if (ai.mode == AiMode.simplePlayer) {
+		if (ai.mode == AiMode.simplePlayer) {
 			return simplePlayerFolder(MainApp.actualGameType.get()) + "/" + ai.title;
+		} else if (ai.mode == AiMode.extern) {
+			return aiExternFolder() + "/" + ai.title;
 		} else {
-			ErrorLog.write("Es wurde ein Pfad zu einem nicht gespeicherten Ai angefordert");
-			return null;
+			return aiFolder() + "/" + ai.title;
 		}
 	}
 	
@@ -171,15 +176,22 @@ public class Paths {
 	 * Gibt den Pfad zu einer bestimmten Version zurück
 	 */
 	public static String version(Version version) {
-		return ai(version.ai) + "/v" + version.number;
+		if (version.ai.mode == AiMode.extern)
+			return ((AiExtern) version.ai).path;
+		else
+			return ai(version.ai) + "/v" + version.number;
 	}
+	
 	
 	
 	/**
 	 * Gibt den Pfad zu einer bestimmten Version zurück
 	 */
 	public static String version(AiBase ai, int number) {
-		return ai(ai) + "/v" + number;
+		if (ai.mode == AiMode.extern)
+			return ((AiExtern) ai).path;
+		else
+			return ai(ai) + "/v" + number;
 	}
 	
 	
@@ -187,7 +199,10 @@ public class Paths {
 	 * Gibt den Pfad zu den Properties einer Version zurück
 	 */
 	public static String versionProperties(Version version) {
-		return version(version) + "/versionProperties.txt";
+		if (version.ai.mode == AiMode.extern)
+			return ai(version.ai) + "/versionProperties.txt";
+		else
+			return version(version) + "/versionProperties.txt";
 	}
 	
 	
@@ -202,6 +217,9 @@ public class Paths {
 	
 	
 	public static String versionBin(Version version) {
-		return version(version) + "/bin";
+		if (version.ai.mode == AiMode.extern)
+			return ai(version.ai) + "/bin";
+		else
+			return version(version) + "/bin";
 	}
 }

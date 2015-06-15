@@ -152,7 +152,7 @@ public class TreeFileCell extends TreeCell<File> {
 		if (result != null) {
 			getItem().renameTo(file);
 		}
-		commitEdit(new File(""));
+		commitEdit(file);
 	}
 	
 	

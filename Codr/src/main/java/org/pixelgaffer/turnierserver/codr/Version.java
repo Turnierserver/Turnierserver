@@ -34,7 +34,6 @@ public class Version {
 	
 	public final AiBase ai;
 	public final int number;
-	public final AiMode mode;
 	
 	public String executeCommand = "";
 	public boolean compiled = false;
@@ -47,10 +46,10 @@ public class Version {
 	public TreeItem<File> rootFile = null;
 	
 	
-	public Version(AiBase p, int n, JSONObject json) {
-		ai = p;
+	public Version(AiBase aai, int n, JSONObject json) {
+		ai = aai;
 		number = n;
-		mode = AiMode.online;
+
 		compiled = json.getBoolean("compiled");
 		qualified = json.getBoolean("qualified");
 		finished = json.getBoolean("frozen");
@@ -58,19 +57,16 @@ public class Version {
 	
 	
 	/**
-	 * Erstellt eine neue Version und lädt automatisch den Quellcode
+	 * Instanziert eine neue Version und lädt automatisch den Quellcode
 	 * 
-	 * @param p
-	 *            der Spieler
-	 * @param n
-	 *            die Nummer
+	 * @param p der Spieler
+	 * @param n die Nummer
 	 */
-	public Version(AiBase p, int n, AiMode mmode) {
-		ai = p;
+	public Version(AiBase aai, int n, AiMode mmode) {
+		ai = aai;
 		number = n;
-		mode = mmode;
 		
-		if (mode == AiMode.saved || mode == AiMode.simplePlayer) {
+		if (ai.mode == AiMode.saved || ai.mode == AiMode.simplePlayer) {
 			if (!exists()) {
 				ai.gametype = MainApp.actualGameType.get();
 				copyFromFile(Paths.simplePlayer("" + ai.gametype, ai.language));
@@ -84,14 +80,14 @@ public class Version {
 	}
 	
 	
-	public Version(AiBase p, int n, String path) {
-		ai = p;
+	public Version(AiBase aai, int n, AiMode mmode, String path) {
+		ai = aai;
 		number = n;
-		mode = AiMode.saved;
 		
 		exists();
 		
-		copyFromFile(path);
+		if (ai.mode == AiMode.saved)
+			copyFromFile(path);
 		storeProps();
 		findCode();
 	}
@@ -103,9 +99,8 @@ public class Version {
 	 * @return true, wenn die Version bereits existiert
 	 */
 	public boolean exists() {
-		if (mode != AiMode.saved) {
-			if (mode != AiMode.simplePlayer)
-				ErrorLog.write("dies ist kein speicherbares Objekt (exists)");
+		if (ai.mode != AiMode.saved && ai.mode != AiMode.extern && ai.mode != AiMode.simplePlayer) {
+			ErrorLog.write("dies ist kein speicherbares Objekt (exists)");
 			return true;
 		}
 		File dir = new File(Paths.version(this));
@@ -114,14 +109,12 @@ public class Version {
 	
 	
 	/**
-	 * Kopiert alle Dateien von einem bestimmten Pfad in das Verzeichnis der
-	 * Version.
+	 * Kopiert alle Dateien von einem bestimmten Pfad in das Verzeichnis der Version.
 	 * 
-	 * @param path
-	 *            der Pfad, von dem kopiert werden soll
+	 * @param path der Pfad, von dem kopiert werden soll
 	 */
 	public void copyFromFile(String path) {
-		if (mode != AiMode.saved) {
+		if (ai.mode != AiMode.saved && ai.mode != AiMode.extern) {
 			ErrorLog.write("dies ist kein speicherbares Objekt (copyFromFile)");
 			return;
 		}
@@ -137,11 +130,10 @@ public class Version {
 	
 	
 	/**
-	 * Sucht alle Dateien innerhalb des Versionsordners und speichert sie in
-	 * files
+	 * Sucht alle Dateien innerhalb des Versionsordners und speichert sie in files
 	 */
 	public void findCode() {
-		if (mode != AiMode.saved && mode != AiMode.simplePlayer) {
+		if (ai.mode != AiMode.saved && ai.mode != AiMode.simplePlayer && ai.mode != AiMode.extern) {
 			ErrorLog.write("dies ist kein lesbares Objekt (findCode)");
 			return;
 		}
@@ -153,13 +145,13 @@ public class Version {
 	}
 	
 	
-	private void recursiveFileBuild(TreeItem<File> item){
+	private void recursiveFileBuild(TreeItem<File> item) {
 		File[] underFiles = item.getValue().listFiles();
 		
 		if (underFiles == null)
 			return;
 		
-		for (File file : underFiles){
+		for (File file : underFiles) {
 			if (file.getName().startsWith(".")) {
 				continue;
 			}
@@ -167,10 +159,9 @@ public class Version {
 			TreeItem<File> actual = new TreeItem<File>(file);
 			actual.setExpanded(true);
 			item.getChildren().add(actual);
-			if (file.isDirectory()){
+			if (file.isDirectory()) {
 				recursiveFileBuild(actual);
-			}
-			else{
+			} else {
 				files.add(new CodeEditor(file));
 			}
 		}
@@ -181,8 +172,8 @@ public class Version {
 	 * Speichert alle Dateien aus den CodeEditoren in files im Dateisystem ab
 	 */
 	public void saveCode() {
-		if (mode != AiMode.saved) {
-			if (mode != AiMode.simplePlayer)
+		if (ai.mode != AiMode.saved && ai.mode != AiMode.extern) {
+			if (ai.mode != AiMode.simplePlayer)
 				ErrorLog.write("dies ist kein speicherbares Objekt (saveCode)");
 			return;
 		}
@@ -201,7 +192,7 @@ public class Version {
 	 * Lädt aus dem Dateiverzeichnis die Eigenschaften des Players.
 	 */
 	public void loadProps() {
-		if (mode != AiMode.saved && mode != AiMode.simplePlayer) {
+		if (ai.mode != AiMode.saved && ai.mode != AiMode.simplePlayer && ai.mode != AiMode.extern) {
 			ErrorLog.write("dies ist kein lesbares Objekt (Version.loadProps)");
 			return;
 		}
@@ -227,7 +218,7 @@ public class Version {
 	 * Speichert die Eigenschaften des Players in das Dateiverzeichnis.
 	 */
 	public void storeProps() {
-		if (mode != AiMode.saved) {
+		if (ai.mode != AiMode.saved && ai.mode != AiMode.extern) {
 			ErrorLog.write("dies ist kein speicherbares Objekt (Version.storeProps)");
 			return;
 		}
@@ -256,7 +247,7 @@ public class Version {
 	 * @return false, wenn die Kompilierung fehlgeschlagen ist
 	 */
 	public boolean compile() {
-		if (mode != AiMode.saved && mode != AiMode.simplePlayer) {
+		if (ai.mode != AiMode.saved && ai.mode != AiMode.simplePlayer && ai.mode != AiMode.extern) {
 			ErrorLog.write("dies ist kein kompilierbares Objekt (compile)");
 			return false;
 		}
@@ -292,7 +283,7 @@ public class Version {
 	 * @return false, wenn die Qualifikation fehlgeschlagen ist
 	 */
 	public boolean qualify() {
-		if (mode != AiMode.saved) {
+		if (ai.mode != AiMode.saved && ai.mode != AiMode.extern) {
 			ErrorLog.write("dies ist kein speicherbares Objekt (qualify)");
 			return false;
 		}
@@ -308,11 +299,10 @@ public class Version {
 	
 	
 	/**
-	 * Stellt die Ki fertig, was bedeutet, dass sie nicht mehr bearbeitet werden
-	 * kann.
+	 * Stellt die Ki fertig, was bedeutet, dass sie nicht mehr bearbeitet werden kann.
 	 */
 	public void finish() {
-		if (mode != AiMode.saved) {
+		if (ai.mode != AiMode.saved && ai.mode != AiMode.extern) {
 			ErrorLog.write("dies ist kein speicherbares Objekt (finish)");
 			return;
 		}
