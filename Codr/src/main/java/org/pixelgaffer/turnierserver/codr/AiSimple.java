@@ -55,7 +55,8 @@ public class AiSimple extends AiBase {
 			description = prop.getProperty("description");
 			language = prop.getProperty("language");
 		} catch (IOException e) {
-			ErrorLog.write("Fehler bei Laden aus der properties.txt");
+			e.printStackTrace();
+			ErrorLog.write("Fehler bei Laden aus der aiProperties.txt");
 		}
 	}
 	

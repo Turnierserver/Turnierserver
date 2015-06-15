@@ -21,6 +21,7 @@ public class AiManager {
 	 * Lädt alle Spieler aus dem Dateisystem in die Liste
 	 */
 	public void loadAis() {
+		
 		ais.clear();
 		File dir = new File(Paths.aiFolder());
 		dir.mkdirs();
@@ -32,6 +33,19 @@ public class AiManager {
 		for (int i = 0; i < playerDirs.length; i++) {
 			if (playerDirs[i].isDirectory())
 				ais.add(new AiSaved(playerDirs[i].getName()));
+		}
+		
+		
+		File externDir = new File(Paths.aiExternFolder());
+		externDir.mkdirs();
+		File[] externDirs = externDir.listFiles();
+		if (externDirs == null) {
+			ErrorLog.write("keine Spieler vorhanden");
+			return;
+		}
+		for (int i = 0; i < externDirs.length; i++) {
+			if (externDirs[i].isDirectory())
+				ais.add(new AiExtern(externDirs[i].getName()));
 		}
 		
 		File simpleDir = new File(Paths.simplePlayerFolder(MainApp.actualGameType.get()));

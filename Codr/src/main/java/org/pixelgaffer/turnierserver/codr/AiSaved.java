@@ -77,13 +77,13 @@ public class AiSaved extends AiSimple {
 		Version version = null;
 		switch (type) {
 		case fromFile:
-			version = new Version(this, versions.size(), path);
+			version = new Version(this, versions.size(), mode, path);
 			break;
 		case lastVersion:
 			if (versions.size() == 0) {
 				return null;
 			}
-			version = new Version(this, versions.size(), Paths.version(this, versions.size() - 1));
+			version = new Version(this, versions.size(), mode, Paths.version(this, versions.size() - 1));
 			break;
 		case simplePlayer:
 			version = new Version(this, versions.size(), mode);

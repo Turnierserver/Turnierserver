@@ -34,6 +34,7 @@ import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NothingDoneException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
+import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
 import org.pixelgaffer.turnierserver.codr.utilities.Settings;
 import org.pixelgaffer.turnierserver.codr.utilities.WebConnector;
@@ -89,6 +90,16 @@ public class MainApp extends Application {
 		ErrorLog.clear();
 		ErrorLog.write("Programm startet...", true);
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> exit()));
+		
+//		AiExtern hi = new AiExtern("Titel", "Java", "C:/Users/Philip/Desktop/testordner");
+//		System.out.println("Ai:             " + Paths.ai(hi));
+//		System.out.println("Version:        " + Paths.version(hi.lastVersion()));
+//		System.out.println("VersionProp:    " + Paths.versionProperties(hi.lastVersion()));
+//		System.out.println("Picture:        " + Paths.aiPicture(hi));
+//		System.out.println("AiProp:         " + Paths.aiProperties(hi));
+//		System.out.println("VersionSrc:     " + Paths.versionSrc(hi.lastVersion()));
+//		System.out.println("VersionSrcStart:" + Paths.versionSrcStartClass(hi.lastVersion()));
+//		System.out.println("VersionBin:     " + Paths.versionBin(hi.lastVersion()));
 		
 		stage = new Stage(StageStyle.DECORATED);
 		
@@ -204,25 +215,25 @@ public class MainApp extends Application {
 		Task<ObservableList<AiOnline>> loadOwn = new Task<ObservableList<AiOnline>>() {
 			public ObservableList<AiOnline> call() {
 				ObservableList<AiOnline> newOwnOnline = null;
-				if (MainApp.webConnector.isLoggedIn())		
+				if (MainApp.webConnector.isLoggedIn())
 					newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
 				return newOwnOnline;
 			}
 		};
-
+		
 		loadOnline.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-				if (newValue != null){
-					onlineAis.clear();
-					onlineAis.addAll(newValue);
-				}
+			if (newValue != null) {
+				onlineAis.clear();
+				onlineAis.addAll(newValue);
+			}
 		});
 		loadOwn.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-				if (newValue != null){
-					ownOnlineAis.clear();
-					ownOnlineAis.addAll(newValue);
-				}
+			if (newValue != null) {
+				ownOnlineAis.clear();
+				ownOnlineAis.addAll(newValue);
+			}
 		});
-
+		
 		Thread thread1 = new Thread(loadOnline, "loadOnlineAis");
 		thread1.setDaemon(true);
 		thread1.start();

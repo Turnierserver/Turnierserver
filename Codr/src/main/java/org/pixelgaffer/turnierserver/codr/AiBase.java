@@ -23,7 +23,7 @@ public class AiBase {
 	
 	
 	public static enum AiMode {
-		saved, online, simplePlayer, gitHub, fake
+		saved, online, simplePlayer, extern, fake
 	}
 	
 	public static enum NewVersionType {
