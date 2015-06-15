@@ -187,12 +187,6 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 			return;
 		}
 		
-		if(getMaxTurns() == getPlayedRounds()) {
-			endGame();
-			logger.finest("Das Spiel wurde erfolgreich beendet");
-			return;
-		}
-		
 		finished.clear();
 		
 		if(building) {
@@ -201,6 +195,11 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 		}
 		else {
 			round();
+			if(allRoundsPlayed()) {
+				endGame();
+				logger.finest("Das Spiel wurde erfolgreich beendet");
+				return;
+			}
 			logger.fine("Die Ais fangen nun an zu builden");
 			startBuilding();
 		}

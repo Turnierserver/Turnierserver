@@ -238,6 +238,15 @@ public abstract class GameLogic<E extends AiObject, R> {
 	public void round() {
 		playedRounds++;
 	}
+	
+	/**
+	 * Gibt zurück, ob die Anzahl an gespielten Runden der Anzahl an zu spielenden Runden ist
+	 * 
+	 * @return True, wenn alle zu spielenden Runden gespielt wurden
+	 */
+	public boolean allRoundsPlayed() {
+		return playedRounds == maxTurns;
+	}
 
 	/**
 	 * Sortiert Ais aufsteigend nach Score
