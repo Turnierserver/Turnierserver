@@ -165,7 +165,8 @@ public class ControllerAiManagement {
 			cbVersion.getSelectionModel().clearSelection();
 			cbVersion.setItems(ai.versions);
 			Bindings.bindBidirectional(image.imageProperty(), ai.getPicture());
-			
+
+			newFileTab.setDisable(false);
 			btChangeImage.setDisable(false);
 			btDeleteImage.setDisable(false);
 			btToActual.setDisable(false);
@@ -185,6 +186,7 @@ public class ControllerAiManagement {
 				version = ai.lastVersion();
 			}
 		} else {
+			newFileTab.setDisable(true);
 			lbName.setText("Name");
 			lbLanguage.setText("Sprache: ");
 			tbDescription.setText("Momentan ist kein Spieler ausgew�hlt");
@@ -211,6 +213,7 @@ public class ControllerAiManagement {
 		
 		// Version-spezifisches
 		if (version != null && ai != null) {
+			newFileTab.setDisable(false);
 			cbVersion.setValue(version);
 			tbOutput.setText("");
 			if (!version.compileOutput.equals("")) {
@@ -235,6 +238,7 @@ public class ControllerAiManagement {
 			
 			setVersionTabs();
 		} else {
+			newFileTab.setDisable(true);
 			cbVersion.setValue(null);
 			tbOutput.setText("");
 			lbCompiled.setVisible(false);
@@ -254,6 +258,7 @@ public class ControllerAiManagement {
 		
 		if (ai != null) {
 			if (ai.mode == AiMode.simplePlayer) {
+				newFileTab.setDisable(true);
 				btDelete.setDisable(true);
 				btEdit.setDisable(true);
 				btToActual.setDisable(true);
@@ -284,6 +289,13 @@ public class ControllerAiManagement {
 	 * Lädt mithilfe der CodeEditoren der anzuzeigenden Version alle Dateien der Version in die Tab-Leiste
 	 */
 	private void setVersionTabs() {
+		if (version == null){
+			tpCode.getTabs().clear();
+			tpCode.getTabs().add(infoTab);
+			tpCode.getTabs().add(newFileTab);
+			return;
+		}
+		
 		version.findCode();
 		
 		tvFiles.setRoot(version.rootFile);
@@ -403,6 +415,7 @@ public class ControllerAiManagement {
 		
 		MainApp.aiManager.ais.add(new AiSaved(title, cbLanguage.getValue()));
 		lvAis.getSelectionModel().selectLast();
+		setVersionTabs();
 	}
 	
 	
