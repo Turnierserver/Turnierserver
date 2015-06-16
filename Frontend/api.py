@@ -91,9 +91,7 @@ def api_index():
 @api.route("/ais/<string:gametype>", methods=["GET"])
 @json_out
 def api_ais(gametype=None):
-	if not gametype:
-		gametype = GameType.lastest()
-	else:
+	if gametype:
 		if isinstance(gametype, int):
 			gametype = GameType.query.get(gametype)
 		elif isinstance(gametype, str):
@@ -103,7 +101,7 @@ def api_ais(gametype=None):
 		if not gametype:
 			return CommonErrors.BAD_REQUEST
 
-	return [ai.info() for ai in AI.query.filter(AI.type == gametype).filter(AI.id >= 0).all()]
+	return [ai.info() for ai in AI.filtered(gametype).all()]
 
 @api.route("/ai/<int:id>", methods=["GET"])
 @json_out
@@ -1039,6 +1037,11 @@ def game_logic(id):
 		else:
 			abort(503)
 	return f()
+
+@api.route("/lib/<string:lang>/<string:name>")
+def lib_by_name(lang, name):
+	## ratelimit
+	return CommonErrors.NOT_IMPLEMENTED
 
 @api.route("/data_container/<int:game_id>")
 def esu_container(game_id):

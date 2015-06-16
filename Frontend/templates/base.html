@@ -1,7 +1,7 @@
 {% set nav_menu = [
-	(url_for("anonymous.ai_list"), "ai_list", "KI-Liste"),
-	(url_for("anonymous.user_list"), "user_list", "Nutzer-Liste"),
-	(url_for("anonymous.game_list"), "game_list", "Spiel-Liste")
+	(url_for("anonymous.ai_list"), "ai_list", "KIs"),
+	(url_for("anonymous.user_list"), "user_list", "Nutzer"),
+	(url_for("anonymous.game_list"), "game_list", "Spiele")
 ]%}
 
 {% if current_user and current_user.is_authenticated() %}
@@ -30,7 +30,7 @@
 		<a href="{{ url_for("anonymous.index") }}" class="brand {{'active' if active_page == 'index'}} item">Turnierserver</a>
 		<div class="right menu">
 			{% for url, id, name in nav_menu %}
-			<a href="{{ url | e }}" class="{{'active' if id == active_page}} item">{{ name | e }}</a>
+			<a href="{{ url | e }}" class="{{'active' if active_page == id}} item">{{ name | e }}</a>
 			{% endfor %}
 			{% if current_user and current_user.is_authenticated() %}
 			<div class="item"><button id="logout" class="ui green button">Ausloggen</button></div>
@@ -89,6 +89,10 @@
 				$('.ui.checkbox').checkbox();
 			</script>
 			{% endif %}
+			<div class="{{'active' if active_page == 'settings'}} item" style="cursor: pointer;">
+				<i class="settings icon" style="font-size: 1.5em;" onclick="location.href='settings'"></i>
+				<!-- ## -->
+			</div>
 		</div>
 	</nav>
 	{% block rawbody %}

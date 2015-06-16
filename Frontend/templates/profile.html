@@ -99,61 +99,61 @@
 
 <script>
 $("#password").on("input", function() {
-	var hidden = $("#confirm_pw").hasClass("hidden")
-	if ($("#password").val() != "") {
+	var hidden = $("#confirm_pw").hasClass("hidden");
+	if ($("#password").val() !== "") {
 		if (hidden)
-			$("#confirm_pw").transition("scale")
+			$("#confirm_pw").transition("scale");
 	} else {
 		if (!hidden)
-			$("#confirm_pw").transition("scale")
-		$("#confirm_pw_input").val("")
+			$("#confirm_pw").transition("scale");
+		$("#confirm_pw_input").val("");
 	}
-})
+});
 
 $("#change_account").on("click", function() {
 	var d = {};
 
-	if ($("#firstname").val() != "")
-		d.firstname = $("#firstname").val()
+	if ($("#firstname").val() !== "")
+		d.firstname = $("#firstname").val();
 
-	if ($("#lastname").val() != "")
-		d.lastname = $("#lastname").val()
+	if ($("#lastname").val() !== "")
+		d.lastname = $("#lastname").val();
 
-	if ($("#email").val() != "")
-		d.email = $("#email").val()
+	if ($("#email").val() !== "")
+		d.email = $("#email").val();
 
-	if ($("#password").val() != "") {
+	if ($("#password").val() !== "") {
 		if ($("#password").val() != $("#confirm_pw_input").val()) {
-			alert("Die eingetippten Passwörter sind nicht gleich!")
-			$("#confirm_pw").transition("pulse")
+			alert("Die eingetippten Passwörter sind nicht gleich!");
+			$("#confirm_pw").transition("pulse");
 			return;
 		}
 		d.password = $("#password").val();
 	}
 
-	$("#profile_form").addClass("loading")
+	$("#profile_form").addClass("loading");
 	$.post("/api/user/{{user.id}}/update", d).done(function(data) {
-		console.log("User changed.")
+		console.log("User changed.");
 		location.reload();
 	}).fail(function(xhr, textStatus, errorThrown) {
-		console.log(xhr.responseText.error)
-		alert(JSON.parse(xhr.responseText).error)
-	})
-})
+		console.log(xhr.responseText.error);
+		alert(JSON.parse(xhr.responseText).error);
+	});
+});
 
 
 $("#delete_account").on("click", function() {
 	$('#delete_modal').modal({
 		onApprove: function() {
 			$.post("/api/user/{{user.id}}/delete").done(function(data) {
-				console.log("User deleted.")
-				location.href = "/"
+				console.log("User deleted.");
+				location.href = "/";
 			}).fail(function(xhr, textStatus, errorThrown) {
-				console.log(xhr.responseText.error)
-				alert(JSON.parse(xhr.responseText).error)
-			})
+				console.log(xhr.responseText.error);
+				alert(JSON.parse(xhr.responseText).error);
+			});
 		}
-	}).modal('show')
+	}).modal('show');
 });
 
 </script>

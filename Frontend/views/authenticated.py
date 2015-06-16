@@ -11,7 +11,7 @@ authenticated_blueprint = Blueprint("authenticated", __name__)
 @authenticated_web
 def current_profile():
 	user = current_user
-	ais = AI.query.filter(AI.user == user).filter(AI.id >= 0).all()
+	ais = AI.filtered().filter(AI.user == user).all()
 	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
 	return render_template("profile.html", columns=columns, user=user)
 
@@ -24,7 +24,7 @@ def profile_id(id):
 	if not current_user.can_access(user):
 		abort(403)
 
-	ais = AI.query.filter(AI.user == user).filter(AI.id >= 0).all()
+	ais = AI.filtered().filter(AI.user == user).all()
 	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
 	return render_template("profile.html", columns=columns, user=user)
 
@@ -141,10 +141,8 @@ def qualify_ai(id):
 @authenticated_blueprint.route("/ais/challenge")
 @authenticated_web
 def ais_challenge():
-	gametype = GameType.query.first()
-	## current gametype
+	own_ais = AI.filtered().filter(AI.user == current_user).order_by(AI.last_modified.desc()).all()
 
-	own_ais = AI.query.filter(AI.user == current_user).filter(AI.type == gametype).filter(AI.id >= 0).order_by(AI.last_modified.desc()).all()
 	if len(own_ais) < 1:
 		return error(403, body="Du hast nicht genug eigene KIs.")
 
@@ -153,7 +151,7 @@ def ais_challenge():
 	if len(own_ais) < 1:
 		return error(403, body="Du hast keine qualifizierten KIs.")
 
-	all_ais = AI.query.filter(AI.id >= 0).order_by(AI.id).all()
+	all_ais = AI.filtered().order_by(AI.id).all()
 	if len(all_ais) < 2:
 		return error(403, body="Es gibt noch nicht genug KIs.")
 
