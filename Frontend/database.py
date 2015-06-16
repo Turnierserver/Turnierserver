@@ -1,5 +1,5 @@
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask import send_file, abort
+from flask import send_file, abort, request
 from _cfg import env
 from activityfeed import Activity
 from io import BytesIO
@@ -392,6 +392,17 @@ class AI(db.Model):
 		target_dir_base = "AIs/{}/v{}".format(self.id, self.lastest_version().version_id)
 		return ftp.copy_tree(source_dir_base, target_dir_base)
 
+	@classmethod
+	def filtered(cls, gametype=None):
+		query = db.session.query(cls).filter(cls.id >= 0)
+		if not gametype:
+			if "gametype" in request.cookies:
+				gametype = GameType.query.filter(GameType.name.ilike(request.cookies["gametype"])).first()
+
+		if not gametype:
+			gametype = GameType.lastest()
+
+		return query.filter(cls.type == gametype)
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(
