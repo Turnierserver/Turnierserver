@@ -126,7 +126,7 @@ public class MainApp extends Application {
 		
 		if (cGame != null && cGame.runningGame != null) {
 			try {
-				cGame.runningGame.getGame().finishGame();
+				cGame.runningGame.game.finishGame();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -144,7 +144,7 @@ public class MainApp extends Application {
 			ErrorLog.write("Du hast nicht die Jar-Version von Codr");
 			return;
 		}
-
+		
 		// ist neu
 		if (myself.getName().equals("CodrNewVersion.jar")) {
 			File oldCodr = new File("Codr.jar");
@@ -182,7 +182,7 @@ public class MainApp extends Application {
 						} else {
 							ErrorLog.write("Eine neue Version ist verfügbar, sie wird ausgeführt...");
 							
-							if (newStartWarning){
+							if (newStartWarning) {
 								Dialog.info("Codr wird jetzt neu gestartet.");
 							}
 							

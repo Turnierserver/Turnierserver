@@ -19,8 +19,9 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import org.pixelgaffer.turnierserver.codr.AiBase;
-import org.pixelgaffer.turnierserver.codr.CodrGame;
-import org.pixelgaffer.turnierserver.codr.CodrGame.GameMode;
+import org.pixelgaffer.turnierserver.codr.GameBase;
+import org.pixelgaffer.turnierserver.codr.GameBase.GameMode;
+import org.pixelgaffer.turnierserver.codr.GameSaved;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.ParticipantResult;
 import org.pixelgaffer.turnierserver.codr.Version;
@@ -48,11 +49,11 @@ public class ControllerGameManagement {
 	@FXML public TextArea tbOutput2;
 	@FXML public TableView<ParticipantResult> tableResult;
 	
-	@FXML public CodrGame runningGame;
+	@FXML public GameSaved runningGame;
 	
 	MainApp mainApp;
 	
-	CodrGame game = null;
+	GameBase game = null;
 	
 	
 	/**
@@ -92,7 +93,7 @@ public class ControllerGameManagement {
 		
 		MainApp.gameManager.loadGames();
 		showGame();
-
+		
 		lvPlayer1.getItems().clear();
 		lvPlayer2.getItems().clear();
 		lvPlayer1.getItems().addAll(MainApp.aiManager.ais);
@@ -100,7 +101,7 @@ public class ControllerGameManagement {
 	}
 	
 	
-	public void showGame(CodrGame ggame) {
+	public void showGame(GameBase ggame) {
 		game = ggame;
 		showGame();
 	}
@@ -153,7 +154,7 @@ public class ControllerGameManagement {
 			if (lvPlayer1.getSelectionModel().getSelectedItem() != null && lvPlayer2.getSelectionModel().getSelectedItem() != null) {
 				Task<Boolean> play = new Task<Boolean>() {
 					public Boolean call() {
-						runningGame = new CodrGame(MainApp.actualGameType.get(), GameMode.playing);
+						runningGame = new GameSaved(MainApp.actualGameType.get(), GameMode.playing);
 						List<Version> players = new ArrayList<>();
 						players.add(lvPlayer1.getSelectionModel().getSelectedItem().lastVersion());
 						players.add(lvPlayer2.getSelectionModel().getSelectedItem().lastVersion());
@@ -161,7 +162,7 @@ public class ControllerGameManagement {
 						return true;
 					}
 				};
-
+				
 				Thread thread = new Thread(play, "play");
 				thread.setDaemon(true);
 				thread.start();

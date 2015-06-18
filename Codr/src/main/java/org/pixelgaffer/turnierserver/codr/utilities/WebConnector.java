@@ -46,7 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.AiOnline;
-import org.pixelgaffer.turnierserver.codr.CodrGame;
+import org.pixelgaffer.turnierserver.codr.GameBase;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.DeletedException;
@@ -246,7 +246,7 @@ public class WebConnector {
 	}
 	
 	
-	public List<CodrGame> getGames() {
+	public List<GameBase> getGames() {
 		throw new UnsupportedOperationException("Ich bin so pöse!");
 	}
 	
