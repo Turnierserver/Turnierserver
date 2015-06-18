@@ -19,7 +19,7 @@ import java.util.jar.Manifest;
 
 import lombok.Getter;
 
-import org.pixelgaffer.turnierserver.codr.CodrGame;
+import org.pixelgaffer.turnierserver.codr.GameBase;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
@@ -80,7 +80,7 @@ public class CodrGameImpl implements Game, Frontend
 	
 	private OutputStream renderData;
 	
-	public CodrGameImpl (CodrGame game, Collection<Version> opponents) throws IOException, ReflectiveOperationException
+	public CodrGameImpl (GameBase game, Collection<Version> opponents) throws IOException, ReflectiveOperationException
 	{
 		renderData = new FileOutputStream(Paths.gameRenderData(game));
 		logic = loadGameLogic(game.logic);

@@ -17,7 +17,7 @@ import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 
 import org.pixelgaffer.turnierserver.codr.AiOnline;
-import org.pixelgaffer.turnierserver.codr.CodrGame;
+import org.pixelgaffer.turnierserver.codr.GameBase;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
@@ -35,7 +35,7 @@ public class ControllerRanking {
 	@FXML TextArea tbDescription;
 	@FXML TableView<AiOnline> tvAis;
 	@FXML TableView<Version> tvVersions;
-	@FXML TableView<CodrGame> tvGames;
+	@FXML TableView<GameBase> tvGames;
 	@FXML ImageView imageView;
 	
 	MainApp mainApp;
@@ -164,11 +164,11 @@ public class ControllerRanking {
 		
 		
 
-		TableColumn<CodrGame, String> colG0 = new TableColumn<>("Gegner");
-		TableColumn<CodrGame, String> colG1 = new TableColumn<>("zum Spiel");
-		TableColumn<CodrGame, String> colG2 = new TableColumn<>("Datum");
-		TableColumn<CodrGame, String> colG3 = new TableColumn<>("gespielte Zeit");
-		TableColumn<CodrGame, String> colG4 = new TableColumn<>("Gewonnen?");
+		TableColumn<GameBase, String> colG0 = new TableColumn<>("Gegner");
+		TableColumn<GameBase, String> colG1 = new TableColumn<>("zum Spiel");
+		TableColumn<GameBase, String> colG2 = new TableColumn<>("Datum");
+		TableColumn<GameBase, String> colG3 = new TableColumn<>("gespielte Zeit");
+		TableColumn<GameBase, String> colG4 = new TableColumn<>("Gewonnen?");
 		
 		tvGames.getColumns().add(colG0);
 		tvGames.getColumns().add(colG1);
