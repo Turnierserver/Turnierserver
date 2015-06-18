@@ -36,6 +36,7 @@ public:
 	QStringList dependencies() const  { return value("Dependency").toStringList(); }
 	
 	int build(const QString &currentHash);
+	int start();
 	
 protected:
 	QVariant value(const QString &key) const;

@@ -20,6 +20,8 @@
 #ifndef PATCHER_H
 #define PATCHER_H
 
+#include "module.h"
+
 #include <sys/types.h>
 
 #include <QDir>
@@ -45,8 +47,8 @@ public slots:
 	void startWorker();
 	
 protected:
-	/// Startet den Befehl cmd im Verzeichnis wd und gibt die pid zurück.
-	virtual pid_t start (const QString &wd, const QString &cmd);
+	/// Startet das Modul in einem eigenen Prozess und gibt die PID zurück.
+	virtual pid_t start (Module &module);
 	/// Sendet einen kill-Befehl an den Prozess.
 	virtual bool stop(pid_t process);
 	
