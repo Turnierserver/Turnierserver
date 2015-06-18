@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <QDir>
+
 Module::Module(QSettings *config, QSettings *tmp, const QString &name)
 	: _config(config)
 	, _tmp(tmp)
@@ -92,6 +94,51 @@ int Module::build(const QString &currentHash)
 				RETURN_ERROR
 			}
 			RETURN_BUILD(system("mvn clean package install dependency:copy-dependencies"))
+		}
+		ELSE_UNKNOWN
+	}
+	ELSE_UNKNOWN
+			
+#undef ELSE_UNKNOWN
+#undef RETURN_ERROR
+#undef RETURN_BUILD
+}
+
+int Module::start()
+{
+	// die config bei bedarf ins verzeichnis kopieren
+	QFileInfo configFile(QDir(_tmp->value("ConfigRepoClonePath").toString()).absoluteFilePath(_config->value(name() + "/Config", "_n_o_n_e_x_i_s_t_e_n_t").toString()));
+	if (configFile.exists())
+		QFile::copy(configFile.absoluteFilePath(), QDir(_tmp->value("RepoClonePath").toString()).absoluteFilePath(configFile.fileName()));
+	
+#define ELSE_UNKNOWN \
+	else \
+	{ \
+		fprintf(stderr, "Unknown Language/Build %s/%s\n", qPrintable(lang()), qPrintable(build())); \
+		return -1; \
+	}
+	
+	if (lang() == "Java")
+	{
+		if (build() == "Maven")
+		{
+			QDir target(_tmp->value("RepoClonePath").toString());
+			if (!target.cd(_config->value(name() + "/Folder").toString()) || !target.cd("target"))
+			{
+				fprintf(stderr, "Konnte nicht ins Verzeichnis des Moduls wechseln\n");
+				return 1;
+			}
+			QString cmd("java -classpath '.");
+			for (QString file : target.entryList(QDir::Files))
+				if (file.endsWith(".jar"))
+					cmd += ":" + target.absoluteFilePath(file);
+			if (target.cd("dependency"))
+				for (QString file : target.entryList(QDir::Files))
+					if (file.endsWith(".jar"))
+						cmd += ":" + target.absoluteFilePath(file);
+			cmd += "' '" + _config->value(name() + "/MainClass").toString() + "' " + _config->value(name() + "/Args").toString().replace("${CONFIG}", "'" + configFile.absoluteFilePath() + "'");
+			printf("%s\n", qPrintable(cmd));
+			return system(qPrintable(cmd));
 		}
 		ELSE_UNKNOWN
 	}
