@@ -505,6 +505,13 @@ public class WebConnector {
 	}
 	
 	
+	public boolean updateCodr() throws IOException{
+		return false;  //TODO
+		//return true, wenn eine neue Verison existiert
+		//return false, wenn keine neue Version existiert
+	}
+	
+	
 	public boolean loadGamelogic(int game, String gameName) {
 		byte[] logic;
 		try {
