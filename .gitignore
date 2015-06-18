@@ -14,6 +14,7 @@ test.db
 gen/
 GameBuilder/Makefile
 startServer.bat
+dependency-reduced-pom.xml
 
 # java müll
 .settings/
