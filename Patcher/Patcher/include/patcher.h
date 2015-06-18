@@ -24,7 +24,10 @@
 
 #include <QDir>
 #include <QObject>
+#include <QSettings>
+#include <QStringList>
 #include <QTemporaryDir>
+#include <QTemporaryFile>
 
 #include <qithubbranch.h>
 #include <qithubrepository.h>
@@ -34,7 +37,7 @@ class Patcher : public QObject
 	Q_OBJECT
 	
 public:
-	Patcher(const QitHubRepository &repo, const QString &repoBranch, const QitHubRepository &configRepo, const QString &configBranch, QObject *parent = 0);
+	Patcher(QSettings *config, const QitHubRepository &repo, const QString &repoBranch, const QitHubRepository &configRepo, const QString &configBranch, QObject *parent = 0);
 	
 public slots:
 	void startFrontend();
@@ -48,6 +51,9 @@ protected:
 	virtual bool stop(pid_t process);
 	
 private:
+	QSettings *_config, *_tmp;
+	QTemporaryFile tmpConfig;
+	
 	QitHubRepository repo, config;
 	QitHubBranch repoBranch, configBranch;
 	

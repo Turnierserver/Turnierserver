@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 	config->endGroup();
 	
 	// den Patcher erstellen
-	Patcher patcher(repo, parser.isSet(repoBranchOption) ? parser.value(repoBranchOption) : parser.value(branchOption),
+	Patcher patcher(config, repo, parser.isSet(repoBranchOption) ? parser.value(repoBranchOption) : parser.value(branchOption),
 					configRepo, parser.isSet(configBranchOption) ? parser.value(configBranchOption) : parser.value(branchOption));
 	if (parser.isSet(backendOption))
 		patcher.startBackend();
