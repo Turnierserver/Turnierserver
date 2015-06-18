@@ -158,7 +158,7 @@ public class MainApp extends Application {
 					System.exit(0);
 					
 				} catch (IOException e) {
-					ErrorLog.write("Fehler beim Updaten (Eigener Name: CodrNewVersion) --> " + e);
+					ErrorLog.write("Fehler beim Updaten: " + e);
 				}
 				try {
 					Thread.sleep(100);  // vor nächstem Versuch warten
@@ -337,7 +337,7 @@ public class MainApp extends Application {
 				} catch (NothingDoneException | UpdateException e) {
 				} catch (IOException e) {
 					ErrorLog.write("Bitte stellen Sie beim ersten Start eine Verbindung zum Internet her");
-					for (int i = 10; i >= 0; i--) {
+					for (int i = 100; i >= 0; i--) {
 						updateMessage("Keine Internetverbindung (" + i + ")");
 						Thread.sleep(1000);
 					}
@@ -352,7 +352,7 @@ public class MainApp extends Application {
 				} catch (NothingDoneException e) {
 				} catch (IOException e) {
 					ErrorLog.write("Bitte stellen Sie beim ersten Start eine Verbindung zum Internet her");
-					for (int i = 10; i >= 0; i--) {
+					for (int i = 100; i >= 0; i--) {
 						updateMessage("Keine Internetverbindung (" + i + ")");
 						Thread.sleep(1000);
 					}
@@ -385,6 +385,13 @@ public class MainApp extends Application {
 		splashStage.setTitle("Codr");
 		splashStage.getIcons().add(Resources.codrIcon());
 		splashStage.show();
+		
+		downloadTask.messageProperty().addListener((observableValue, oldValue, newValue) -> {
+			if (newValue.equals("Keine Internetverbindung (100)")) {
+				Dialog.info("Codr braucht beim ersten Start eine Internetverbindung.", "keine Internetverbindung");
+				System.exit(1);
+			}
+		});
 		
 		downloadTask.stateProperty().addListener((observableValue, oldState, newState) -> {
 			if (newState == Worker.State.SUCCEEDED) {
