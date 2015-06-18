@@ -20,6 +20,11 @@ public class Paths {
 	}
 	
 	
+	public static String newCodrVersion() {
+		return "CodrNewVersion.jar";
+	}
+	
+	
 	public static String settings() {
 		return "settings.txt";
 	}

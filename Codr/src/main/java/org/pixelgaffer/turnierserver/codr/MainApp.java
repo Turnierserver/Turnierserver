@@ -174,6 +174,7 @@ public class MainApp extends Application {
 						if (Resources.compareFiles(myself, toDelete)) {
 							try {
 								org.apache.commons.io.FileUtils.forceDelete(toDelete);
+								ErrorLog.write("CodrNewVersion.jar wurde gelöscht, da sie identisch mit der aktuellen Version ist.");
 								return;
 							} catch (Exception e) {
 								ErrorLog.write(e.toString());
