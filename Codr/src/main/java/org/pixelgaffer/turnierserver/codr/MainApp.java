@@ -144,58 +144,67 @@ public class MainApp extends Application {
 			ErrorLog.write("Du hast nicht die Jar-Version von Codr");
 			return;
 		}
-		
-		try {
-			ErrorLog.write("Ich bin: " + myself.getName());
-			Thread.sleep(2000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
-		
-		
+//		
+//		try {
+//			ErrorLog.write("Ich bin: " + myself.getName());
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e1) {
+//			e1.printStackTrace();
+//		}
+//		
+//		
 		// ist neu
 		if (myself.getName().equals("CodrNewVersion.jar")) {
 			File oldCodr = new File("Codr.jar");
 			
-			if (!oldCodr.exists()) {
-				ErrorLog.write("Es befindet sich kein richtiger Codr im Verzeichnis.");
-				return;
-			}
-			
-			try {
-				FileUtils.copyFile(myself, oldCodr);
-				
-				Runtime.getRuntime().exec(new String[]
-				{ "java", "-jar", oldCodr.getName() });
-				System.exit(0);
-				
-			} catch (IOException e) {
-				ErrorLog.write("Fehler beim Updaten (Eigener Name: CodrNewVersion) --> " + e);
+			for (int i = 0; i < 5; i++) {  // 5 Versuche mit Pausen, um zu warten, bis oldCodr freigegeben ist.
+				try {
+					FileUtils.copyFile(myself, oldCodr);
+					
+					Runtime.getRuntime().exec(new String[]
+					{ "java", "-jar", oldCodr.getName() });
+					System.exit(0);
+					
+				} catch (IOException e) {
+					ErrorLog.write("Fehler beim Updaten (Eigener Name: CodrNewVersion) --> " + e);
+				}
+				try {
+					Thread.sleep(100);  // vor nächstem Versuch warten
+				} catch (InterruptedException e) {
+				}
 			}
 			
 		} else {  // ist normal
 			File toDelete = new File("CodrNewVersion.jar");
 			if (toDelete.exists()) {
-				try {
-					if (Resources.compareFiles(myself, toDelete)) {
-						try {
-							org.apache.commons.io.FileUtils.forceDelete(toDelete);
-						} catch (Exception e) {
-							ErrorLog.write(e.toString());
+				for (int i = 0; i < 5; i++) {  // 5 Versuche mit Pausen, um zu warten, bis toDelete freigegeben ist.
+					try {
+						if (Resources.compareFiles(myself, toDelete)) {
+							try {
+								org.apache.commons.io.FileUtils.forceDelete(toDelete);
+								return;
+							} catch (Exception e) {
+								ErrorLog.write(e.toString());
+							}
+							
+						} else {
+							ErrorLog.write("Eine neue Version ist verfügbar, sie wird ausgeführt...");
+							
+							Runtime.getRuntime().exec(new String[]
+							{ "java", "-jar", toDelete.getName() });
+							ErrorLog.write("Ausführen fertig.");
+							
+							System.exit(0);
 						}
-						
-					} else {
-						ErrorLog.write("Eine neue Version ist verfügbar, sie wird ausgeführt...");
-						
-						Runtime.getRuntime().exec(new String[]
-						{ "java", "-jar", toDelete.getName() });
-						ErrorLog.write("Ausführen fertig.");
-						
-						System.exit(0);
+					} catch (IOException e) {
+						ErrorLog.write("Fehler beim Updaten: " + e);
+						return;
 					}
-				} catch (IOException e) {
-					ErrorLog.write("Fehler beim Updaten (Eigener Name: Codr) --> " + e);
-					return;
+					
+					try {
+						Thread.sleep(100);  // vor nächstem Versuch warten
+					} catch (InterruptedException e) {
+					}
 				}
 			}
 		}
@@ -227,7 +236,7 @@ public class MainApp extends Application {
 				}
 				
 				try {
-					if (webConnector.updateCodr()){
+					if (webConnector.updateCodr()) {
 						updateMessage("neuer Codr");
 					}
 				} catch (IOException e) {
@@ -265,7 +274,7 @@ public class MainApp extends Application {
 			Dialog.info("Neue Sprachen sind verfügbar");
 			break;
 		case "neuer Codr":
-			if (Dialog.okAbort("Eine neue Version von Codr ist verfügbar.\nJetzt neustarten?")){
+			if (Dialog.okAbort("Eine neue Version von Codr ist verfügbar.\nJetzt neustarten?")) {
 				checkNewVersion();
 			}
 			
