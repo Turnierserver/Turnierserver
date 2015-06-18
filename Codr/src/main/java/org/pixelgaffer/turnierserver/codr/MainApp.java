@@ -118,7 +118,6 @@ public class MainApp extends Application {
 	}
 	
 	
-	
 	public void exit() {
 		if (settings != null)
 			settings.store(cStart);
@@ -132,6 +131,9 @@ public class MainApp extends Application {
 				e.printStackTrace();
 			}
 		}
+		
+		checkNewVersion();
+		
 		ErrorLog.write("Programm beendet", true);
 	}
 	
@@ -224,6 +226,13 @@ public class MainApp extends Application {
 				} catch (IOException e) {
 				}
 				
+				try {
+					if (webConnector.updateCodr()){
+						updateMessage("neuer Codr");
+					}
+				} catch (IOException e) {
+				}
+				
 				updateMessage("laden fertig");
 				return null;
 			}
@@ -254,6 +263,12 @@ public class MainApp extends Application {
 		case "neue Sprachen":
 			// languages = ;
 			Dialog.info("Neue Sprachen sind verfügbar");
+			break;
+		case "neuer Codr":
+			if (Dialog.okAbort("Eine neue Version von Codr ist verfügbar.\nJetzt neustarten?")){
+				checkNewVersion();
+			}
+			
 			break;
 		case "laden fertig":
 			if (cStart != null) {
