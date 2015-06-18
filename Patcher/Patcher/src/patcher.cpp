@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "module.h"
 #include "patcher.h"
 
 #include <stdio.h>
@@ -100,8 +101,9 @@ QString download (const QDir &tmpPath, const QitHubBranch &branch)
 	return path;
 }
 
-Patcher::Patcher(const QitHubRepository &repo, const QString &repoBranch, const QitHubRepository &configRepo, const QString &configBranch, QObject *parent)
+Patcher::Patcher(QSettings *config, const QitHubRepository &repo, const QString &repoBranch, const QitHubRepository &configRepo, const QString &configBranch, QObject *parent)
 	: QObject(parent)
+	, _config(config)
 	, repo(repo)
 	, config(configRepo)
 	, repoBranch(this->repo.client(), this->repo, repoBranch)
@@ -115,11 +117,29 @@ Patcher::Patcher(const QitHubRepository &repo, const QString &repoBranch, const 
 		QCoreApplication::exit(1);
 		return;
 	}
+	
+	if (tmpConfig.open())
+		tmpConfig.close();
+	qDebug() << tmpConfig.fileName();
+	_tmp = new QSettings(tmpConfig.fileName(), QSettings::IniFormat);
+	_tmp->setValue("RepoClonePath", repoPath.absolutePath());
+	_tmp->setValue("ConfigRepoClonePath", configPath.absolutePath());
 }
 
 void Patcher::startBackend()
 {
-	
+	static Module module(_config, _tmp, "Backend");
+	int ret = module.build(repoBranch.latestCommit().sha());
+	if (ret != 0)
+		exit(ret);
+}
+
+void Patcher::startWorker()
+{
+	static Module module(_config, _tmp, "Worker");
+	int ret = module.build(repoBranch.latestCommit().sha());
+	if (ret != 0)
+		exit(ret);
 }
 
 void Patcher::startFrontend()
@@ -129,11 +149,6 @@ void Patcher::startFrontend()
 	frontendDir.remove("_cfg.py");
 	QFile::copy(configPath.absoluteFilePath("Frontend/_cfg.py"), frontendDir.absoluteFilePath("_cfg.py"));
 	frontend = start(frontendDir.absolutePath(), "python3 app.py run");
-}
-
-void Patcher::startWorker()
-{
-	
 }
 
 pid_t Patcher::start (const QString &wd, const QString &cmd)
