@@ -91,7 +91,7 @@ public class MainApp extends Application {
 		ErrorLog.clear();
 		ErrorLog.write("Programm startet...", true);
 		
-		checkNewVersion();
+		checkNewVersion(false);
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> exit()));
 		
 		
@@ -132,27 +132,19 @@ public class MainApp extends Application {
 			}
 		}
 		
-		checkNewVersion();
+		checkNewVersion(true);
 		
 		ErrorLog.write("Programm beendet", true);
 	}
 	
 	
-	public void checkNewVersion() {
+	public void checkNewVersion(boolean newStartWarning) {
 		File myself = new File((System.getProperty("java.class.path").split(System.getProperty("path.separator"))[0]));
 		if (myself.isDirectory()) {
 			ErrorLog.write("Du hast nicht die Jar-Version von Codr");
 			return;
 		}
-//		
-//		try {
-//			ErrorLog.write("Ich bin: " + myself.getName());
-//			Thread.sleep(2000);
-//		} catch (InterruptedException e1) {
-//			e1.printStackTrace();
-//		}
-//		
-//		
+
 		// ist neu
 		if (myself.getName().equals("CodrNewVersion.jar")) {
 			File oldCodr = new File("Codr.jar");
@@ -189,6 +181,10 @@ public class MainApp extends Application {
 							
 						} else {
 							ErrorLog.write("Eine neue Version ist verfügbar, sie wird ausgeführt...");
+							
+							if (newStartWarning){
+								Dialog.info("Codr wird jetzt neu gestartet.");
+							}
 							
 							Runtime.getRuntime().exec(new String[]
 							{ "java", "-jar", toDelete.getName() });
@@ -275,7 +271,7 @@ public class MainApp extends Application {
 			break;
 		case "neuer Codr":
 			if (Dialog.okAbort("Eine neue Version von Codr ist verfügbar.\nJetzt neustarten?")) {
-				checkNewVersion();
+				checkNewVersion(false);
 			}
 			
 			break;
