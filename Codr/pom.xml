@@ -100,7 +100,7 @@
 						<goal>shade</goal>
 					</goals>
 					<configuration>
-						<minimizeJar>true</minimizeJar>
+<!-- 						<minimizeJar>true</minimizeJar> -->
 						<filters>
 							<filter>
 								<artifact>org.projectlombok:lombok</artifact>
