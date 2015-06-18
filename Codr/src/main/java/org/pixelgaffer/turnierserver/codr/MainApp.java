@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.codr;
 
 
+import java.io.File;
 import java.io.IOException;
 
 import javafx.animation.FadeTransition;
@@ -29,12 +30,12 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+import org.apache.commons.io.FileUtils;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NothingDoneException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
-import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
 import org.pixelgaffer.turnierserver.codr.utilities.Settings;
 import org.pixelgaffer.turnierserver.codr.utilities.WebConnector;
@@ -89,17 +90,10 @@ public class MainApp extends Application {
 	public void start(Stage _stage) throws Exception {
 		ErrorLog.clear();
 		ErrorLog.write("Programm startet...", true);
+		
+		checkNewVersion();
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> exit()));
 		
-//		AiExtern hi = new AiExtern("Titel", "Java", "C:/Users/Philip/Desktop/testordner");
-//		System.out.println("Ai:             " + Paths.ai(hi));
-//		System.out.println("Version:        " + Paths.version(hi.lastVersion()));
-//		System.out.println("VersionProp:    " + Paths.versionProperties(hi.lastVersion()));
-//		System.out.println("Picture:        " + Paths.aiPicture(hi));
-//		System.out.println("AiProp:         " + Paths.aiProperties(hi));
-//		System.out.println("VersionSrc:     " + Paths.versionSrc(hi.lastVersion()));
-//		System.out.println("VersionSrcStart:" + Paths.versionSrcStartClass(hi.lastVersion()));
-//		System.out.println("VersionBin:     " + Paths.versionBin(hi.lastVersion()));
 		
 		stage = new Stage(StageStyle.DECORATED);
 		
@@ -139,6 +133,72 @@ public class MainApp extends Application {
 			}
 		}
 		ErrorLog.write("Programm beendet", true);
+	}
+	
+	
+	public void checkNewVersion() {
+		File myself = new File((System.getProperty("java.class.path").split(System.getProperty("path.separator"))[0]));
+		if (myself.isDirectory()) {
+			ErrorLog.write("Du hast nicht die Jar-Version von Codr");
+			return;
+		}
+		
+		try {
+			ErrorLog.write("Ich bin: " + myself.getName());
+			Thread.sleep(2000);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		
+		
+		// ist neu
+		if (myself.getName().equals("CodrNewVersion.jar")) {
+			File oldCodr = new File("Codr.jar");
+			
+			if (!oldCodr.exists()) {
+				ErrorLog.write("Es befindet sich kein richtiger Codr im Verzeichnis.");
+				return;
+			}
+			
+			try {
+				FileUtils.copyFile(myself, oldCodr);
+				
+				Runtime.getRuntime().exec(new String[]
+				{ "java", "-jar", oldCodr.getName() });
+				System.exit(0);
+				
+			} catch (IOException e) {
+				ErrorLog.write("Fehler beim Updaten (Eigener Name: CodrNewVersion) --> " + e);
+			}
+			
+		} else {  // ist normal
+			File toDelete = new File("CodrNewVersion.jar");
+			if (toDelete.exists()) {
+				try {
+					if (Resources.compareFiles(myself, toDelete)) {
+						try {
+							org.apache.commons.io.FileUtils.forceDelete(toDelete);
+						} catch (Exception e) {
+							ErrorLog.write(e.toString());
+						}
+						
+					} else {
+						ErrorLog.write("Eine neue Version ist verfügbar, sie wird ausgeführt...");
+						
+						Runtime.getRuntime().exec(new String[]
+						{ "java", "-jar", toDelete.getName() });
+						ErrorLog.write("Ausführen fertig.");
+						
+						System.exit(0);
+					}
+				} catch (IOException e) {
+					ErrorLog.write("Fehler beim Updaten (Eigener Name: Codr) --> " + e);
+					return;
+				}
+			}
+		}
+		
+		
 	}
 	
 	
@@ -246,8 +306,7 @@ public class MainApp extends Application {
 	
 	public void showSplashStage(Stage splashStage) {
 		
-		final Task<Object> updateTask = new Task<Object>() {
-			
+		final Task<Object> downloadTask = new Task<Object>() {
 			@Override protected Object call() throws InterruptedException {
 				
 				updateMessage("Gametypen werden geladen");
@@ -294,7 +353,7 @@ public class MainApp extends Application {
 		splashLayout.getChildren().addAll(img, loadProgress, progressText);
 		progressText.setAlignment(Pos.CENTER);
 		splashLayout.setStyle("-fx-padding: 10; " + "-fx-border-color: derive(black, 90%); " + "-fx-border-width:1; " + "-fx-background-color: white;");
-		progressText.textProperty().bind(updateTask.messageProperty());
+		progressText.textProperty().bind(downloadTask.messageProperty());
 		splashLayout.setEffect(new DropShadow());
 		
 		Scene splashScene = new Scene(splashLayout);
@@ -303,9 +362,11 @@ public class MainApp extends Application {
 		splashStage.setScene(splashScene);
 		splashStage.setX(bounds.getMinX() + bounds.getWidth() / 2 - 400 / 2);
 		splashStage.setY(bounds.getMinY() + bounds.getHeight() / 2 - 200);
+		splashStage.setTitle("Codr");
+		splashStage.getIcons().add(Resources.codrIcon());
 		splashStage.show();
 		
-		updateTask.stateProperty().addListener((observableValue, oldState, newState) -> {
+		downloadTask.stateProperty().addListener((observableValue, oldState, newState) -> {
 			if (newState == Worker.State.SUCCEEDED) {
 				FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1), splashLayout);
 				fadeSplash.setFromValue(1.0);
@@ -317,7 +378,7 @@ public class MainApp extends Application {
 			}
 		});
 		
-		Thread thread = new Thread(updateTask, "splashUpdate");
+		Thread thread = new Thread(downloadTask, "splashUpdate");
 		thread.setDaemon(true);
 		thread.start();
 	}

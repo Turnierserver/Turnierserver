@@ -432,6 +432,7 @@ public class WebConnector {
 			ErrorLog.write("Die Spieltypen konnten nicht aus der Datei gelesen werden: " + e);
 			ErrorLog.write("Es werden nun alle Spieltypen geladen!");
 		}
+		System.out.println(json);
 		
 		List<String> gametypesInFile = new ArrayList<>();
 		List<String> gametypesFromFrontend = new ArrayList<>();
