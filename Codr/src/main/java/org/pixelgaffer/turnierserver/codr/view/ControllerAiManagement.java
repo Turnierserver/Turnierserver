@@ -172,6 +172,7 @@ public class ControllerAiManagement {
 			btToActual.setDisable(false);
 			cbVersion.setDisable(false);
 			tpNewVersion.setDisable(false);
+			tpNewVersion.setExpanded(true);
 			btEdit.setDisable(false);
 			btToActual.setDisable(false);
 			
@@ -201,6 +202,7 @@ public class ControllerAiManagement {
 			btToActual.setDisable(true);
 			cbVersion.setDisable(true);
 			tpNewVersion.setDisable(true);
+			tpNewVersion.setExpanded(false);
 			btEdit.setDisable(true);
 			btToActual.setDisable(true);
 		}
@@ -264,6 +266,7 @@ public class ControllerAiManagement {
 				btToActual.setDisable(true);
 				cbVersion.setDisable(true);
 				tpNewVersion.setDisable(true);
+				tpNewVersion.setExpanded(false);
 				btCompile.setDisable(true);
 				btQualify.setDisable(true);
 				btFinish.setDisable(true);
@@ -275,10 +278,12 @@ public class ControllerAiManagement {
 				
 				btChangeImage.setDisable(true);
 				btDeleteImage.setDisable(true);
+				
 			} else if (ai.mode == AiMode.extern) {
 				btToActual.setDisable(true);
 				cbVersion.setDisable(true);
 				tpNewVersion.setDisable(true);
+				tpNewVersion.setExpanded(false);
 			}
 		}
 		
