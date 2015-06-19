@@ -1044,7 +1044,7 @@ def lib_by_name(lang, name):
 	return CommonErrors.NOT_IMPLEMENTED
 
 @api.route("/data_container/<int:game_id>")
-def esu_container(game_id):
+def data_container(game_id):
 	p = "Games/{}/data_container.zip".format(secure_filename(str(game_id)))
 	@ftp.failsafe_locked
 	def f():
@@ -1063,4 +1063,22 @@ def make_data_container(game_id):
 		return CommonErrors.INVALID_ID
 	_make_data_container(str(game_id))
 	return {"error": False}, 200
+
+
+@api.route("/upload_codr")
+@admin_required
+def upload_codr():
+	return upload_single_file(request, "Data/codr.jar")
+
+@api.route("/download_codr")
+def download_codr():
+	p = "Data/codr.jar"
+	@ftp.failsafe_locked
+	def f():
+		if ftp.ftp_host.path.isfile(p):
+			return ftp.send_file(p)
+		else:
+			abort(503)
+	return f()
+
 

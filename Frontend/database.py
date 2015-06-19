@@ -614,7 +614,7 @@ def populate():
 
 	py = Lang(name="Python", ace_name="python", url="https://www.python.org")
 	java = Lang(name="Java", ace_name="java", url="https://www.java.com/?isthaesslig=1")
-	cpp = Lang(name="C++", ace_name="cpp", url="http://en.wikipedia.org/wiki/C%2B%2B")
+	cpp = Lang(name="C++", ace_name="cpp", url="http://isocpp.org")
 	langs = [py, java, cpp]
 	db_save(langs)
 
