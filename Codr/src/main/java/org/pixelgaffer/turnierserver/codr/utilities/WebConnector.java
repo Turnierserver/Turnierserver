@@ -21,10 +21,6 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
@@ -272,17 +268,23 @@ public class WebConnector {
 	
 	
 	public void changeImage(Image img, int id) {
-		// TODO: Das Bild einer bestimmten KI ändern
+		
 	}
 	
 	
-	public void changeDescription(String description, int id) {
-		// TODO: Die Beschreibung einer bestimmten KI ändern
+	public void changeDescription(String description, int id) throws IOException {
+		String result = toString(sendGet("ai/" + id + "/update", "description", description));
+		if(result == null) {
+			throw new IOException("A problem occured while trying to update the description!");
+		}
 	}
 	
 	
-	public void deleteKI(int id) {
-		// TODO: Eine KI löschen
+	public void deleteKI(int id) throws IOException {
+		String result = toString(sendGet("ai/" + id + "/delete"));
+		if(result == null) {
+			throw new IOException("A problem occured while trying to delete ai!");
+		}
 	}
 	
 	
@@ -546,7 +548,7 @@ public class WebConnector {
 	
 	
 	private boolean loadCodr() {
-		byte[] codr;  //4. TODO :P bitte nochmal drüberschauen, ob alles richtig ist.
+		byte[] codr;
 		try {
 			codr = sendGet("download_codr");
 		} catch (IOException e) {
@@ -558,6 +560,10 @@ public class WebConnector {
 			return false;
 		
 		try {
+			File file = new File(Paths.newCodrVersion());
+			file.mkdirs();
+			file.delete();
+			file.createNewFile();
 			FileUtils.writeByteArrayToFile(new File(Paths.newCodrVersion()), codr);
 		} catch (IOException e) {
 			ErrorLog.write("Die neue Version von Codr konnte nicht gespeichert werden: " + e);
