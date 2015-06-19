@@ -44,6 +44,7 @@ public:
 public slots:
 	void startFrontend();
 	void startBackend();
+	void startCodr();
 	void startWorker();
 	
 protected:

@@ -44,6 +44,9 @@ int main(int argc, char *argv[])
 	parser.addOption(workerOption);
 	QCommandLineOption frontendOption(QStringList() << "f" << "frontend", "Wenn angegeben wird das Frontend gestartet.");
 	parser.addOption(frontendOption);
+	QCommandLineOption codrOption(QStringList() << "c" << "codr", QString::fromUtf8("Wenn angegeben wird der Codr bei Änderungen "
+								  "neu kompiliert und hochgeladen."));
+	parser.addOption(codrOption);
 	QCommandLineOption branchOption("branch", "Gibt den zu benutzenden Branch von beiden Repositories an. Default: master. Wird "
 									"von den entsprechenden Parametern überschrieben.", "branch", "master");
 	parser.addOption(branchOption);
@@ -89,6 +92,8 @@ int main(int argc, char *argv[])
 		patcher.startWorker();
 	if (parser.isSet(frontendOption))
 		patcher.startFrontend();
+	if (parser.isSet(codrOption))
+		patcher.startCodr();
 	
 	return app.exec();
 }

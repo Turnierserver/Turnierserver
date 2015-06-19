@@ -152,6 +152,19 @@ void Patcher::startFrontend()
 	frontend = start(module);
 }
 
+void Patcher::startCodr()
+{
+	static Module module(_config, _tmp, "Codr");
+	int ret = module.build(repoBranch.latestCommit().sha());
+	if (ret != 0)
+	{
+		fprintf(stderr, "Fehler: Der Aufruf von build() für Codr hat %d zurückgegeben.\n", ret);
+		return;
+	}
+	// sonderrolle: der codr wird hochgeladen statt ausgeführt
+	module.upload();
+}
+
 pid_t Patcher::start (Module &module)
 {
 	pid_t pid = fork();

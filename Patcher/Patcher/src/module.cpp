@@ -18,6 +18,7 @@
  */
 
 #include "module.h"
+#include "upload.h"
 
 #include <error.h>
 #include <stdio.h>
@@ -143,4 +144,34 @@ int Module::start()
 		ELSE_UNKNOWN
 	}
 	ELSE_UNKNOWN
+			
+#undef ELSE_UNKNOWN
+}
+
+bool Module::upload()
+{
+#define ELSE_UNKNOWN \
+	else \
+	{ \
+		fprintf(stderr, "Unknown Language/Build %s/%s\n", qPrintable(lang()), qPrintable(build())); \
+		return false; \
+	}
+	
+	if (lang() == "Java")
+	{
+		if (build() == "Maven")
+		{
+			QDir target(_tmp->value("RepoClonePath").toString());
+			if (!target.cd(_config->value(name() + "/Folder").toString()) || !target.cd("target"))
+			{
+				fprintf(stderr, "Konnte nicht ins Verzeichnis des Moduls wechseln\n");
+				return 1;
+			}
+			return uploadFile(_config, _config->value(name() + "/Upload").toString(), target.absoluteFilePath(_config->value(name() + "/File").toString()));
+		}
+		ELSE_UNKNOWN
+	}
+	ELSE_UNKNOWN
+	
+#undef ELSE_UNKNOWN
 }
