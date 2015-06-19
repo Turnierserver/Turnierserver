@@ -1,5 +1,5 @@
 /*
- * module.h
+ * upload.h
  * 
  * Copyright (C) 2015 Dominic S. Meiser <meiserdo@web.de>
  * 
@@ -17,35 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MODULE_H
-#define MODULE_H
+#ifndef UPLOAD_H
+#define UPLOAD_H
 
 #include <QSettings>
-#include <QString>
 
-class Module
-{
-	
-public:
-	Module(QSettings *config, QSettings *tmp, const QString &name);
-	
-	QString name() const { return _name; }
-	QString lang() const { return value("Lang").toString(); }
-	QString build() const  { return value("Build").toString(); }
-	QString folder() const  { return value("Folder").toString(); }
-	QStringList dependencies() const  { return value("Dependency").toStringList(); }
-	
-	int build(const QString &currentHash);
-	int start();
-	bool upload();
-	
-protected:
-	QVariant value(const QString &key) const;
-	
-private:
-	QSettings *_config, *_tmp;
-	QString _name;
-	
-};
+extern bool uploadFile (const QSettings *config, const QString &location, const QString &file);
 
-#endif // MODULE_H
+#endif // UPLOAD_H
+
