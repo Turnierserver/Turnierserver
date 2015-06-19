@@ -100,8 +100,9 @@ QString download (const QDir &tmpPath, const QitHubBranch &branch)
 	return path;
 }
 
-Patcher::Patcher(const QitHubRepository &repo, const QString &repoBranch, const QitHubRepository &configRepo, const QString &configBranch, QObject *parent)
+Patcher::Patcher(QSettings *config, const QitHubRepository &repo, const QString &repoBranch, const QitHubRepository &configRepo, const QString &configBranch, QObject *parent)
 	: QObject(parent)
+	, _config(config)
 	, repo(repo)
 	, config(configRepo)
 	, repoBranch(this->repo.client(), this->repo, repoBranch)
@@ -115,40 +116,49 @@ Patcher::Patcher(const QitHubRepository &repo, const QString &repoBranch, const 
 		QCoreApplication::exit(1);
 		return;
 	}
+	
+	if (tmpConfig.open())
+		tmpConfig.close();
+	qDebug() << tmpConfig.fileName();
+	_tmp = new QSettings(tmpConfig.fileName(), QSettings::IniFormat);
+	_tmp->setValue("RepoClonePath", repoPath.absolutePath());
+	_tmp->setValue("ConfigRepoClonePath", configPath.absolutePath());
 }
 
 void Patcher::startBackend()
 {
-	
-}
-
-void Patcher::startFrontend()
-{
-	QDir frontendDir(repoPath);
-	frontendDir.cd("Frontend");
-	frontendDir.remove("_cfg.py");
-	QFile::copy(configPath.absoluteFilePath("Frontend/_cfg.py"), frontendDir.absoluteFilePath("_cfg.py"));
-	frontend = start(frontendDir.absolutePath(), "python3 app.py run");
+	static Module module(_config, _tmp, "Backend");
+	int ret = module.build(repoBranch.latestCommit().sha());
+	if (ret != 0)
+		exit(ret);
+	backend = module.start();
 }
 
 void Patcher::startWorker()
 {
-	
+	static Module module(_config, _tmp, "Worker");
+	int ret = module.build(repoBranch.latestCommit().sha());
+	if (ret != 0)
+		exit(ret);
+	worker = module.start();
 }
 
-pid_t Patcher::start (const QString &wd, const QString &cmd)
+void Patcher::startFrontend()
+{
+	static Module module(_config, _tmp, "Frontend");
+	int ret = module.build(repoBranch.latestCommit().sha());
+	if (ret != 0)
+		exit(ret);
+	frontend = start(module);
+}
+
+pid_t Patcher::start (Module &module)
 {
 	pid_t pid = fork();
 	if (pid == 0) // geforktes programm
 	{
-		if (chdir(qPrintable(wd)) != 0)
-		{
-			perror("Fehler beim Wechseln des Verzeichnises");
-			exit(1);
-		}
-		printf("%s$ %s\n", qPrintable(wd), qPrintable(cmd));
-		int ret = system(qPrintable(cmd));
-		printf("%d\t%s\n", ret, qPrintable(cmd));
+		int ret = module.start();
+		printf("%s exited with exit code %d\n", qPrintable(module.name()), ret);
 	}
 	return pid;
 }

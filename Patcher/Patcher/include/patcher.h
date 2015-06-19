@@ -20,11 +20,16 @@
 #ifndef PATCHER_H
 #define PATCHER_H
 
+#include "module.h"
+
 #include <sys/types.h>
 
 #include <QDir>
 #include <QObject>
+#include <QSettings>
+#include <QStringList>
 #include <QTemporaryDir>
+#include <QTemporaryFile>
 
 #include <qithubbranch.h>
 #include <qithubrepository.h>
@@ -34,7 +39,7 @@ class Patcher : public QObject
 	Q_OBJECT
 	
 public:
-	Patcher(const QitHubRepository &repo, const QString &repoBranch, const QitHubRepository &configRepo, const QString &configBranch, QObject *parent = 0);
+	Patcher(QSettings *config, const QitHubRepository &repo, const QString &repoBranch, const QitHubRepository &configRepo, const QString &configBranch, QObject *parent = 0);
 	
 public slots:
 	void startFrontend();
@@ -42,12 +47,15 @@ public slots:
 	void startWorker();
 	
 protected:
-	/// Startet den Befehl cmd im Verzeichnis wd und gibt die pid zurück.
-	virtual pid_t start (const QString &wd, const QString &cmd);
+	/// Startet das Modul in einem eigenen Prozess und gibt die PID zurück.
+	virtual pid_t start (Module &module);
 	/// Sendet einen kill-Befehl an den Prozess.
 	virtual bool stop(pid_t process);
 	
 private:
+	QSettings *_config, *_tmp;
+	QTemporaryFile tmpConfig;
+	
 	QitHubRepository repo, config;
 	QitHubBranch repoBranch, configBranch;
 	
