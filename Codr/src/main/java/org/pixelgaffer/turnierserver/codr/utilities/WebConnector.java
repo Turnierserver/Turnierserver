@@ -267,8 +267,17 @@ public class WebConnector {
 	}
 	
 	
-	public void changeImage(Image img, int id) {
-		
+	public void changeImage(File img, int id) throws IOException {
+		if(img == null) {
+			return;
+		}
+		HttpPost post = new HttpPost("ai/" + id + "/upload_icon");
+		ByteArrayEntity entity = new ByteArrayEntity(FileUtils.readFileToByteArray(img));
+		post.setEntity(entity);
+		HttpResponse response = http.execute(post);
+		if (getOutput(response.getEntity().getContent()) == null) {
+			throw new IOException("Konnte nicht zum Server verbinden");
+		}
 	}
 	
 	
