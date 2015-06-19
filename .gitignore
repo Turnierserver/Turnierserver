@@ -1,7 +1,5 @@
 # unnötiges generiertes zeugs
 .directory
-Codr/errorLog.txt
-Codr/session.conf
 __pycache__
 Frontend/tmpfile
 *.log
@@ -9,12 +7,15 @@ AIs/
 Downloads/
 Ace/
 Games/
+Codr/errorLog.txt
+Codr/session.conf
 Codr/settings.txt
 test.db
 gen/
 GameBuilder/Makefile
 startServer.bat
 dependency-reduced-pom.xml
+*.jar
 
 # java müll
 .settings/
