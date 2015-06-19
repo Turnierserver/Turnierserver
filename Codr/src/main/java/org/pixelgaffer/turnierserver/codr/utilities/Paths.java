@@ -6,7 +6,7 @@ import java.io.File;
 import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
 import org.pixelgaffer.turnierserver.codr.AiExtern;
-import org.pixelgaffer.turnierserver.codr.CodrGame;
+import org.pixelgaffer.turnierserver.codr.GameBase;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.ParticipantResult;
 import org.pixelgaffer.turnierserver.codr.Version;
@@ -17,6 +17,11 @@ public class Paths {
 	
 	public static String aceFolder() {
 		return "Ace";
+	}
+	
+	
+	public static String newCodrVersion() {
+		return "CodrNewVersion.jar";
 	}
 	
 	
@@ -97,7 +102,7 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zum Ordner eines bestimmten Spiels zurück
 	 */
-	public static String game(CodrGame game) {
+	public static String game(GameBase game) {
 		return gameFolder() + "/" + game.ID;
 	}
 	
@@ -113,7 +118,7 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zu den Properties eines bestimmten Spiels zurück
 	 */
-	public static String gameProperties(CodrGame game) {
+	public static String gameProperties(GameBase game) {
 		return game(game) + "/gameProperties.txt";
 	}
 	
@@ -121,7 +126,7 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zu dem Output der GameLogic für das Spiel zurück.
 	 */
-	public static String gameRenderData(CodrGame game) {
+	public static String gameRenderData(GameBase game) {
 		return game(game) + "/renderData.txt";
 	}
 	

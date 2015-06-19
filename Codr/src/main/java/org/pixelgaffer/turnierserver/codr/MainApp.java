@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.codr;
 
 
+import java.io.File;
 import java.io.IOException;
 
 import javafx.animation.FadeTransition;
@@ -29,12 +30,12 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+import org.apache.commons.io.FileUtils;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NothingDoneException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
-import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
 import org.pixelgaffer.turnierserver.codr.utilities.Settings;
 import org.pixelgaffer.turnierserver.codr.utilities.WebConnector;
@@ -89,17 +90,10 @@ public class MainApp extends Application {
 	public void start(Stage _stage) throws Exception {
 		ErrorLog.clear();
 		ErrorLog.write("Programm startet...", true);
+		
+		checkNewVersion(false);
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> exit()));
 		
-//		AiExtern hi = new AiExtern("Titel", "Java", "C:/Users/Philip/Desktop/testordner");
-//		System.out.println("Ai:             " + Paths.ai(hi));
-//		System.out.println("Version:        " + Paths.version(hi.lastVersion()));
-//		System.out.println("VersionProp:    " + Paths.versionProperties(hi.lastVersion()));
-//		System.out.println("Picture:        " + Paths.aiPicture(hi));
-//		System.out.println("AiProp:         " + Paths.aiProperties(hi));
-//		System.out.println("VersionSrc:     " + Paths.versionSrc(hi.lastVersion()));
-//		System.out.println("VersionSrcStart:" + Paths.versionSrcStartClass(hi.lastVersion()));
-//		System.out.println("VersionBin:     " + Paths.versionBin(hi.lastVersion()));
 		
 		stage = new Stage(StageStyle.DECORATED);
 		
@@ -124,7 +118,6 @@ public class MainApp extends Application {
 	}
 	
 	
-	
 	public void exit() {
 		if (settings != null)
 			settings.store(cStart);
@@ -133,12 +126,87 @@ public class MainApp extends Application {
 		
 		if (cGame != null && cGame.runningGame != null) {
 			try {
-				cGame.runningGame.getGame().finishGame();
+				cGame.runningGame.game.finishGame();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		
+		checkNewVersion(true);
+		
 		ErrorLog.write("Programm beendet", true);
+	}
+	
+	
+	public void checkNewVersion(boolean newStartWarning) {
+		File myself = new File((System.getProperty("java.class.path").split(System.getProperty("path.separator"))[0]));
+		if (myself.isDirectory()) {
+			ErrorLog.write("Du hast nicht die Jar-Version von Codr");
+			return;
+		}
+		
+		// ist neu
+		if (myself.getName().equals("CodrNewVersion.jar")) {
+			File oldCodr = new File("Codr.jar");
+			
+			for (int i = 0; i < 5; i++) {  // 5 Versuche mit Pausen, um zu warten, bis oldCodr freigegeben ist.
+				try {
+					FileUtils.copyFile(myself, oldCodr);
+					
+					Runtime.getRuntime().exec(new String[]
+					{ "java", "-jar", oldCodr.getName() });
+					System.exit(0);
+					
+				} catch (IOException e) {
+					ErrorLog.write("Fehler beim Updaten: " + e);
+				}
+				try {
+					Thread.sleep(100);  // vor nächstem Versuch warten
+				} catch (InterruptedException e) {
+				}
+			}
+			
+		} else {  // ist normal
+			File toDelete = new File("CodrNewVersion.jar");
+			if (toDelete.exists()) {
+				for (int i = 0; i < 5; i++) {  // 5 Versuche mit Pausen, um zu warten, bis toDelete freigegeben ist.
+					try {
+						if (Resources.compareFiles(myself, toDelete)) {
+							try {
+								org.apache.commons.io.FileUtils.forceDelete(toDelete);
+								ErrorLog.write("CodrNewVersion.jar wurde gelöscht, da sie identisch mit der aktuellen Version ist.");
+								return;
+							} catch (Exception e) {
+								ErrorLog.write(e.toString());
+							}
+							
+						} else {
+							ErrorLog.write("Eine neue Version ist verfügbar, sie wird ausgeführt...");
+							
+							if (newStartWarning) {
+								Dialog.info("Codr wird jetzt neu gestartet.");
+							}
+							
+							Runtime.getRuntime().exec(new String[]
+							{ "java", "-jar", toDelete.getName() });
+							ErrorLog.write("Ausführen fertig.");
+							
+							System.exit(0);
+						}
+					} catch (IOException e) {
+						ErrorLog.write("Fehler beim Updaten: " + e);
+						return;
+					}
+					
+					try {
+						Thread.sleep(100);  // vor nächstem Versuch warten
+					} catch (InterruptedException e) {
+					}
+				}
+			}
+		}
+		
+		
 	}
 	
 	
@@ -161,6 +229,13 @@ public class MainApp extends Application {
 					languages = e.newValues;
 					updateMessage("neue Sprachen");
 				} catch (NothingDoneException e) {
+				} catch (IOException e) {
+				}
+				
+				try {
+					if (webConnector.updateCodr()) {
+						updateMessage("neuer Codr");
+					}
 				} catch (IOException e) {
 				}
 				
@@ -194,6 +269,12 @@ public class MainApp extends Application {
 		case "neue Sprachen":
 			// languages = ;
 			Dialog.info("Neue Sprachen sind verfügbar");
+			break;
+		case "neuer Codr":
+			if (Dialog.okAbort("Eine neue Version von Codr ist verfügbar.\nJetzt neustarten?")) {
+				checkNewVersion(false);
+			}
+			
 			break;
 		case "laden fertig":
 			if (cStart != null) {
@@ -246,8 +327,7 @@ public class MainApp extends Application {
 	
 	public void showSplashStage(Stage splashStage) {
 		
-		final Task<Object> updateTask = new Task<Object>() {
-			
+		final Task<Object> downloadTask = new Task<Object>() {
 			@Override protected Object call() throws InterruptedException {
 				
 				updateMessage("Gametypen werden geladen");
@@ -258,7 +338,7 @@ public class MainApp extends Application {
 				} catch (NothingDoneException | UpdateException e) {
 				} catch (IOException e) {
 					ErrorLog.write("Bitte stellen Sie beim ersten Start eine Verbindung zum Internet her");
-					for (int i = 10; i >= 0; i--) {
+					for (int i = 100; i >= 0; i--) {
 						updateMessage("Keine Internetverbindung (" + i + ")");
 						Thread.sleep(1000);
 					}
@@ -273,7 +353,7 @@ public class MainApp extends Application {
 				} catch (NothingDoneException e) {
 				} catch (IOException e) {
 					ErrorLog.write("Bitte stellen Sie beim ersten Start eine Verbindung zum Internet her");
-					for (int i = 10; i >= 0; i--) {
+					for (int i = 100; i >= 0; i--) {
 						updateMessage("Keine Internetverbindung (" + i + ")");
 						Thread.sleep(1000);
 					}
@@ -294,7 +374,7 @@ public class MainApp extends Application {
 		splashLayout.getChildren().addAll(img, loadProgress, progressText);
 		progressText.setAlignment(Pos.CENTER);
 		splashLayout.setStyle("-fx-padding: 10; " + "-fx-border-color: derive(black, 90%); " + "-fx-border-width:1; " + "-fx-background-color: white;");
-		progressText.textProperty().bind(updateTask.messageProperty());
+		progressText.textProperty().bind(downloadTask.messageProperty());
 		splashLayout.setEffect(new DropShadow());
 		
 		Scene splashScene = new Scene(splashLayout);
@@ -303,9 +383,18 @@ public class MainApp extends Application {
 		splashStage.setScene(splashScene);
 		splashStage.setX(bounds.getMinX() + bounds.getWidth() / 2 - 400 / 2);
 		splashStage.setY(bounds.getMinY() + bounds.getHeight() / 2 - 200);
+		splashStage.setTitle("Codr");
+		splashStage.getIcons().add(Resources.codrIcon());
 		splashStage.show();
 		
-		updateTask.stateProperty().addListener((observableValue, oldState, newState) -> {
+		downloadTask.messageProperty().addListener((observableValue, oldValue, newValue) -> {
+			if (newValue.equals("Keine Internetverbindung (100)")) {
+				Dialog.info("Codr braucht beim ersten Start eine Internetverbindung.", "keine Internetverbindung");
+				System.exit(1);
+			}
+		});
+		
+		downloadTask.stateProperty().addListener((observableValue, oldState, newState) -> {
 			if (newState == Worker.State.SUCCEEDED) {
 				FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1), splashLayout);
 				fadeSplash.setFromValue(1.0);
@@ -317,7 +406,7 @@ public class MainApp extends Application {
 			}
 		});
 		
-		Thread thread = new Thread(updateTask, "splashUpdate");
+		Thread thread = new Thread(downloadTask, "splashUpdate");
 		thread.setDaemon(true);
 		thread.start();
 	}

@@ -46,7 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.AiOnline;
-import org.pixelgaffer.turnierserver.codr.CodrGame;
+import org.pixelgaffer.turnierserver.codr.GameBase;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.DeletedException;
@@ -246,7 +246,7 @@ public class WebConnector {
 	}
 	
 	
-	public List<CodrGame> getGames() {
+	public List<GameBase> getGames() {
 		throw new UnsupportedOperationException("Ich bin so pöse!");
 	}
 	
@@ -278,7 +278,7 @@ public class WebConnector {
 			json = json.getJSONObject("ai");
 			return json.getInt("id");
 		} catch (IOException e) {
-			ErrorLog.write("Konnte AI nicht erstellen: " + e.getLocalizedMessage());
+			ErrorLog.write("Konnte AI nicht erstellen: " + e);
 			;
 			return -1;
 		}
@@ -329,7 +329,7 @@ public class WebConnector {
 				result.add(line.split("->")[0]);
 			}
 		} catch (IOException e) {
-			ErrorLog.write("Konnte Spieltypen nicht aus Datei laden. Dies ist beim ersten Starten zu erwarten: " + e.getLocalizedMessage());
+			ErrorLog.write("Konnte Spieltypen nicht aus Datei laden. Dies ist beim ersten Starten zu erwarten: " + e);
 			return null;
 		}
 		
@@ -486,7 +486,7 @@ public class WebConnector {
 				try {
 					FileUtils.deleteDirectory(new File(Paths.downloadGameType(gametype)));
 				} catch (IOException e) {
-					ErrorLog.write("Konnte Spieltyp " + gametype + " nicht löschen: " + e.getLocalizedMessage());
+					ErrorLog.write("Konnte Spieltyp " + gametype + " nicht löschen: " + e);
 				}
 				break;
 			}
@@ -505,35 +505,61 @@ public class WebConnector {
 	}
 	
 	
-	public boolean loadGamelogic(int game, String gameName) {
-		byte[] logic;
+	public boolean updateCodr() throws IOException {
+		return loadCodr();
+	}
+	
+	
+	private boolean loadCodr() {
+		byte[] codr;
 		try {
-			logic = sendGet("gamelogic/" + game);
+			codr = sendGet("download_codr");
 		} catch (IOException e) {
-			ErrorLog.write("Spiellogik konnte nicht heruntergeladen werden: " + e.getLocalizedMessage());
+			ErrorLog.write("Die neue Version von Codr konnte nicht heruntergeladen werden: " + e);
 			return false;
 		}
 		
-		if (logic == null) {
+		if (codr == null)
 			return false;
-		}
 		
 		try {
-			FileUtils.writeByteArrayToFile(new File(Paths.gameLogic(gameName)), logic);
+			FileUtils.writeByteArrayToFile(new File(Paths.newCodrVersion()), codr);
 		} catch (IOException e) {
-			ErrorLog.write("Spiellogik konnte nicht gespeichert werden: " + e.getLocalizedMessage());
+			ErrorLog.write("Die neue Version von Codr konnte nicht gespeichert werden: " + e);
 			return false;
 		}
 		return true;
 	}
 	
 	
-	public boolean loadDataContainer(int game, String gameName) {
+	private boolean loadGamelogic(int game, String gameName) {
+		byte[] logic;
+		try {
+			logic = sendGet("gamelogic/" + game);
+		} catch (IOException e) {
+			ErrorLog.write("Spiellogik konnte nicht heruntergeladen werden: " + e);
+			return false;
+		}
+		
+		if (logic == null)
+			return false;
+		
+		try {
+			FileUtils.writeByteArrayToFile(new File(Paths.gameLogic(gameName)), logic);
+		} catch (IOException e) {
+			ErrorLog.write("Spiellogik konnte nicht gespeichert werden: " + e);
+			return false;
+		}
+		return true;
+	}
+	
+	
+	private boolean loadDataContainer(int game, String gameName) {
 		byte[] libraries;
 		try {
 			libraries = sendGet("data_container/" + game);
 		} catch (IOException e) {
-			ErrorLog.write("Der Data Container konnten nicht heruntergeladen werden: " + e.getLocalizedMessage());
+			ErrorLog.write("Der Data Container konnten nicht heruntergeladen werden: " + e);
 			return false;
 		}
 		
@@ -576,7 +602,7 @@ public class WebConnector {
 			}
 		} catch (IOException | ZipException e) {
 			e.printStackTrace();
-			ErrorLog.write("Ai Libraries konnte nicht entpackt werden: " + e.getLocalizedMessage());
+			ErrorLog.write("Ai Libraries konnte nicht entpackt werden: " + e);
 			return false;
 		}
 		

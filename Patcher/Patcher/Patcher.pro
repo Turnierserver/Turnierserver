@@ -25,7 +25,9 @@ INCLUDEPATH += include/
 
 SOURCES += \
     src/main.cpp \
-    src/patcher.cpp
+    src/patcher.cpp \
+    src/module.cpp
 
 HEADERS += \
-    include/patcher.h
+    include/patcher.h \
+    include/module.h

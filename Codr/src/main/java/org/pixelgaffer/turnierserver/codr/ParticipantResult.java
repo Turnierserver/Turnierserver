@@ -7,7 +7,7 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class ParticipantResult {
 	
-	public final CodrGame game;
+	public final GameBase game;
 	public SimpleStringProperty number = new SimpleStringProperty();
 	public SimpleStringProperty playerName = new SimpleStringProperty();
 	public SimpleStringProperty kiName = new SimpleStringProperty();
@@ -17,7 +17,7 @@ public class ParticipantResult {
 	public SimpleStringProperty won = new SimpleStringProperty();
 	
 	
-	public ParticipantResult(CodrGame ggame, String pplayerName, String kkiName, String dduration, String mmoveCount, String ppoints, String wwon) {
+	public ParticipantResult(GameBase ggame, String pplayerName, String kkiName, String dduration, String mmoveCount, String ppoints, String wwon) {
 		game = ggame;
 		playerName.set(pplayerName);
 		kiName.set(kkiName);
