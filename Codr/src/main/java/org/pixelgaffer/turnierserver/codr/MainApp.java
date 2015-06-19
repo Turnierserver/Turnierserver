@@ -166,14 +166,12 @@ public class MainApp extends Application {
 				cStart.vbLogin.setDisable(false);
 				cGame.btLoadOnline.setDisable(false);
 				cRoot.tabRanking.setDisable(false);
-				cRoot.tabSubmission.setDisable(false);
 			} else {
 				cStart.lbIsOnline.setText("Momentan besteht keine Internetverbindung");
 				cStart.btTryOnline.setText("Erneut versuchen");
 				cStart.vbLogin.setDisable(true);
 				cGame.btLoadOnline.setDisable(true);
 				cRoot.tabRanking.setDisable(true);
-				cRoot.tabSubmission.setDisable(true);
 			}
 		});
 		
@@ -211,12 +209,14 @@ public class MainApp extends Application {
 				cGame.btOnline.setDisable(false);
 				cAi.btUpload.setVisible(true);
 				cRanking.btChallenge.setVisible(true);
+				cRoot.tabSubmission.setDisable(false);
 			} else {
 				cStart.vbLogin.getChildren().clear();
 				cStart.vbLogin.getChildren().add(cStart.gpLogin);
 				cGame.btOnline.setDisable(true);
 				cAi.btUpload.setVisible(false);
 				cRanking.btChallenge.setVisible(false);
+				cRoot.tabSubmission.setDisable(true);
 			}
 			cStart.prLogin.setVisible(false);
 			cStart.prLogin1.setVisible(false);
