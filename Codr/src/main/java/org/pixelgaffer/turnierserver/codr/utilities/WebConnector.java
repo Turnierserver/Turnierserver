@@ -21,6 +21,10 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
@@ -58,7 +62,9 @@ import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
 
 public class WebConnector {
 	
+	
 	public String userName = null;
+	public boolean isLoggedIn = false;
 	public boolean isConnected = false;
 	
 	private final String url;
@@ -97,8 +103,10 @@ public class WebConnector {
 		boolean result = sendPost("login", "email", userName, "password", password, "remember", "true") != null;
 		saveToFile();
 		if (result == false) {
-			userName = null;
+			isLoggedIn = false;
+			this.userName = null;
 		}
+		getUserName();
 		return result;
 	}
 	
@@ -110,9 +118,11 @@ public class WebConnector {
 				throw new IOException();
 			}
 			userName = new JSONObject(json).getString("name");
+			isLoggedIn = true;
 			return userName;
 		} catch (IOException e) {
 			ErrorLog.write("Abfrage des Nutzernamens nicht möglich");
+			isLoggedIn = false;
 			userName = null;
 			return null;
 		}
@@ -536,7 +546,7 @@ public class WebConnector {
 	
 	
 	private boolean loadCodr() {
-		byte[] codr;
+		byte[] codr;  //4. TODO :P bitte nochmal drüberschauen, ob alles richtig ist.
 		try {
 			codr = sendGet("download_codr");
 		} catch (IOException e) {

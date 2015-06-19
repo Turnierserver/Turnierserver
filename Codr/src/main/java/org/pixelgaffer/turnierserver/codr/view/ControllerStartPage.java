@@ -31,6 +31,7 @@ import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Settings;
+import org.pixelgaffer.turnierserver.codr.utilities.WebConnector;
 
 
 
@@ -110,6 +111,7 @@ public class ControllerStartPage {
 				
 			}
 		});
+		
 	}
 	
 	
