@@ -268,7 +268,7 @@ public class WebConnector {
 	
 	
 	public void changeImage(File img, int id) throws IOException {
-		if(img == null) {
+		if (img == null) {
 			return;
 		}
 		HttpPost post = new HttpPost("ai/" + id + "/upload_icon");
@@ -281,18 +281,30 @@ public class WebConnector {
 	}
 	
 	
-	public void changeDescription(String description, int id) throws IOException {
-		String result = toString(sendGet("ai/" + id + "/update", "description", description));
-		if(result == null) {
-			throw new IOException("A problem occured while trying to update the description!");
+	public void changeDescription(String description, int id) {
+		String result;
+		try {
+			result = toString(sendGet("ai/" + id + "/update", "description", description));
+			if (result == null) {
+				throw new IOException("A problem occured while trying to update the description!");
+			}
+		} catch (IOException e) {
+			ErrorLog.write("Die Beschreibung der KI konnte nicht geändert werden.");
+			e.printStackTrace();
 		}
 	}
 	
 	
-	public void deleteKI(int id) throws IOException {
-		String result = toString(sendGet("ai/" + id + "/delete"));
-		if(result == null) {
-			throw new IOException("A problem occured while trying to delete ai!");
+	public void deleteKI(int id) {
+		String result;
+		try {
+			result = toString(sendGet("ai/" + id + "/delete"));
+			if (result == null) {
+				throw new IOException("A problem occured while trying to delete ai!");
+			}
+		} catch (IOException e) {
+			ErrorLog.write("Die AI konnte nicht gelöscht werden.");
+			e.printStackTrace();
 		}
 	}
 	
@@ -793,7 +805,7 @@ public class WebConnector {
 				isConnected = false;
 				return null;
 			}
-
+			
 			isConnected = true;
 			return responseArray;
 		} catch (IOException e) {
@@ -852,7 +864,7 @@ public class WebConnector {
 				isConnected = false;
 				return null;
 			}
-
+			
 			isConnected = true;
 			return responseArray;
 		} catch (IOException e) {

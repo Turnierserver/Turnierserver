@@ -97,6 +97,9 @@ public class AiSimple extends AiBase {
 		return img;
 	}
 	
+	public File getPictureFile(){
+		return new File(Paths.aiPicture(this));
+	}
 	
 	/**
 	 * Speichert das Bild des Spielers in der Datei picture.png.
