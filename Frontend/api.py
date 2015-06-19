@@ -1065,7 +1065,8 @@ def make_data_container(game_id):
 	return {"error": False}, 200
 
 
-@api.route("/upload_codr")
+@api.route("/upload_codr", methods=["POST"])
+@json_out
 @admin_required
 def upload_codr():
 	return upload_single_file(request, "Data/codr.jar")
