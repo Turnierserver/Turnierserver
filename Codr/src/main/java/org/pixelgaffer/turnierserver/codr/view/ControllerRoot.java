@@ -14,12 +14,12 @@ import javafx.scene.layout.AnchorPane;
 
 public class ControllerRoot {
 	
-	@FXML TabPane tabPane;
-	@FXML Tab tabStartPage;
-	@FXML Tab tabKiManagement;
-	@FXML Tab tabGameManagement;
-	@FXML Tab tabRanking;
-	@FXML Tab tabSubmission;
+	@FXML public TabPane tabPane;
+	@FXML public Tab tabStartPage;
+	@FXML public Tab tabKiManagement;
+	@FXML public Tab tabGameManagement;
+	@FXML public Tab tabRanking;
+	@FXML public Tab tabSubmission;
 	AnchorPane anchorStartPage;
 	AnchorPane anchorKiManagement;
 	AnchorPane anchorGameManagement;

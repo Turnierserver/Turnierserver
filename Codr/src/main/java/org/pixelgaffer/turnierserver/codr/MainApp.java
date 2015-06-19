@@ -138,6 +138,97 @@ public class MainApp extends Application {
 	}
 	
 	
+
+	public static void updateConnected() {
+		Task<Boolean> updateC = new Task<Boolean>() {
+			public Boolean call() {
+				if (MainApp.webConnector.ping()) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		};
+		
+		cStart.prOnlineResources.setVisible(true);
+		
+		updateC.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			if (cSubmission == null)
+				try {
+					Thread.sleep(20);
+				} catch (Exception e) {
+				}
+			
+			cStart.prOnlineResources.setVisible(false);
+			if (newValue) {
+				cStart.lbIsOnline.setText("Es besteht eine Internetverbindung");
+				cStart.btTryOnline.setText("nach Aktualisierungen suchen");
+				cStart.vbLogin.setDisable(false);
+				cGame.btLoadOnline.setDisable(false);
+				cRoot.tabRanking.setDisable(false);
+				cRoot.tabSubmission.setDisable(false);
+			} else {
+				cStart.lbIsOnline.setText("Momentan besteht keine Internetverbindung");
+				cStart.btTryOnline.setText("Erneut versuchen");
+				cStart.vbLogin.setDisable(true);
+				cGame.btLoadOnline.setDisable(true);
+				cRoot.tabRanking.setDisable(true);
+				cRoot.tabSubmission.setDisable(true);
+			}
+		});
+		
+		Thread thread = new Thread(updateC, "updateConnected");
+		thread.setDaemon(true);
+		thread.start();
+	}
+	
+	
+	public static void updateLoggedIn() {
+		
+		Task<Boolean> updateL = new Task<Boolean>() {
+			public Boolean call() {
+				if (webConnector.isLoggedIn()) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		};
+		
+		cStart.prLogin.setVisible(true);
+		cStart.prLogin1.setVisible(true);
+		
+		updateL.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			if (cSubmission == null)
+				try {
+					Thread.sleep(20);
+				} catch (Exception e) {
+				}
+			
+			if (newValue) {
+				cStart.vbLogin.getChildren().clear();
+				cStart.vbLogin.getChildren().add(cStart.hbLogout);
+				cGame.btOnline.setDisable(false);
+				cAi.btUpload.setVisible(true);
+				cRanking.btChallenge.setVisible(true);
+			} else {
+				cStart.vbLogin.getChildren().clear();
+				cStart.vbLogin.getChildren().add(cStart.gpLogin);
+				cGame.btOnline.setDisable(true);
+				cAi.btUpload.setVisible(false);
+				cRanking.btChallenge.setVisible(false);
+			}
+			cStart.prLogin.setVisible(false);
+			cStart.prLogin1.setVisible(false);
+		});
+		
+		Thread thread = new Thread(updateL, "updateLoggedIn");
+		thread.setDaemon(true);
+		thread.start();
+	}
+	
+	
+	
 	public void checkNewVersion(boolean newStartWarning) {
 		File myself = new File((System.getProperty("java.class.path").split(System.getProperty("path.separator"))[0]));
 		if (myself.isDirectory()) {

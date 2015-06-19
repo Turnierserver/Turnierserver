@@ -61,7 +61,7 @@ public class ControllerAiManagement {
 	@FXML Button btCompile;
 	@FXML Button btQualify;
 	@FXML Button btFinish;
-	@FXML Button btUpload;
+	@FXML public Button btUpload;
 	@FXML Button btToActual;
 	@FXML Button btChangeImage;
 	@FXML Button btDeleteImage;
