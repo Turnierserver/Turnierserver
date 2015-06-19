@@ -46,12 +46,12 @@ public class ControllerStartPage {
 	@FXML TitledPane tpLogic;
 	@FXML TitledPane tpRegister;
 	@FXML WebView wfNews;
-	@FXML VBox vbLogin;
-	@FXML GridPane gpLogin;
-	@FXML HBox hbLogout;
+	@FXML public VBox vbLogin;
+	@FXML public GridPane gpLogin;
+	@FXML public HBox hbLogout;
 	@FXML public ChoiceBox<String> cbGameTypes;
-	@FXML Button btTryOnline;
-	@FXML Label lbIsOnline;
+	@FXML public Button btTryOnline;
+	@FXML public Label lbIsOnline;
 	
 	@FXML public ProgressIndicator prOnlineResources;
 	@FXML public ProgressIndicator prLogin;
@@ -83,8 +83,8 @@ public class ControllerStartPage {
 		webEngine.load("http://www.bundeswettbewerb-informatik.de/");
 		wfNews.setZoom(0.9);
 		
-		updateLoggedIn();
-		updateConnected();
+		MainApp.updateLoggedIn();
+		MainApp.updateConnected();
 		
 		btTheme.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
 			clickTheme(newValue);
@@ -115,86 +115,6 @@ public class ControllerStartPage {
 	}
 	
 	
-	public void updateConnected() {
-		Task<Boolean> updateC = new Task<Boolean>() {
-			public Boolean call() {
-				if (MainApp.webConnector.ping()) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		};
-		
-		prOnlineResources.setVisible(true);
-		
-		updateC.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-			prOnlineResources.setVisible(false);
-			if (newValue) {
-				lbIsOnline.setText("Es besteht eine Internetverbindung");
-				btTryOnline.setText("nach Aktualisierungen suchen");
-				vbLogin.setDisable(false);
-			} else {
-				lbIsOnline.setText("Momentan besteht keine Internetverbindung");
-				btTryOnline.setText("Erneut versuchen");
-				vbLogin.setDisable(true);
-			}
-		});
-		
-		Thread thread = new Thread(updateC, "updateConnected");
-		thread.setDaemon(true);
-		thread.start();
-	}
-	
-	
-	public void updateLoggedIn() {
-		
-		Task<Boolean> updateL = new Task<Boolean>() {
-			public Boolean call() {
-				if (MainApp.webConnector.isLoggedIn()) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		};
-		
-		prLogin.setVisible(true);
-		prLogin1.setVisible(true);
-		
-		updateL.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-			if (newValue) {
-				vbLogin.getChildren().clear();
-				vbLogin.getChildren().add(hbLogout);
-				if (MainApp.cGame == null)
-					try {
-						Thread.sleep(100);
-					} catch (Exception e) {
-					}
-				if (MainApp.cGame != null) {
-					MainApp.cGame.btOnline.setDisable(false);
-				}
-			} else {
-				vbLogin.getChildren().clear();
-				vbLogin.getChildren().add(gpLogin);
-				if (MainApp.cGame == null)
-					try {
-						Thread.sleep(100);
-					} catch (Exception e) {
-					}
-				if (MainApp.cGame != null) {
-					MainApp.cGame.btOnline.setDisable(true);
-				}
-			}
-			prLogin.setVisible(false);
-			prLogin1.setVisible(false);
-		});
-		
-		Thread thread = new Thread(updateL, "updateLoggedIn");
-		thread.setDaemon(true);
-		thread.start();
-	}
-	
 	
 	@FXML void clickInfo() {
 		
@@ -223,7 +143,7 @@ public class ControllerStartPage {
 		
 		updateL.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue) {
-				updateLoggedIn();
+				MainApp.updateLoggedIn();
 			} else {
 				ErrorLog.write("Logout fehlgeschlagen");
 			}
@@ -255,7 +175,7 @@ public class ControllerStartPage {
 		updateL.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			switch (newValue) {
 			case "success":
-				updateLoggedIn();
+				MainApp.updateLoggedIn();
 				Dialog.info("Login erfolgreich!");
 				break;
 			case "wrongPassword":
@@ -273,7 +193,7 @@ public class ControllerStartPage {
 		thread.setDaemon(true);
 		thread.start();
 		
-		updateLoggedIn();
+		MainApp.updateLoggedIn();
 	}
 	
 	
@@ -283,7 +203,7 @@ public class ControllerStartPage {
 	
 	
 	@FXML void clickTryOnline() {
-		updateConnected();
+		MainApp.updateConnected();
 		mainApp.loadOnlineResources();
 	}
 	

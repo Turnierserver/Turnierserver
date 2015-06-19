@@ -33,7 +33,7 @@ public class ControllerRanking {
 	@FXML Label lbUser;
 	@FXML Label lbElo;
 	@FXML Label lbLanguage;
-	@FXML Button btChallenge;
+	@FXML public Button btChallenge;
 	@FXML Button btEdit;
 	@FXML Button btAbort;
 	@FXML HBox hbEdit;
