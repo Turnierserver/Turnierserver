@@ -72,6 +72,15 @@ public class ControllerRoot {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		tabPane.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+			if (newValue.getText().equals("Rangliste")){
+				if (MainApp.cRanking.ai == null && MainApp.cRanking.tvAis.getItems().size() > 0){
+					MainApp.cRanking.tvAis.getSelectionModel().select(0);
+				}
+			}
+		});
+		
 	}
 	
 	
