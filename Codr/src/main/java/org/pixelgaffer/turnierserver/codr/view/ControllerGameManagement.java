@@ -15,7 +15,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import org.pixelgaffer.turnierserver.codr.AiBase;
@@ -86,10 +85,7 @@ public class ControllerGameManagement {
 		tableResult.getColumns().add(col4);
 		tableResult.getColumns().add(col5);
 		
-		final ToggleGroup group = new ToggleGroup();
-		btOffline.setToggleGroup(group);
 		btOffline.setSelected(true);
-		btOnline.setToggleGroup(group);
 		
 		MainApp.gameManager.loadGames();
 		showGame();
@@ -127,8 +123,15 @@ public class ControllerGameManagement {
 	}
 	
 	
-	
 	@FXML void clickOnline() {
+		if (MainApp.webConnector.userName == null){
+			btOffline.selectedProperty().set(true);
+			btOnline.selectedProperty().set(false);
+			return;
+		}
+		btOffline.selectedProperty().set(false);
+		btOnline.selectedProperty().set(true);
+		
 		mainApp.loadOnlineAis();
 		lvPlayer1.getItems().clear();
 		lvPlayer1.getItems().addAll(MainApp.ownOnlineAis);
@@ -140,6 +143,10 @@ public class ControllerGameManagement {
 	
 	
 	@FXML void clickOffline() {
+		
+		btOffline.selectedProperty().set(true);
+		btOnline.selectedProperty().set(false);
+		
 		lvPlayer1.getItems().clear();
 		lvPlayer2.getItems().clear();
 		lvPlayer1.getItems().addAll(MainApp.aiManager.ais);

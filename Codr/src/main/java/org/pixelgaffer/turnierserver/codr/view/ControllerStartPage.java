@@ -63,6 +63,7 @@ public class ControllerStartPage {
 	@FXML public ChoiceBox<String> cbCplusplusCompilerType;
 	@FXML public TextField tbJDK;
 	
+	
 	WebEngine webEngine;
 	
 	
@@ -95,7 +96,7 @@ public class ControllerStartPage {
 		
 		cbGameTypes.setItems(MainApp.gametypes);
 		cbGameTypes.getSelectionModel().selectLast();
-
+		
 		cbCplusplusCompilerType.getItems().add("gcc");
 		cbCplusplusCompilerType.getItems().add("clang");
 		cbCplusplusCompilerType.getItems().add("g++");
@@ -163,9 +164,25 @@ public class ControllerStartPage {
 			if (newValue) {
 				vbLogin.getChildren().clear();
 				vbLogin.getChildren().add(hbLogout);
+				if (MainApp.cGame == null)
+					try {
+						Thread.sleep(100);
+					} catch (Exception e) {
+					}
+				if (MainApp.cGame != null) {
+					MainApp.cGame.btOnline.setDisable(false);
+				}
 			} else {
 				vbLogin.getChildren().clear();
 				vbLogin.getChildren().add(gpLogin);
+				if (MainApp.cGame == null)
+					try {
+						Thread.sleep(100);
+					} catch (Exception e) {
+					}
+				if (MainApp.cGame != null) {
+					MainApp.cGame.btOnline.setDisable(true);
+				}
 			}
 			prLogin.setVisible(false);
 			prLogin1.setVisible(false);
@@ -311,6 +328,6 @@ public class ControllerStartPage {
 			}
 		}
 	}
-
-
+	
+	
 }

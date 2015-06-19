@@ -58,6 +58,9 @@ import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
 
 public class WebConnector {
 	
+	public String userName = null;
+	public boolean isConnected = false;
+	
 	private final String url;
 	
 	private DateFormat cookieDateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.UK);
@@ -82,16 +85,20 @@ public class WebConnector {
 	/**
 	 * Loggt den Benutzer ein
 	 * 
-	 * @param username
+	 * @param userName
 	 *            Der Benutzername
 	 * @param password
 	 *            Der Passwort
 	 * @return Gibt an ob das Login erfolgreich war
 	 * @throws IOException
 	 */
-	public boolean login(String username, String password) throws IOException {
-		boolean result = sendPost("login", "email", username, "password", password, "remember", "true") != null;
+	public boolean login(String userName, String password) throws IOException {
+		this.userName = userName;
+		boolean result = sendPost("login", "email", userName, "password", password, "remember", "true") != null;
 		saveToFile();
+		if (result == false) {
+			userName = null;
+		}
 		return result;
 	}
 	
@@ -102,9 +109,11 @@ public class WebConnector {
 			if (json == null) {
 				throw new IOException();
 			}
-			return new JSONObject(json).getString("name");
+			userName = new JSONObject(json).getString("name");
+			return userName;
 		} catch (IOException e) {
 			ErrorLog.write("Abfrage des Nutzernamens nicht möglich");
+			userName = null;
 			return null;
 		}
 	}
@@ -124,7 +133,7 @@ public class WebConnector {
 	}
 	
 	
-	public int getLangID(String langName) {
+	private int getLangID(String langName) {
 		try {
 			String json = toString(sendGet("langs"));
 			if (json == null) {
@@ -145,7 +154,7 @@ public class WebConnector {
 	}
 	
 	
-	public int getGametypeID(String gametypeName) {
+	private int getGametypeID(String gametypeName) {
 		try {
 			String json = toString(sendGet("gametypes"));
 			if (json == null) {
@@ -180,6 +189,7 @@ public class WebConnector {
 	public boolean logout() throws IOException {
 		boolean result = sendPost("logout") != null;
 		saveToFile();
+		userName = null;
 		return result;
 	}
 	
@@ -248,6 +258,21 @@ public class WebConnector {
 	
 	public List<GameBase> getGames() {
 		throw new UnsupportedOperationException("Ich bin so pöse!");
+	}
+	
+	
+	public void changeImage(Image img, int id) {
+		// TODO: Das Bild einer bestimmten KI ändern
+	}
+	
+	
+	public void changeDescription(String description, int id) {
+		// TODO: Die Beschreibung einer bestimmten KI ändern
+	}
+	
+	
+	public void deleteKI(int id) {
+		// TODO: Eine KI löschen
 	}
 	
 	
@@ -615,7 +640,7 @@ public class WebConnector {
 	 * 
 	 * @return Den Session Token der Session
 	 */
-	public String getSession() {
+	private String getSession() {
 		List<Cookie> cookie = cookies.getCookies().stream().filter((Cookie o) -> o.getName().equals("session")).collect(Collectors.toList());
 		return cookie.isEmpty() ? null : cookie.get(0).getValue();
 	}
@@ -626,7 +651,7 @@ public class WebConnector {
 	 * 
 	 * @return Den Remember Token der Session
 	 */
-	public String getRememberToken() {
+	private String getRememberToken() {
 		List<Cookie> cookie = cookies.getCookies().stream().filter((Cookie o) -> o.getName().equals("remember_token")).collect(Collectors.toList());
 		return cookie.isEmpty() ? null : cookie.get(0).getValue();
 	}
@@ -635,7 +660,7 @@ public class WebConnector {
 	/**
 	 * Speichert die Session in eine Datei
 	 */
-	public void saveToFile() {
+	private void saveToFile() {
 		File file = new File(Paths.sessionFile());
 		try {
 			Properties p = new Properties();
@@ -664,7 +689,7 @@ public class WebConnector {
 	/**
 	 * Holt die Session aus einer Datei
 	 */
-	public void readFromFile() {
+	private void readFromFile() {
 		File file = new File(Paths.sessionFile());
 		try {
 			if (!file.exists()) {
@@ -697,12 +722,12 @@ public class WebConnector {
 	}
 	
 	
-	public byte[] sendPost(String command) throws IOException {
+	private byte[] sendPost(String command) throws IOException {
 		return sendPost(command, new NameValuePair[0]);
 	}
 	
 	
-	public byte[] sendPost(String command, String... data) throws IOException {
+	private byte[] sendPost(String command, String... data) throws IOException {
 		if (data.length % 2 != 0) {
 			throw new IllegalArgumentException("Pöse pöse, data muss immer eine Länge % 2 = 0 haben!");
 		}
@@ -727,31 +752,38 @@ public class WebConnector {
 	 * @return Die Antwort als byte[]
 	 * @throws IOException
 	 */
-	public byte[] sendPost(String command, NameValuePair... data) throws IOException {
-		HttpPost post = new HttpPost(command == null || command.length() == 0 ? url.substring(0, url.length() - 1) : url + command);
-		if (data.length != 0) {
-			post.setEntity(new UrlEncodedFormEntity(Arrays.asList(data)));
+	private byte[] sendPost(String command, NameValuePair... data) throws IOException {
+		try {
+			HttpPost post = new HttpPost(command == null || command.length() == 0 ? url.substring(0, url.length() - 1) : url + command);
+			if (data.length != 0) {
+				post.setEntity(new UrlEncodedFormEntity(Arrays.asList(data)));
+			}
+			
+			HttpResponse response = http.execute(post);
+			
+			byte[] responseArray = getOutput(response.getEntity().getContent());
+			
+			if (response.getStatusLine().getStatusCode() != 200) {
+				ErrorLog.write("ERROR: Executing post request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + toString(responseArray));
+				isConnected = false;
+				return null;
+			}
+
+			isConnected = true;
+			return responseArray;
+		} catch (IOException e) {
+			isConnected = false;
+			throw e;
 		}
-		
-		HttpResponse response = http.execute(post);
-		
-		byte[] responseArray = getOutput(response.getEntity().getContent());
-		
-		if (response.getStatusLine().getStatusCode() != 200) {
-			ErrorLog.write("ERROR: Executing post request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode() + ", ErrorMessage: " + toString(responseArray));
-			return null;
-		}
-		
-		return responseArray;
 	}
 	
 	
-	public byte[] sendGet(String command) throws IOException {
+	private byte[] sendGet(String command) throws IOException {
 		return sendGet(command, new NameValuePair[0]);
 	}
 	
 	
-	public byte[] sendGet(String command, String... data) throws IOException {
+	private byte[] sendGet(String command, String... data) throws IOException {
 		if (data.length % 2 != 0) {
 			throw new IllegalArgumentException("Data muss immer eine Länge % 2 = 0 haben!");
 		}
@@ -774,27 +806,34 @@ public class WebConnector {
 	 * @return Die Antwort als byte[]
 	 * @throws IOException
 	 */
-	public byte[] sendGet(String command, NameValuePair... data) throws IOException {
-		
-		String args = "";
-		for (NameValuePair pair : data) {
-			args += args.isEmpty() ? "?" : "&";
-			args += URLEncoder.encode(pair.getName(), "UTF8") + "=" + URLEncoder.encode(pair.getValue(), "UTF8");
+	private byte[] sendGet(String command, NameValuePair... data) throws IOException {
+		try {
+			String args = "";
+			for (NameValuePair pair : data) {
+				args += args.isEmpty() ? "?" : "&";
+				args += URLEncoder.encode(pair.getName(), "UTF8") + "=" + URLEncoder.encode(pair.getValue(), "UTF8");
+			}
+			
+			
+			HttpGet get = new HttpGet(command == null || command.isEmpty() ? url.substring(0, url.length() - 1) + args : url + command + args);
+			
+			HttpResponse response = http.execute(get);
+			
+			byte[] responseArray = getOutput(response.getEntity().getContent());
+			
+			if (response.getStatusLine().getStatusCode() != 200) {
+				ErrorLog.write("ERROR: Executing get request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode());// + ", ErrorMessage: " +
+// toString(responseArray));
+				isConnected = false;
+				return null;
+			}
+
+			isConnected = true;
+			return responseArray;
+		} catch (IOException e) {
+			isConnected = false;
+			throw e;
 		}
-		
-		
-		HttpGet get = new HttpGet(command == null || command.isEmpty() ? url.substring(0, url.length() - 1) + args : url + command + args);
-		
-		HttpResponse response = http.execute(get);
-		
-		byte[] responseArray = getOutput(response.getEntity().getContent());
-		
-		if (response.getStatusLine().getStatusCode() != 200) {
-			ErrorLog.write("ERROR: Executing get request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode());// + ", ErrorMessage: " + toString(responseArray));
-			return null;
-		}
-		
-		return responseArray;
 	}
 	
 	

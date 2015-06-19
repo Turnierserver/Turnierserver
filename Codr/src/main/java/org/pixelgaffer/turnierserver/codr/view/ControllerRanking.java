@@ -14,6 +14,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
 import org.pixelgaffer.turnierserver.codr.AiOnline;
@@ -32,14 +34,19 @@ public class ControllerRanking {
 	@FXML Label lbElo;
 	@FXML Label lbLanguage;
 	@FXML Button btChallenge;
+	@FXML Button btEdit;
+	@FXML Button btAbort;
+	@FXML HBox hbEdit;
+	@FXML VBox vbContent;
 	@FXML TextArea tbDescription;
 	@FXML TableView<AiOnline> tvAis;
 	@FXML TableView<Version> tvVersions;
 	@FXML TableView<GameBase> tvGames;
 	@FXML ImageView imageView;
 	
+	
 	MainApp mainApp;
-	private AiOnline ai;
+	public AiOnline ai;
 	
 	
 	/**
@@ -150,7 +157,7 @@ public class ControllerRanking {
 					return new SimpleStringProperty("Nein");
 			}
 		});
-
+		
 		colV0.setStyle("-fx-alignment: CENTER;");
 		colV1.setStyle("-fx-alignment: CENTER;");
 		colV2.setStyle("-fx-alignment: CENTER;");
@@ -163,7 +170,7 @@ public class ControllerRanking {
 		tvVersions.setFixedCellSize(25);
 		
 		
-
+		
 		TableColumn<GameBase, String> colG0 = new TableColumn<>("Gegner");
 		TableColumn<GameBase, String> colG1 = new TableColumn<>("zum Spiel");
 		TableColumn<GameBase, String> colG2 = new TableColumn<>("Datum");
@@ -195,28 +202,37 @@ public class ControllerRanking {
 			btChallenge.setDisable(false);
 			imageView.imageProperty().unbind();
 			imageView.imageProperty().bind(ai.getPicture());
+			
 			tvVersions.setItems(ai.versions);
-			if (ai.versions.size() != 0){
+			if (ai.versions.size() != 0) {
 				tvVersions.prefHeightProperty().bind(tvVersions.fixedCellSizeProperty().multiply(Bindings.size(tvVersions.getItems()).add(1.25)));
 				tvVersions.minHeightProperty().bind(tvVersions.prefHeightProperty());
 				tvVersions.maxHeightProperty().bind(tvVersions.prefHeightProperty());
-			}
-			else{
+			} else {
 				tvVersions.prefHeightProperty().set(60);
 				tvVersions.minHeightProperty().set(60);
 				tvVersions.maxHeightProperty().set(60);
 			}
 			tvGames.setItems(ai.onlineGames);
-			if (ai.onlineGames.size() != 0){
+			if (ai.onlineGames.size() != 0) {
 				tvGames.prefHeightProperty().bind(tvGames.fixedCellSizeProperty().multiply(Bindings.size(tvGames.getItems()).add(1.25)));
 				tvGames.minHeightProperty().bind(tvGames.prefHeightProperty());
 				tvGames.maxHeightProperty().bind(tvGames.prefHeightProperty());
-			}
-			else{
+			} else {
 				tvGames.prefHeightProperty().set(60);
 				tvGames.minHeightProperty().set(60);
 				tvGames.maxHeightProperty().set(60);
 			}
+			
+			if (ai.userName.equals(MainApp.webConnector.userName)) {
+				vbContent.getChildren().remove(hbEdit);
+				vbContent.getChildren().add(1, hbEdit);
+				btChallenge.setText("Löschen");
+			} else {
+				vbContent.getChildren().remove(hbEdit);
+				btChallenge.setText("Herausfordern");
+			}
+			
 		} else {
 			lbName.setText("Null");
 			tbDescription.setText("Aktuell wird keine KI angezeigt");
@@ -234,19 +250,38 @@ public class ControllerRanking {
 			tvGames.prefHeightProperty().set(60);
 			tvGames.minHeightProperty().set(60);
 			tvGames.maxHeightProperty().set(60);
+			
+			vbContent.getChildren().remove(hbEdit);
+			btChallenge.setText("Herausfordern");
 		}
 	}
 	
 	
 	@FXML public void clickChallenge() {
-		mainApp.loadOnlineAis();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+	}
+	
+	
+	@FXML public void clickAbort() {
+		btAbort.setVisible(false);
+		btEdit.setText("Bearbeiten");
+		tbDescription.setEditable(false);
+		tbDescription.setText(ai.description);
+	}
+	
+	
+	@FXML public void clickEdit() {
+		if (!btAbort.isVisible()) {
+			btAbort.setVisible(true);
+			btEdit.setText("Speichern");
+			tbDescription.setEditable(true);
+		} else {
+			btAbort.setVisible(false);
+			btEdit.setText("Bearbeiten");
+			tbDescription.setEditable(false);
+			ai.description = tbDescription.getText();
+			MainApp.webConnector.changeDescription(ai.description, ai.id);
 		}
-		tvAis.setItems(MainApp.onlineAis);
 	}
 	
 	
