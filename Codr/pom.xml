@@ -101,6 +101,8 @@
 					</goals>
 					<configuration>
 <!-- 						<minimizeJar>true</minimizeJar> -->
+						<createDependencyReducedPom>false</createDependencyReducedPom>
+						<finalName>Codr-standalone</finalName>
 						<filters>
 							<filter>
 								<artifact>org.projectlombok:lombok</artifact>
