@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 {% set active_page = "edit_ai" %}
+{% block head %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
+{% endblock %}
+
 {% block body %}
 
 
@@ -257,9 +261,10 @@ $('.ui.checkbox').checkbox();
 $('select.dropdown').dropdown();
 
 
-var f = function() {
+var f = function(force) {
 	console.log("Updating AI...");
-	$('#form').addClass('loading');
+	if (force) {$('#form').addClass('loading');}
+	else {$("#submit").addClass("loading")}
 	var name = $("#name").val();
 	var lang = $("#lang").val();
 	var desc = $("#desc").val();
@@ -275,14 +280,18 @@ var f = function() {
 
 	$.post("/api/ai/{{ai.id}}/update", d).done(function(data) {
 		console.log("AI changed.");
-		location.reload();
+		if (force) {location.reload();}
+		else {$("#submit").removeClass("loading")}
 	}).fail(function(xhr, textStatus, errorThrown) {
 		console.log(xhr.responseText.error);
 		alert(JSON.parse(xhr.responseText).error);
 	});
 };
 
-$("#submit").on("click", f);
+$("#submit").on("click", function() {f(true)});
+$('input:text, textarea').keyup( $.debounce( 350, function() {f(false)} ) );
+$('#extras, #lang').change(function() {f(false)});
+
 
 $("#copy_code").on("click", function() {
 	$('#copy_simple_player_modal').modal({
