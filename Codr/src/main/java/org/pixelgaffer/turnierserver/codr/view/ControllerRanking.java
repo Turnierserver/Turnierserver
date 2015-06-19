@@ -228,6 +228,9 @@ public class ControllerRanking {
 				vbContent.getChildren().remove(hbEdit);
 				vbContent.getChildren().add(1, hbEdit);
 				btChallenge.setText("Löschen");
+				btAbort.setVisible(false);
+				btEdit.setText("Bearbeiten");
+				tbDescription.setEditable(false);
 			} else {
 				vbContent.getChildren().remove(hbEdit);
 				btChallenge.setText("Herausfordern");
@@ -258,7 +261,11 @@ public class ControllerRanking {
 	
 	
 	@FXML public void clickChallenge() {
-		
+		if (btChallenge.getText().equals("Löschen")) {
+			MainApp.webConnector.deleteKI(ai.id);
+		} else {
+			
+		}
 	}
 	
 	
