@@ -46,6 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.AiOnline;
+import org.pixelgaffer.turnierserver.codr.AiSimple;
 import org.pixelgaffer.turnierserver.codr.GameBase;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
@@ -324,6 +325,7 @@ public class WebConnector {
 		if (getOutput(response.getEntity().getContent()) == null) {
 			throw new IOException("Konnte nicht zum Server verbinden");
 		}
+		changeImage(((AiSimple)version.ai).getPictureFile(), id);
 	}
 	
 	
