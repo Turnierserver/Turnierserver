@@ -396,11 +396,7 @@ class AI(db.Model):
 	def filtered(cls, gametype=None):
 		query = db.session.query(cls).filter(cls.id >= 0)
 		if not gametype:
-			if "gametype" in request.cookies:
-				gametype = GameType.query.filter(GameType.name.ilike(request.cookies["gametype"])).first()
-
-		if not gametype:
-			gametype = GameType.lastest()
+			gametype = GameType.selected()
 
 		return query.filter(cls.type == gametype)
 
@@ -587,6 +583,15 @@ class GameType(db.Model):
 	@classmethod
 	def lastest(cls):
 		return cls.query.order_by(cls.id.desc()).first()
+	
+	@classmethod
+	def selected(cls, gametype = None):
+		if not gametype:
+			if "gametype" in request.cookies:
+				gametype = GameType.query.filter(GameType.name.ilike(request.cookies["gametype"])).first()
+		if not gametype:
+			gametype = cls.lastest()
+		return gametype
 
 	def updated(self):
 		self.last_modified = timestamp()
