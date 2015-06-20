@@ -38,6 +38,8 @@ public:
 	QString name () const { return _name; }
 	
 	QitHubCommit latestCommit ();
+	QList<QitHubCommit> commitsSince (const QitHubCommit &commit) { return commitsSince(commit.sha()); }
+	QList<QitHubCommit> commitsSince (const QString &sha);
 	
 	bool download (const QString &filename, const QString &format = "tarball") const;
 	

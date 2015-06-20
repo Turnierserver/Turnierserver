@@ -22,6 +22,9 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QSettings>
+#include <QThread>
+#include <QTime>
+#include <QTimer>
 
 #include <qithubapi.h>
 #include <qithubrepository.h>
@@ -94,6 +97,31 @@ int main(int argc, char *argv[])
 		patcher.startFrontend();
 	if (parser.isSet(codrOption))
 		patcher.startCodr();
+	
+	// warten bis der Patcher starten soll
+	QString timeStr = config->value("Time", "now").toString();
+	if (timeStr != "now")
+	{
+		QTime time = QTime::fromString(timeStr, "hh:mm");
+		if (!time.isValid())
+		{
+			fprintf(stderr, "Ungültige Zeitangabe %s\n", qPrintable(timeStr));
+			return 1;
+		}
+		QTime current = QTime::currentTime();
+		QThread::sleep(current.secsTo(time));
+	}
+	
+	// den Patcher jetzt einmal starten und dann in dem angegebenen Intervall
+	int interval = config->value("Interval").toInt();
+	if (interval <= 0)
+	{
+		fprintf(stderr, "Ungültiges Intervall %d\n", interval);
+		return 1;
+	}
+	QTimer timer;
+	QObject::connect(&timer, SIGNAL(timeout()), &patcher, SLOT(update()));
+	timer.start(interval * 60000);
 	
 	return app.exec();
 }
