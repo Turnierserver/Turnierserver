@@ -15,7 +15,6 @@ builddir=PatcherBuild
 # die konfiguration ausgeben
 echo "Using logfile $logfile"
 echo "[$(date)] Using directory = $directory"  >$logfile
-echo "[$(date)] Using dirback   = $dirback"   >>$logfile
 echo "[$(date)] Using execfile  = $execfile"  >>$logfile
 echo "[$(date)] Using builddir  = $builddir"  >>$logfile
 
