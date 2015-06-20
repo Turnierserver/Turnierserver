@@ -131,6 +131,7 @@ Patcher::Patcher(QSettings *config, const QitHubRepository &repo, const QString 
 
 void Patcher::startBackend()
 {
+	_modules << "Backend";
 	static Module module(_config, _tmp, "Backend");
 	int ret = module.build(latestRepoCommit);
 	if (ret != 0)
@@ -140,6 +141,7 @@ void Patcher::startBackend()
 
 void Patcher::startWorker()
 {
+	_modules << "Worker";
 	static Module module(_config, _tmp, "Worker");
 	int ret = module.build(latestRepoCommit);
 	if (ret != 0)
@@ -149,6 +151,7 @@ void Patcher::startWorker()
 
 void Patcher::startFrontend()
 {
+	_modules << "Frontend";
 	static Module module(_config, _tmp, "Frontend");
 	int ret = module.build(latestRepoCommit);
 	if (ret != 0)
@@ -158,6 +161,7 @@ void Patcher::startFrontend()
 
 void Patcher::startCodr()
 {
+	_modules << "Codr";
 	static Module module(_config, _tmp, "Codr");
 	int ret = module.build(latestRepoCommit);
 	if (ret != 0)
@@ -175,14 +179,53 @@ void Patcher::update()
 	repoBranch.update();
 	configBranch.update();
 	
-	QList<QitHubCommit> commits = repoBranch.commitsSince(latestRepoCommit);
-	QStringList modifiedDirs;
+	QList<QitHubCommit> commits = repoBranch.commitsSince("dcfc3423144f8341993b2e2586865ad632ab83eb");
+	QSet<QString> modifiedDirs;
 	for (QitHubCommit commit : commits)
 	{
 		for (QitHubFile file : commit.modifiedFiles())
 		{
-			printf("%s\n", qPrintable(file.filename()));
+			QFile out(repoPath.absoluteFilePath(file.filename()));
+			if (!out.open(QIODevice::WriteOnly))
+			{
+				fprintf(stderr, "Fehler beim Öffnen von %s: %s\n", qPrintable(out.fileName()), qPrintable(out.errorString()));
+				exit(0); // der Fehler sollte beim komplett neuen klonen behoben sein
+			}
+			out.write(file.content());
+			out.close();
+			
+			modifiedDirs << file.filename().mid(0, qMax(0, file.filename().indexOf('/')));
 		}
+	}
+	
+	commits = configBranch.commitsSince("04ff1fd329eb706efe7d4113dd650ec153984bc4");
+	QSet<QString> modifiedFiles;
+	for (QitHubCommit commit : commits)
+	{
+		for (QitHubFile file : commit.modifiedFiles())
+		{
+			QFile out(configPath.absoluteFilePath(file.filename()));
+			if (!out.open(QIODevice::WriteOnly))
+			{
+				fprintf(stderr, "Fehler beim Öffnen von %s: %s\n", qPrintable(out.fileName()), qPrintable(out.errorString()));
+				exit(0); // der Fehler sollte beim komplett neuen klonen behoben sein
+			}
+			out.write(file.content());
+			out.close();
+			
+			modifiedFiles << file.filename();
+		}
+	}
+	
+//	if (modifiedDirs.contains("Patcher") || modifiedFiles.contains("Patcher.ini"))
+//		exit(0);
+	
+	QSet<QString> modules;
+	for (QString module : _modules)
+	{
+		bool restart = false;
+		if (modifiedDirs.contains(_config->value(module + "/Folder").toString()) || modifiedFiles.contains(_config->value(module + "/Config").toString()))
+			;
 	}
 }
 

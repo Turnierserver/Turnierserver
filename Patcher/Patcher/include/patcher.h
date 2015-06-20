@@ -26,8 +26,8 @@
 
 #include <QDir>
 #include <QObject>
+#include <QSet>
 #include <QSettings>
-#include <QStringList>
 #include <QTemporaryDir>
 #include <QTemporaryFile>
 
@@ -66,6 +66,7 @@ private:
 	QTemporaryDir repoTmpDir, configTmpDir;
 	QDir repoPath, configPath;
 	
+	QSet<QString> _modules;
 	pid_t frontend = 0, backend = 0, worker = 0;
 	
 };
