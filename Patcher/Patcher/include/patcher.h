@@ -47,6 +47,8 @@ public slots:
 	void startCodr();
 	void startWorker();
 	
+	void update();
+	
 protected:
 	/// Startet das Modul in einem eigenen Prozess und gibt die PID zurück.
 	virtual pid_t start (Module &module);
@@ -59,6 +61,7 @@ private:
 	
 	QitHubRepository repo, config;
 	QitHubBranch repoBranch, configBranch;
+	QString latestRepoCommit, latestConfigCommit;
 	
 	QTemporaryDir repoTmpDir, configTmpDir;
 	QDir repoPath, configPath;

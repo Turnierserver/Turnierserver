@@ -31,6 +31,8 @@
 #include <QDir>
 #include <QThread>
 
+#include <qithubfile.h>
+
 QString download (const QDir &tmpPath, const QitHubBranch &branch)
 {
 	QString repoTarball = tmpPath.filePath("repo.tar.gz");
@@ -107,6 +109,8 @@ Patcher::Patcher(QSettings *config, const QitHubRepository &repo, const QString 
 	, config(configRepo)
 	, repoBranch(this->repo.client(), this->repo, repoBranch)
 	, configBranch(this->config.client(), this->config, configBranch)
+	, latestRepoCommit(this->repoBranch.latestCommit().sha())
+	, latestConfigCommit(this->configBranch.latestCommit().sha())
 {
 	repoPath = download(repoTmpDir.path(), this->repoBranch);
 	configPath = download(configTmpDir.path(), this->configBranch);
@@ -128,7 +132,7 @@ Patcher::Patcher(QSettings *config, const QitHubRepository &repo, const QString 
 void Patcher::startBackend()
 {
 	static Module module(_config, _tmp, "Backend");
-	int ret = module.build(repoBranch.latestCommit().sha());
+	int ret = module.build(latestRepoCommit);
 	if (ret != 0)
 		exit(ret);
 	backend = start(module);
@@ -137,7 +141,7 @@ void Patcher::startBackend()
 void Patcher::startWorker()
 {
 	static Module module(_config, _tmp, "Worker");
-	int ret = module.build(repoBranch.latestCommit().sha());
+	int ret = module.build(latestRepoCommit);
 	if (ret != 0)
 		exit(ret);
 	worker = start(module);
@@ -146,7 +150,7 @@ void Patcher::startWorker()
 void Patcher::startFrontend()
 {
 	static Module module(_config, _tmp, "Frontend");
-	int ret = module.build(repoBranch.latestCommit().sha());
+	int ret = module.build(latestRepoCommit);
 	if (ret != 0)
 		exit(ret);
 	frontend = start(module);
@@ -155,7 +159,7 @@ void Patcher::startFrontend()
 void Patcher::startCodr()
 {
 	static Module module(_config, _tmp, "Codr");
-	int ret = module.build(repoBranch.latestCommit().sha());
+	int ret = module.build(latestRepoCommit);
 	if (ret != 0)
 	{
 		fprintf(stderr, "Fehler: Der Aufruf von build() für Codr hat %d zurückgegeben.\n", ret);
@@ -163,6 +167,23 @@ void Patcher::startCodr()
 	}
 	// sonderrolle: der codr wird hochgeladen statt ausgeführt
 	module.upload();
+}
+
+void Patcher::update()
+{
+	printf("Patcher::update called\n");
+	repoBranch.update();
+	configBranch.update();
+	
+	QList<QitHubCommit> commits = repoBranch.commitsSince(latestRepoCommit);
+	QStringList modifiedDirs;
+	for (QitHubCommit commit : commits)
+	{
+		for (QitHubFile file : commit.modifiedFiles())
+		{
+			printf("%s\n", qPrintable(file.filename()));
+		}
+	}
 }
 
 pid_t Patcher::start (Module &module)

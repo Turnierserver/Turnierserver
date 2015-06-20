@@ -56,6 +56,24 @@ QitHubCommit QitHubBranch::latestCommit()
 	return QitHubCommit(api, repo(), QString::fromUtf8(commit.value("sha").toVariant().toByteArray()));
 }
 
+QList<QitHubCommit> QitHubBranch::commitsSince (const QString &sha)
+{
+	QList<QitHubCommit> allCommits = repo().commits();
+	QString latest = latestCommit().sha();
+	int start=-1, end=-1;
+	for (int i = 0; i < allCommits.size(); i++)
+	{
+		QitHubCommit commit = allCommits[i];
+		if (commit.sha() == latest)
+			start = i;
+		if (commit.sha() == sha)
+			end = i;
+		if ((start >= 0) && (end >= 0))
+			break;
+	}
+	return allCommits.mid(start, end-start);
+}
+
 bool QitHubBranch::download(const QString &filename, const QString &format) const
 {
 	QNetworkRequest req = api->createRequest("/repos/" + repo().user() + "/" + repo().repo() + "/" + format + "/" + name());
