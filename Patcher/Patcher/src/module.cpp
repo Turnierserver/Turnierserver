@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <QDebug>
 #include <QDir>
 
 Module::Module(QSettings *config, QSettings *tmp, const QString &name)
@@ -98,6 +99,12 @@ int Module::build(const QString &currentHash)
 		}
 		ELSE_UNKNOWN
 	}
+	else if (lang() == "Python")
+	{
+		if (build() == "")
+			return 0;
+		ELSE_UNKNOWN
+	}
 	ELSE_UNKNOWN
 			
 #undef ELSE_UNKNOWN
@@ -110,7 +117,13 @@ int Module::start()
 	// die config bei bedarf ins verzeichnis kopieren
 	QFileInfo configFile(QDir(_tmp->value("ConfigRepoClonePath").toString()).absoluteFilePath(_config->value(name() + "/Config", "_n_o_n_e_x_i_s_t_e_n_t").toString()));
 	if (configFile.exists())
-		QFile::copy(configFile.absoluteFilePath(), QDir(_tmp->value("RepoClonePath").toString()).absoluteFilePath(configFile.fileName()));
+	{
+		QString target = QDir(QDir(_tmp->value("RepoClonePath").toString()).absoluteFilePath(_config->value(name() + "/Folder").toString())).absoluteFilePath(configFile.fileName());
+		qDebug() << "copy" << configFile.absoluteFilePath() << "to" << target;
+		QFile::remove(target);
+		if (!QFile::copy(configFile.absoluteFilePath(), target))
+			fprintf(stderr, "Konnte Konfigurationsdatei %s nicht kopieren!\n", qPrintable(configFile.fileName()));
+	}
 	
 #define ELSE_UNKNOWN \
 	else \
@@ -138,6 +151,28 @@ int Module::start()
 					if (file.endsWith(".jar"))
 						cmd += ":" + target.absoluteFilePath(file);
 			cmd += "' '" + _config->value(name() + "/MainClass").toString() + "' " + _config->value(name() + "/Args").toString().replace("${CONFIG}", "'" + configFile.absoluteFilePath() + "'");
+			printf("%s\n", qPrintable(cmd));
+			return system(qPrintable(cmd));
+		}
+		ELSE_UNKNOWN
+	}
+	else if (lang() == "Python")
+	{
+		if (build() == "")
+		{
+			QDir wd(_tmp->value("RepoClonePath").toString());
+			if (!wd.cd(_config->value(name() + "/Folder").toString()))
+			{
+				fprintf(stderr, "Konnte nicht ins Verzeichnis des Moduls wechseln\n");
+				return 1;
+			}
+			if (chdir(qPrintable(wd.absolutePath())) != 0)
+			{
+				perror("Konnte nicht ins Verzeichnis des Moduls wechseln");
+				return 1;
+			}
+			QString cmd("python '" + _config->value(name() + "/File").toString() + "' "
+						+ _config->value(name() + "/Args").toString().replace("${CONFIG}", "'" + configFile.absoluteFilePath() + "'"));
 			printf("%s\n", qPrintable(cmd));
 			return system(qPrintable(cmd));
 		}
