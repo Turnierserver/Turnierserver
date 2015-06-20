@@ -119,6 +119,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Ungültiges Intervall %d\n", interval);
 		return 1;
 	}
+	patcher.update();
 	QTimer timer;
 	QObject::connect(&timer, SIGNAL(timeout()), &patcher, SLOT(update()));
 	timer.start(interval * 60000);
