@@ -131,7 +131,7 @@ void Patcher::startBackend()
 	int ret = module.build(repoBranch.latestCommit().sha());
 	if (ret != 0)
 		exit(ret);
-	backend = module.start();
+	backend = start(module);
 }
 
 void Patcher::startWorker()
@@ -140,7 +140,7 @@ void Patcher::startWorker()
 	int ret = module.build(repoBranch.latestCommit().sha());
 	if (ret != 0)
 		exit(ret);
-	worker = module.start();
+	worker = start(module);
 }
 
 void Patcher::startFrontend()
