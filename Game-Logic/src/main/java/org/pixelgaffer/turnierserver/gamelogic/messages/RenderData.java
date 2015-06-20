@@ -11,9 +11,9 @@ public class RenderData {
 	 */
 	public int update;
 	/**
-	 * Die Fsortschrittsanzeige des Spieles
+	 * Die Fortschrittsanzeige des Spieles
 	 */
-	public String display;
+	public String display = "Spiel ist noch am laufen...";
 	/**
 	 * Die Daten, die an den renderer gesendet werden sollen
 	 */
