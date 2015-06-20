@@ -62,7 +62,7 @@ void JobControl::terminateJob (const QUuid &uuid)
 {
 	mutex.lock();
 	if (current && current->uuid() == uuid)
-		current->terminateAi(); // will emit finished() -> aiFinished()
+		current->terminateAi(); // will emit finished() -> jobFinished()
 	else
 		queue.removeAll(uuid);
 	mutex.unlock();
@@ -71,8 +71,8 @@ void JobControl::terminateJob (const QUuid &uuid)
 void JobControl::killJob (const QUuid &uuid)
 {
 	mutex.lock();
-	if (current && current->uuid() == uuid)
-		current->killAi(); // will emit finished() -> aiFinished()
+	if (current && (current->uuid() == uuid))
+		current->killAi(); // will emit finished() -> jobFinished()
 	else
 		queue.removeAll(uuid);
 	mutex.unlock();
@@ -80,7 +80,8 @@ void JobControl::killJob (const QUuid &uuid)
 
 void JobControl::jobFinished (const QUuid &uuid)
 {
-	mutex.lock();
+	printf("JobControl::jobFinished() called\n");
+	//mutex.lock();
 	if (current->uuid() == uuid)
 	{
 		delete current;
@@ -91,6 +92,6 @@ void JobControl::jobFinished (const QUuid &uuid)
 	}
 	else
 		fprintf(stderr, "Warnung: JobControl: Aktueller Job ist %s aber %s wurde beendet.\n", qPrintable(current->uuid().toString()), qPrintable(uuid.toString()));
-	mutex.unlock();
+	//mutex.unlock();
 	emit aiFinished(uuid);
 }

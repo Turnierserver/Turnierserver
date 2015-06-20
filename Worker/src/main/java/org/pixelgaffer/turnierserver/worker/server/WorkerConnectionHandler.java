@@ -8,6 +8,7 @@ import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnection
 import java.io.IOException;
 
 import lombok.Getter;
+import lombok.ToString;
 import naga.NIOSocket;
 
 import org.pixelgaffer.turnierserver.Parsers;
@@ -20,6 +21,7 @@ import org.pixelgaffer.turnierserver.worker.Sandbox;
 import org.pixelgaffer.turnierserver.worker.Sandboxes;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
 
+@ToString(of = { "type" })
 public class WorkerConnectionHandler extends ConnectionHandler
 {
 	/** Der lokale Buffer mit den noch nicht gelesenen bytes. */
