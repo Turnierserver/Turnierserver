@@ -393,6 +393,11 @@ def api_user_create():
 	if not username or not password or not email:
 		return {'error': 'Missing username, password or email'}, 400
 
+	if len(username) > 40:
+		return {'error': 'Username too long'}, 400
+	if len(password) < 3:
+		return {'error': 'Password too short'}, 400
+	
 	try:
 		User.query.filter(User.name.ilike(username)).one()
 		return {'error': 'Username already registered'}, 400
@@ -444,7 +449,7 @@ def api_ai_create():
 		if not type:
 			return {"error": "Invalid type."}, 400
 	else:
-		type = GameType.lastest()
+		type = GameType.selected()
 
 	ai = AI(name=name, user=current_user, desc=desc, lang=lang, type=type)
 	db.session.add(ai)
@@ -477,7 +482,7 @@ def upload_single_file(request, path, image=False):
 		print(mime, magic.from_buffer(content))
 		if not "image/" in mime:
 			## no gifs?
-			return {"error": "Invalid mimetype for an image.", "mimetype": mime}
+			return {"error": "Invalid mimetype for an image.", "mimetype": mime}, 400
 
 	@ftp.safe
 	def f():
@@ -585,6 +590,8 @@ def api_ai_copy_example_code(id):
 		ai.ftp_sync()
 	except ftp.err:
 		return CommonErrors.FTP_ERROR
+
+
 	if not ai.copy_example_code():
 		return CommonErrors.FTP_ERROR
 

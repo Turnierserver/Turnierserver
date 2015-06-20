@@ -126,6 +126,7 @@ class Backend(threading.Thread):
 		self.requests[reqid]["ai1"] = ais[1]
 		self.requests[reqid]["ai_objs"] = ais
 		self.requests[reqid]["states"] = []
+		self.requests[reqid]["status_text"] = "In Wartschlange"
 		Activity("Backend[{}]: Spiel mit {} gestartet".format(reqid, [ai.name for ai in ais]))
 		return reqid
 
@@ -232,7 +233,7 @@ class Backend(threading.Thread):
 				id=r["requestid"],
 				ai0=r["ai0"],
 				ai1=r["ai1"],
-				status="## Status?...",
+				status=r["status_text"],
 				inqueue=r["status"] == "processed"
 			))
 		return games
@@ -276,7 +277,7 @@ class Backend(threading.Thread):
 				self.connect()
 			if self.connected:
 				r = self.sock.recv(1024*1024).decode("utf-8")
-				#print('recvd', r)
+				print('recvd', r)
 				## zerstückelte blöcke?
 				for d in r.split("\n"):
 					if d == '':
