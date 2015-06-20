@@ -172,6 +172,7 @@ pid_t Patcher::start (Module &module)
 	{
 		int ret = module.start();
 		printf("%s exited with exit code %d\n", qPrintable(module.name()), ret);
+		exit(ret);
 	}
 	return pid;
 }
