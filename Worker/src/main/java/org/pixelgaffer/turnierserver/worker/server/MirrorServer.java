@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
+import org.pixelgaffer.turnierserver.worker.WorkerMain;
 
 /**
  * Dieser Server spiegelt den FTP-Server auf dem Datastore für die Sandboxen,
@@ -37,7 +38,8 @@ public class MirrorServer extends Thread
 			try
 			{
 				Socket client = server.accept();
-				System.out.println("MirrorServer:33: wie wärs mit authentikation?");
+				WorkerMain.getLogger().info("MirrorServer: " + client + " hat sich verbunden");
+				System.out.println("todo:MirrorServer:33: wie wärs mit authentikation?");
 				new Thread( () -> {
 					try
 					{

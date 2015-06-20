@@ -71,8 +71,8 @@ public class Sandboxes
 					"todo:Sandboxes:43: hier wärs schön wenn die supporteten sprachen geprüft werden würden");
 			if (!s.isBusy())
 			{
-				s.sendJob(job);
-				return s;
+				if (s.sendJob(job))
+					return s;
 			}
 		}
 		return null;

@@ -1,6 +1,9 @@
 package org.pixelgaffer.turnierserver.worker;
 
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.SANDBOX;
+import static org.pixelgaffer.turnierserver.worker.server.SandboxCommand.KILL_AI;
+import static org.pixelgaffer.turnierserver.worker.server.SandboxCommand.RUN_AI;
+import static org.pixelgaffer.turnierserver.worker.server.SandboxCommand.TERM_AI;
 import static org.pixelgaffer.turnierserver.worker.server.SandboxMessage.FINISHED_AI;
 import static org.pixelgaffer.turnierserver.worker.server.SandboxMessage.KILLED_AI;
 import static org.pixelgaffer.turnierserver.worker.server.SandboxMessage.STARTED_AI;
@@ -11,6 +14,7 @@ import java.io.IOException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
 import org.pixelgaffer.turnierserver.worker.server.SandboxMessage;
@@ -19,6 +23,7 @@ import org.pixelgaffer.turnierserver.worker.server.WorkerConnectionHandler;
 /**
  * Repräsentiert eine Sandbox.
  */
+@ToString
 public class Sandbox
 {
 	/** Gibt an ob die Sandbox busy ist. */
@@ -44,9 +49,15 @@ public class Sandbox
 	 */
 	public synchronized boolean sendJob (SandboxCommand job) throws IOException
 	{
-		if (isBusy())
-			return false;
-		setBusy(true);
+		System.out.println("Sandbox::sendJob(" + job + ")");
+		if (job.getCommand() == RUN_AI)
+		{
+			if (isBusy())
+				return false;
+			setBusy(true);
+		}
+		else if ((job.getCommand() == KILL_AI) || (job.getCommand() == TERM_AI))
+			setBusy(false);
 		connection.sendJob(job);
 		return true;
 	}

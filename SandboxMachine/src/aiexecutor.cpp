@@ -21,7 +21,7 @@
 #include "mirrorclient.h"
 #include "workerclient.h"
 
-#include <errno.h>
+#include <error.h>
 #include <pwd.h>
 #include <signal.h>
 #include <stdio.h>
@@ -283,14 +283,22 @@ void AiExecutor::executeAi ()
 
 void AiExecutor::terminateAi ()
 {
-	kill(pid, SIGKILL);
+	printf("AiExecutor::terminateAi() called\n");
+	if (kill(pid, SIGKILL) != 0)
+	{
+		perror("Fehler beim Töten der KI");
+	}
 	worker->sendMessage(uuid(), 'T');
 	emit finished(uuid());
 }
 
 void AiExecutor::killAi ()
 {
-	kill(pid, SIGKILL);
+	printf("AiExecutor::killAi() called\n");
+	if (kill(pid, SIGKILL) != 0)
+	{
+		perror("Fehler beim Töten der KI");
+	}
 	worker->sendMessage(uuid(), 'K');
 	emit finished(uuid());
 }
