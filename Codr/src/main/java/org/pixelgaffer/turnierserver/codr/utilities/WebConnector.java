@@ -48,6 +48,7 @@ import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.AiOnline;
 import org.pixelgaffer.turnierserver.codr.AiSimple;
 import org.pixelgaffer.turnierserver.codr.GameBase;
+import org.pixelgaffer.turnierserver.codr.GameOnline;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.DeletedException;
@@ -244,6 +245,25 @@ public class WebConnector {
 		return result;
 	}
 	
+	public ObservableList<GameOnline> getGames(String game) {
+		ObservableList<GameOnline> result = FXCollections.observableArrayList();
+		String json;
+		try {
+			json = toString(sendGet("games/" + getGametypeID(game)));
+		} catch (IOException e) {
+			return result;
+		}
+		if (json == null) {
+			return result;
+		}
+		JSONArray ais = new JSONArray(json);
+		
+		for (int i = 0; i < ais.length(); i++) {
+			result.add(new GameOnline(ais.getJSONObject(i), this));
+		}
+		
+		return result;
+	}
 	
 	/**
 	 * Gibt das Bild einer AI zurück
@@ -261,12 +281,6 @@ public class WebConnector {
 			return null;
 		}
 	}
-	
-	
-	public List<GameBase> getGames() {
-		throw new UnsupportedOperationException("Ich bin so pöse!");
-	}
-	
 	
 	public void changeImage(File img, int id) throws IOException {
 		if (img == null) {
@@ -357,14 +371,29 @@ public class WebConnector {
 		return result.getString("compilelog");
 	}
 	
-	
-	public ObservableList<AiOnline> getOwnAis(String game) {
-		String user = getUserName();
-		if (user == null)
-			return null;
-		return FXCollections.observableArrayList(getAis(game).stream().filter((AiOnline ai) -> ai.userName.equals(user)).collect(Collectors.toList()));
+	public ObservableList<AiOnline> getOwnAis() {
+		return getUserAis(getUserID());
 	}
 	
+	public ObservableList<AiOnline> getUserAis(int user) {
+		ObservableList<AiOnline> result = FXCollections.observableArrayList();
+		String json;
+		try {
+			json = toString(sendGet("user/" + user));
+		} catch (IOException e) {
+			return result;
+		}
+		if (json == null) {
+			return result;
+		}
+		JSONArray ais = new JSONObject(json).getJSONArray("ais");
+		
+		for (int i = 0; i < ais.length(); i++) {
+			result.add(new AiOnline(ais.getJSONObject(i), this));
+		}
+		
+		return result;
+	}
 	
 	/**
 	 * Pingt den Server
@@ -379,7 +408,6 @@ public class WebConnector {
 			return false;
 		}
 	}
-	
 	
 	public ObservableList<String> loadGametypesFromFile() {
 		ObservableList<String> result = FXCollections.observableArrayList();
