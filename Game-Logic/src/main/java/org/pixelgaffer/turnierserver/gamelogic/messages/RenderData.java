@@ -22,5 +22,9 @@ public class RenderData {
 	 * Die requestid des Frontendauftrages
 	 */
 	public int requestid;
+	/**
+	 * Der Fortschritt des Spieles zwischen 0 und 1, -1 wenn kein Fortschritt angezeigt werden soll
+	 */
+	public double progress = -1;
 	
 }

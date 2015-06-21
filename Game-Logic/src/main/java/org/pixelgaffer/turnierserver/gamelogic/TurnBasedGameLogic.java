@@ -8,12 +8,18 @@ import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 
+import com.google.gson.reflect.TypeToken;
+
 /**
  * @param <E> Das AiObject
  * @param <R> Die Antwort der Ai
  */
 public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameStateLogic<E, R> {
 	
+	public TurnBasedGameLogic(TypeToken<R> token) {
+		super(token);
+	}
+
 	/**
 	 * Die AIs, deren Antworten erhalten wurden
 	 */
@@ -70,12 +76,12 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameStat
 				sendRenderData(update);
 			}
 			
-			if(getMaxTurns() == getPlayedRounds()) {
+			round();
+
+			if(maxTurns == playedRounds) {
 				endGame();
 				return;
 			}
-			
-			round();
 			
 			try {
 				sendGameState();

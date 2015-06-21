@@ -5,9 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
@@ -33,21 +31,27 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * Gibt an, wie viele Runden gespielt werden. -1 bei unbegrenzt vielen
 	 * Runden.
 	 */
-	@Getter
-	@Setter
-	private int maxTurns = -1;
+	protected int maxTurns = -1;
 
 	/**
 	 * Gibt an, wie viele Runden schon gespielt wurden
 	 */
-	@Getter
-	private int playedRounds;
+	protected int playedRounds;
 
 	/**
 	 * Das Spiel, welches von dieser GameLogic geleitet wird
 	 */
-	@Getter
 	protected Game game;
+	
+	/**
+	 * Der Fortschritt, welcher angezeigt werden soll, -1, wenn keiner angezeigt werden soll
+	 */
+	protected double progress = -1;
+	
+	/**
+	 * Der Display-String, welcher angezeigt werden soll
+	 */
+	protected String display;
 
 	/**
 	 * Sortiert Ais absteigend nach Score
@@ -171,6 +175,10 @@ public abstract class GameLogic<E extends AiObject, R> {
 		update++;
 		renderData.data = data;
 		renderData.requestid = game.getFrontend().getRequestId();
+		renderData.progress = progress;
+		if(display != null) {
+			renderData.display = display;
+		}
 		sendToFronted(renderData);
 	}
 
