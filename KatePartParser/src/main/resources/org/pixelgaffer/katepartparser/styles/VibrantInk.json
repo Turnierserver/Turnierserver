@@ -1,0 +1,97 @@
+{
+	"normal": {
+		"bgColor": "#191919",
+		"color": "#ffffff",
+		"italic": false,
+		"bold": false,
+		"underline": false,
+		"strikeout": false,
+		"spellChecking": true
+	},
+	"keyword": {
+		"color": "#ec691e",
+		"bold": true
+	},
+	"function": {
+		"color": "#f7c527"
+	},
+	"variable": {
+		"color": "#357a8f"
+	},
+	"controlFlow": {
+		"color": "#ec691e",
+		"bold": true
+	},
+	"operator": {
+	},
+	"builtIn": {
+	},
+	"extensions": {
+	},
+	"preprocessor": {
+		"color": "#ec691e"
+	},
+	"attribute": {
+		"color": "#ec691e"
+	},
+	
+	"char": {
+		"color": "#477488"
+	},
+	"specialChar": {
+		"color": "#477488",
+		"bold": true
+	},
+	"string": {
+		"color": "#477488"
+	},
+	"verbatimString": {
+		"color": "#477488",
+		"bold": true
+	},
+	"specialString": {
+		"color": "#477488",
+		"italic": true
+	},
+	
+	"dataType": {
+		"color": "#ec691e"
+	},
+	"decVal": {
+		"color": "#477488"
+	},
+	"baseN": {
+		"color": "#477488"
+	},
+	"float": {
+		"color": "#477488"
+	},
+	"constant": {
+		"color": "#ec691e"
+	},
+	
+	"comment": {
+		"color": "#8146a2"
+	},
+	"documentation": {
+		"color": "#8c3fc8"
+	},
+	"annotation": {
+		"color": "#800080"
+	},
+	"commentVar": {
+		"color": "#814582"
+	},
+	"regionMarker": {
+	},
+	"information": {
+		"color": "#800080"
+	},
+	"warning": {
+		"color": "#800080"
+	},
+	"alert": {
+		"color": "#800080",
+		"bold": true
+	},
+}

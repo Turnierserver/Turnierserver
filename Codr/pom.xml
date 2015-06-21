@@ -51,11 +51,19 @@
 		<artifactId>compiler</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</dependency>
+	
 	<dependency>
 		<groupId>org.pixelgaffer.turnierserver</groupId>
 		<artifactId>gamelogic</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</dependency>
+	
+	<dependency>
+		<groupId>org.pixelgaffer</groupId>
+		<artifactId>katepartparser</artifactId>
+		<version>1.0</version>
+	</dependency>
+	
 	<dependency>
 		<groupId>org.projectlombok</groupId>
 		<artifactId>lombok</artifactId>

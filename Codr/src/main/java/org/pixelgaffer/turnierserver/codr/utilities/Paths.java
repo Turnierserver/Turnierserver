@@ -15,8 +15,8 @@ import org.pixelgaffer.turnierserver.codr.Version;
 
 public class Paths {
 	
-	public static String aceFolder() {
-		return "Ace";
+	public static String syntaxFolder() {
+		return "Syntax";
 	}
 	
 	
