@@ -12,7 +12,7 @@ public class DetectSpaces extends DefaultRule
 	public int matches (String line, int off, Map<String, List<String>> lists)
 	{
 		int start = 0;
-		while (Character.isWhitespace(line.charAt(off + start)))
+		while ((line.length() > off + start) && Character.isWhitespace(line.charAt(off + start)))
 			start++;
 		return start;
 	}

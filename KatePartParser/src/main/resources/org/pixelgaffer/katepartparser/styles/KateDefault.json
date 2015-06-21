@@ -1,7 +1,7 @@
 {
 	"normal": {
-		"bgColor": "#191919",
-		"color": "#ffffff",
+		"bgColor": "#ffffff",
+		"color": "#1f1c1b",
 		"italic": false,
 		"bold": false,
 		"underline": false,
@@ -9,94 +9,95 @@
 		"spellChecking": true
 	},
 	"keyword": {
-		"color": "#ec691e",
 		"bold": true
 	},
 	"function": {
-		"color": "#f7c527"
+		"color": "#644a9b"
 	},
 	"variable": {
-		"color": "#357a8f"
+		"color": "#0057ae"
 	},
 	"controlFlow": {
-		"color": "#ec691e",
 		"bold": true
 	},
 	"operator": {
 	},
 	"builtIn": {
+		"color": "#644a9b"
 	},
 	"extension": {
+		"color": "#0095ff",
+		"bold": true
 	},
 	"preprocessor": {
-		"color": "#ec691e"
+		"color": "#006e28"
 	},
 	"attribute": {
-		"color": "#ec691e"
+		"color": "#0057ae"
 	},
 	
 	"char": {
-		"color": "#477488"
+		"color": "#924c9d"
 	},
 	"specialChar": {
-		"color": "#477488",
-		"bold": true
+		"color": "#ff5500"
 	},
 	"string": {
-		"color": "#477488"
+		"color": "#bf0303"
 	},
 	"verbatimString": {
-		"color": "#477488",
-		"bold": true
+		"color": "#bf0303"
 	},
 	"specialString": {
-		"color": "#477488",
-		"italic": true
+		"color": "#ff5500"
 	},
 	"import": {
-		"color": "#9cf828"
+		"color": "#644a9b"
 	},
 	
 	"dataType": {
-		"color": "#ec691e"
+		"color": "#0057ae"
 	},
 	"decVal": {
-		"color": "#477488"
+		"color": "#b08000"
 	},
 	"baseN": {
-		"color": "#477488"
+		"color": "#b08000"
 	},
 	"float": {
-		"color": "#477488"
+		"color": "#b08000"
 	},
 	"constant": {
-		"color": "#ec691e"
+		"color": "#aa5500"
 	},
 	
 	"comment": {
-		"color": "#8146a2"
+		"color": "#898887"
 	},
 	"documentation": {
-		"color": "#8c3fc8"
+		"color": "#607880"
 	},
 	"annotation": {
-		"color": "#800080"
+		"color": "#0095ff"
 	},
 	"commentVar": {
-		"color": "#814582"
+		"color": "#ca60ca"
 	},
 	"regionMarker": {
+		"color": "#0057ae"
 	},
 	"information": {
-		"color": "#800080"
+		"color": "#b08000"
 	},
 	"warning": {
-		"color": "#800080"
+		"color": "#bf0303"
 	},
 	"alert": {
-		"color": "#800080",
+		"color": "#bf0303",
 		"bold": true
 	},
+	
 	"others": {
+		"color": "#006e28"
 	}
 }

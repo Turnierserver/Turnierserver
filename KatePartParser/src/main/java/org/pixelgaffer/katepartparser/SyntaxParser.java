@@ -195,15 +195,24 @@ public class SyntaxParser
 									Element itemData = (Element)n1;
 									if (!itemData.getTagName().equals("itemData"))
 									{
-										System.err.println("Unbekanntes Element in " + file.getName() + ": " + itemData);
+										System.err
+												.println("Unbekanntes Element in " + file.getName() + ": " + itemData);
 										continue;
 									}
 									
 									try
 									{
 										String name = itemData.getAttribute("name");
-										NamedStyleEntry styleEntry = new NamedStyleEntry(style.getEntry(itemData
-												.getAttribute("defStyleNum")));
+										StyleEntry parent = style.getEntry(itemData.getAttribute("defStyleNum"));
+										NamedStyleEntry styleEntry;
+										if (parent == null)
+										{
+											System.err.println("Undefinierter Standart-Stil: "
+													+ itemData.getAttribute("defStyleNum"));
+											styleEntry = new NamedStyleEntry();
+										}
+										else
+											styleEntry = new NamedStyleEntry(parent);
 										styleEntry.setName("itemData" + j);
 										
 										if (itemData.hasAttribute("color"))
@@ -213,7 +222,8 @@ public class SyntaxParser
 									}
 									catch (NoSuchMethodException nsme)
 									{
-										System.err.println("Unbekannter Standart-Stil in " + file.getName() + ": " + nsme.getMessage());
+										System.err.println("Unbekannter Standart-Stil in " + file.getName() + ": "
+												+ nsme.getMessage());
 									}
 									catch (SecurityException se)
 									{
@@ -262,7 +272,8 @@ public class SyntaxParser
 					{
 						Context toInclude = contexts.get(e.getAttribute("context"));
 						if (toInclude == null)
-							System.err.println("Unbekannter Context in " + file.getName() + ": " + e.getAttribute("context"));
+							System.err.println("Unbekannter Context in " + file.getName() + ": "
+									+ e.getAttribute("context"));
 						else
 							c.getRules().addAll(toInclude.getRules());
 					}
@@ -300,7 +311,9 @@ public class SyntaxParser
 		PrintWriter out = new PrintWriter(tmp);
 		for (NamedStyleEntry entry : itemDatas.values())
 			out.println(entry.toCss(false));
-		out.println("#" + id + "{-fx-background-color:" + style.getNormal().getBgColor() + "}");
+		out.println("#" + id + "{-fx-background-color:" + style.getNormal().getBgColor() + ";"
+				+ "-fx-text-fill:" + style.getNormal().getColor() + ";"
+				+ "-fx-prompt-text-fill:" + style.getNormal().getColor() + "}");
 		out.close();
 		return tmp.toURI().toURL();
 	}
@@ -314,12 +327,18 @@ public class SyntaxParser
 		
 		Deque<String> lines = new LinkedList<>(Arrays.asList(text.split("\n")));
 		
-		String line;
-		while ((line = lines.pollFirst()) != null)
+		String line = lines.pollFirst();
+		while (line != null)
 		{
 			int pos = 0;
 			lineloop: while (line.length() > pos)
 			{
+				if (context.isEmpty())
+				{
+					System.err.println("Fehler in " + file.getName() + ": Die Context-Liste ist leer");
+					context.offer(defaultContext);
+				}
+				
 				for (ContextRule rule : context.getFirst().getRules())
 				{
 					int chars = rule.matches(line, pos, lists);
@@ -332,10 +351,21 @@ public class SyntaxParser
 						pos += chars;
 						
 						String c = rule.getContext();
-						if (c.equals("#pop"))
-							context.pollFirst();
-						else if (!c.equals("#stay"))
-							context.addFirst(contexts.get(c));
+						while (c.startsWith("#pop"))
+						{
+							c = c.substring(4);
+							if (context.size() > 1)
+								context.pollFirst();
+							else
+								System.err.println("#pop für oberstes Element in " + file.getName());
+						}
+						if (!c.isEmpty() && !c.equals("#stay"))
+						{
+							if (contexts.containsKey(c))
+								context.addFirst(contexts.get(c));
+							else
+								System.err.println("Unbekannter Context in " + file.getName() + " (referenziert von " + rule + ")");
+						}
 						
 						continue lineloop;
 					}
@@ -345,12 +375,25 @@ public class SyntaxParser
 				pos++;
 			}
 			
-			spansBuilder.add(Collections.emptyList(), 1);
+			line = lines.pollFirst();
+			if (line != null)
+				spansBuilder.add(Collections.emptyList(), 1);
 			String c = context.getFirst().getLineEndContext();
-			if (c.equals("#pop"))
-				context.pollFirst();
-			else if (!c.equals("#stay"))
-				context.addFirst(contexts.get(c));
+			while (c.startsWith("#pop"))
+			{
+				c = c.substring(4);
+				if (context.size() > 1)
+					context.pollFirst();
+				else
+					System.err.println("#pop für oberstes Element in " + file.getName());
+			}
+			if (!c.isEmpty() && !c.equals("#stay"))
+			{
+				if (contexts.containsKey(c))
+					context.addFirst(contexts.get(c));
+				else
+					System.err.println("Unbekannter Context in " + file.getName() + " (referenziert von " + context.getFirst().getName() + ")");
+			}
 		}
 		
 		return spansBuilder.create();

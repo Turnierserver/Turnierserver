@@ -88,7 +88,6 @@ public class CodeEditor
 	 */
 	public CodeEditor (File doc)
 	{
-		System.out.println("CodeEditor::CodeEditor(" + doc + ")");
 		document = doc;
 		codeArea = new CodeArea();
 		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
@@ -96,7 +95,7 @@ public class CodeEditor
 		Style style = new EmptyStyle();
 		try
 		{
-			style = MainApp.cStart.btTheme.isSelected() ? Styles.getStyle("VibrantInk") : new EmptyStyle();
+			style = MainApp.cStart.btTheme.isSelected() ? Styles.getStyle("VibrantInk") : Styles.getStyle("KateDefault");
 		}
 		catch (IOException e1)
 		{
