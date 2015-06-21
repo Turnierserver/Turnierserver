@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="Maven: org.fxmisc.wellbehaved:wellbehavedfx:0.1.1">
+    <archive path="/home/dominic/.m2/repository/org/fxmisc/wellbehaved/wellbehavedfx/0.1.1/wellbehavedfx-0.1.1.jar" />
+  </library>
+  <library name="Maven: org.fxmisc.undo:undofx:1.1">
+    <archive path="/home/dominic/.m2/repository/org/fxmisc/undo/undofx/1.1/undofx-1.1.jar" />
+  </library>
+  <library name="Maven: org.reactfx:reactfx:2.0-M4">
+    <archive path="/home/dominic/.m2/repository/org/reactfx/reactfx/2.0-M4/reactfx-2.0-M4.jar" />
+  </library>
+  <library name="Maven: org.fxmisc.flowless:flowless:0.4.3">
+    <archive path="/home/dominic/.m2/repository/org/fxmisc/flowless/flowless/0.4.3/flowless-0.4.3.jar" />
+  </library>
+  <library name="Maven: org.projectlombok:lombok:1.16.4">
+    <archive path="/home/dominic/.m2/repository/org/projectlombok/lombok/1.16.4/lombok-1.16.4.jar" />
+  </library>
+  <library name="Maven: org.fxmisc.richtext:richtextfx:0.6.4">
+    <archive path="/home/dominic/.m2/repository/org/fxmisc/richtext/richtextfx/0.6.4/richtextfx-0.6.4.jar" />
+  </library>
+</eclipse-userlibraries>
+

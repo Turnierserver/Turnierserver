@@ -104,7 +104,7 @@ public class MainApp extends Application {
 		gametypes = webConnector.loadGametypesFromFile();
 		languages = webConnector.loadLangsFromFile();
 		
-		CodeEditor.writeAce();
+		CodeEditor.writeSyntax();
 		
 		if (gametypes == null || languages == null) {
 			showSplashStage(_stage);
