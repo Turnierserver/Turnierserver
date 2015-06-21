@@ -269,4 +269,8 @@ public abstract class GameLogic<E extends AiObject, R> {
 		}
 	}
 
+	public Game getGame() {
+		return game;
+	}
+
 }
