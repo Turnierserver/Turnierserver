@@ -35,13 +35,13 @@ public abstract class AllBuilderAllSolverLogic<E extends BuilderSolverAiObject<G
 	
 	@Override
 	public Ai getBuilder(Ai ai) {
-		return game.getAis().get((ai.getIndex() - getPlayedRounds()) % game.getAis().size());
+		return game.getAis().get((ai.getIndex() - playedRounds) % game.getAis().size());
 	}
 	
 	@Override
 	public void startGame(Game game) {
 		super.startGame(game);
-		setMaxTurns(game.getAis().size() - 1);
+		maxTurns = game.getAis().size() - 1;
 	}
 	
 }

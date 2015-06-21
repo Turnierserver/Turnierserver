@@ -38,13 +38,13 @@ public abstract class OneBuilderAllSolverLogic<E extends BuilderSolverAiObject<G
 	
 	@Override
 	public Ai getBuilder(Ai ai) {
-		return game.getAis().get(getPlayedRounds() - 1);
+		return game.getAis().get(playedRounds - 1);
 	}
 	
 	@Override
 	public void startGame(Game game) {
 		super.startGame(game);
-		setMaxTurns(game.getAis().size());
+		maxTurns = game.getAis().size();
 	}
 	
 }

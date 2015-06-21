@@ -7,17 +7,22 @@ import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.GameState;
 
+import com.google.gson.reflect.TypeToken;
+
 /**
  * @param <E> Das AiObject
  * @param <R> Die Antwort der Ai
  */
 public abstract class GameStateLogic<E extends AiObject, R> extends GameLogic<E, R> {
 	
+	public GameStateLogic(TypeToken<R> token) {
+		super(token);
+	}
+
 	/**
 	 * Der Gamestate
 	 */
 	protected GameState<?, R> gamestate;
-	
 	
 	/**
 	 * Schickt die Änderungen des GameStates an alle AIs
