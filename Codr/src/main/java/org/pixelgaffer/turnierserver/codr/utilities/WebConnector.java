@@ -265,6 +265,26 @@ public class WebConnector {
 		return result;
 	}
 	
+	public ObservableList<GameOnline> getGames(int ai) {
+		ObservableList<GameOnline> result = FXCollections.observableArrayList();
+		String json;
+		try {
+			json = toString(sendGet("ai/" + ai + "/games"));
+		} catch (IOException e) {
+			return result;
+		}
+		if (json == null) {
+			return result;
+		}
+		JSONArray ais = new JSONArray(json);
+		
+		for (int i = 0; i < ais.length(); i++) {
+			result.add(new GameOnline(ais.getJSONObject(i), this));
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * Gibt das Bild einer AI zurück
 	 * 
