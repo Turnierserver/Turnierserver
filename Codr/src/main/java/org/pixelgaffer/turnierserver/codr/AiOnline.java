@@ -46,14 +46,14 @@ public class AiOnline extends AiBase {
 		for (int i = 0; i < versions.length(); i++) {
 			newVersion(versions.getJSONObject(i));
 		}
-		
+		onlineGames.addAll(connector.getGames(id));
 		
 		Task<Image> imageLoader = new Task<Image>() {
 			public Image call() {
 				try {
 					Image img = connector.getImage(json.getInt("id"));
 					if (img == null) {
-						img = connector.getImage(json.getInt("id"));  // zweiter Versuch
+						img = connector.getImage(json.getInt("id"));  // zweiter Versuch (das geht aber auch elleganter :D)
 						if (img == null) {
 							return Resources.defaultPicture();
 						} else
