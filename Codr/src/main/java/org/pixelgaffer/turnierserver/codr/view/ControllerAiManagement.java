@@ -624,7 +624,7 @@ public class ControllerAiManagement {
 			public Boolean call() {
 				System.out.println("Angekommenerst1");
 				if (MainApp.webConnector.isLoggedIn())
-					MainApp.ownOnlineAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+					MainApp.ownOnlineAis = MainApp.webConnector.getOwnAis();
 				System.out.println("Angekommenerst");
 				return true;
 			}
