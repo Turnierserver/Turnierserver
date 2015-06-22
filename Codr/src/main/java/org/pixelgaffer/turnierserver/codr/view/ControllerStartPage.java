@@ -235,6 +235,7 @@ public class ControllerStartPage {
 		} else {
 			btTheme.setText("Light");
 		}
+		MainApp.cAi.showAi();
 	}
 	
 	
