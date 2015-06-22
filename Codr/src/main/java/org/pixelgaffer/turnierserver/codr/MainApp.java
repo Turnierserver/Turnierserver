@@ -388,7 +388,7 @@ public class MainApp extends Application {
 			public ObservableList<AiOnline> call() {
 				ObservableList<AiOnline> newOwnOnline = null;
 				if (MainApp.webConnector.isLoggedIn())
-					newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+					newOwnOnline = MainApp.webConnector.getOwnAis();
 				return newOwnOnline;
 			}
 		};
