@@ -415,6 +415,16 @@ public class WebConnector {
 		return result;
 	}
 	
+	public ObservableList<AiOnline> getOwnAis(String gametype) {
+		return getUserAis(getUserID(), gametype);
+	}
+	
+	public ObservableList<AiOnline> getUserAis(int user, String gametype) {
+		ObservableList<AiOnline> ais = FXCollections.observableArrayList();
+		ais.addAll(getUserAis(user).stream().filter(ai -> ai.gametype.equals(gametype)).collect(Collectors.toList()));
+		return ais;
+	}
+	
 	/**
 	 * Pingt den Server
 	 * 
