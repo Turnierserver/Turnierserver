@@ -16,6 +16,8 @@ GameBuilder/Makefile
 startServer.bat
 dependency-reduced-pom.xml
 *.jar
+*.orig
+PatcherBuild/
 
 # java müll
 .settings/

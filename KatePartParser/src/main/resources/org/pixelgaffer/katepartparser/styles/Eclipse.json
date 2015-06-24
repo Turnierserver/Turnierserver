@@ -1,0 +1,108 @@
+{
+	"normal": {
+		"bgColor": "white",
+		"color": "black",
+		"italic": false,
+		"bold": false,
+		"underline": false,
+		"strikeout": false,
+		"spellChecking": true
+	},
+	"keyword": {
+		"color": "purple",
+		"bold": true
+	},
+	"function": {
+		"color": "brown"
+	},
+	"variable": {
+		"color": "lightbrown"
+	},
+	"controlFlow": {
+		"color": "purple",
+		"bold": true
+	},
+	"operator": {
+	},
+	"builtIn": {
+		"color": "black"
+	},
+	"extension": {
+		"color": "black"
+	},
+	"preprocessor": {
+		"color": "purple"
+	},
+	"attribute": {
+		"color": "purple"
+	},
+	
+	"char": {
+		"color": "blue"
+	},
+	"specialChar": {
+		"color": "blue"
+	},
+	"string": {
+		"color": "blue"
+	},
+	"verbatimString": {
+		"color": "blue"
+	},
+	"specialString": {
+		"color": "blue"
+	},
+	"import": {
+		"color": "black"
+	},
+	
+	"dataType": {
+		"color": "purple"
+	},
+	"decVal": {
+		"color": "blue"
+	},
+	"baseN": {
+		"color": "blue"
+	},
+	"float": {
+		"color": "blue"
+	},
+	"constant": {
+		"color": "blue",
+		"bold": true
+	},
+	
+	"comment": {
+		"color": "green"
+	},
+	"documentation": {
+		"color": "skyblue"
+	},
+	"annotation": {
+		"color": "skyblue",
+		"bold": true
+	},
+	"commentVar": {
+		"color": "skyblue",
+		"italic": true
+	},
+	"regionMarker": {
+		"color": "skyblue",
+		"bold":true
+	},
+	"information": {
+		"color": "skyblue"
+	},
+	"warning": {
+		"color": "skyblue"
+	},
+	"alert": {
+		"color": "skyblue",
+		"bold": true
+	},
+	
+	"others": {
+		"color": "black"
+	}
+}
