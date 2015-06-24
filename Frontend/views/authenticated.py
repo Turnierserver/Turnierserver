@@ -35,8 +35,7 @@ def profile_id(id):
 def create_ai():
 	ai = AI(user=current_user, name="Unbenannte KI",
 			desc="Unbeschriebene KI", lang=Lang.query.first(),
-			type=GameType.query.first())
-	## current gametype
+			type=GameType.selected())
 	db.session.commit()
 	return redirect(url_for("authenticated.edit_ai", id=ai.id))
 
@@ -81,7 +80,7 @@ def file_browser(id, path=""):
 	if not curr_url.endswith("/"):
 		curr_url += "/"
 
-	ftp_url = "AIs/{}/v{}/{}".format(id, ai.lastest_version().version_id, path)
+	ftp_url = "AIs/{}/v{}/{}".format(id, ai.latest_version().version_id, path)
 
 	root_url = url_for("authenticated.file_browser", id=id, path="")
 	path_url = [(ai.name, root_url)]
@@ -146,7 +145,7 @@ def ais_challenge():
 	if len(own_ais) < 1:
 		return error(403, body="Du hast nicht genug eigene KIs.")
 
-	own_ais = [ai for ai in own_ais if ai.lastest_version().qualified]
+	own_ais = [ai for ai in own_ais if ai.latest_version().qualified]
 
 	if len(own_ais) < 1:
 		return error(403, body="Du hast keine qualifizierten KIs.")
@@ -156,7 +155,7 @@ def ais_challenge():
 		return error(403, body="Es gibt noch nicht genug KIs.")
 
 	print(all_ais)
-	all_ais = [ai for ai in all_ais if ai.lastest_qualified_version()]
+	all_ais = [ai for ai in all_ais if ai.latest_qualified_version()]
 	print(all_ais)
 	if len(all_ais) < 2:
 		return error(403, body="Es gibt nicht genug qualifizierte KIs.")

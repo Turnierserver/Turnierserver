@@ -42,7 +42,7 @@ def game_list():
 		gametype = GameType.query.filter(GameType.name.ilike(request.cookies["gametype"])).first()
 		query = query.filter(Game.type == gametype)
 	else:
-		query = query.filter(Game.type == GameType.lastest())
+		query = query.filter(Game.type == GameType.latest())
 	return render_template("game_list.html", game_list=query.all(), in_progress_games=backend.inprogress_games())
 
 @anonymous_blueprint.route("/game/<int:id>")
@@ -75,4 +75,4 @@ def settings():
 	if "gametype" in request.cookies:
 		current_gametype = GameType.query.filter(GameType.name.ilike(request.cookies["gametype"])).first()
 	return render_template("settings.html", current_gametype=current_gametype,
-		lastest_gametype=GameType.lastest(), gametypes=GameType.query.all())
+		latest_gametype=GameType.latest(), gametypes=GameType.query.all())

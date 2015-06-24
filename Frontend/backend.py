@@ -21,7 +21,7 @@ class Backend(threading.Thread):
 		self.connect()
 		self.start()
 		self.requests = {}
-		self.lastest_request_id = 0
+		self.latest_request_id = 0
 		self.app = None
 
 	def is_connected(self):
@@ -35,6 +35,7 @@ class Backend(threading.Thread):
 		try:
 			self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			self.sock.connect((env.backend_url, env.backend_port))
+			self.sock.sendall(b"")
 			self.connected = True
 		except socket.error as e:
 			print(e)
@@ -43,10 +44,10 @@ class Backend(threading.Thread):
 			self.connected = False
 
 	def request_compile(self, ai):
-		reqid = self.lastest_request_id
-		self.lastest_request_id += 1
+		reqid = self.latest_request_id
+		self.latest_request_id += 1
 		d = {
-			'action': 'compile', 'id':str(ai.id)+'v'+str(ai.lastest_version().version_id),
+			'action': 'compile', 'id':str(ai.id)+'v'+str(ai.latest_version().version_id),
 			'requestid': reqid, 'gametype': ai.type.id
 		}
 		self.requests[reqid] = d
@@ -84,10 +85,10 @@ class Backend(threading.Thread):
 				if "success" in resp:
 					if resp["success"]:
 						yield ("Anfrage erfolgreich beendet\n", "log")
-						ai.lastest_version().compiled = True
+						ai.latest_version().compiled = True
 						db.session.commit()
 					else:
-						ai.lastest_version().compiled = False
+						ai.latest_version().compiled = False
 						db.session.commit()
 						yield ("Kompilierung fehlgeschlagen\n", "log")
 						if "exception" in resp:
@@ -107,17 +108,17 @@ class Backend(threading.Thread):
 
 
 	def request_game(self, ais):
-		reqid = self.lastest_request_id
-		self.lastest_request_id += 1
+		reqid = self.latest_request_id
+		self.latest_request_id += 1
 		if any([ai.type != ais[0].type for ai in ais]):
 			raise RuntimeError("AIs haben verschiedene Typen: " + str(ais))
 		d = {'action': 'start', 'ais': [], 'gametype': ais[0].type.id, 'requestid': reqid}
 		for ai in ais:
-			if not ai.lastest_qualified_version():
+			if not ai.latest_qualified_version():
 				print(ais)
 				print(ai)
 				raise RuntimeError("Nich qualifizierte KI in request_game()")
-			d['ais'].append(str(ai.id) + 'v' + str(ai.lastest_qualified_version().version_id))
+			d['ais'].append(str(ai.id) + 'v' + str(ai.latest_qualified_version().version_id))
 		self.requests[reqid] = d
 		self.send_dict(d)
 		self.requests[reqid]["queue"] = Queue()
@@ -131,9 +132,9 @@ class Backend(threading.Thread):
 		return reqid
 
 	def request_qualify(self, ai):
-		reqid = self.lastest_request_id
-		self.lastest_request_id += 1
-		d = {'action': 'qualify', 'id': str(ai.id)+'v'+str(ai.lastest_version().version_id),
+		reqid = self.latest_request_id
+		self.latest_request_id += 1
+		d = {'action': 'qualify', 'id': str(ai.id)+'v'+str(ai.latest_version().version_id),
 			'gametype': ai.type.id, "requestid": reqid}
 		self.requests[reqid] = d
 		self.send_dict(d)
@@ -277,6 +278,10 @@ class Backend(threading.Thread):
 				self.connect()
 			if self.connected:
 				r = self.sock.recv(1024*1024).decode("utf-8")
+				if r == '':
+					print(".", end="")
+					time.sleep(10)
+					continue
 				print('recvd', r)
 				## zerstückelte blöcke?
 				for d in r.split("\n"):
@@ -289,8 +294,7 @@ class Backend(threading.Thread):
 						self.parse(json.loads(d))
 			else:
 				print("No connection to Backend...")
-				time.sleep(60*15)
-			time.sleep(0.5)
+				time.sleep(60*15)	
 
 
 backend = Backend()

@@ -68,8 +68,6 @@ class SyncedFTP:
 					raise self.err()
 		return wrapper
 
-
-
 	def send_file_failsafe(self, path):
 		@self.failsafe_locked
 		def f(path):
@@ -92,6 +90,7 @@ class SyncedFTP:
 		pass
 
 	def copy_tree(self, from_dir, to_dir, overwrite=True):
+		print("COPY_TREE", from_dir, to_dir, overwrite)
 		@self.safe
 		def f():
 			if overwrite:
@@ -274,7 +273,7 @@ class AI(db.Model):
 		super(AI, self).__init__(*args, **kwargs)
 		db.session.add(self)
 		db.session.commit()
-		self.lastest_version()
+		self.latest_version()
 		self.updated(True)
 
 		@ftp.safe
@@ -306,12 +305,12 @@ class AI(db.Model):
 		else:
 			return ftp.send_file("AIs/default.png")
 
-	def lastest_version(self):
+	def latest_version(self):
 		if len(self.version_list) == 0:
 			return self.new_version()
 		return self.version_list[-1]
 
-	def lastest_qualified_version(self):
+	def latest_qualified_version(self):
 		for v in self.version_list[::-1]:
 			if v.qualified:
 				return v
@@ -366,6 +365,7 @@ class AI(db.Model):
 			# 		language = self.lang.name,
 			# 		language_id = self.lang.id,
 			# 		name = self.name,
+
 			# 		id = self.id,
 			# 		author = self.user.name,
 			# 		type = self.type.name,
@@ -373,8 +373,10 @@ class AI(db.Model):
 			# 	))
 
 			with ftp.ftp_host.open(bd+"/v"+str(version.version_id)+"/libraries.txt", "w") as f:
-				for lib in self.lastest_version().extras():
+				for lib in self.latest_version().extras():
 					f.write(lib + "\n")
+				if not self.latest_version().extras():
+					f.write("\n")
 
 		with ftp.ftp_host.open(bd+"/language.txt", "w") as f:
 			f.write(self.lang.name)
@@ -388,8 +390,8 @@ class AI(db.Model):
 		return True
 
 	def copy_example_code(self):
-		source_dir_base = "Games/{}/{}/example_ai".format(GameType.query.first().id, self.lang.name)
-		target_dir_base = "AIs/{}/v{}".format(self.id, self.lastest_version().version_id)
+		source_dir_base = "Games/{}/{}/example_ai".format(self.type.id, self.lang.name)
+		target_dir_base = "AIs/{}/v{}".format(self.id, self.latest_version().version_id)
 		return ftp.copy_tree(source_dir_base, target_dir_base)
 
 	@classmethod
@@ -458,7 +460,7 @@ class AI_Version(db.Model):
 
 	@property
 	def current(self):
-		return self.ai.lastest_version() == self
+		return self.ai.latest_version() == self
 
 	def freeze(self):
 		self.frozen = True
@@ -548,7 +550,7 @@ class Game_inprogress:
 	status = "1/2378"
 
 	def __init__(self, id, d=None):
-		self.type = GameType.lastest()
+		self.type = GameType.latest()
 		self.timestamp = timestamp()
 		self.id = id
 		if d:
@@ -581,16 +583,16 @@ class GameType(db.Model):
 			self.last_modified = timestamp()
 
 	@classmethod
-	def lastest(cls):
+	def latest(cls):
 		return cls.query.order_by(cls.id.desc()).first()
-	
+
 	@classmethod
 	def selected(cls, gametype = None):
 		if not gametype:
 			if "gametype" in request.cookies:
 				gametype = GameType.query.filter(GameType.name.ilike(request.cookies["gametype"])).first()
 		if not gametype:
-			gametype = cls.lastest()
+			gametype = cls.latest()
 		return gametype
 
 	def updated(self):

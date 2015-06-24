@@ -4,6 +4,7 @@ print("Turnierserver - Frontend - ", arrow.utcnow().to('local').format("HH:mm:ss
 print("-"*36 + "\n"*2)
 
 from flask import Flask, got_request_exception
+from werkzeug.contrib.fixers import ProxyFix
 from flask.ext.login import current_user
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
@@ -50,6 +51,10 @@ if env.airbrake:
 		airbrake_logger.exception(exception, extra=extra)
 	got_request_exception.connect(log_exception, app)
 
+if True:
+	# fix fuer Gunicorn und NGINX
+	app.wsgi_app = ProxyFix(app.wsgi_app)
+
 
 cache.init_app(app)
 backend.app = app
@@ -65,7 +70,7 @@ def inject_globals():
 @manager.command
 def run():
 	"Startet den Server."
-	app_run_params = dict(host="::", port=env.web_port, threaded=True)
+	app_run_params = dict(host="0.0.0.0", port=env.web_port, threaded=True)
 	if env.ssl:
 		import ssl
 		context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)

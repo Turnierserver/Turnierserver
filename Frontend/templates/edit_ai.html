@@ -104,7 +104,7 @@
 			<script>
 				// ## Das ist verdammt haesslig und sollte nicht verdammt haesslig sein.
 				$("#extras").dropdown("set selected", [
-					{% for selected in ai.lastest_version().extras() %}
+					{% for selected in ai.latest_version().extras() %}
 						"{{selected}}",
 					{% endfor %}
 				]);
@@ -240,7 +240,7 @@
 			<i class="copy outline icon"></i>
 		</div>
 		<div class="description">
-			<p>Das kopieren des Beispielcodes wird deine aktuelle Version (Version {{ai.lastest_version().version_id}}) überschreiben! Bist du dir sicher?</p>
+			<p>Das kopieren des Beispielcodes wird deine aktuelle Version (Version {{ai.latest_version().version_id}}) überschreiben! Bist du dir sicher?</p>
 		</div>
 	</div>
 	<div class="actions">
