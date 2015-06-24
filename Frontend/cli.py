@@ -136,10 +136,10 @@ def manage(manager, app):
 		all = prompt_bool("Compile all?")
 		for ai in AI.query.all():
 			if all or prompt_bool("Compile '"+ai.name + "' by " + ai.user.name):
-				if ai.lastest_version().frozen:
+				if ai.latest_version().frozen:
 					print("AI_Version is frozen")
 					continue
-				ai.lastest_version().compiled = True
+				ai.latest_version().compiled = True
 				print("Compiling", ai.name)
 				for data, event in backend.compile(ai):
 					print(event, ":", data)

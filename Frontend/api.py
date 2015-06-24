@@ -127,7 +127,7 @@ def api_ai_games(id):
 @json_out
 def api_games(gametype=None):
 	if not gametype:
-		gametype = GameType.lastest()
+		gametype = GameType.latest()
 	else:
 		if isinstance(gametype, int):
 			gametype = GameType.query.get(gametype)
@@ -431,6 +431,8 @@ def api_user_create():
 @authenticated
 def api_ai_create():
 	name = request.args.get('name', 'unbenannte ki')
+	if len(name) == 0:
+		name = 'unbenannte ki'
 	desc = request.args.get('desc', 'unbeschriebene ki')
 	## lang fix setzen
 
@@ -565,7 +567,7 @@ def api_ai_update(id):
 
 	if 'extra[]' in request.form:
 		extras = request.form.getlist("extra[]")
-		ai.lastest_version().extras(extras)
+		ai.latest_version().extras(extras)
 
 	# es muss zur Datenbank geschrieben werden, um die aktuellen Infos zu bekommen
 	db.session.commit()
@@ -626,10 +628,10 @@ def api_ai_compile(id):
 		return (CommonErrors.NO_ACCESS[0]["error"], "error")
 
 
-	if ai.lastest_version().frozen:
+	if ai.latest_version().frozen:
 		return {"error": "AI_Version is frozen"}, 400
-	ai.lastest_version().compiled = True
-	ai.lastest_version().qualified = False
+	ai.latest_version().compiled = True
+	ai.latest_version().qualified = False
 	db.session.commit()
 
 	yield from backend.compile(ai)
@@ -644,10 +646,10 @@ def api_ai_compile_blocking(id):
 	if not current_user.can_access(ai):
 		return (CommonErrors.NO_ACCESS[0]["error"], "error")
 
-	if ai.lastest_version().frozen:
+	if ai.latest_version().frozen:
 		return {"error": "AI_Version is frozen"}, 400
-	ai.lastest_version().compiled = True
-	ai.lastest_version().qualified = False
+	ai.latest_version().compiled = True
+	ai.latest_version().qualified = False
 	db.session.commit()
 
 	compile_log = ""
@@ -673,9 +675,9 @@ def ai_qualify(id):
 		return (CommonErrors.NO_ACCESS[0]["error"], "error")
 
 
-	if not ai.lastest_version().compiled:
+	if not ai.latest_version().compiled:
 		return {"error": "AI_Version isnt compiled."}, 400
-	if ai.lastest_version().frozen:
+	if ai.latest_version().frozen:
 		return {"error": "AI_Version is frozen."}, 400
 
 	reqid = backend.request_qualify(ai)
@@ -684,8 +686,8 @@ def ai_qualify(id):
 			yield json.dumps(data), event
 		elif event == "success":
 			yield "", "qualified"
-			ai.lastest_version().compiled = True
-			ai.lastest_version().qualified = True
+			ai.latest_version().compiled = True
+			ai.latest_version().qualified = True
 			db.session.commit()
 
 @api.route("/ai/<int:id>/freeze", methods=["POST"])
@@ -747,7 +749,7 @@ def ai_new_version_from_zip(id):
 	except zipfile.BadZipFile:
 		return {"error": "Bad zip file."}, 400
 
-	if not ftp.upload_tree(tmpdir, "AIs/{}/v{}".format(ai.id, ai.lastest_version().version_id)):
+	if not ftp.upload_tree(tmpdir, "AIs/{}/v{}".format(ai.id, ai.latest_version().version_id)):
 		return CommonErrors.FTP_ERROR
 
 	return {"error": False}, 200
@@ -771,13 +773,13 @@ def ai_upload(id):
 		return CommonErrors.BAD_REQUEST
 	if not path.endswith("/"):
 		path += "/"
-	path = "AIs/{}/v{}/{}".format(id, ai.lastest_version().version_id, path)
+	path = "AIs/{}/v{}/{}".format(id, ai.latest_version().version_id, path)
 	filename = secure_filename(request.form['filename'])
 	if not len(filename):
 		return ({"error": "Missing filename."}, 400)
 	data = request.form["data"]
 
-	if ai.lastest_version().frozen:
+	if ai.latest_version().frozen:
 		return {"error": "AI is frozen, you need to create a new version."}, 400
 
 	@ftp.safe
@@ -816,7 +818,7 @@ def ai_delete_file(id):
 		return CommonErrors.BAD_REQUEST
 	if not path.endswith("/"):
 		path += "/"
-	path = "AIs/{}/v{}/{}".format(id, ai.lastest_version().version_id, path)
+	path = "AIs/{}/v{}/{}".format(id, ai.latest_version().version_id, path)
 	filename = secure_filename(request.form['filename'])
 
 	@ftp.safe
@@ -853,7 +855,7 @@ def ai_create_folder(id):
 		return CommonErrors.BAD_REQUEST
 	if not path.endswith("/"):
 		path += "/"
-	path = "AIs/{}/v{}/{}".format(id, ai.lastest_version().version_id, path)
+	path = "AIs/{}/v{}/{}".format(id, ai.latest_version().version_id, path)
 	name = secure_filename(request.form['name'])
 	if not len(name):
 		return ({"error": "Missing name."}, 400)
@@ -919,7 +921,7 @@ def start_game():
 	if not any([current_user.can_access(ai) for ai in ais]):
 		return CommonErrors.NO_ACCESS
 
-	if not all([ai.lastest_qualified_version() for ai in ais]):
+	if not all([ai.latest_qualified_version() for ai in ais]):
 		return {"error": "All AIs have to be qualified"}, 400
 
 	backend.request_game(ais)
@@ -1015,6 +1017,7 @@ def upload_game_libs(id, lang):
 	@ftp.safe
 	def f():
 		if not ftp.ftp_host.path.isdir("Games/{}/{}/ailib".format(id, lang)):
+			## ordner erstellen, falls jemand zeugs für nen neues spiel hochladen will
 			return {"error": "Invalid GameID or Lang"}, 400
 		if not "X-FileName" in request.headers:
 			return {"error": "Missing filename"}, 400
