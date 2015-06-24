@@ -14,6 +14,7 @@ import json
 import magic
 import uuid
 import os
+import urllib
 
 
 def timestamp():
@@ -587,11 +588,12 @@ class GameType(db.Model):
 		return cls.query.order_by(cls.id.desc()).first()
 
 	@classmethod
-	def selected(cls, gametype = None):
+	def selected(cls, gametype=None, latest_on_none=True):
 		if not gametype:
 			if "gametype" in request.cookies:
-				gametype = GameType.query.filter(GameType.name.ilike(request.cookies["gametype"])).first()
-		if not gametype:
+				gt = urllib.parse.unquote(request.cookies["gametype"])
+				gametype = GameType.query.filter(GameType.name.ilike(gt)).first()
+		if not gametype and latest_on_none:
 			gametype = cls.latest()
 		return gametype
 

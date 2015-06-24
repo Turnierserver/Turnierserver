@@ -54,3 +54,4 @@ SandboxMachine/startGdb.sh
 SandboxMachine/SandboxMachine.ini
 turnierserver.prop
 .qmake.stash
+*.swp
