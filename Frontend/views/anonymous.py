@@ -71,8 +71,6 @@ def inprogress_game(id):
 @anonymous_blueprint.route("/settings")
 def settings():
 	print(request.cookies)
-	current_gametype = None
-	if "gametype" in request.cookies:
-		current_gametype = GameType.query.filter(GameType.name.ilike(request.cookies["gametype"])).first()
+	current_gametype = GameType.selected(None, latest_on_none=False)
 	return render_template("settings.html", current_gametype=current_gametype,
 		latest_gametype=GameType.latest(), gametypes=GameType.query.all())
