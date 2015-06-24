@@ -1,0 +1,70 @@
+{% extends "game.html" %}
+
+{% block viz %}
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<link href="//code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" rel="stylesheet">
+<style type="text/css">
+canvas {
+	width: 100%;
+	background: green;
+}
+</style>
+
+{% macro render_output(ai, side, desc) -%}
+	{% if logged_in %}
+	{% if current_user.can_access(ai) -%}
+	<div class="ui segment">
+		Debugausgaben von "{{ai.name}}":
+		<textarea id="ai_{{desc}}_output" style="width: 100%; height: auto; min-height: 20em;"></textarea>
+	</div>
+	{%- endif %}
+	{% endif %}
+{%- endmacro %}
+
+
+
+
+
+<div class="ui segment">
+	<!--
+	<div class="ui right floated main menu">
+		<a id="play_button" class="play popup icon item" data-content="Spiel abspielen">
+			<i class="play icon"></i>
+		</a>
+		<a id="pause_button" class="pause popup icon item" data-content="Pausieren">
+			<i class="pause icon"></i>
+		</a>
+	</div> -->
+	<center>
+		<canvas id="canvas">
+			<h1>Du musst Javascript aktiviert haben, um Spiele zu sehen.</h1>
+		</canvas>
+	</center>
+
+	<div id="step_slider"></div>
+
+	<div id="download_progress" class="ui bottom attached progress" data-percent="0">
+		<div class="bar" style="transition-duration: 300ms; width: 0%;"></div>
+	</div>
+
+	<div class="ui two column grid">
+		<div class="column">
+			<div class="ui horizontal segment">
+				{{render_output(ai0, "left", "left")}}
+			</div>
+		</div>
+		<div class="column">
+			<div class="ui horizontal segment">
+				{{render_output(ai1, "right", "right")}}
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$(".ui.popup").popup();
+</script>
+
+<script id="game_script" type="text/javascript" src="{{url_for('static', filename='prisonersdilemma.js')}}" stream="{{stream}}"></script>
+
+{% endblock %}
