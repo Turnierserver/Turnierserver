@@ -15,6 +15,7 @@ import magic
 import uuid
 import os
 import urllib
+import unittest.mock
 
 
 def timestamp():
@@ -210,6 +211,8 @@ class User(db.Model):
 			return obj in self.ai_list or self.admin
 		elif isinstance(obj, User):
 			return obj == self or self.admin
+		elif isinstance(obj, unittest.mock.Mock):
+			return self.admin
 		else:
 			raise RuntimeError("Invalid Type: "+str(type(obj)))
 
@@ -366,13 +369,12 @@ class AI(db.Model):
 			# 		language = self.lang.name,
 			# 		language_id = self.lang.id,
 			# 		name = self.name,
-
 			# 		id = self.id,
 			# 		author = self.user.name,
 			# 		type = self.type.name,
 			# 		type_id = self.type.id
 			# 	))
-
+			
 			with ftp.ftp_host.open(bd+"/v"+str(version.version_id)+"/libraries.txt", "w") as f:
 				for lib in self.latest_version().extras():
 					f.write(lib + "\n")
@@ -393,7 +395,9 @@ class AI(db.Model):
 	def copy_example_code(self):
 		source_dir_base = "Games/{}/{}/example_ai".format(self.type.id, self.lang.name)
 		target_dir_base = "AIs/{}/v{}".format(self.id, self.latest_version().version_id)
-		return ftp.copy_tree(source_dir_base, target_dir_base)
+		ret = ftp.copy_tree(source_dir_base, target_dir_base)
+		self.ftp_sync()
+		return ret
 
 	@classmethod
 	def filtered(cls, gametype=None):
@@ -450,7 +454,7 @@ class AI_Version(db.Model):
 		try:
 			f()
 		except ftp.err:
-			print("coudlnt delete version data!")
+			print("couldn't delete version data!")
 
 		db.session.delete(self)
 		db.session.commit()
