@@ -4,6 +4,7 @@ from database import AI, User, Game, Lang, GameType, db, ftp
 from commons import authenticated_web
 from activityfeed import activity_feed
 from errorhandling import error
+from unittest import mock
 
 authenticated_blueprint = Blueprint("authenticated", __name__)
 
@@ -129,8 +130,14 @@ def qualify_ai(id):
 	if not current_user.can_access(ai):
 		abort(401)
 
-	quali_ai = AI.query.get(-ai.type.id)
-
+	#quali_ai = AI.query.get(-ai.type.id)
+	quali_ai = mock.Mock()
+	quali_ai.id = -ai.type.id
+	version = quali_ai.latest_version()
+	version.compiled, version.qualified, version.frozen = True, True, True
+	quali_ai.name = "QualiKI"
+	quali_ai.user = User.query.filter(User.admin == True).first()
+	quali_ai.lang = Lang.query.first()
 
 	stream = url_for("api.ai_qualify", id=id)
 
