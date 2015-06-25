@@ -1,6 +1,7 @@
 from flask.ext.script import prompt_bool, prompt, prompt_pass
-from database import db, populate, AI, User, GameType, ftp
+from database import *
 from backend import backend
+from unittest.mock import Mock
 
 import os
 import shutil
@@ -129,6 +130,28 @@ def manage(manager, app):
 	def make_data_container(game_id):
 		"Packt die Beispiel-KIs und AILibs in einen data_container.zip zusammen"
 		_make_data_container(game_id)
+
+
+	@manager.command
+	def compile_quali_ai():
+		for gt in GameType.query.all():
+			if not prompt_bool("Compile for '" + gt.name + "'?"):
+				continue
+			ai = Mock()
+			ai.id = -gt.id
+			ai.lang = Lang.query.filter(Lang.name == "Java").first()
+			ai.type = gt
+			ai.name = "QualiKi-"+gt.name
+			v = ai.latest_version()
+			v.version_id = 1
+			v.qualified, v.compiled, v.frozen = True, True, True
+			v.extras.return_value = []
+			ai.version_list = [v]
+			ai.ftp_sync = lambda: AI.ftp_sync(ai)
+			ai.copy_example_code = lambda: AI.copy_example_code(ai)
+			ai.copy_example_code()
+			for data, event in backend.compile(ai):
+				print(event, ":", data)
 
 
 	@manager.command
