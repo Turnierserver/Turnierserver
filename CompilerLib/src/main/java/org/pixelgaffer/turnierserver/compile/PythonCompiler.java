@@ -65,7 +65,7 @@ public class PythonCompiler extends Compiler
 		// ## wenn libs pypy: pypy, p2k: python2
 		script.println("python3 wrapper.py \"" + p.getProperty("filename") + "\" ${@}");
 		script.close();
-		setCommand("python3 wrapper.py \"" + p.getProperty("filename"));
+		setCommand(new String[] { "python3", "wrapper.py", p.getProperty("filename") });
 		output.println("fertig");
 		
 		return true;
