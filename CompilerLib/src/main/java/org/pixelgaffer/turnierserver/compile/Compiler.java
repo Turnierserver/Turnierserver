@@ -120,7 +120,7 @@ public abstract class Compiler
 	
 	@Getter
 	@Setter(AccessLevel.PROTECTED)
-	private String command;
+	private String command[];
 	
 	public CompileResult compileAndUpload (@NonNull Backend backend)
 			throws IOException, InterruptedException, FTPIllegalReplyException, FTPException, FTPDataTransferException,

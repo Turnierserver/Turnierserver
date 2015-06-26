@@ -127,10 +127,14 @@ public class JavaCompiler extends Compiler
 			script.close();
 			return false;
 		}
-		String command = "java -classpath " + classpath + " -Xmx500M " + mainclass;
+		String command[] = { "java", "-classpath", classpath, "-Xmx500M", mainclass };
 		setCommand(command);
-		script.println("echo \"" + command + "\"");
-		script.println(command + " ${@}");
+		String commandStr = "";
+		for (String s : command)
+			commandStr += "'" + s + "' ";
+		commandStr = commandStr.trim();
+		script.println("echo \"" + commandStr + "\"");
+		script.println(commandStr + " ${@}");
 		script.close();
 		output.println("done");
 		
