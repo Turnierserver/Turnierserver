@@ -14,8 +14,11 @@ def index():
 @anonymous_blueprint.route("/ai_list")
 def ai_list():
 	ais = AI.filtered().all()
+	if len(ais) == 0:
+		flash("Es gibt keine KIs des aktuellen Spieltypen!")
+		abort(403)
 	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
-	return render_template("ai_list.html", columns=columns)
+	return render_template("ai_list.html", columns=columns, type=ais[0].type)
 
 @anonymous_blueprint.route("/ai/<int:id>")
 def ai(id):
@@ -38,12 +41,10 @@ def user(id):
 @anonymous_blueprint.route("/game_list")
 def game_list():
 	query = Game.query.order_by(Game.id.desc())
-	if "gametype" in request.cookies:
-		gametype = GameType.query.filter(GameType.name.ilike(request.cookies["gametype"])).first()
-		query = query.filter(Game.type == gametype)
-	else:
-		query = query.filter(Game.type == GameType.latest())
-	return render_template("game_list.html", game_list=query.all(), in_progress_games=backend.inprogress_games())
+	gametype = GameType.selected()
+	query = query.filter(Game.type == gametype)
+
+	return render_template("game_list.html", game_list=query.all(), in_progress_games=backend.inprogress_games(), gametype=gametype)
 
 @anonymous_blueprint.route("/game/<int:id>")
 def game(id):
