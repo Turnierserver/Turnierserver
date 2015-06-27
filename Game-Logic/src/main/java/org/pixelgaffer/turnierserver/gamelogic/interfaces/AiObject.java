@@ -54,7 +54,7 @@ public class AiObject {
 		if(lastCalculationStart != -1) {
 			return;
 		}
-		System.out.println("Calculation timer started!");
+		System.out.println("Calculation timer started! " + millisLeft);
 		lastCalculationStart = System.currentTimeMillis();
 		if(updateTime > 0) {
 			updating = true;
@@ -101,6 +101,7 @@ public class AiObject {
 		System.out.println("Calculation timer updated, millis left: " + millisLeft);
 		lastCalculationStart = System.currentTimeMillis();
 		if(millisLeft <= 0) {
+			System.out.println("Die AI " + ai.getId() + " hat verloren, da sie keine zeit mehr hat");
 			loose();
 		}
 	}
