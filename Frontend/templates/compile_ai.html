@@ -18,6 +18,7 @@
 	<div class="ui basic segment">
 		<center>
 			<button id="button" class="ui basic huge green button">Kompilierung anfragen</button>
+			<a id="qualify" href="{{url_for('authenticated.qualify_ai', id=ai.id)}}" class="ui basic huge green button" style="display: none;">Qualifizieren</a>
 		</center>
 		<div id="button-dimmer" class="ui dimmer">
 			<div class="ui indeterminate text loader">Kompilierung aktiv.</div>
@@ -95,6 +96,7 @@ function compile() {
 		evtSrc.close();
 		$("#button-dimmer").dimmer("hide");
 		$("#button").removeClass("disabled");
+		$("#qualify").show();
 	});
 }
 
