@@ -36,7 +36,7 @@ public class AiObject {
 	/**
 	 * Das letzte mal als startCalculationTimer oder updateCalculationTimer aufgerufen wurde
 	 */
-	private long lastCalculationStart;
+	private long lastCalculationStart = -1;
 	
 	/**
 	 * Startet den Berechnungtimer
@@ -95,6 +95,7 @@ public class AiObject {
 		if(lastCalculationStart == -1) {
 			return;
 		}
+		System.out.println("Millis left: " + millisLeft);
 		millisLeft -= System.currentTimeMillis()  - lastCalculationStart;
 		lastCalculationStart = System.currentTimeMillis();
 		if(millisLeft <= 0) {
