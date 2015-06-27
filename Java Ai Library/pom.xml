@@ -16,13 +16,6 @@
 		<github.global.server>github</github.global.server>
 	</properties>
 	
-	<dependencies>
-		<dependency>
-			<groupId>org.pixelgaffer.turnierserver</groupId>
-			<artifactId>networking</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
 	
 	<organization>
 		<name>Pixelgaffer</name>
@@ -81,4 +74,11 @@
 		</plugins>
 	</build>
 	
+	<dependencies>
+		<dependency>
+			<groupId>org.pixelgaffer.turnierserver</groupId>
+			<artifactId>utils</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 </project>
