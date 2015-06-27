@@ -1,7 +1,8 @@
 extends javadef
 
-# zusätzliches Manifest-Attribut
+# zusätzliche Manifest-Attribute
 manifest: echo "Logic-Class: ${LOGICCLASS}" >>"${MANIFEST}"
+manifest: echo "Required-Libs: ${REQUIREDLIBS}" >>"${MANIFEST}"
 
 # die jar umbenennen
 JAR = ${BINDIR}/${NAME}-Logic-${VERSION}.jar

@@ -228,8 +228,9 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 				// passwort fragen
 				if (pass.isEmpty())
 				{
-					printf("Passwort: ");
 #if defined __unix
+					printf("Passwort: ");
+					
 					termios oldt;
 					tcgetattr(STDIN_FILENO, &oldt);
 					termios newt = oldt;
@@ -243,6 +244,8 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 					
 					tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 #elif defined __WIN32 || defined __WIN64
+					printf("Passwort: ");
+					
 					HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE); 
 					DWORD mode = 0;
 					GetConsoleMode(hStdin, &mode);
@@ -253,7 +256,12 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 					pass = s.data();
 					
 					SetConsoleMode(hStdin, mode);
+#elif defined __APPLE__
+					char *s = getpass("Passwort: ");
+					pass = s;
+					
 #else
+					printf("Passwort (wird auf der Kommandozeile angezeigt): ");
 					in >> pass;
 #endif
 				}
