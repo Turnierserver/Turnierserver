@@ -72,6 +72,7 @@ class AIWrapper:
 			fakeresp = deepcopy(resp)
 			self.del_output(fakeresp)
 			pprint(fakeresp)
+			self.add_output(resp, self.output.read())
 			resp[list(resp.keys())[0]]["output"] += self.output.read()
 			self.send(json.dumps(resp))
 
