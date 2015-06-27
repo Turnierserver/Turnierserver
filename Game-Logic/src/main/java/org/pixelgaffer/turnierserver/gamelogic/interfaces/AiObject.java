@@ -108,6 +108,17 @@ public class AiObject {
 	
 	public void loose() {
 		if(lost) {
+			boolean finishGame = true;
+			for(Ai ai : logic.getGame().getAis()) {
+				if(!ai.getObject().lost) {
+					finishGame = false;
+					break;
+				}
+				System.out.println("AiObject:121: Die KI " + ai.getId() + " hat verloren");
+			}
+			if(finishGame) {
+				logic.endGame();
+			}
 			return;
 		}
 		try {
