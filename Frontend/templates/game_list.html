@@ -28,8 +28,10 @@
 
 {% block body %}
 
+{% if gametype %}
 <h4>'{{gametype.name}}' Spiele</h4>
 <div class="ui divider"></div>
+{% endif %}
 
 <table class="ui very basic table">
 	<thead>
