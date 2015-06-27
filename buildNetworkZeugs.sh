@@ -6,7 +6,7 @@ then
 fi
 mkdir -p build
 
-projects="NetworkingLib CompilerLib Worker Game-Logic Backend"
+projects="Utils NetworkingLib CompilerLib Worker Game-Logic Backend"
 for project in $projects
 do
     cd $project
