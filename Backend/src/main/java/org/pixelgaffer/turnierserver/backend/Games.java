@@ -4,6 +4,7 @@ import it.sauronsoftware.ftp4j.FTPAbortedException;
 import it.sauronsoftware.ftp4j.FTPDataTransferException;
 import it.sauronsoftware.ftp4j.FTPException;
 import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
+import it.sauronsoftware.ftp4j.FTPListParseException;
 
 import java.io.File;
 import java.io.IOException;
@@ -225,7 +226,7 @@ public class Games
 	 */
 	public static GameLogic<?, ?> loadGameLogic (int gameId) // keep in sync with codr
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
-			ReflectiveOperationException
+			ReflectiveOperationException, FTPListParseException
 	{
 		// jar runterladen
 		File jar = Files.createTempFile("logic", ".jar").toFile();
@@ -235,12 +236,22 @@ public class Games
 		JarFile jarFile = new JarFile(jar);
 		Manifest mf = jarFile.getManifest();
 		String classname = mf.getMainAttributes().getValue("Logic-Class");
-		System.out.println(classname);
+		BackendMain.getLogger().info("Lade Logik-Klasse " + classname);
+		String requiredLibs[] = mf.getMainAttributes().getValue("Required-Libs").split("\\s+");
+		File libDir = Files.createTempDirectory("libs").toFile();
+		for (String lib : requiredLibs)
+			if (!lib.isEmpty())
+				DatastoreFtpClient.retrieveLibrary(lib, "Java", libDir);
 		jarFile.close();
 		
 		// klasse laden
+		List<URL> urls = new ArrayList<>();
+		urls.add(jar.toURI().toURL());
+		for (File entry : libDir.listFiles())
+			urls.add(entry.toURI().toURL());
+		System.out.println(urls);
 		@SuppressWarnings("resource")
-		URLClassLoader cl = new URLClassLoader(new URL[] { jar.toURI().toURL() });
+		URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[0]));
 		Class<?> clazz = cl.loadClass(classname);
 		return (GameLogic<?, ?>)clazz.newInstance();
 	}
@@ -250,7 +261,7 @@ public class Games
 	 */
 	public static Game startGame (int gameId, int requestId, String ... ais)
 			throws ReflectiveOperationException, IOException, FTPIllegalReplyException, FTPException,
-			FTPDataTransferException, FTPAbortedException
+			FTPDataTransferException, FTPAbortedException, FTPListParseException
 	{
 		GameLogic<?, ?> logic = loadGameLogic(gameId);
 		UUID uuid = randomUuid();
@@ -266,7 +277,7 @@ public class Games
 	 */
 	public static Game startQualifyGame (int gameId, int requestId, String ai)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
-			ReflectiveOperationException
+			ReflectiveOperationException, FTPListParseException
 	{
 		GameLogic<?, ?> logic = loadGameLogic(gameId);
 		UUID uuid = randomUuid();
