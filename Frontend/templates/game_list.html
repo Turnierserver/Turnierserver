@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% set active_page = "game_list" %}
 
+
 {% macro render_inprogress_game(game) %}
 <tr id="inprogress_{{game.id}}">
 	<td class="left aligned">
@@ -26,6 +27,9 @@
 {% endmacro %}
 
 {% block body %}
+
+<h4>'{{gametype.name}}' Spiele</h4>
+<div class="ui divider"></div>
 
 <table class="ui very basic table">
 	<thead>
