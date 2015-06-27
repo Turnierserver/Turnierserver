@@ -70,7 +70,7 @@ def inject_globals():
 @manager.command
 def run():
 	"Startet den Server."
-	app_run_params = dict(host="0.0.0.0", port=env.web_port, threaded=True)
+	app_run_params = dict(host="::", port=env.web_port, threaded=True)
 	if env.ssl:
 		import ssl
 		context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
