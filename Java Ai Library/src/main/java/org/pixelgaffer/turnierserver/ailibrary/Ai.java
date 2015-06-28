@@ -154,5 +154,14 @@ public abstract class Ai<E, R> implements Runnable {
 			}
 		}
 	}
+	
+	/**
+	 * Tolle Extension-Methode für xtend
+	 * 
+	 * @param builder Der Builder, der geleert werden soll
+	 */
+	protected void clear(StringBuilder builder) {
+		builder.delete(0, builder.length());
+	}
 
 }
