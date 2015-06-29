@@ -17,8 +17,7 @@ def ai_list():
 	if len(ais) == 0:
 		flash("Es gibt keine KIs des aktuellen Spieltypen!")
 		abort(403)
-	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
-	return render_template("ai_list.html", columns=columns, type=ais[0].type)
+	return render_template("ai_list.html", ais=ais, type=ais[0].type)
 
 @anonymous_blueprint.route("/ai/<int:id>")
 def ai(id):

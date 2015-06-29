@@ -406,6 +406,11 @@ class AI(db.Model):
 			gametype = GameType.selected()
 
 		return query.filter(cls.type == gametype)
+	
+	@property
+	def rank(self):
+		sub = db.session.query(AI.id, db.func.row_number().over(order_by=db.desc(AI.elo)).label('pos')).filter(AI.type == self.type).subquery()
+		return db.session.query(sub.c.pos).filter(sub.c.id==self.id).scalar()
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(
