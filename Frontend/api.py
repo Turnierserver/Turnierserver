@@ -197,7 +197,7 @@ def api_user(id):
 
 @api.route("/user/<int:id>/icon", methods=["GET"])
 @cache.memoize(timeout=env.cache_max_age)
-def api_user_icon(id):
+def user_icon(id):
 	user = User.query.get(id)
 	if user:
 		return user.icon()
@@ -461,7 +461,7 @@ def api_ai_create():
 
 @api.route("/ai/<int:id>/icon", methods=["GET"])
 @cache.memoize(timeout=env.cache_max_age)
-def api_ai_icon(id):
+def ai_icon(id):
 	ai = AI.query.get(id)
 	if ai:
 		return ai.icon()

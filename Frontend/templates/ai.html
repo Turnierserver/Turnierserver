@@ -1,20 +1,71 @@
 {% extends "base.html" %}
 {% block body %}
 
-KI: {{ ai.name }}
-von <a href="{{ url_for("anonymous.user", id=ai.user.id) }}">{{ ai.user.name }}</a>
+<div class="ui segment">
+
+{% if current_user.is_authenticated() and current_user.can_access(ai) %}
+<a class="ui teal right ribbon label" href="{{ url_for("authenticated.edit_ai", id=ai.id)}}">
+	Bearbeiten
+</a>
+{% endif %}
+
+
+<h1 class="ui center aligned header" style="font-size: 4em; margin-bottom: 0px;">{{ ai.name }}</h1>
+<h1 class="ui center aligned sub header" style="font-size: 1.2em; margin-top: 0px;">
+	von <a href="{{ url_for("anonymous.user", id=ai.user.id) }}">{{ ai.user.name }}</a>
+</h1>
 <br />
-Beschreibung:
-{{ ai.desc }}
-<br />
-Sprache:
-<a href="{{ ai.lang.url }}">{{ ai.lang.name }}</a>
-<br />
+
+<p align="middle">{{ ai.desc }}</p>
+<div class="ui divider"></div>
+
+<div class="ui four statistics">
+	<div class="statistic">
+		<div class="value"> {{ ai.rank }}. </div>
+		<div class="label"> Platz </div>
+	</div>
+	<div class="statistic">
+		<div class="value"> {{ ai.elo | int }} </div>
+		<div class="label"> ELO </div>
+	</div>
+	<div class="statistic">
+		<div class="value"> {% if game_count > 0 %}{{ game_count }}{% else %}Kein{% endif %} </div>
+		<div class="label"> Spiel{% if game_count > 1 %}e{% endif %} </div>
+	</div>
+	<div class="statistic">
+		<div class="value"> {{ version_count }} </div>
+		<div class="label"> Version{% if version_count > 1 %}en{% endif %} </div>
+	</div>
+</div>
+
+<div class="ui hidden divider"></div>
+
+<div class="ui mini three statistics">
+	<div class="statistic">
+		<div class="label"> Geschrieben in </div>
+		<div class="value"> {{ ai.lang.name }} </div>
+	</div>
+	<div class="statistic">
+		<div class="label"> Spieltyp </div>
+		<div class="value"> {{ ai.type.name }} </div>
+	</div>
+	<div class="statistic">
+		<div class="label"> Topkek </div>
+		<div class="value"> 100% dank </div>
+	</div>
+</div>
+
+<div class="ui divider"></div>
+
 Spiele:
 <ul>
 {% for assoc in ai.game_assocs %}
 	<li><a href="{{ url_for("anonymous.game", id=assoc.game.id) }}"> {{ assoc.game }} </a></li>
 {% endfor %}
 </ul>
+
+
+
+</div>
 
 {% endblock %}

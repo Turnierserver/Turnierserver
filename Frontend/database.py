@@ -409,6 +409,7 @@ class AI(db.Model):
 	
 	@property
 	def rank(self):
+		## Schlaues caching
 		sub = db.session.query(AI.id, db.func.row_number().over(order_by=db.desc(AI.elo)).label('pos')).filter(AI.type == self.type).subquery()
 		return db.session.query(sub.c.pos).filter(sub.c.id==self.id).scalar()
 
@@ -631,7 +632,7 @@ def populate():
 		db.session.commit()
 
 	py = Lang(name="Python", ace_name="python", url="https://www.python.org")
-	java = Lang(name="Java", ace_name="java", url="https://www.java.com/?isthaesslig=1")
+	java = Lang(name="Java", ace_name="java", url="https://www.java.com")
 	cpp = Lang(name="C++", ace_name="cpp", url="http://isocpp.org")
 	langs = [py, java, cpp]
 	db_save(langs)
