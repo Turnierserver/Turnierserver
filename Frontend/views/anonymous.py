@@ -24,7 +24,7 @@ def ai(id):
 	ai = AI.query.get(id)
 	if not ai:
 		abort(404)
-	return render_template("ai.html", ai=ai)
+	return render_template("ai.html", ai=ai, version_count=len(ai.version_list), game_count=len(ai.game_assocs))
 
 @anonymous_blueprint.route("/user_list")
 def user_list():

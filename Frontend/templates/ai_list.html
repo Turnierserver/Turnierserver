@@ -18,7 +18,7 @@
 		<th class="center aligned two wide data-elo">ELO</th>
 		<th class="left aligned six wide data-name">Name</th>
 		<th class="right aligned six wide data-user">Benutzer</th>
-		<th class="right aligned three wide data-topkek">Topkek</th>
+		<th class="right aligned three wide data-lang">Sprache</th>
 		</tr>
 	</thead>
 	<tbody class="list">
@@ -40,8 +40,10 @@
 					<div class="header">{{ai.user.name}}</div>
 				</a>
 			</td>
-			<td class="right aligned data-topkek">
-				Bearbeiten oder so?
+			<td class="right aligned data-lang">
+				<a class="content" href="{{ ai.lang.url }}">
+					<div class="header">{{ ai.lang.name }}</div>
+				</a>
 			</td>
 		</tr>
 		{% endfor %}
