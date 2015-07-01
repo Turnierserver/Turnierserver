@@ -17,10 +17,8 @@ Und hier die einzelnen Spezifikationen, der Module (aus [#1](https://github.com/
 FTP-Server:
 ftp://msrd0.duckdns.org/
 
-Beispiels-Implementation eines Spieles:
-https://github.com/msrd0/Minesweeper <br>
-Und hier das alte Repo mit dem Beispiel-KI:
-https://github.com/nicosio2/Minesweeper
+Beispiels-Implementation von Minesweeper und Prisoners Dilemma:
+https://github.com/msrd0/Turnierserver-Examples
 
 Privates Config-Repo:
 https://github.com/nicosio2/Turnierserver-Config
