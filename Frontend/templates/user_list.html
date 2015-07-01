@@ -6,7 +6,7 @@
 {% for user in user_list %}
 	<a class="item" href="{{ url_for("anonymous.user", id=user.id) }}">
 		<div class="ui tiny image">
-			<img src="{{ url_for("api.api_user_icon", id=user.id) }}">
+			<img src="{{ url_for("api.user_icon", id=user.id) }}">
 		</div>
 		<div class="content">
 			<div class="header">{{ user.name }}</div>
