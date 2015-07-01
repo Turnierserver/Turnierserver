@@ -126,5 +126,8 @@
 		</div>
 	</div>
 	{% endblock %}
+	{% if current_user and current_user.admin %}
+		<script src="//github.com/Khan/tota11y/releases/download/0.0.3/tota11y.min.js"></script>
+	{% endif %}
 </body>
 </html>
