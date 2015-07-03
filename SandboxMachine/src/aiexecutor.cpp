@@ -276,7 +276,7 @@ void AiExecutor::executeAi ()
 		printf("Die KI hat sich mit dem Statuscode %d beendet.\n", retval);
 		worker->sendMessage(uuid(), 'F');
 		emit finished(uuid());
-		return;
+		exit(retval);
 	}
 	worker->sendMessage(uuid(), 'S');
 }

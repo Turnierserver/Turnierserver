@@ -15,4 +15,10 @@ public class MessageForward
 	
 	@Getter
 	private byte message[];
+	
+	@Override
+	public String toString ()
+	{
+		return "MessageForward[ai=" + ai + ", message=" + new String(message) + "]";
+	}
 }
