@@ -175,20 +175,22 @@ void Patcher::startCodr()
 
 void Patcher::update()
 {
-	printf("Patcher::update called\n");
+	printf("%s:%d: Patcher::update called\n", __FILE__, __LINE__);
 	repoBranch.update();
 	configBranch.update();
 	
-	QList<QitHubCommit> commits = repoBranch.commitsSince("dcfc3423144f8341993b2e2586865ad632ab83eb");
+	QList<QitHubCommit> commits = repoBranch.commitsSince("06996dbed797cc0778be265df3a749090cc429b4");
 	QSet<QString> modifiedDirs;
 	for (QitHubCommit commit : commits)
 	{
 		for (QitHubFile file : commit.modifiedFiles())
 		{
 			QFile out(repoPath.absoluteFilePath(file.filename()));
+			if (QFileInfo(out).isSymLink())
+				continue;
 			if (!out.open(QIODevice::WriteOnly))
 			{
-				fprintf(stderr, "Fehler beim Öffnen von %s: %s\n", qPrintable(out.fileName()), qPrintable(out.errorString()));
+				fprintf(stderr, "%s:%d: Fehler beim Öffnen von %s: %s\n", __FILE__, __LINE__, qPrintable(out.fileName()), qPrintable(out.errorString()));
 				exit(0); // der Fehler sollte beim komplett neuen klonen behoben sein
 			}
 			out.write(file.content());
@@ -205,9 +207,11 @@ void Patcher::update()
 		for (QitHubFile file : commit.modifiedFiles())
 		{
 			QFile out(configPath.absoluteFilePath(file.filename()));
+			if (QFileInfo(out).isSymLink())
+				continue;
 			if (!out.open(QIODevice::WriteOnly))
 			{
-				fprintf(stderr, "Fehler beim Öffnen von %s: %s\n", qPrintable(out.fileName()), qPrintable(out.errorString()));
+				fprintf(stderr, "%s:%d: Fehler beim Öffnen von %s: %s\n", __FILE__, __LINE__, qPrintable(out.fileName()), qPrintable(out.errorString()));
 				exit(0); // der Fehler sollte beim komplett neuen klonen behoben sein
 			}
 			out.write(file.content());
