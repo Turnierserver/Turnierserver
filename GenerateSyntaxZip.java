@@ -78,6 +78,8 @@ public class GenerateSyntaxZip
 		return xml.toString();
 	}
 	
+	static final BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
+	
 	static Map<String, List<String>> lists;
 	
 	static void handleElement (Element e, PrintWriter out, int indent, Properties props, String lang) throws Throwable
@@ -169,7 +171,7 @@ public class GenerateSyntaxZip
 								if (newDefault == null)
 								{
 									System.out.print("Das itemData-Element für " + name + " (default: " + defStyleNum + ") enthält eigene Style-Informationen (" + xmlElement(itemData, 0, false) + "). Neues default: ");
-									newDefault = new BufferedReader(new InputStreamReader(System.in)).readLine();
+									newDefault = sysin.readLine();
 								}
 								if (newDefault.isEmpty())
 								{
@@ -232,7 +234,7 @@ public class GenerateSyntaxZip
 			if (answer == null)
 			{
 				System.out.print("Soll die Sprache " + lang + " in die syntax.zip-Datei geschrieben werden?");
-				answer = new BufferedReader(new InputStreamReader(System.in)).readLine();
+				answer = sysin.readLine();
 			}
 			props.put(lang + ".include", answer);
 			boolean include = !answer.startsWith("n");
@@ -246,7 +248,6 @@ public class GenerateSyntaxZip
 			zip.putNextEntry(entry);
 			
 			out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-			out.println("<!DOCTYPE language SYSTEM \"language.dtd\">");
 			out.println("<!-- read from " + file.getAbsolutePath() + " at " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG, Locale.UK).format(new Date()) + " -->");
 			out.println(xmlElement(root, 0, true));
 			
@@ -297,6 +298,69 @@ public class GenerateSyntaxZip
 							out.println(xmlElementWithChildren(e, 1));
 					}
 				}
+			}
+			
+			answer = props.getProperty(lang + ".isProgrammingLanguage");
+			if (answer == null)
+			{
+				System.out.print("Ist die Sprache " + lang + " eine Programmiersprache?");
+				answer = sysin.readLine();
+			}
+			props.put(lang + ".isProgrammingLanguage", answer);
+			boolean isProgrammingLanguage = !answer.startsWith("n");
+			String classDef = null, methodDef = null, classList = null;
+			if (isProgrammingLanguage)
+			{
+				classDef = props.getProperty(lang + ".classDef");
+				if (classDef == null)
+				{
+					System.out.print("Syntax für Klassendefinitionen (RegEx mit der Gruppe (?P<classname> … ) für den Klassennamen):");
+					classDef = sysin.readLine();
+				}
+				props.put(lang + ".classDef", classDef);
+				
+				methodDef = props.getProperty(lang + ".methodDef");
+				if (methodDef == null)
+				{
+					System.out.print("Syntax für Methodendefinitionen (RegEx mit der Gruppe (?P<methodname> … ) für den Methodennamen):");
+					methodDef = sysin.readLine();
+				}
+				props.put(lang + ".methodDef", methodDef);
+				
+				classList = props.getProperty(lang + ".classList");
+				if (classList == null)
+				{
+					System.out.print("Liste mit den definierten Klassen (" + lists.keySet() + "):");
+					classList = sysin.readLine();
+				}
+				props.put(lang + ".classList", classList);
+				
+				out.println("\t<codr>");
+				if (classDef.contains("(?P<classname>"))
+				{
+					classDef = classDef.replace("&", "&amp;");
+					classDef = classDef.replace("<", "&lt;");
+					classDef = classDef.replace(">", "&gt;");
+					classDef = classDef.replace("\"", "&quot;");
+					out.println("\t\t<classDef>" + classDef + "</classDef>");
+				}
+				if (methodDef.contains("(?P<methodname>"))
+				{
+					methodDef = methodDef.replace("&", "&amp;");
+					methodDef = methodDef.replace("<", "&lt;");
+					methodDef = methodDef.replace(">", "&gt;");
+					methodDef = methodDef.replace("\"", "&quot;");
+					out.println("\t\t<methodDef>" + methodDef + "</methodDef>");
+				}
+				if (lists.containsKey(classList))
+				{
+					classList = classList.replace("&", "&amp;");
+					classList = classList.replace("<", "&lt;");
+					classList = classList.replace(">", "&gt;");
+					classList = classList.replace("\"", "&quot;");
+					out.println("\t\t<classList>" + classList + "</classList>");
+				}
+				out.println("\t</codr>");
 			}
 			
 			out.println("</" + root.getTagName() + ">");
