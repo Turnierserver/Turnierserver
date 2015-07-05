@@ -4,6 +4,7 @@
 
 {% block head %}
 <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
+<script src="{{ url_for('static', filename='sortablelist.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -14,7 +15,8 @@
 <table id="ais" class="ui very basic sortable table">
 	<thead>
 		<tr>
-		<th class="left aligned one wide data-rank">Platz</th>
+		<th class="left aligned one wide">Icon</th>
+		<th class="center aligned one wide data-rank">Platz</th>
 		<th class="center aligned two wide data-elo">ELO</th>
 		<th class="left aligned six wide data-name">Name</th>
 		<th class="right aligned six wide data-user">Benutzer</th>
@@ -24,7 +26,10 @@
 	<tbody class="list">
 		{% for ai in ais %}
 		<tr>
-			<td class="left aligned data-rank">
+			<td>
+				<img class="ui avatar image" src="{{ url_for('api.ai_icon', id=ai.id) }}">
+			</td>
+			<td class="center aligned data-rank">
 				{{ai.rank}}
 			</td>
 			<td class="center aligned data-elo">
@@ -52,66 +57,8 @@
 
 
 <script>
-var options = {
-	valueNames: []
-}
-
-$("thead > tr > th").each(function () {
-	$.each($(this).attr("class").split(/\s+/), function(index, item){
-		if (item.indexOf('data-') == 0) {
-			options.valueNames.push(item);
-		}
-	});
-});
-
-
-
-var aiList = new List("ais", options);
-
-var s_type = "data-rank";
-var s_dir = "ascending";
-
-function toggle(type) {
-	if (s_type === type) {
-		if (s_dir === "ascending") {
-			s_dir = "descending";
-		} else {
-			s_dir = "ascending";
-		}
-	} else {
-		s_dir = "ascending";
-	}
-	s_type = type;
-
-	if (s_dir === "ascending") {
-		aiList.sort(s_type, {order: "asc"});
-	} else {
-		aiList.sort(s_type, {order: "desc"});
-	}
-
-	$("thead > tr > th").each(function () {
-		var e = $(this);
-		e.removeClass("sorted");
-		e.removeClass("ascending");
-		e.removeClass("descending");
-		if (e.hasClass(s_type)) {
-			e.addClass("sorted");
-			e.addClass(s_dir);
-		}
-	});
-}
-
-$("thead > tr > th").on("click", function () {
-	$.each($(this).attr("class").split(/\s+/), function(index, item){
-		if (item.indexOf('data-') == 0) {
-			toggle(item);
-		}
-	});
-});
-
-toggle("data-rank");
-toggle("data-rank");
-
+var list = sortable_list("ais");
+list.toggle("data-rank");
 </script>
 
 {% endblock %}

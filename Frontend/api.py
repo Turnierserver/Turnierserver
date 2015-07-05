@@ -397,7 +397,7 @@ def api_user_create():
 		return {'error': 'Username too long'}, 400
 	if len(password) < 3:
 		return {'error': 'Password too short'}, 400
-	
+
 	try:
 		User.query.filter(User.name.ilike(username)).one()
 		return {'error': 'Username already registered'}, 400
@@ -499,10 +499,10 @@ def upload_single_file(request, path, image=False):
 @api.route("/ai/<int:id>/upload_icon", methods=["POST"])
 @json_out
 @authenticated
-def api_ai_upload_icon(id):
+def ai_upload_icon(id):
 	ai = AI.query.get(id)
 	if ai:
-		cache.delete_memoized(api_ai_icon, id)
+		cache.delete_memoized(ai_icon, id)
 		return upload_single_file(request, "AIs/"+str(id)+"/icon.png", image=True)
 	else:
 		return CommonErrors.INVALID_ID
@@ -1091,5 +1091,3 @@ def download_codr():
 		else:
 			abort(503)
 	return f()
-
-
