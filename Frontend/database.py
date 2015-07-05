@@ -4,7 +4,7 @@ from _cfg import env
 from activityfeed import Activity
 from io import BytesIO
 from functools import wraps
-from threading import Lock
+from threading import RLock
 from werkzeug.security import generate_password_hash, check_password_hash
 import mail
 import ftputil
@@ -14,6 +14,7 @@ import json
 import magic
 import uuid
 import os
+import shutil
 import urllib
 import unittest.mock
 
@@ -31,7 +32,7 @@ class SyncedFTP:
 	def __init__(self):
 		self.cached = set()
 		self.ftp_host = None
-		self.lock = Lock()
+		self.lock = RLock()
 		self.err = SyncedFTPError
 
 	def connect(self):
@@ -139,15 +140,42 @@ class SyncedFTP:
 					self.ftp_host.mkdir(t_dir+d)
 				for f in files:
 					print(s_dir+f, "->", t_dir+f)
-					with open(s_dir+f, "rb") as source:
-						with self.ftp_host.open(t_dir+f, "wb") as target:
-							target.write(source.read())
+					self.ftp_host.upload(s_dir+f, t_dir+f)
 			return True
 
 		try:
 			return f()
 		except self.err:
-			print("copy_tree failed!")
+			print("upload_tree failed!")
+			return False
+
+
+	def download_tree(self, from_dir, to_dir, overwrite=True):
+		print("DOWNLOAD_TREE", from_dir, to_dir)
+		@self.safe
+		def f():
+			if overwrite:
+				if os.path.isdir(to_dir):
+					print("DEL:", to_dir)
+					shutil.rmtree(to_dir)
+				print("MKDIR:", to_dir)
+				os.mkdir(to_dir)
+
+			for root, dirs, files in self.ftp_host.walk(from_dir, topdown=True, followlinks=False):
+				t_dir = to_dir + root[len(from_dir):] + "/"
+				s_dir = root + "/"
+				for d in dirs:
+					print("MKDIR:", t_dir + d)
+					self.ftp_host.mkdir(t_dir+d)
+				for f in files:
+					print(s_dir+f, "->", t_dir+f)
+					self.ftp_host.download(s_dir+f, t_dir+f)
+			return True
+
+		try:
+			return f()
+		except self.err:
+			print("upload_tree failed!")
 			return False
 
 

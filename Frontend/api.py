@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request, abort, redirect, flash, get_template_attribute, url_for
+from flask import Blueprint, Response, request, abort, redirect, flash, get_template_attribute, url_for, send_file
 from flask.ext.login import current_user, login_user, logout_user, LoginManager, UserMixin
 from functools import wraps
 from queue import Empty
@@ -9,10 +9,12 @@ import magic
 import time
 import zipfile
 import tempfile
+import os
 from pprint import pprint
 from collections import defaultdict
 
 from database import AI, User, Game, Lang, GameType, db, populate, ftp, Game_inprogress, timestamp
+from cli import zipdir, _make_data_container
 from backend import backend
 from commons import authenticated, cache, CommonErrors
 from _cfg import env
@@ -1048,10 +1050,29 @@ def game_logic(id):
 			abort(503)
 	return f()
 
-@api.route("/lib/<string:lang>/<string:name>")
-def lib_by_name(lang, name):
+@api.route("/lib/<string:lang>/<string:name>/<string:version>")
+def lib(lang, name, version):
 	## ratelimit
-	return CommonErrors.NOT_IMPLEMENTED
+	p = "Libraries/{}/{}/{}".format(secure_filename(lang), secure_filename(name), secure_filename(version))
+
+	@ftp.failsafe_locked
+	def f():
+		tmpdir = tempfile.mkdtemp()
+
+		ftp.download_tree(p, tmpdir)
+
+		_, tmpzip_path = tempfile.mkstemp()
+		print(tmpzip_path)
+
+		currdir = os.getcwd()
+		os.chdir(tmpdir)
+		zipf = zipfile.ZipFile(tmpzip_path, 'w')
+		zipdir(".", zipf)
+		zipf.close()
+		os.chdir(currdir)
+		return send_file(tmpzip_path)
+
+	return f()
 
 @api.route("/data_container/<int:game_id>")
 def data_container(game_id):
@@ -1068,7 +1089,6 @@ def data_container(game_id):
 @json_out
 @admin_required
 def make_data_container(game_id):
-	from cli import _make_data_container
 	if not GameType.query.get(game_id):
 		return CommonErrors.INVALID_ID
 	_make_data_container(str(game_id))
