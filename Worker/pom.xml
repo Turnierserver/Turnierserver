@@ -49,13 +49,6 @@
             <artifactId>compiler</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <!-- also ich brauch kein junit, vlt braucht mvn das -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <repositories>
