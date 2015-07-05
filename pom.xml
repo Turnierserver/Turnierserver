@@ -13,6 +13,11 @@
         <name>Pixelgaffer</name>
     </organization>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <github.global.server>github</github.global.server>
+    </properties>
+
     <modules>
         <module>Backend</module>
         <module>Codr</module>
