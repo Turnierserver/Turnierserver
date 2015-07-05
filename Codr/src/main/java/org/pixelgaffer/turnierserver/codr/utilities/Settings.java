@@ -15,7 +15,7 @@ import org.pixelgaffer.turnierserver.codr.view.ControllerStartPage;
 public class Settings {
 	
 	
-	public static String webUrl = "localhost:5000";
+	public static String webUrl = "thuermchen.com";
 	
 	
 	
