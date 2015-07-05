@@ -113,7 +113,7 @@ public class CodeEditor
 		document = doc;
 		codeArea = new CodeArea();
 		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-//		codeArea.setStyle("-fx-text-fill: white");
+		// codeArea.setStyle("-fx-text-fill: white");
 		
 		Style style = new EmptyStyle();
 		try
@@ -182,8 +182,8 @@ public class CodeEditor
 	
 	
 	/**
-	 * ��berpr��ft, ob der angezeigte Text mit seiner gespeicherten Datei
-	 * ��bereinstimmt
+	 * Überprüft, ob der angezeigte Text mit seiner gespeicherten Datei
+	 * übereinstimmt
 	 * 
 	 * @return true, wenn savedText != text
 	 */
@@ -209,7 +209,7 @@ public class CodeEditor
 	
 	
 	/**
-	 * Erstellt ein Tab, das in die Tab-Leiste eingef��gt werden kann
+	 * Erstellt ein Tab, das in die Tab-Leiste eingefügt werden kann
 	 * 
 	 * @return das erstellte Tab
 	 */
@@ -221,7 +221,7 @@ public class CodeEditor
 	
 	
 	/**
-	 * L��dt den Inhalt der Datei in die StringProperty text
+	 * Lädt den Inhalt der Datei in die StringProperty text
 	 */
 	public void load ()
 	{
@@ -241,18 +241,21 @@ public class CodeEditor
 	
 	/**
 	 * Speichert den Inhalt der StringProperty text in die Datei
+	 * 
+	 * @return false wenn nichts geändert wurde, ansonsten true
 	 */
-	public void save ()
+	public boolean save ()
 	{
 		if (!hasChanged())
-			return;
+			return false;
 		forceSave();
+		return true;
 	}
 	
 	
 	/**
 	 * Speichert den Inhalt der StringProperty text in eine Datei. Dabei wird
-	 * nicht ��berpr��ft, ob sich der Inhalt ver��ndert hat.
+	 * nicht Überprüft, ob sich der Inhalt verändert hat.
 	 */
 	public void forceSave ()
 	{
