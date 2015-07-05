@@ -22,7 +22,10 @@ public class Libraries implements LibraryDownloader
 		if (!dir.mkdirs())
 			throw new IllegalStateException("Can't download Library " + language + "/" + name + " to " + dir.getPath());
 		if (!MainApp.webConnector.getLibrary(language, name))
+		{
+			dir.delete();
 			throw new IllegalStateException("Failed to download " + language + "/" + name);
+		}
 		return dir.listFiles();
 	}
 }
