@@ -1,18 +1,46 @@
 {% extends "base.html" %}
 {% set active_page = "user_list" %}
+
+{% block head %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
+<script src="{{ url_for('static', filename='sortablelist.js') }}"></script>
+{% endblock %}
+
 {% block body %}
 
-<div class="ui link items">
-{% for user in user_list %}
-	<a class="item" href="{{ url_for("anonymous.user", id=user.id) }}">
-		<div class="ui tiny image">
-			<img src="{{ url_for("api.user_icon", id=user.id) }}">
-		</div>
-		<div class="content">
-			<div class="header">{{ user.name }}</div>
-		</div>
-	</a>
-{% endfor %}
-</div>
+
+<table id="users" class="ui very basic sortable table">
+	<thead>
+		<tr>
+		<th class="left aligned one wide">Icon</th>
+		<th class="left aligned ten wide data-name">Name</th>
+		<th class="right aligned two wide data-elo">Höchste ELO</th>
+		</tr>
+	</thead>
+	<tbody class="list">
+		{% for user in user_list %}
+		<tr>
+			<td>
+				<img class="ui avatar image" src="{{ url_for('api.user_icon', id=user.id) }}">
+			</td>
+			<td class="left aligned data-name">
+				<a class="content" href="{{url_for('anonymous.user', id=user.id)}}">
+					<div class="header">{{user.name}}</div>
+				</a>
+			</td>
+			<td class="right aligned data-elo">
+				{% if user.elo %}
+				{{user.elo | int}}
+				{% endif %}
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<script>
+var list = sortable_list("users");
+list.toggle("data-name");
+</script>
 
 {% endblock %}

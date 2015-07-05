@@ -187,6 +187,14 @@ class User(db.Model):
 	def validated(self):
 		return self.validation_code == None
 
+	@property
+	def elo(self):
+		ais = AI.query.filter(AI.user == self).filter(AI.type == GameType.selected()).all()
+		if len(ais) == 0:
+			return None
+		return max([ai.elo for ai in ais])
+
+
 	def send_validation_mail(self):
 		return mail.send_validation(self)
 
@@ -374,7 +382,7 @@ class AI(db.Model):
 			# 		type = self.type.name,
 			# 		type_id = self.type.id
 			# 	))
-			
+
 			with ftp.ftp_host.open(bd+"/v"+str(version.version_id)+"/libraries.txt", "w") as f:
 				for lib in self.latest_version().extras():
 					f.write(lib + "\n")
@@ -406,7 +414,7 @@ class AI(db.Model):
 			gametype = GameType.selected()
 
 		return query.filter(cls.type == gametype)
-	
+
 	@property
 	def rank(self):
 		## Schlaues caching
