@@ -15,7 +15,8 @@
 <table id="ais" class="ui very basic sortable table">
 	<thead>
 		<tr>
-		<th class="left aligned one wide data-rank">Platz</th>
+		<th class="left aligned one wide">Icon</th>
+		<th class="center aligned one wide data-rank">Platz</th>
 		<th class="center aligned two wide data-elo">ELO</th>
 		<th class="left aligned six wide data-name">Name</th>
 		<th class="right aligned six wide data-user">Benutzer</th>
@@ -25,7 +26,10 @@
 	<tbody class="list">
 		{% for ai in ais %}
 		<tr>
-			<td class="left aligned data-rank">
+			<td>
+				<img class="ui avatar image" src="{{ url_for('api.ai_icon', id=ai.id) }}">
+			</td>
+			<td class="center aligned data-rank">
 				{{ai.rank}}
 			</td>
 			<td class="center aligned data-elo">
@@ -54,7 +58,7 @@
 
 <script>
 var list = sortable_list("ais");
-list.toggle("data-name");
+list.toggle("data-rank");
 </script>
 
 {% endblock %}
