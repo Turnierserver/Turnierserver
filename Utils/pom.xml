@@ -7,26 +7,14 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>Utils</name>
-    <url>https://github.com/LuckyLukert/Turnierserver</url>
 
-    <organization>
-        <name>Pixelgaffer</name>
-    </organization>
-
-    <properties>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <github.global.server>github</github.global.server>
-    </properties>
+    <parent>
+        <groupId>org.pixelgaffer.turnierserver</groupId>
+        <artifactId>turnierserver-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
     <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.4</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -34,17 +22,6 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>github</id>
-            <name>Pixelgaffer Repository</name>
-            <url>https://raw.githubusercontent.com/msrd0/MavenRespository/master/repository/</url>
-        </repository>
-    </repositories>
 
     <distributionManagement>
         <repository>
