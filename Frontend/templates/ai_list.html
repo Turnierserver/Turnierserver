@@ -4,6 +4,7 @@
 
 {% block head %}
 <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
+<script src="{{ url_for('static', filename='sortablelist.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -52,66 +53,8 @@
 
 
 <script>
-var options = {
-	valueNames: []
-}
-
-$("thead > tr > th").each(function () {
-	$.each($(this).attr("class").split(/\s+/), function(index, item){
-		if (item.indexOf('data-') == 0) {
-			options.valueNames.push(item);
-		}
-	});
-});
-
-
-
-var aiList = new List("ais", options);
-
-var s_type = "data-rank";
-var s_dir = "ascending";
-
-function toggle(type) {
-	if (s_type === type) {
-		if (s_dir === "ascending") {
-			s_dir = "descending";
-		} else {
-			s_dir = "ascending";
-		}
-	} else {
-		s_dir = "ascending";
-	}
-	s_type = type;
-
-	if (s_dir === "ascending") {
-		aiList.sort(s_type, {order: "asc"});
-	} else {
-		aiList.sort(s_type, {order: "desc"});
-	}
-
-	$("thead > tr > th").each(function () {
-		var e = $(this);
-		e.removeClass("sorted");
-		e.removeClass("ascending");
-		e.removeClass("descending");
-		if (e.hasClass(s_type)) {
-			e.addClass("sorted");
-			e.addClass(s_dir);
-		}
-	});
-}
-
-$("thead > tr > th").on("click", function () {
-	$.each($(this).attr("class").split(/\s+/), function(index, item){
-		if (item.indexOf('data-') == 0) {
-			toggle(item);
-		}
-	});
-});
-
-toggle("data-rank");
-toggle("data-rank");
-
+var list = sortable_list("ais");
+list.toggle("data-name");
 </script>
 
 {% endblock %}
