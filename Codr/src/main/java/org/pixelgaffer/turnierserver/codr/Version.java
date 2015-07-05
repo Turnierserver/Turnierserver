@@ -206,7 +206,12 @@ public class Version
 		
 		for (int i = 0; i < files.size(); i++)
 		{
-			files.get(i).save();
+			if (files.get(i).save())
+			{
+				compiled = false;
+				qualified = false;
+				storeProps();
+			}
 		}
 	}
 	
