@@ -1,116 +1,94 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.pixelgaffer.turnierserver</groupId>
-	<artifactId>compiler</artifactId>
-	<packaging>jar</packaging>
-	<version>1.0-SNAPSHOT</version>
-	<name>Compiler</name>
-	<url>https://github.com/LuckyLukert/Turnierserver</url>
-	
-	<properties>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<github.global.server>github</github.global.server>
-	</properties>
-	
-	<dependencies>
-		
-		<dependency>
-			<groupId>it.sauronsoftware.ftp4j</groupId>
-			<artifactId>ftp4j</artifactId>
-			<version>1.7.2</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>naga</groupId>
-			<artifactId>naga</artifactId>
-			<version>1.1</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.16.4</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.3.1</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.pixelgaffer.turnierserver</groupId>
-			<artifactId>networking</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-		</dependency>
-		
-	</dependencies>
-	
-	<organization>
-		<name>Pixelgaffer</name>
-	</organization>
-	
-	<repositories>
-		<repository>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>github</id>
-			<name>Pixelgaffer Repository</name>
-			<url>https://raw.githubusercontent.com/msrd0/MavenRespository/master/repository/</url>
-		</repository>
-	</repositories>
-	
-	<distributionManagement>
-		<repository>
-			<id>internal.repo</id>
-			<name>Temporary Staging Repository</name>
-			<url>file://${project.build.directory}/mvn-repo</url>
-		</repository>
-	</distributionManagement>
-	
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.8.1</version>
-				<configuration>
-					<altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.github.github</groupId>
-				<artifactId>site-maven-plugin</artifactId>
-				<version>0.11</version>
-				<configuration>
-					<message>Update ${project.name} to ${project.version}</message>
-					<merge>true</merge>
-					<noJekyll>true</noJekyll>
-					<outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
-					<includes><include>**/*</include></includes>
-					<repositoryName>MavenRespository</repositoryName>
-					<repositoryOwner>msrd0</repositoryOwner>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>site</goal>
-						</goals>
-						<phase>deploy</phase>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-	
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.pixelgaffer.turnierserver</groupId>
+    <artifactId>compiler</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>Compiler</name>
+
+    <parent>
+        <groupId>org.pixelgaffer.turnierserver</groupId>
+        <artifactId>turnierserver-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>it.sauronsoftware.ftp4j</groupId>
+            <artifactId>ftp4j</artifactId>
+            <version>1.7.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>naga</groupId>
+            <artifactId>naga</artifactId>
+            <version>1.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.3.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.pixelgaffer.turnierserver</groupId>
+            <artifactId>networking</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>internal.repo</id>
+            <name>Temporary Staging Repository</name>
+            <url>file://${project.build.directory}/mvn-repo</url>
+        </repository>
+    </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo
+                    </altDeploymentRepository>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.11</version>
+                <configuration>
+                    <message>Update ${project.name} to ${project.version}</message>
+                    <merge>true</merge>
+                    <noJekyll>true</noJekyll>
+                    <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
+                    <includes>
+                        <include>**/*</include>
+                    </includes>
+                    <repositoryName>MavenRespository</repositoryName>
+                    <repositoryOwner>msrd0</repositoryOwner>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

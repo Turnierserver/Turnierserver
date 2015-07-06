@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.pixelgaffer.turnierserver</groupId>
+    <artifactId>turnierserver-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>Turnierserver</name>
+    <url>https://github.com/LuckyLukert/Turnierserver</url>
+
+    <organization>
+        <name>Pixelgaffer</name>
+    </organization>
+
+    <properties>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <github.global.server>github</github.global.server>
+    </properties>
+
+    <modules>
+        <module>Backend</module>
+        <module>Codr</module>
+        <module>CompilerLib</module>
+        <module>Game-Logic</module>
+        <module>Java Ai Library</module>
+        <module>KatePartParser</module>
+        <module>NetworkingLib</module>
+        <module>Worker</module>
+        <module>Utils</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.4</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>github</id>
+            <name>Pixelgaffer Repository</name>
+            <url>https://raw.githubusercontent.com/msrd0/MavenRespository/master/repository/</url>
+        </repository>
+    </repositories>
+</project>
