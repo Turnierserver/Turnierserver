@@ -76,9 +76,10 @@ int Module::build(const QString &currentHash)
 	return 1;
 	
 #define RETURN_BUILD(retval) \
+	int __retval = (retval); \
 	_tmp->setValue(currentHash + "/" + name() + "_state", "build"); \
-	_tmp->setValue(currentHash + "/" + name() + "_ret", (retval)); \
-	return (retval);
+	_tmp->setValue(currentHash + "/" + name() + "_ret", __retval); \
+	return __retval;
 	
 	
 	if (lang() == "Java")
