@@ -6,6 +6,7 @@ then
 fi
 mkdir -p build
 
+mvn -N install
 projects="Utils NetworkingLib CompilerLib Worker Game-Logic Backend"
 for project in $projects
 do
