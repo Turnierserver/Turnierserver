@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
-import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCommand;
+import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 
 @AllArgsConstructor
@@ -18,6 +18,9 @@ public class Job
 	
 	@Getter
 	private BackendFrontendCommand frontendCommand;
+	
+	@Getter
+	private WorkerConnection worker;
 	
 	public UUID getUuid ()
 	{

@@ -1,4 +1,4 @@
-package org.pixelgaffer.turnierserver.backend.server;
+package org.pixelgaffer.turnierserver.backend.server.message;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

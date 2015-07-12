@@ -49,11 +49,28 @@ public class WorkerConnection
 	}
 	
 	/**
+	 * Disconnected alle Verbindungen zum Worker.
+	 */
+	public void disconnect ()
+	{
+		disconnectClient();
+		disconnectConnection();
+	}
+	
+	/**
 	 * Disconnected den Client zum Worker.
 	 */
 	public void disconnectClient ()
 	{
 		client.disconnect();
+	}
+	
+	/**
+	 * Disconnected die Verbindung vom Worker zum BackendWorkerServer.
+	 */
+	public void disconnectConnection ()
+	{
+		connection.disconnect();
 	}
 	
 	/**

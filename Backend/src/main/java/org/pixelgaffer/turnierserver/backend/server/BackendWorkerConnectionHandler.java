@@ -17,6 +17,7 @@ import org.pixelgaffer.turnierserver.backend.Games;
 import org.pixelgaffer.turnierserver.backend.Jobs;
 import org.pixelgaffer.turnierserver.backend.WorkerConnection;
 import org.pixelgaffer.turnierserver.backend.Workers;
+import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendCompileMessage;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.AiConnected;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine;
@@ -96,7 +97,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 						{
 							BackendFrontendCompileMessage msg = new BackendFrontendCompileMessage(answer.getMessage(),
 									Jobs.findRequestId(answer.getUuid()));
-							System.out.println(msg);
+							System.out.println("BackendWorkerConnectionHandler:100: " + msg);
 							BackendFrontendConnectionHandler.getFrontend()
 									.sendMessage(Parsers.getFrontend().parse(msg));
 						}

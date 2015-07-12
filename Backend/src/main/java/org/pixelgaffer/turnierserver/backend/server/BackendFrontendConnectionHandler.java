@@ -7,6 +7,7 @@ import naga.NIOSocket;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.BackendMain;
 import org.pixelgaffer.turnierserver.backend.Jobs;
+import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendCommand;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 

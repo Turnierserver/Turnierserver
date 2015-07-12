@@ -104,5 +104,17 @@ public class Workers
 		}
 	}
 	
+	/**
+	 * Beendet alle Verbindungen zu den Workern.
+	 */
+	public static void shutdown ()
+	{
+		synchronized (workerConnections)
+		{
+			workerConnections.forEach((con) -> con.disconnect());
+			workerConnections.clear();
+		}
+	}
+	
 	private static final Set<WorkerConnection> workerConnections = new HashSet<>();
 }
