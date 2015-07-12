@@ -1,6 +1,7 @@
 from _cfg import env
 import socket
 import json
+import sys
 import time
 from activityfeed import Activity
 import threading
@@ -280,6 +281,7 @@ class Backend(threading.Thread):
 				r = self.sock.recv(1024*1024).decode("utf-8")
 				if r == '':
 					print(".", end="")
+					sys.stdout.flush()
 					time.sleep(10)
 					continue
 				print('recvd', r)
@@ -294,7 +296,7 @@ class Backend(threading.Thread):
 						self.parse(json.loads(d))
 			else:
 				print("No connection to Backend...")
-				time.sleep(60*15)	
+				time.sleep(60*3)
 
 
 backend = Backend()
