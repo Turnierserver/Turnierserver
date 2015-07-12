@@ -97,7 +97,6 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 						{
 							BackendFrontendCompileMessage msg = new BackendFrontendCompileMessage(answer.getMessage(),
 									Jobs.findRequestId(answer.getUuid()));
-							System.out.println("BackendWorkerConnectionHandler:100: " + msg);
 							BackendFrontendConnectionHandler.getFrontend()
 									.sendMessage(Parsers.getFrontend().parse(msg));
 						}
