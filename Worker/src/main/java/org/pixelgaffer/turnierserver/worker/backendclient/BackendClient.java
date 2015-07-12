@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.worker.backendclient;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.pixelgaffer.turnierserver.PropertyUtils.RECON_IVAL;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.AICONNECTED;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.ANSWER;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.INFO;
@@ -19,6 +20,7 @@ import naga.NIOSocket;
 import naga.SocketObserver;
 
 import org.pixelgaffer.turnierserver.Parsers;
+import org.pixelgaffer.turnierserver.PropertyUtils;
 import org.pixelgaffer.turnierserver.compile.Backend;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.AiConnected;
@@ -39,6 +41,10 @@ import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
 public class BackendClient implements SocketObserver, Backend
 {
 	private NIOSocket client;
+	@Getter
+	private String ip;
+	@Getter
+	private int port;
 	
 	/** Speichert, ob der Client verbunden ist. */
 	@Getter
@@ -48,6 +54,8 @@ public class BackendClient implements SocketObserver, Backend
 	
 	public BackendClient (String ip, int port) throws IOException
 	{
+		this.ip = ip;
+		this.port = port;
 		client = NetworkService.getService().openSocket(ip, port);
 		client.listen(this);
 	}
@@ -86,11 +94,45 @@ public class BackendClient implements SocketObserver, Backend
 		}
 	}
 	
+	private final Runnable reconnector = () -> {
+		int interval = PropertyUtils.getInt(RECON_IVAL, 3000);
+		while (!connected)
+		{
+			try
+			{
+				client = NetworkService.getService().openSocket(ip, port);
+				client.listen(this);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			
+			try
+			{
+				Thread.sleep(interval);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		reconnectorRunning = false;
+	};
+	
+	private boolean reconnectorRunning = false;
+	
 	@Override
 	public void connectionBroken (NIOSocket socket, Exception exception)
 	{
 		WorkerMain.getLogger().severe("BackendClient: Connection to Backend broken: " + exception);
 		connected = false;
+		synchronized (this)
+		{
+			if (!reconnectorRunning)
+				new Thread(reconnector, "Reconnector").start();
+			reconnectorRunning = true;
+		}
 	}
 	
 	@Override
@@ -132,7 +174,9 @@ public class BackendClient implements SocketObserver, Backend
 								cmd.getAiId(), cmd.getVersion(), cmd.getUuid());
 						Sandbox s = Sandboxes.sandboxJobs.get(cmd.getUuid());
 						if (s == null)
-							WorkerMain.getLogger().severe("Das Backend hat mich beauftragt die unbekannte KI " + cmd.getUuid() + " zu beenden.");
+							WorkerMain.getLogger().severe(
+									"Das Backend hat mich beauftragt die unbekannte KI " + cmd.getUuid()
+											+ " zu beenden.");
 						else
 							s.sendJob(scmd);
 					}

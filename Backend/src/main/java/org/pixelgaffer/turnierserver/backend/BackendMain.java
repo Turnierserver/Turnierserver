@@ -1,5 +1,11 @@
 package org.pixelgaffer.turnierserver.backend;
 
+import static org.pixelgaffer.turnierserver.PropertyUtils.BACKEND_FRONTEND_SERVER_PORT;
+import static org.pixelgaffer.turnierserver.PropertyUtils.BACKEND_WORKER_SERVER_MAX_CLIENTS;
+import static org.pixelgaffer.turnierserver.PropertyUtils.BACKEND_WORKER_SERVER_PORT;
+import static org.pixelgaffer.turnierserver.PropertyUtils.getInt;
+import static org.pixelgaffer.turnierserver.PropertyUtils.loadProperties;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -8,7 +14,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import naga.ConnectionAcceptor;
 
-import org.pixelgaffer.turnierserver.PropertyUtils;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendServer;
 import org.pixelgaffer.turnierserver.backend.server.BackendWorkerServer;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
@@ -26,21 +31,12 @@ public class BackendMain
 		return Logger.getLogger("BackendServer");
 	}
 	
-	/** Gibt eine Integer-Property oder den Defaultwert zurück. */
-	static int getIntProp (String name, int defaultValue)
-	{
-		String value = System.getProperty(name);
-		if (value == null)
-			return defaultValue;
-		return Integer.valueOf(value);
-	}
-	
 	static final File jobsStore = new File("/var/spool/backend/jobs");
 	
 	public static void main (String args[]) throws IOException
 	{
 		// Properties laden
-		PropertyUtils.loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
+		loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
 		
 		// Zeugs restoren
 		if (jobsStore.exists())
@@ -58,10 +54,10 @@ public class BackendMain
 		
 		// Server starten
 		getLogger().info("BackendServer starting");
-		int port = getIntProp("turnierserver.backend.workerserver.port", BackendWorkerServer.DEFAULT_PORT);
-		int maxClients = getIntProp("turnierserver.backend.workerserver.maxClients", -1);
+		int port = getInt(BACKEND_WORKER_SERVER_PORT, BackendWorkerServer.DEFAULT_PORT);
+		int maxClients = getInt(BACKEND_WORKER_SERVER_MAX_CLIENTS, -1);
 		BackendWorkerServer server0 = new BackendWorkerServer(port, maxClients);
-		port = getIntProp("turnierserver.backend.frontendserver.port", BackendFrontendServer.DEFAULT_PORT);
+		port = getInt(BACKEND_FRONTEND_SERVER_PORT, BackendFrontendServer.DEFAULT_PORT);
 		BackendFrontendServer server1 = new BackendFrontendServer(port);
 		server0.setConnectionAcceptor(ConnectionAcceptor.ALLOW);
 		server1.setConnectionAcceptor(ConnectionAcceptor.ALLOW);

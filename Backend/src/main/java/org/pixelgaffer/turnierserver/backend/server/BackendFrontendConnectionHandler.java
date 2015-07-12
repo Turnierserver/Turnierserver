@@ -1,7 +1,6 @@
 package org.pixelgaffer.turnierserver.backend.server;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import lombok.Getter;
 import naga.NIOSocket;
 
 import org.pixelgaffer.turnierserver.Parsers;
@@ -13,8 +12,24 @@ import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 
 public class BackendFrontendConnectionHandler extends ConnectionHandler
 {
-	@Getter
 	private static BackendFrontendConnectionHandler frontend;
+	
+	public static BackendFrontendConnectionHandler getFrontend ()
+	{
+		while (true)
+		{
+			if (frontend != null && frontend.isConnected())
+				return frontend;
+			try
+			{
+				Thread.sleep(100);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	/** Der lokale Buffer mit den noch nicht gelesenen bytes. */
 	private DataBuffer buffer = new DataBuffer();

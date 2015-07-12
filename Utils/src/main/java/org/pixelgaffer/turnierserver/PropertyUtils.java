@@ -14,6 +14,7 @@ public class PropertyUtils
 	private static final String BACKEND_BASE = TURNIERSERVER_BASE + "backend.";
 	private static final String WORKER_BASE = TURNIERSERVER_BASE + "worker.";
 	private static final String WORKER_SERVER_BASE = WORKER_BASE + "server.";
+	private static final String WORKER_MIRROR_BASE = WORKER_BASE + "mirror.";
 	private static final String DATASTORE_BASE = TURNIERSERVER_BASE + "datastore.";
 	private static final String SERIALIZER_BASE = TURNIERSERVER_BASE + "serializer.";
 	private static final String AI_BASE = TURNIERSERVER_BASE + "ai.";
@@ -23,9 +24,12 @@ public class PropertyUtils
 	public static final String BACKEND_HOST = BACKEND_BASE + "host";
 	public static final String BACKEND_FRONTEND_SERVER_PORT = BACKEND_FRONTEND_SERVER_BASE + "port";
 	public static final String BACKEND_WORKER_SERVER_PORT = BACKEND_WORKER_SERVER_BASE + "port";
+	public static final String BACKEND_WORKER_SERVER_MAX_CLIENTS = BACKEND_WORKER_SERVER_BASE + "maxClients";
 	public static final String WORKER_HOST = WORKER_BASE + "host";
 	public static final String WORKER_SERVER_PORT = WORKER_SERVER_BASE + "port";
+	public static final String WORKER_SERVER_MAX_CLIENTS = WORKER_SERVER_BASE + "maxClients";
 	public static final String WORKER_SERVER_AICHAR = WORKER_SERVER_BASE + "aichar";
+	public static final String WORKER_MIRROR_PORT = WORKER_MIRROR_BASE + "port";
 	public static final String DATASTORE_HOST = DATASTORE_BASE + "host";
 	public static final String DATASTORE_PORT = DATASTORE_BASE + "port";
 	public static final String DATASTORE_USERNAME = DATASTORE_BASE + "username";
@@ -37,6 +41,7 @@ public class PropertyUtils
 	public static final String AI_UUID = AI_BASE + "uuid";
 	
 	public static final String FTP_CONNECTIONS = TURNIERSERVER_BASE + "ftpconnections";
+	public static final String RECON_IVAL = TURNIERSERVER_BASE + ".reconnectionInterval";
 	
 	public static Properties loadProperties (String filename) throws IOException
 	{
