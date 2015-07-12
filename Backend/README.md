@@ -1,8 +1,12 @@
+##Backend
+
 Server, der für die Koordination der Sandbox-Server und das Starten und Ausführen von Spielen verantwortlich ist.
+
 Sprache: Java
 
-Der Server kommuniziert mit Frontend und/oder ESU, die dem Backend-Server das Signal zum Starten eines Spieles geben. Der
-Server sorgt dann dafür, dass er die aktuellste Version der ausgewählten Spiellogik hat, und besorgt sich diese bei Bedarf
-vom Datastore. Anschließend schickt er die KIs an nach der aktuellen Beschäftigung ausgewählte Sandbox-Server, die die KIs
-ausführen und deren Züge an den Backend-Server schicken. Anschließend wird das Spiel auf dem Datastore abgelegt und Frontend
-bzw. ESU erhalten das Signal, dass das Spiel fertig ist.
+Der Server koordiniert die Worker. Er bekommt Befehle vom Frontend und leitet diese an unbeschäftigte Worker weiter. Sobald ein Worker sich
+disconnected wird ein anderer Worker beschäftigt. Sollte das Backend gestoppt werden werden im Verzeichnis `/var/spool/backend` ein paar Dateien
+abgelegt, die die aktuell ausgeführten und wartenden Jobs abspeichern. Beim nächsten Start des Backends werden diese Daten wieder eingelesen und
+die Aufträge werden (erneut) ausgeführt.
+
+Wichtig: Das Verzeichnis `/var/spool/backend` sollte mit Lese- und Schreibberechtigungen für den das Backend ausführenden Benutzer existieren!
