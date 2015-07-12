@@ -1,4 +1,4 @@
-package org.pixelgaffer.turnierserver.backend.server;
+package org.pixelgaffer.turnierserver.backend.server.message;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

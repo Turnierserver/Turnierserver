@@ -1,5 +1,6 @@
 package org.pixelgaffer.turnierserver.backend;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -34,10 +35,26 @@ public class BackendMain
 		return Integer.valueOf(value);
 	}
 	
+	static final File jobsStore = new File("/var/spool/backend/jobs");
+	
 	public static void main (String args[]) throws IOException
 	{
 		// Properties laden
 		PropertyUtils.loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
+		
+		// Zeugs restoren
+		if (jobsStore.exists())
+		{
+			try
+			{
+				Jobs.restoreJobs(jobsStore);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			jobsStore.delete();
+		}
 		
 		// Server starten
 		getLogger().info("BackendServer starting");
@@ -50,5 +67,20 @@ public class BackendMain
 		server1.setConnectionAcceptor(ConnectionAcceptor.ALLOW);
 		new Thread( () -> NetworkService.mainLoop(), "NetworkService").start();
 		getLogger().info("BackendServer started");
+		
+		// eine ShutdownHook zum Speichern erstellen
+		Runtime.getRuntime().addShutdownHook(new Thread( () -> {
+			
+			Workers.shutdown();
+			try
+			{
+				Jobs.storeJobs(jobsStore);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+		}, "BackendMain-ShutdownHook"));
 	}
 }

@@ -28,9 +28,9 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import org.pixelgaffer.turnierserver.Parsers;
-import org.pixelgaffer.turnierserver.backend.server.BackendFrontendCommandProcessed;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
-import org.pixelgaffer.turnierserver.backend.server.BackendFrontendResult;
+import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendCommandProcessed;
+import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendResult;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;

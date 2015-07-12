@@ -80,9 +80,6 @@ public class CompileQueue implements Runnable
 					c.setUuid(job.getUuid());
 					CompileResult result = c.compileAndUpload(WorkerMain.getBackendClient());
 					DatastoreFtpClient.storeAiCompileOutput(job.getAiId(), job.getVersion(), result.getOutput());
-					// WorkerMain.getBackendClient().sendSuccess(
-					// new WorkerCommandSuccess(job.getAction(),
-					// result.isSuccessfull(), job.getUuid()));
 					WorkerMain.getBackendClient().sendAnswer(
 							new WorkerCommandAnswer(job.getAction(),
 									result.isSuccessfull() ? WorkerCommandAnswer.SUCCESS : WorkerCommandAnswer.CRASH,
@@ -102,9 +99,6 @@ public class CompileQueue implements Runnable
 						e.printStackTrace(out);
 						out.close();
 						DatastoreFtpClient.storeAiCompileOutput(job.getAiId(), job.getVersion(), tmp);
-						// WorkerMain.getBackendClient().sendSuccess(
-						// new WorkerCommandSuccess(job.getAction(), false,
-						// job.getUuid()));
 						StringWriter sw = new StringWriter();
 						e.printStackTrace(new PrintWriter(sw));
 						WorkerMain.getBackendClient().sendAnswer(new WorkerCommandAnswer(job.getAction(),
