@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import org.pixelgaffer.turnierserver.Parsers;
+import org.pixelgaffer.turnierserver.networking.messages.SandboxMessage;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 
 @AllArgsConstructor
@@ -20,6 +21,8 @@ public class ProtocolLine
 	public static final byte INFO = 'I';
 	/** Enthält ein {@link AiConnected}-Objekt. */
 	public static final byte AICONNECTED = 'C';
+	/** Enthält ein {@link SandboxMessage}-Objekt. */
+	public static final byte SANDBOX_MESSAGE = 'M';
 	
 	/** Der Inhalt der Zeile. */
 	@Getter
@@ -46,6 +49,9 @@ public class ProtocolLine
 				break;
 			case AICONNECTED:
 				object = Parsers.getWorker().parse(line, AiConnected.class);
+				break;
+			case SANDBOX_MESSAGE:
+				object = Parsers.getWorker().parse(line, SandboxMessage.class);
 				break;
 			default:
 				System.err.println("ProtocolLine: Fehler: Unbekannter mode: " + ((char)mode));

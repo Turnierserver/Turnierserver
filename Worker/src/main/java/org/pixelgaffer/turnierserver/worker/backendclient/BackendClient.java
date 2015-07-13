@@ -5,13 +5,14 @@ import static org.pixelgaffer.turnierserver.PropertyUtils.RECON_IVAL;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.AICONNECTED;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.ANSWER;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.INFO;
+import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.SANDBOX_MESSAGE;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.KILL_AI;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.RUN_AI;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.TERM_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.COMPILE;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.KILLAI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.STARTAI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.TERMAI;
-import static org.pixelgaffer.turnierserver.worker.server.SandboxCommand.KILL_AI;
-import static org.pixelgaffer.turnierserver.worker.server.SandboxCommand.RUN_AI;
-import static org.pixelgaffer.turnierserver.worker.server.SandboxCommand.TERM_AI;
 
 import java.io.IOException;
 
@@ -26,6 +27,8 @@ import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.AiConnected;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer;
+import org.pixelgaffer.turnierserver.networking.messages.SandboxCommand;
+import org.pixelgaffer.turnierserver.networking.messages.SandboxMessage;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
@@ -33,7 +36,6 @@ import org.pixelgaffer.turnierserver.worker.Sandbox;
 import org.pixelgaffer.turnierserver.worker.Sandboxes;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
 import org.pixelgaffer.turnierserver.worker.compile.CompileQueue;
-import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
 
 /**
  * Diese Klasse ist der Client zum Backend.
@@ -75,6 +77,12 @@ public class BackendClient implements SocketObserver, Backend
 	public void sendAiConnected (AiConnected aiConnected) throws IOException
 	{
 		client.write(new ProtocolLine(AICONNECTED, aiConnected).serialize());
+		client.write("\n".getBytes(UTF_8));
+	}
+	
+	public void sendSandboxMessage (SandboxMessage msg) throws IOException
+	{
+		client.write(new ProtocolLine(SANDBOX_MESSAGE, msg).serialize());
 		client.write("\n".getBytes(UTF_8));
 	}
 	

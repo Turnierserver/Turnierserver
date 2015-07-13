@@ -1,13 +1,13 @@
 package org.pixelgaffer.turnierserver.worker;
 
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.KILL_AI;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.RUN_AI;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.TERM_AI;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.FINISHED_AI;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.KILLED_AI;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.STARTED_AI;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.TERMINATED_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.SANDBOX;
-import static org.pixelgaffer.turnierserver.worker.server.SandboxCommand.KILL_AI;
-import static org.pixelgaffer.turnierserver.worker.server.SandboxCommand.RUN_AI;
-import static org.pixelgaffer.turnierserver.worker.server.SandboxCommand.TERM_AI;
-import static org.pixelgaffer.turnierserver.worker.server.SandboxMessage.FINISHED_AI;
-import static org.pixelgaffer.turnierserver.worker.server.SandboxMessage.KILLED_AI;
-import static org.pixelgaffer.turnierserver.worker.server.SandboxMessage.STARTED_AI;
-import static org.pixelgaffer.turnierserver.worker.server.SandboxMessage.TERMINATED_AI;
 
 import java.io.IOException;
 
@@ -16,8 +16,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
-import org.pixelgaffer.turnierserver.worker.server.SandboxMessage;
+import org.pixelgaffer.turnierserver.networking.messages.SandboxCommand;
+import org.pixelgaffer.turnierserver.networking.messages.SandboxMessage;
 import org.pixelgaffer.turnierserver.worker.server.WorkerConnectionHandler;
 
 /**
@@ -70,15 +70,21 @@ public class Sandbox
 		switch (answer.getEvent())
 		{
 			case TERMINATED_AI:
-				System.out.println("Sandbox:62: Hier sollte ich das Backend informieren");
 			case KILLED_AI:
-				System.out.println("Sandbox:64: Hier sollte ich mir überlegen ob das einen Unterschied macht");
 			case FINISHED_AI:
-				System.out.println("Sandbox:66: Hier sollte ich Backend und Spiellogik informieren");
+				try
+				{
+					WorkerMain.getBackendClient().sendSandboxMessage(answer);
+				}
+				catch (IOException e)
+				{
+					WorkerMain.getLogger().severe("Sandbox: Fehler beim notifien des Backends (" + answer + "): " + e);
+					e.printStackTrace();
+				}
 				setBusy(false);
 				break;
 			case STARTED_AI:
-				System.out.println("Sandbox:70: Hier sollte ich mir überlegen ob ich iwas notifien soll");
+				System.out.println("Sandbox:87: Hier sollte ich mir überlegen ob ich iwas notifien soll");
 				setBusy(true);
 				break;
 			default:
