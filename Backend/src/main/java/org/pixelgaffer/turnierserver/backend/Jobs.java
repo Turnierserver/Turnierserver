@@ -1,5 +1,8 @@
 package org.pixelgaffer.turnierserver.backend;
 
+import static org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer.SUCCESS;
+import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.COMPILE;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -233,9 +236,13 @@ public class Jobs
 			BackendMain.getLogger().severe("Couldn't find job with UUID " + uuid);
 			return;
 		}
+		
+		if (job.getWorkerCommand().getAction() == COMPILE)
+			job.getWorker().setCompiling(false);
+		
 		int requestId = job.getRequestId();
 		BackendFrontendResult result = new BackendFrontendResult(requestId,
-				answer.getWhat() == WorkerCommandAnswer.SUCCESS);
+				answer.getWhat() == SUCCESS);
 		BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result));
 		synchronized (jobs)
 		{
@@ -243,5 +250,28 @@ public class Jobs
 			jobUuids.remove(uuid);
 			jobRequestIds.remove(requestId);
 		}
+	}
+	
+	/**
+	 * Muss aufgerufen werden, wenn sich ein Worker disconnected. Alle
+	 * ausstehenden Jobs des Workers werden anschließend neu gestartet.
+	 */
+	public static void workerDisconnected (@NonNull WorkerConnection worker)
+	{
+		BackendMain.getLogger().entering("Jobs", "workerDisconnected");
+		synchronized (jobs)
+		{
+			for (int i = 0; i < jobs.size();)
+			{
+				if (jobs.get(i).getWorker().equals(worker))
+				{
+					processCommand(jobs.get(i).getFrontendCommand());
+					jobs.remove(i);
+				}
+				else
+					i++;
+			}
+		}
+		BackendMain.getLogger().exiting("Jobs", "workerDisconnected");
 	}
 }

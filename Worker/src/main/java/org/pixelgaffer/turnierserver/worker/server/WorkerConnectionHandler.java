@@ -15,6 +15,8 @@ import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.AiConnected;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
+import org.pixelgaffer.turnierserver.networking.messages.SandboxCommand;
+import org.pixelgaffer.turnierserver.networking.messages.SandboxMessage;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 import org.pixelgaffer.turnierserver.worker.Sandbox;
@@ -93,8 +95,6 @@ public class WorkerConnectionHandler extends ConnectionHandler
 		byte line[];
 		while ((line = buffer.readLine()) != null)
 		{
-//			System.out.println("Der Worker Server hat eine Zeile empfangen: " + new String(line, UTF_8));
-			
 			// wenn type noch null ist, diesen lesen
 			if (type == null)
 			{

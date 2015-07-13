@@ -10,7 +10,7 @@ import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import org.pixelgaffer.turnierserver.worker.server.SandboxCommand;
+import org.pixelgaffer.turnierserver.networking.messages.SandboxCommand;
 
 /**
  * Diese Klasse speichert alle verbundenen Sandboxen.

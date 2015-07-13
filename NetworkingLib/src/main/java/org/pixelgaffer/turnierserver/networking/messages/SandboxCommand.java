@@ -1,4 +1,4 @@
-package org.pixelgaffer.turnierserver.worker.server;
+package org.pixelgaffer.turnierserver.networking.messages;
 
 import java.util.UUID;
 

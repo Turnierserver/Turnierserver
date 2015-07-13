@@ -3,6 +3,7 @@ package org.pixelgaffer.turnierserver.backend;
 import java.io.IOException;
 import java.util.UUID;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -18,8 +19,13 @@ import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
  * Diese Klasse speichert Informationen über einen verbundenen Worker.
  */
 @ToString(exclude = { "connection", "client" })
+@EqualsAndHashCode(of = { "id" })
 public class WorkerConnection
 {
+	// id des Workers
+	private static long nid = 0;
+	private long id = nid++;
+	
 	/**
 	 * Die Anzahl der zur Verfügung stehenden Sandboxen.
 	 */
@@ -32,6 +38,7 @@ public class WorkerConnection
 	
 	/** Gibt an, ob gerade ein Kompilierungsauftrag läuft. */
 	@Getter
+	@Setter
 	private boolean compiling;
 	
 	/** Die Connection vom Backend zum Worker. */
@@ -100,7 +107,9 @@ public class WorkerConnection
 	public synchronized WorkerCommand compile (int aiId, int version, int game) throws IOException
 	{
 		if (isCompiling())
-			BackendMain.getLogger().warning("WorkerConnection: Gebe Kompilierungsauftrag an beschägtigten Worker weiter.");
+			BackendMain.getLogger().warning(
+					"WorkerConnection: Gebe Kompilierungsauftrag an beschägtigten Worker weiter.");
+		setCompiling(true);
 		WorkerCommand cmd = new WorkerCommand(WorkerCommand.COMPILE, aiId, version, game, UUID.randomUUID());
 		connection.sendCommand(cmd);
 		return cmd;
@@ -114,6 +123,7 @@ public class WorkerConnection
 	{
 		if (!canStartAi())
 			return false;
+		usedSandboxes++;
 		connection.sendCommand(new WorkerCommand(WorkerCommand.STARTAI,
 				ai.getAiId(), ai.getVersion(), game, ai.getUuid()));
 		return true;
@@ -144,12 +154,21 @@ public class WorkerConnection
 	{
 		client.sendMessage(mf);
 	}
-
+	
 	/**
 	 * Aktualisiert die Daten dieses Workers.
 	 */
 	public void update (WorkerInfo info)
 	{
 		sandboxes = info.getSandboxes();
+	}
+	
+	/**
+	 * Wird aufgerufen wenn eine KI fertig ist und der Worker somit die nächste
+	 * starten kann.
+	 */
+	public synchronized void aiFinished ()
+	{
+		usedSandboxes--;
 	}
 }

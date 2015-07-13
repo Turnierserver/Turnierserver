@@ -13,18 +13,24 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Workers
 {
+	private static final Object lock = new Workers();
+	
 	/**
 	 * Diese Methode registriert einen neuen Worker.
 	 */
 	public static boolean registerWorker (@NonNull WorkerConnection worker)
 	{
 		BackendMain.getLogger().info("Workers: Neuer Worker registriert: " + worker);
-		boolean success = workerConnections.add(worker);
+		boolean success;
+		synchronized (workerConnections)
+		{
+			success = workerConnections.add(worker);
+		}
 		if (success)
 		{
-			synchronized (workerConnections)
+			synchronized (lock)
 			{
-				workerConnections.notifyAll();
+				lock.notifyAll();
 			}
 		}
 		return success;
@@ -35,9 +41,10 @@ public class Workers
 	 */
 	public static boolean removeWorker (WorkerConnection worker)
 	{
+		BackendMain.getLogger().info("Workers: Entferne Worker " + worker);
 		synchronized (workerConnections)
 		{
-			System.out.println("Workers:34: Hier muss iwi abgefangen werden wenn ein Worker crasht");
+			Jobs.workerDisconnected(worker);
 			return workerConnections.remove(worker);
 		}
 	}
@@ -55,9 +62,12 @@ public class Workers
 				for (WorkerConnection worker : workerConnections)
 					if (worker.canStartAi())
 						return worker;
+			}
+			synchronized (lock)
+			{
 				try
 				{
-					workerConnections.wait();
+					lock.wait();
 				}
 				catch (InterruptedException e)
 				{
@@ -80,9 +90,12 @@ public class Workers
 				for (WorkerConnection worker : workerConnections)
 					if (!worker.isCompiling())
 						return worker;
+			}
+			synchronized (lock)
+			{
 				try
 				{
-					workerConnections.wait();
+					lock.wait();
 				}
 				catch (InterruptedException e)
 				{
@@ -98,9 +111,9 @@ public class Workers
 	 */
 	public static void workerIsAvailable ()
 	{
-		synchronized (workerConnections)
+		synchronized (lock)
 		{
-			workerConnections.notifyAll();
+			lock.notifyAll();
 		}
 	}
 	
@@ -111,7 +124,7 @@ public class Workers
 	{
 		synchronized (workerConnections)
 		{
-			workerConnections.forEach((con) -> con.disconnect());
+			workerConnections.forEach( (con) -> con.disconnect());
 			workerConnections.clear();
 		}
 	}

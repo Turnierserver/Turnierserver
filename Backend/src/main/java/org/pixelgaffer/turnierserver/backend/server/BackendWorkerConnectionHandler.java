@@ -4,6 +4,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.AICONNECTED;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.ANSWER;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.INFO;
+import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.SANDBOX_MESSAGE;
 
 import java.io.IOException;
 
@@ -58,6 +59,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 	@Override
 	protected void disconnected ()
 	{
+		BackendMain.getLogger().warning("Der Worker " + workerConnection + " hat sich disconnected.");
 		if (workerConnection != null)
 		{
 			Workers.removeWorker(workerConnection);
@@ -122,6 +124,11 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 						}
 						else
 							ai.connected();
+					}
+					else if (l.getMode() == SANDBOX_MESSAGE)
+					{
+						workerConnection.aiFinished();
+						System.out.println("todo: BackendWorkerConnectionHandler:131: hier muss die spiellogik informiert werden.");
 					}
 					else
 						BackendMain.getLogger().severe("Unknown ProtocolLine Mode " + ((char)l.getMode()));
