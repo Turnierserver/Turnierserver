@@ -77,7 +77,7 @@ public class SyntaxParser
 	
 	// all item datas
 	@Getter
-	private Map<String, NamedStyleEntry> itemDatas = new HashMap<>();
+	private final Map<String, NamedStyleEntry> itemDatas = new HashMap<>();
 	
 	public SyntaxParser (String filename, Style s) throws ParserConfigurationException, IOException, SAXException
 	{
@@ -370,8 +370,14 @@ public class SyntaxParser
 						continue lineloop;
 					}
 				}
-				String attribute = context.getFirst().getAttribute();
-				spansBuilder.add(Collections.singleton(itemDatas.get(attribute).getName()), 1);
+				String attribute = defaultContext.getAttribute();
+				if (itemDatas.containsKey(attribute))
+					spansBuilder.add(Collections.singleton(itemDatas.get(attribute).getName()), 1);
+				else
+				{
+					System.err.println("Unbekanntes Attribut in " + file.getName() + ": " + attribute);
+					spansBuilder.add(Collections.emptyList(), 1);
+				}
 				pos++;
 			}
 			
