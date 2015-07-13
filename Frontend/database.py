@@ -572,6 +572,9 @@ class Game(db.Model):
 
 	@classmethod
 	def from_inprogress(cls, d):
+		if "exception" in d:
+			print("Game Exception!", d["exception"])
+			return
 		ais = [d["ai0"], d["ai1"]]
 		print(ais)
 		print(ais[0] == ais[1])
