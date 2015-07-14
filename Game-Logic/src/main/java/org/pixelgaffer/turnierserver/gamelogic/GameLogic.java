@@ -125,21 +125,21 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 *            Die AI, von welcher die Nachricht kommt
 	 */
 	public void receiveMessage(byte[] message, Ai ai) {
-		logger.info("Eine Nachricht wurde von einer AI(" + ai.getIndex() + ") empfangen: " + new String(message, StandardCharsets.UTF_8));
+//		logger.info("Eine Nachricht wurde von einer AI(" + ai.getIndex() + ") empfangen: " + new String(message, StandardCharsets.UTF_8));
 		if (getUserObject(ai).lost) {
-			logger.info("Die ai hat schon verloren");
+//			logger.info("Die ai hat schon verloren");
 			return;
 		}
 		if (new String(message, StandardCharsets.UTF_8).equals("SURRENDER")) {
-			logger.info("Di ai hat aufgegeben");
+//			logger.info("Di ai hat aufgegeben");
 			getUserObject(ai).loose();
 			return;
 		}
 		try {
 			receive(Parsers.getWorker().parse(message, token.getType()), ai);
-			logger.finest("Nachricht erfolgreich empfangen");
+//			logger.finest("Nachricht erfolgreich empfangen");
 		} catch (IOException e) {
-			logger.severe("Eine Nachricht konnte nicht gelesen werden: " + e.getLocalizedMessage());
+			logger.severe("Eine Nachricht konnte nicht gelesen werden: " + e);
 			e.printStackTrace();
 			getUserObject(ai).loose();
 		}

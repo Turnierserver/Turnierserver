@@ -81,7 +81,17 @@ public class Games
 		{
 			aiw = getAiWrapper(uuid);
 		}
+		if (aiw == null)
+		{
+			BackendMain.getLogger().severe("Konnte KI mit der UUID " + uuid + " nicht finden");
+			return;
+		}
 		GameImpl game = aiw.getGame();
+		if (game == null)
+		{
+			BackendMain.getLogger().severe("Die KI " + uuid + " hat kein Spiel");
+			return;
+		}
 		game.restart();
 	}
 	
@@ -259,6 +269,8 @@ public class Games
 		 */
 		public synchronized void restart () throws IOException
 		{
+			BackendMain.getLogger().info("Starte Spiel " + uuid + " neu");
+			
 			started = false;
 			logic.endGame();
 			BackendFrontendConnectionHandler.getFrontend().sendMessage(
