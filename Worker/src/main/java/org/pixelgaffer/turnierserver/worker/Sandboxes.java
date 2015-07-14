@@ -41,10 +41,12 @@ public class Sandboxes
 	}
 	
 	/**
-	 * Entfernt die Sandbox aus der Liste.
+	 * Entfernt die Sandbox aus der Liste. Ruft außerdem
+	 * {@link Sandbox#disconnected()} auf.
 	 */
 	public static boolean removeSandbox (Sandbox sandbox)
 	{
+		sandbox.disconnected();
 		boolean success = sandboxes.remove(sandbox);
 		WorkerMain.workerInfo.setSandboxes(sandboxes.size());
 		try

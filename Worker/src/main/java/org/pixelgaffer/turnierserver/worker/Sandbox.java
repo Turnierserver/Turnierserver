@@ -10,10 +10,9 @@ import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.T
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.SANDBOX;
 
 import java.io.IOException;
+import java.util.UUID;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import org.pixelgaffer.turnierserver.networking.messages.SandboxCommand;
@@ -28,8 +27,10 @@ public class Sandbox
 {
 	/** Gibt an ob die Sandbox busy ist. */
 	@Getter
-	@Setter(AccessLevel.PACKAGE)
 	private boolean busy = false;
+	
+	/** Die UUID des aktuell in der Sandbox ausgeführten Jobs. */
+	private UUID currentJob;
 	
 	/** Die Connection von der Sandbox zum Worker. */
 	@Getter
@@ -54,10 +55,11 @@ public class Sandbox
 		{
 			if (isBusy())
 				return false;
-			setBusy(true);
+			busy = true;
 		}
 		else if ((job.getCommand() == KILL_AI) || (job.getCommand() == TERM_AI))
-			setBusy(false);
+			busy = false;
+		currentJob = job.getUuid();
 		connection.sendJob(job);
 		return true;
 	}
@@ -81,15 +83,23 @@ public class Sandbox
 					WorkerMain.getLogger().severe("Sandbox: Fehler beim notifien des Backends (" + answer + "): " + e);
 					e.printStackTrace();
 				}
-				setBusy(false);
+				busy = false;
 				break;
 			case STARTED_AI:
-				System.out.println("Sandbox:87: Hier sollte ich mir überlegen ob ich iwas notifien soll");
-				setBusy(true);
+				System.out.println("todo:Sandbox:89: Hier sollte ich mir überlegen ob ich iwas notifien soll");
+				busy = true;
 				break;
 			default:
 				WorkerMain.getLogger().severe("Sandbox: Unknown event received:" + answer);
 				break;
 		}
+	}
+	
+	/**
+	 * Wird aufgerufen, wenn sich die Sandbox disconnected hat.
+	 */
+	public void disconnected ()
+	{
+		sandboxAnswer(new SandboxMessage(TERMINATED_AI, currentJob));
 	}
 }
