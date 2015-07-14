@@ -32,6 +32,12 @@ public class ProtocolLine
 	@Getter
 	private Object object;
 	
+	@SuppressWarnings("unchecked")
+	public <T> T getObject (Class<T> clazz)
+	{
+		return (T) getObject();
+	}
+	
 	/**
 	 * Parst die Zeile.
 	 */
