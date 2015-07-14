@@ -190,6 +190,9 @@ class Backend(threading.Thread):
 			if "data" in d:
 				self.requests[reqid]["states"].append(d["data"])
 
+			if "status" in d and d["status"] == "restarted":
+				self.requests[reqid]["states"] = []
+
 			for q in self.game_update_queues:
 				q.put(d)
 
