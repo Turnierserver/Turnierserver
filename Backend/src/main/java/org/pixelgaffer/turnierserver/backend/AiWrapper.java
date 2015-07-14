@@ -64,6 +64,7 @@ public class AiWrapper implements Ai
 	 */
 	public void connected ()
 	{
+		BackendMain.getLogger().info("Die KI " + uuid + " hat sich verbunden!");
 		connected = true;
 		getGame().aiConnected();
 	}
@@ -91,6 +92,8 @@ public class AiWrapper implements Ai
 	@Override
 	public void disconnect () throws IOException
 	{
+		BackendMain.getLogger().info("Die KI " + uuid + " wird disconnected");
+		connected = false;
 		connection.killJob(this);
 	}
 }

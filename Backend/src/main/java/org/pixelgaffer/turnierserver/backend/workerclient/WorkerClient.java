@@ -82,7 +82,6 @@ public class WorkerClient implements SocketObserver
 			try
 			{
 				MessageForward mf = Parsers.getWorker().parse(line, MessageForward.class);
-				System.out.println(mf);
 				Games.receiveMessage(mf);
 			}
 			catch (IOException e)

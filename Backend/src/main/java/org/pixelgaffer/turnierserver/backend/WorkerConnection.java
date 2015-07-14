@@ -158,7 +158,7 @@ public class WorkerConnection
 	/**
 	 * Aktualisiert die Daten dieses Workers.
 	 */
-	public void update (WorkerInfo info)
+	public synchronized void update (WorkerInfo info)
 	{
 		sandboxes = info.getSandboxes();
 	}

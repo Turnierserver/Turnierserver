@@ -30,6 +30,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <QCoreApplication>
 #include <QRegularExpression>
 #include <QTemporaryDir>
 
@@ -99,6 +100,7 @@ void AiExecutor::runAi ()
 	connect(this, SIGNAL(startAi()), this, SLOT(download()));
 	connect(this, SIGNAL(downloaded()), this, SLOT(generateProps()));
 	connect(this, SIGNAL(propsGenerated()), this, SLOT(executeAi()));
+	connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(terminateAi()));
 	emit startAi();
 }
 
