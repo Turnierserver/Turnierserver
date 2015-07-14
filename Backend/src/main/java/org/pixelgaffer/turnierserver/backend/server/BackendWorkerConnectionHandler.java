@@ -5,6 +5,7 @@ import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.A
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.ANSWER;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.INFO;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.SANDBOX_MESSAGE;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.TERMINATED_AI;
 
 import java.io.IOException;
 
@@ -24,6 +25,7 @@ import org.pixelgaffer.turnierserver.networking.bwprotocol.AiConnected;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
+import org.pixelgaffer.turnierserver.networking.messages.SandboxMessage;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
@@ -128,6 +130,10 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 					else if (l.getMode() == SANDBOX_MESSAGE)
 					{
 						workerConnection.aiFinished();
+						if (l.getObject(SandboxMessage.class).getEvent() == TERMINATED_AI)
+						{
+							// TODO
+						}
 						System.out.println("todo: BackendWorkerConnectionHandler:131: hier muss die spiellogik informiert werden.");
 					}
 					else

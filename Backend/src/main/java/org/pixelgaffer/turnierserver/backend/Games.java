@@ -52,6 +52,8 @@ public class Games
 		}
 	}
 	
+	private static final Object lock = new Games();
+	
 	/** Alle aktuell benutzten UUIDs. */
 	private static final Set<UUID> uuids = new HashSet<>();
 	
@@ -61,8 +63,26 @@ public class Games
 	/** Die AI mit der angegebenen UUID hat sich disconnected. */
 	public static void aiDisconnected (UUID uuid)
 	{
-		aiWrappers.remove(uuid);
-		uuids.remove(uuid);
+		synchronized (lock)
+		{
+			aiWrappers.remove(uuid);
+			uuids.remove(uuid);
+		}
+	}
+	
+	/**
+	 * Die AI mit der angegebenen UUID wurde von Backend/Worker/Sandbox beendet
+	 * und das Spiel muss neu gestartet werden.
+	 */
+	public static void aiTerminated (UUID uuid) throws IOException
+	{
+		AiWrapper aiw;
+		synchronized (lock)
+		{
+			aiw = getAiWrapper(uuid);
+		}
+		GameImpl game = aiw.getGame();
+		game.restart();
 	}
 	
 	/** Das zur UUID gehörende Spiel. */
@@ -74,7 +94,7 @@ public class Games
 	private static UUID randomUuid ()
 	{
 		UUID uuid;
-		synchronized (uuids)
+		synchronized (lock)
 		{
 			do
 			{
@@ -91,7 +111,10 @@ public class Games
 	 */
 	public static AiWrapper getAiWrapper (UUID uuid)
 	{
-		return aiWrappers.get(uuid);
+		synchronized (lock)
+		{
+			return aiWrappers.get(uuid);
+		}
 	}
 	
 	/**
@@ -159,7 +182,10 @@ public class Games
 				aiw.setVersion(Integer.valueOf(s[1]));
 				// die KI zur Liste hinzufügen
 				this.ais.add(aiw);
-				aiWrappers.put(aiw.getUuid(), aiw);
+				synchronized (lock)
+				{
+					aiWrappers.put(aiw.getUuid(), aiw);
+				}
 				
 				// einen Worker mit der KI beauftragen
 				WorkerConnection w = Workers.getStartableWorker();
@@ -188,11 +214,20 @@ public class Games
 			}
 			for (AiWrapper ai : ais)
 				ai.disconnect();
-			System.out.println("alle kis disconnected, sende success an frontend");
-			BackendFrontendConnectionHandler.getFrontend().sendMessage(
-					Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), true)));
-			games.remove(getUuid());
-			uuids.remove(getUuid());
+			if (started) // ist beim restart auf false
+			{
+				System.out.println("alle kis disconnected, sende success an frontend");
+				BackendFrontendConnectionHandler.getFrontend().sendMessage(
+						Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), true)));
+				synchronized (lock)
+				{
+					games.remove(getUuid());
+					uuids.remove(getUuid());
+				}
+				
+				// started nicht auf false setzen damit das spiel nicht aus
+				// versehen neu gestartet wird
+			}
 		}
 		
 		/**
@@ -218,13 +253,36 @@ public class Games
 				e.printStackTrace();
 			}
 		}
+		
+		/**
+		 * Diese Methode startet das Spiel neu.
+		 */
+		public synchronized void restart () throws IOException
+		{
+			started = false;
+			logic.endGame();
+			BackendFrontendConnectionHandler.getFrontend().sendMessage(
+					Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(getRequestId(), "restarted")));
+			
+			for (int i = 0; i < ais.size(); i++)
+			{
+				AiWrapper aiw = ais.get(i);
+				aiw.disconnect();
+				
+				// einen Worker mit der KI beauftragen
+				WorkerConnection w = Workers.getStartableWorker();
+				w.addJob(aiw, gameId);
+				aiw.setConnection(w);
+			}
+		}
 	}
 	
 	/**
 	 * Lädt die Jar-Datei der GameLogic für das angegebene Spiel herunter, liest
 	 * die Manifest-Datei, und lädt die GameLogic-Klasse.
 	 */
-	public static GameLogic<?, ?> loadGameLogic (int gameId) // keep in sync with codr
+	public static GameLogic<?, ?> loadGameLogic (int gameId) // keep in sync
+																// with codr
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
 			ReflectiveOperationException, FTPListParseException
 	{
@@ -267,7 +325,10 @@ public class Games
 		UUID uuid = randomUuid();
 		GameImpl game = new GameImpl(gameId, uuid, requestId, ais);
 		game.logic = logic;
-		games.put(uuid, game);
+		synchronized (lock)
+		{
+			games.put(uuid, game);
+		}
 		return game;
 	}
 	
@@ -293,7 +354,10 @@ public class Games
 		// Spiel starten
 		GameImpl game = new GameImpl(gameId, uuid, requestId, ais);
 		game.logic = logic;
-		games.put(uuid, game);
+		synchronized (lock)
+		{
+			games.put(uuid, game);
+		}
 		return game;
 	}
 }
