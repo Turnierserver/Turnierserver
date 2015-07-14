@@ -28,7 +28,8 @@ public class WorkerMain
 	
 	public static void notifyInfoUpdated () throws IOException
 	{
-		getBackendClient().sendInfo(workerInfo);
+		if (getBackendClient().isConnected())
+			getBackendClient().sendInfo(workerInfo);
 	}
 	
 	@Getter

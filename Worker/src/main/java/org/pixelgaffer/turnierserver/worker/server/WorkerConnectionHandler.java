@@ -140,10 +140,8 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					{
 						try
 						{
-//							System.out.println("Die KI hat " + new String(line, UTF_8) + " gesendet");
 							MessageForward mf = new MessageForward(type.getUuid(), line);
 							DataBuffer buf = new DataBuffer();
-//							buf.add((byte)'M');
 							buf.add(Parsers.getWorker().parse(mf));
 							buf.add("\n".getBytes(UTF_8));
 							WorkerServer.backendConnection.getClient().write(buf.readAll());
