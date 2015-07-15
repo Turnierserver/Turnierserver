@@ -48,7 +48,7 @@ AiExecutor::AiExecutor (int id, int version, const QUuid &uuid)
 	configMutex->unlock();
 	if (uid < 1000)
 	{
-		LOG_WARNING << "Ich werde keine UUID kleiner als 1000 benutzen";
+		LOG_WARNING << "Ich werde keine UID kleiner als 1000 benutzen";
 		abort = true;
 		return;
 	}
