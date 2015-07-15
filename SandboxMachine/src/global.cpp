@@ -22,6 +22,9 @@
 #include <QMutex>
 #include <QSettings>
 
+/// Die Liste aller Sprachen und Interpreter
+QHash<QString, QString> commands;
+
 /// Eine Verbindung zum Worker
 WorkerClient *worker;
 

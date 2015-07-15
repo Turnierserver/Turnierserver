@@ -18,6 +18,7 @@
  */
 
 #include "aiexecutor.h"
+#include "logger.h"
 #include "mirrorclient.h"
 #include "workerclient.h"
 
@@ -47,7 +48,7 @@ AiExecutor::AiExecutor (int id, int version, const QUuid &uuid)
 	configMutex->unlock();
 	if (uid < 1000)
 	{
-		fprintf(stderr, "Warnung: Ich werde keine UID kleiner als 1000 benutzen.\n");
+		LOG_WARNING << "Ich werde keine UUID kleiner als 1000 benutzen";
 		abort = true;
 		return;
 	}
@@ -56,7 +57,7 @@ AiExecutor::AiExecutor (int id, int version, const QUuid &uuid)
 	passwd *userInfo = getpwuid(uid); // nicht löschen
 	if (!userInfo)
 	{
-		fprintf(stderr, "Fehler: Kann Informationen zum Benutzer mit der UID %d nicht abrufen.\n", uid);
+		LOG_CRITICAL << "Kann keine Informationen zum Benutzer mit der UID " + QString::number(uid) + " abrufen";
 		abort = true;
 		return;
 	}
@@ -65,10 +66,8 @@ AiExecutor::AiExecutor (int id, int version, const QUuid &uuid)
 	
 	// ein neues Verzeichnis für den Job im Home des Users anlegen
 	QString dirPath = QString(userInfo->pw_dir) + "/ai-XXXXXX";
-	printf("DirPath: %s\n", qPrintable(dirPath));
 	QTemporaryDir tmpDir(dirPath);
 	tmpDir.setAutoRemove(false);
-	printf("TmpDir: %s\n", qPrintable(tmpDir.path()));
 	dir = tmpDir.path();
 	
 	// das Verzeichnis gehört root (die KI darf nichts ändern), die Gruppe auf die des Benutzers setzen
@@ -93,7 +92,7 @@ void AiExecutor::runAi ()
 {
 	if (abort)
 	{
-		fprintf(stderr, "Weigere mich aufgrund vorheriger Fehler die KI zu laden und zu starten.\n");
+		LOG_CRITICAL << "Weigere mich aufgrund vorheriger Fehler die KI zu laden und zu starten";
 		emit finished(uuid());
 		return;
 	}
@@ -108,7 +107,7 @@ void AiExecutor::download ()
 {
 	if (abort)
 	{
-		fprintf(stderr, "Weigere mich aufgrund vorheriger Fehler die KI zu herunterzuladen.\n");
+		LOG_CRITICAL << "Weigere mich aufgrund vorheriger Fehler die KI zu herunterzuladen";
 		emit downloaded();
 		return;
 	}
@@ -121,7 +120,7 @@ void AiExecutor::download ()
 	configMutex->unlock();
 	if (!mirror.waitForConnected())
 	{
-		fprintf(stderr, "Fehler: Konnte nicht mit dem Mirror verbinden.\n");
+		LOG_CRITICAL << "Fehler: Konnte nicht mit dem Mirror verbinden";
 		abort = true;
 		emit downloaded();
 		return;
@@ -129,7 +128,7 @@ void AiExecutor::download ()
 	binArchive = dir.absoluteFilePath("bin.tar.bz2");
 	if (!mirror.retrieveAi(id(), version(), binArchive))
 	{
-		fprintf(stderr, "Fehler: Konnte KI nicht über den Mirror des Workers herunterladen.\n");
+		LOG_CRITICAL << "Fehler: Konnte KI nicht über den Mirror des Workers herunterladen";
 		abort = true;
 		emit downloaded();
 		return;
@@ -202,7 +201,7 @@ void AiExecutor::generateProps ()
 {
 	if (abort)
 	{
-		fprintf(stderr, "Weigere mich aufgrund vorheriger Fehler die KI-Properties zu erstellen.\n");
+		LOG_CRITICAL << "Weigere mich aufgrund vorheriger Fehler die KI-Properties zu erstellen";
 		emit propsGenerated();
 		return;
 	}
@@ -211,7 +210,7 @@ void AiExecutor::generateProps ()
 	QFile file(aiProp);
 	if (!file.open(QIODevice::WriteOnly))
 	{
-		fprintf(stderr, "Kann die KI Properties nicht beschreiben (%s): %s\n", qPrintable(aiProp), qPrintable(file.errorString()));
+		LOG_CRITICAL << "Kann die KI Properties nicht beschreiben (" + aiProp + " ): " + file.errorString();
 		abort = true;
 		emit propsGenerated();
 		return;
@@ -255,7 +254,8 @@ void AiExecutor::executeAi ()
 {
 	if (abort)
 	{
-		fprintf(stderr, "Weigere mich aufgrund vorheriger Fehler die KI zu starten.\n");
+		LOG_CRITICAL << "Weigere mich aufgrund vorheriger Fehler die KI zu starten";
+		worker->sendMessage(uuid(), 'T'); // T weil interner Fehler
 		emit finished(uuid());
 		return;
 	}
@@ -275,7 +275,7 @@ void AiExecutor::executeAi ()
 //				+ "\" -c id";
 		printf("$ %s\n", qPrintable(cmd));
 		int retval = system(qPrintable(cmd));
-		printf("Die KI hat sich mit dem Statuscode %d beendet.\n", retval);
+		LOG_INFO << "Die KI hat sich mit dem Statuscode " + QString::number(retval) + " beendet";
 		worker->sendMessage(uuid(), 'F');
 		emit finished(uuid());
 		exit(retval);
@@ -285,7 +285,7 @@ void AiExecutor::executeAi ()
 
 void AiExecutor::terminateAi ()
 {
-	printf("AiExecutor::terminateAi() called\n");
+	LOG_INFO << "AiExecutor::terminateAi() called";
 	if (kill(pid, SIGKILL) != 0)
 	{
 		perror("Fehler beim Töten der KI");
@@ -296,7 +296,7 @@ void AiExecutor::terminateAi ()
 
 void AiExecutor::killAi ()
 {
-	printf("AiExecutor::killAi() called\n");
+	LOG_INFO << "AiExecutor::killAi() called";
 	if (kill(pid, SIGKILL) != 0)
 	{
 		perror("Fehler beim Töten der KI");

@@ -32,7 +32,7 @@ class WorkerClient : public QObject
 	
 public:
 	/// Initialisiert den Clienten mit dem schon offenen QTcpSocket
-	explicit WorkerClient (QTcpSocket *client, QObject *parent = 0);
+	explicit WorkerClient (QObject *parent = 0);
 	
 public slots:
 	// die Slots des QTcpSockets

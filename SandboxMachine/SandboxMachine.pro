@@ -29,7 +29,8 @@ SOURCES += \
     src/mirrorclient.cpp \
     src/global.cpp \
     src/aiexecutor.cpp \
-    src/jobcontrol.cpp
+    src/jobcontrol.cpp \
+    src/logger.cpp
 
 HEADERS += \
     include/workerclient.h \
@@ -37,4 +38,5 @@ HEADERS += \
     include/mirrorclient.h \
     include/global.h \
     include/aiexecutor.h \
-    include/jobcontrol.h
+    include/jobcontrol.h \
+    include/logger.h

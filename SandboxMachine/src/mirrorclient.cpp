@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "global.h"
-
 #include "buffer.h"
+#include "global.h"
+#include "logger.h"
 #include "mirrorclient.h"
 
 #include <stdio.h>
@@ -46,7 +46,7 @@ bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 	socket.write(QByteArray::number(id) + "\n" + QByteArray::number(version) + "\n");
 	if (!socket.waitForBytesWritten(timeout()))
 	{
-		printf("failed to write bytes to mirror\n");
+		LOG_CRITICAL << "failed to write bytes to mirror";
 		return false;
 	}
 	
@@ -56,19 +56,19 @@ bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 	{
 		if (!socket.waitForReadyRead(timeout()))
 		{
-			fprintf(stderr, "MirrorClient::retrieveAi(): Failed to wait for file length.\n");
+			LOG_CRITICAL << "MirrorClient::retrieveAi(): Failed to wait for file length";
 			return false;
 		}
 		buf.append(socket.read(30)); // ich erwarte einen long (max 22 zeichen)
 	}
 	line = line.trimmed();
 	qint64 size = line.toLongLong();
-	printf("Empfange Datei: %lli\n", size);
+	LOG_INFO << "Empfange Datei: " + QString::number(size);
 	
 	QFile out(filename);
 	if (!out.open(QIODevice::WriteOnly))
 	{
-		fprintf(stderr, "MirrorClient::retrieveAi(): Failed to open output file %s: %s\n", qPrintable(filename), qPrintable(out.errorString()));
+		LOG_CRITICAL << "MirrorClient::retrieveAi(): Failed to open output file " + filename + ": " + out.errorString();
 		return false;
 	}
 	qint64 written = buf.size();
@@ -77,7 +77,7 @@ bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 	{
 		if (!socket.waitForReadyRead(timeout()))
 		{
-			fprintf(stderr, "MirrorClient::retrieveAi(): Failed to wait for data.\n");
+			LOG_CRITICAL << "MirrorClient::retrieveAi(): Failed to wait for data";
 			return false;
 		}
 		qint64 toRead = size - written;
@@ -99,13 +99,13 @@ bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 
 void MirrorClient::connected ()
 {
-	printf("connected to mirror :)\n");
+//	printf("connected to mirror :)\n");
 	_connected = true;
 }
 
 void MirrorClient::disconnected ()
 {
-	printf("disconnected from mirror :(\n");
+//	printf("disconnected from mirror :(\n");
 	_connected = false;
 	reconnect();
 }
