@@ -46,6 +46,7 @@ public class Sandboxes
 	 */
 	public static boolean removeSandbox (Sandbox sandbox)
 	{
+		WorkerMain.getLogger().info("Die Sandbox " + sandbox + " hat sich disconnected");
 		sandbox.disconnected();
 		boolean success = sandboxes.remove(sandbox);
 		WorkerMain.workerInfo.setSandboxes(sandboxes.size());

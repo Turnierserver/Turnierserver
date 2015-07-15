@@ -71,6 +71,8 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	@Override
 	public void disconnected ()
 	{
+		WorkerMain.getLogger().info(
+				type + (type.getType() == SANDBOX ? " (" + sandbox + ")" : "") + " hat die Verbindung getrennt.");
 		if (type != null)
 		{
 			switch (type.getType())
@@ -180,7 +182,8 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					}
 					catch (Exception e)
 					{
-						WorkerMain.getLogger().severe("WorkerConnectionHandler: Failed to parse message from Sandbox: " + e);
+						WorkerMain.getLogger().severe(
+								"WorkerConnectionHandler: Failed to parse message from Sandbox: " + e);
 					}
 					break;
 			}

@@ -160,6 +160,7 @@ public class WorkerConnection
 	 */
 	public synchronized void update (WorkerInfo info)
 	{
+		BackendMain.getLogger().info("Der Worker " + id + " hat sich geupdated: " + info);
 		sandboxes = info.getSandboxes();
 	}
 	

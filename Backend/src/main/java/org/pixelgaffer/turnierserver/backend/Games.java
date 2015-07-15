@@ -61,20 +61,43 @@ public class Games
 	private static final Map<UUID, AiWrapper> aiWrappers = new HashMap<>();
 	
 	/** Die AI mit der angegebenen UUID hat sich disconnected. */
-	public static void aiDisconnected (UUID uuid)
+	public static void aiDisconnected (UUID uuid, WorkerConnection worker)
 	{
-		synchronized (lock)
-		{
-			aiWrappers.remove(uuid);
-			uuids.remove(uuid);
-		}
+		new Thread( () -> {
+			synchronized (lock)
+			{
+				if (aiWrappers.containsKey(uuid))
+				{
+					worker.aiFinished();
+				}
+			}
+			
+			// die ki noch 1 min speichern um laggs in der verbindung zu
+			// vermeiden
+				try
+				{
+					Thread.sleep(60000);
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+				finally
+				{
+					synchronized (lock)
+					{
+						aiWrappers.remove(uuid);
+						uuids.remove(uuid);
+					}
+				}
+			}).start();
 	}
 	
 	/**
 	 * Die AI mit der angegebenen UUID wurde von Backend/Worker/Sandbox beendet
 	 * und das Spiel muss neu gestartet werden.
 	 */
-	public static void aiTerminated (UUID uuid) throws IOException
+	public static void aiTerminated (UUID uuid) throws IOException, InstantiationException, IllegalAccessException
 	{
 		AiWrapper aiw;
 		synchronized (lock)
@@ -267,12 +290,12 @@ public class Games
 		/**
 		 * Diese Methode startet das Spiel neu.
 		 */
-		public synchronized void restart () throws IOException
+		public synchronized void restart () throws IOException, InstantiationException, IllegalAccessException
 		{
 			BackendMain.getLogger().info("Starte Spiel " + uuid + " neu");
 			
 			started = false;
-			logic.endGame();
+			logic = logic.getClass().newInstance();
 			BackendFrontendConnectionHandler.getFrontend().sendMessage(
 					Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(getRequestId(), "restarted")));
 			
@@ -280,6 +303,13 @@ public class Games
 			{
 				AiWrapper aiw = ais.get(i);
 				aiw.disconnect();
+				
+				// da aiDisconnected aufgerufen wurde wird die alte UUID entfernt
+				aiw.setUuid(randomUuid());
+				synchronized (lock)
+				{
+					aiWrappers.put(aiw.getUuid(), aiw);
+				}
 				
 				// einen Worker mit der KI beauftragen
 				WorkerConnection w = Workers.getStartableWorker();
