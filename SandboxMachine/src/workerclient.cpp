@@ -19,13 +19,16 @@
 
 #include "aiexecutor.h"
 #include "buffer.h"
+#include "logger.h"
 #include "workerclient.h"
 
 #include <stdio.h>
 
 #include <QBuffer>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMessageLogger>
 #include <QRegularExpression>
 #include <QUuid>
 
@@ -33,20 +36,31 @@
 #  define MAX_BUF_SIZE 0xa00000
 #endif
 
-WorkerClient::WorkerClient(QTcpSocket *client, QObject *parent)
+WorkerClient::WorkerClient(QObject *parent)
 	: QObject(parent)
-	, socket(client)
 {
+	socket = new QTcpSocket;
+	connect(socket, SIGNAL(connected()), this, SLOT(connected()));
+	connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
+	connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
+	socket->connectToHost(config->value("Worker/Host").toString(), config->value("Worker/Port").toInt());
 }
 
 void WorkerClient::connected ()
 {
-	printf("connected :)\n");
+	LOG_INFO << "Connected to Worker";
+	socket->write("S\n");
+	// Die unterstützten Programmiersprachen schicken
+	QJsonArray array;
+	for (QString lang : commands.keys())
+		array.append(lang);
+	QJsonDocument doc(array);
+	socket->write(doc.toJson(QJsonDocument::Compact) + "\n");
 }
 
 void WorkerClient::disconnected ()
 {
-	printf("disconnected :(\n");
+	LOG_INFO << "Disconnected from Worker";
 }
 
 void WorkerClient::readyRead ()
@@ -77,25 +91,25 @@ void WorkerClient::readyRead ()
 				int id = json.value("id").toInt();
 				int version = json.value("version").toInt();
 				QUuid uuid = json.value("uuid").toVariant().toUuid();
-				printf("Auftrag erhalten: Run AI %dv%d %s\n", id, version, qPrintable(uuid.toString()));
+				LOG_INFO << "Auftrag erhalten: Run AI " + QString::number(id) + "v" + QString::number(version) + " " + uuid.toString();
 				
 				jobControl.addJob(id, version, uuid);
 			}
 			else if (cmd == "T")
 			{
 				QUuid uuid = json.value("uuid").toVariant().toUuid();
-				printf("Auftrag erhalten: Terminate AI %s\n", qPrintable(uuid.toString()));
+				LOG_INFO << "Auftrag erhalten: Terminate AI " + uuid.toString();
 				jobControl.terminateJob(uuid);
 			}
 			else if (cmd == "K")
 			{
 				QUuid uuid = json.value("uuid").toVariant().toUuid();
-				printf("Auftrag erhalten: Kill AI %s\n", qPrintable(uuid.toString()));
+				LOG_INFO << "Auftrag erhalten: Kill AI " + uuid.toString();
 				jobControl.killJob(uuid);
 			}
 			else
 			{
-				fprintf(stderr, "Also es wäre schön wenn ich den Befehl %s verstehen würde\n", qPrintable(cmd));
+				LOG_DEBUG << "Also es wäre schön wenn ich den Befehl " + cmd + " verstehen würde";
 			}
 		}
 	}

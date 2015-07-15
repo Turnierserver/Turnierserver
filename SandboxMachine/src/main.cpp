@@ -18,7 +18,7 @@
  */
 
 #include "global.h"
-
+#include "logger.h"
 #include "workerclient.h"
 
 #include <stdio.h>
@@ -43,7 +43,7 @@ void searchExecutable (const QString &execfile, const QString &language, QHash<Q
 			file = file.symLinkTarget();
 		if (file.exists() && file.isExecutable())
 		{
-			printf("%s gefunden: %s\n", qPrintable(language), qPrintable(file.absoluteFilePath()));
+			LOG_INFO << language + " gefunden: " + file.absoluteFilePath();
 			commands->insert(language, file.absoluteFilePath());
 			return;
 		}
@@ -68,7 +68,6 @@ int main(int argc, char *argv[])
 		config = new QSettings(QSettings::IniFormat, QSettings::SystemScope, "Pixelgaffer", "SandboxMachine");
 	
 	// Den Rechner nach Programmiersprachen durchsuchen.
-	QHash<QString, QString> commands;
 	config->beginGroup("Languages");
 	QStringList langs = config->value("langs").toStringList();
 	for (QString lang : langs)
@@ -76,45 +75,19 @@ int main(int argc, char *argv[])
 		QString command = config->value(lang).toString();
 		if (command.isEmpty())
 		{
-			printf("Erlaube native Sprache %s\n", qPrintable(lang));
+			LOG_INFO << "Erlaube native Sprache " + lang;
 			commands.insert(lang, QString());
 		}
 		else
 		{
-			printf("Suche Sprache %s (Befehl %s)\n", qPrintable(lang), qPrintable(command));
+			LOG_INFO << "Suche Sprache " + lang + " (Befehl " + command + ")";
 			searchExecutable(command, lang, &commands);
 		}
 	}
 	config->endGroup();
 	
-	// Mit dem Worker verbinden
-	config->beginGroup("Worker");
-	QString host = config->value("Host").toString();
-	quint16 port = config->value("Port").toUInt();
-	config->endGroup();
-	QTcpSocket client;
-	client.connectToHost(host, port);
-	if (!client.waitForConnected(timeout()))
-	{
-		fprintf(stderr, "Failed to connect to Worker: %s\n", qPrintable(client.errorString()));
-		return 1;
-	}
-	
-	// Dem Worker mitteilen, dass dies eine Sandbox ist
-	client.write("S\n");
-	
-	// Die unterstützten Programmiersprachen schicken
-	QJsonArray array;
-	for (QString lang : commands.keys())
-		array.append(lang);
-	QJsonDocument doc(array);
-	client.write(doc.toJson(QJsonDocument::Compact) + "\n");
-	client.waitForBytesWritten(timeout());
-	
-	worker = new WorkerClient(&client);
-	QObject::connect(&client, SIGNAL(connected()), worker, SLOT(connected()));
-	QObject::connect(&client, SIGNAL(disconnected()), worker, SLOT(disconnected()));
-	QObject::connect(&client, SIGNAL(readyRead()), worker, SLOT(readyRead()));
+	// mit dem Worker verbinden
+	worker = new WorkerClient();
 	
 	return app.exec();
 }

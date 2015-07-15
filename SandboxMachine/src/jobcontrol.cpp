@@ -19,6 +19,7 @@
 
 #include "aiexecutor.h"
 #include "jobcontrol.h"
+#include "logger.h"
 
 #include <stdio.h>
 
@@ -80,7 +81,7 @@ void JobControl::killJob (const QUuid &uuid)
 
 void JobControl::jobFinished (const QUuid &uuid)
 {
-	printf("JobControl::jobFinished() called\n");
+	LOG_INFO << "JobControl::jobFinished() called";
 	//mutex.lock();
 	if (current->uuid() == uuid)
 	{
@@ -91,7 +92,7 @@ void JobControl::jobFinished (const QUuid &uuid)
 			doJob(queue.dequeue());
 	}
 	else
-		fprintf(stderr, "Warnung: JobControl: Aktueller Job ist %s aber %s wurde beendet.\n", qPrintable(current->uuid().toString()), qPrintable(uuid.toString()));
+		LOG_WARNING << "JobControl: Aktueller Job ist " + current->uuid().toString() + " aber " + uuid.toString() + " wurde beendet.";
 	//mutex.unlock();
 	emit aiFinished(uuid);
 }
