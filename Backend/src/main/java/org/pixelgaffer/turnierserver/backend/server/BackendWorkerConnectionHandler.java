@@ -130,11 +130,10 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 					else if (l.getMode() == SANDBOX_MESSAGE)
 					{
 						BackendMain.getLogger().info("SandboxMessage received: " + l.getObject());
-						workerConnection.aiFinished();
 						if (l.getObject(SandboxMessage.class).getEvent() == TERMINATED_AI)
-						{
 							Games.aiTerminated(l.getObject(SandboxMessage.class).getUuid());
-						}
+						else
+							Games.aiDisconnected(l.getObject(SandboxMessage.class).getUuid(), workerConnection);
 						System.out.println("todo: BackendWorkerConnectionHandler:131: hier muss die spiellogik informiert werden.");
 					}
 					else

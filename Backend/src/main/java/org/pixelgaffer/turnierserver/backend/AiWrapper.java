@@ -3,6 +3,7 @@ package org.pixelgaffer.turnierserver.backend;
 import java.io.IOException;
 import java.util.UUID;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class AiWrapper implements Ai
 	
 	/** Die UUID der KI im Netzwerk. */
 	@Getter
+	@Setter(AccessLevel.PACKAGE)
 	@NonNull
 	private UUID uuid;
 	
