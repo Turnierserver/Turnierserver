@@ -12,7 +12,7 @@
 
 <h1 class="ui center aligned header" style="font-size: 4em; margin-bottom: 0px;">{{ ai.name }}</h1>
 <h1 class="ui center aligned sub header" style="font-size: 1.2em; margin-top: 0px;">
-	von <a href="{{ url_for("anonymous.user", id=ai.user.id) }}">{{ ai.user.name }}</a>
+	von <a href="{{ url_for('anonymous.user', id=ai.user.id) }}">{{ ai.user.name }}</a>
 </h1>
 <br />
 
