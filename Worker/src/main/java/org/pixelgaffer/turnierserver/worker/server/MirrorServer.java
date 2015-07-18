@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.worker.server;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.pixelgaffer.turnierserver.PropertyUtils.*;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -9,7 +10,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Random;
 
+import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
 
@@ -40,7 +48,6 @@ public class MirrorServer extends Thread
 			{
 				Socket client = server.accept();
 				WorkerMain.getLogger().info("MirrorServer: " + client + " hat sich verbunden");
-				System.out.println("todo:MirrorServer:33: wie wärs mit authentikation?");
 				new Thread( () -> {
 					try
 					{
@@ -57,6 +64,19 @@ public class MirrorServer extends Thread
 						int version = Integer.valueOf(line);
 						
 						OutputStream out = client.getOutputStream();
+						
+						byte[] salt = generateSalt();
+						out.write(salt);
+						byte[] hash = sha256(salt);
+						line = in.readLine();
+						if (line == null)
+							throw new EOFException();
+						if (!Arrays.equals(Base64.getDecoder().decode(line), hash))
+						{
+							WorkerMain.getLogger().critical("Der Mirror-Klient " + client + " hat das falsche Passwort gesendet!");
+							return;
+						}
+						
 						out.write((Long.toString(DatastoreFtpClient.aiSize(id, version)) + "\n").getBytes(UTF_8));
 						DatastoreFtpClient.retrieveAi(id, version, out);
 					}
@@ -85,5 +105,27 @@ public class MirrorServer extends Thread
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private static final Random r = new SecureRandom();
+	
+	private static byte[] generateSalt ()
+	{
+		byte[] salt = new byte[getIntRequired(WORKER_MIRROR_SALT_LENGTH)];
+		r.nextBytes(salt);
+		return salt;
+	}
+	
+	private static byte[] sha256 (byte[] salt) throws NoSuchAlgorithmException
+	{
+		byte[] hash = getStringRequired(WORKER_MIRROR_PASSWORD).getBytes();
+		for (int i = 0; i < getIntRequired(WORKER_MIRROR_PASSWORD_REPEATS); i++)
+		{
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			md.update(salt);
+			md.update(hash);
+			hash = md.digest();
+		}
+		return hash;
 	}
 }
