@@ -104,7 +104,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 				type = WorkerConnectionType.parse(linestr);
 				if (type == null)
 				{
-					WorkerMain.getLogger().severe(
+					WorkerMain.getLogger().critical(
 							"WorkerConnectionHandler: Can't parse WorkerConnectionType from " + linestr);
 					socket.close();
 					return;
@@ -150,11 +150,11 @@ public class WorkerConnectionHandler extends ConnectionHandler
 						}
 						catch (Exception e)
 						{
-							WorkerMain.getLogger().severe("WorkerConnectionHandler: Failed to forward: " + e);
+							WorkerMain.getLogger().critical("WorkerConnectionHandler: Failed to forward: " + e);
 						}
 					}
 					else
-						WorkerMain.getLogger().severe("WorkerConnectionHandler: Connection to Backend not found.");
+						WorkerMain.getLogger().critical("WorkerConnectionHandler: Connection to Backend not found.");
 					break;
 				
 				case BACKEND:
@@ -170,7 +170,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					}
 					catch (Exception e)
 					{
-						WorkerMain.getLogger().severe("WorkerConnectionHandler: Failed to forward: " + e);
+						WorkerMain.getLogger().critical("WorkerConnectionHandler: Failed to forward: " + e);
 					}
 					break;
 				
@@ -182,7 +182,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					}
 					catch (Exception e)
 					{
-						WorkerMain.getLogger().severe(
+						WorkerMain.getLogger().critical(
 								"WorkerConnectionHandler: Failed to parse message from Sandbox: " + e);
 					}
 					break;

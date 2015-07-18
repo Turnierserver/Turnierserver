@@ -86,7 +86,7 @@ public class WorkerClient implements SocketObserver
 			}
 			catch (IOException e)
 			{
-				BackendMain.getLogger().severe("Worker Client: Failed to parse line: " + e);
+				BackendMain.getLogger().critical("Worker Client: Failed to parse line: " + e);
 			}
 		}
 	}

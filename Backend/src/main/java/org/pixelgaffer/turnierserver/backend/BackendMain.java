@@ -8,12 +8,13 @@ import static org.pixelgaffer.turnierserver.PropertyUtils.loadProperties;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import naga.ConnectionAcceptor;
 
+import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendServer;
 import org.pixelgaffer.turnierserver.backend.server.BackendWorkerServer;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
@@ -25,11 +26,8 @@ import org.pixelgaffer.turnierserver.networking.NetworkService;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BackendMain
 {
-	/** Gibt den Standartlogger zurück. */
-	public static Logger getLogger ()
-	{
-		return Logger.getLogger("BackendServer");
-	}
+	@Getter
+	private static final Logger logger = new Logger();
 	
 	static final File jobsStore = new File("/var/spool/backend/jobs");
 	

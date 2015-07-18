@@ -11,11 +11,11 @@ import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
 import static org.pixelgaffer.turnierserver.PropertyUtils.loadProperties;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import lombok.Getter;
 import naga.ConnectionAcceptor;
 
+import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 import org.pixelgaffer.turnierserver.worker.backendclient.BackendClient;
@@ -35,11 +35,8 @@ public class WorkerMain
 	@Getter
 	private static BackendClient backendClient;
 	
-	/** Gibt den Standartlogger zurück. */
-	public static Logger getLogger ()
-	{
-		return Logger.getLogger("BackendServer");
-	}
+	@Getter
+	private static final Logger logger = new Logger();
 	
 	public static void main (String args[]) throws IOException
 	{
