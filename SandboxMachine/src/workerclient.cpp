@@ -29,7 +29,10 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageLogger>
+#include <QMetaEnum>
+#include <QMetaObject>
 #include <QRegularExpression>
+#include <QTimer>
 #include <QUuid>
 
 #ifndef MAX_BUF_SIZE
@@ -39,11 +42,7 @@
 WorkerClient::WorkerClient(QObject *parent)
 	: QObject(parent)
 {
-	socket = new QTcpSocket;
-	connect(socket, SIGNAL(connected()), this, SLOT(connected()));
-	connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
-	connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
-	socket->connectToHost(config->value("Worker/Host").toString(), config->value("Worker/Port").toInt());
+	reconnect();
 }
 
 void WorkerClient::connected ()
@@ -60,7 +59,28 @@ void WorkerClient::connected ()
 
 void WorkerClient::disconnected ()
 {
-	LOG_INFO << "Disconnected from Worker";
+	LOG_CRITICAL << "Disconnected from Worker";
+	QTimer::singleShot(3000, this, SLOT(reconnect()));
+}
+
+void WorkerClient::error (QAbstractSocket::SocketError error)
+{
+	QMetaObject mo = QAbstractSocket::staticMetaObject;
+	QMetaEnum me = mo.enumerator(mo.indexOfEnumerator("SocketError"));
+	LOG_CRITICAL << QString("SocketError: ") + me.key(error);
+	QTimer::singleShot(3000, this, SLOT(reconnect()));
+}
+
+void WorkerClient::reconnect()
+{
+	if (socket)
+		delete socket;
+	socket = new QTcpSocket;
+	connect(socket, SIGNAL(connected()), this, SLOT(connected()));
+	connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
+	connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error(QAbstractSocket::SocketError)));
+	connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
+	socket->connectToHost(config->value("Worker/Host").toString(), config->value("Worker/Port").toInt());
 }
 
 void WorkerClient::readyRead ()
