@@ -88,7 +88,7 @@ public class CompileQueue implements Runnable
 				}
 				catch (Exception e)
 				{
-					WorkerMain.getLogger().severe("Failed to compile AI " + job.getAiId());
+					WorkerMain.getLogger().critical("Failed to compile AI " + job.getAiId());
 					e.printStackTrace();
 					
 					try

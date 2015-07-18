@@ -106,13 +106,13 @@ public class Games
 		}
 		if (aiw == null)
 		{
-			BackendMain.getLogger().severe("Konnte KI mit der UUID " + uuid + " nicht finden");
+			BackendMain.getLogger().critical("Konnte KI mit der UUID " + uuid + " nicht finden");
 			return;
 		}
 		GameImpl game = aiw.getGame();
 		if (game == null)
 		{
-			BackendMain.getLogger().severe("Die KI " + uuid + " hat kein Spiel");
+			BackendMain.getLogger().critical("Die KI " + uuid + " hat kein Spiel");
 			return;
 		}
 		game.restart();

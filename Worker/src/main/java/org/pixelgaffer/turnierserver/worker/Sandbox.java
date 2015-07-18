@@ -80,7 +80,7 @@ public class Sandbox
 				}
 				catch (IOException e)
 				{
-					WorkerMain.getLogger().severe("Sandbox: Fehler beim notifien des Backends (" + answer + "): " + e);
+					WorkerMain.getLogger().critical("Sandbox: Fehler beim notifien des Backends (" + answer + "): " + e);
 					e.printStackTrace();
 				}
 				busy = false;
@@ -90,7 +90,7 @@ public class Sandbox
 				busy = true;
 				break;
 			default:
-				WorkerMain.getLogger().severe("Sandbox: Unknown event received:" + answer);
+				WorkerMain.getLogger().critical("Sandbox: Unknown event received:" + answer);
 				break;
 		}
 	}

@@ -134,7 +134,7 @@ public class BackendClient implements SocketObserver, Backend
 	@Override
 	public void connectionBroken (NIOSocket socket, Exception exception)
 	{
-		WorkerMain.getLogger().severe("BackendClient: Connection to Backend broken: " + exception);
+		WorkerMain.getLogger().critical("BackendClient: Connection to Backend broken: " + exception);
 		connected = false;
 		synchronized (this)
 		{
@@ -174,7 +174,7 @@ public class BackendClient implements SocketObserver, Backend
 					}
 					catch (Exception e)
 					{
-						WorkerMain.getLogger().severe("BackendClient: Fehler beim Senden des StartKI-Befehls: " + e);
+						WorkerMain.getLogger().critical("BackendClient: Fehler beim Senden des StartKI-Befehls: " + e);
 						e.printStackTrace();
 					}
 				}
@@ -186,7 +186,7 @@ public class BackendClient implements SocketObserver, Backend
 								cmd.getAiId(), cmd.getVersion(), cmd.getUuid());
 						Sandbox s = Sandboxes.sandboxJobs.get(cmd.getUuid());
 						if (s == null)
-							WorkerMain.getLogger().severe(
+							WorkerMain.getLogger().critical(
 									"Das Backend hat mich beauftragt die unbekannte KI " + cmd.getUuid()
 											+ " zu beenden.");
 						else
@@ -194,16 +194,16 @@ public class BackendClient implements SocketObserver, Backend
 					}
 					catch (IOException ioe)
 					{
-						WorkerMain.getLogger().severe("BackendClient: Fehler beim Senden des StopKI-Befehls: " + ioe);
+						WorkerMain.getLogger().critical("BackendClient: Fehler beim Senden des StopKI-Befehls: " + ioe);
 						ioe.printStackTrace();
 					}
 				}
 				else
-					WorkerMain.getLogger().severe("BackendClient: Unknown job " + cmd.getAction());
+					WorkerMain.getLogger().critical("BackendClient: Unknown job " + cmd.getAction());
 			}
 			catch (Exception e)
 			{
-				WorkerMain.getLogger().severe("BackendClient: Failed to parse Command: " + e);
+				WorkerMain.getLogger().critical("BackendClient: Failed to parse Command: " + e);
 			}
 		}
 	}
