@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+
+{% block head %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
+<script src="{{ url_for('static', filename='sortablelist.js') }}"></script>
+{% endblock %}
+
 {% block body %}
 
 <div class="ui segment">
@@ -58,12 +64,41 @@
 <div class="ui divider"></div>
 
 Spiele:
-<ul>
-{% for assoc in ai.game_assocs %}
-	<li><a href="{{ url_for("anonymous.game", id=assoc.game.id) }}"> {{ assoc.game }} </a></li>
-{% endfor %}
-</ul>
+<table id="games" class="ui very basic sortable table">
+	<thead>
+		<tr>
+		<th class="center aligned two wide data-id">ID</th>
+		<th class="center aligned ten wide data-ai1">KI1</th>
+		<th class="left aligned ten wide data-ai2">KI2</th>
+		</tr>
+	</thead>
+	<tbody class="list">
+		{% for assoc in ai.game_assocs %}
+		<tr>
+			<td class="center aligned data-id">
+				<a href="{{ url_for('anonymous.game', id=assoc.game.id) }}"> {{ assoc.game_id }} </a>
+			</td>
+			<td class="center aligned data-ai1">
+				<a class="content" href="{{url_for('anonymous.ai', id=assoc.game.ais[0].id)}}">
+					<div class="header">{{assoc.game.ais[0].name}}</div>
+				</a>
+			</td>
+			<td class="left aligned data-ai2">
+				<a class="content" href="{{url_for('anonymous.ai', id=assoc.game.ais[1].id)}}">
+					<div class="header">{{assoc.game.ais[1].name}}</div>
+				</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
 
+
+<script>
+var list = sortable_list("games");
+list.toggle("data-id");
+list.toggle("data-id");
+</script>
 
 
 </div>
