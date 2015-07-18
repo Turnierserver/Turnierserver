@@ -3,6 +3,7 @@ package org.pixelgaffer.turnierserver.worker.server;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -44,11 +45,24 @@ public class MirrorServer extends Thread
 					try
 					{
 						BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-						int id = Integer.valueOf(in.readLine());
-						int version = Integer.valueOf(in.readLine());
+						
+						String line = in.readLine();
+						if (line == null)
+							throw new EOFException();
+						int id = Integer.valueOf(line);
+						
+						line = in.readLine();
+						if (line == null)
+							throw new EOFException();
+						int version = Integer.valueOf(line);
+						
 						OutputStream out = client.getOutputStream();
 						out.write((Long.toString(DatastoreFtpClient.aiSize(id, version)) + "\n").getBytes(UTF_8));
 						DatastoreFtpClient.retrieveAi(id, version, out);
+					}
+					catch (EOFException eofe)
+					{
+						WorkerMain.getLogger().warning("Der Client hat sich während der Übertragung disconnected");
 					}
 					catch (Exception e)
 					{
