@@ -274,6 +274,7 @@ public class Games
 			for (AiWrapper ai : ais)
 				if (!ai.isConnected())
 					return;
+			BackendMain.getLogger().info("Alle KIs verbunden, starte Spiel " + getUuid());
 			getLogic().startGame(this);
 			started = true;
 			try
@@ -302,10 +303,13 @@ public class Games
 			for (int i = 0; i < ais.size(); i++)
 			{
 				AiWrapper aiw = ais.get(i);
+				aiw.getObject().stop();
 				aiw.disconnect();
 				
 				// da aiDisconnected aufgerufen wurde wird die alte UUID entfernt
+				System.out.println("Games:309: " + aiw.getUuid());
 				aiw.setUuid(randomUuid());
+				System.out.println("Games:311: " + aiw.getUuid());
 				synchronized (lock)
 				{
 					aiWrappers.put(aiw.getUuid(), aiw);

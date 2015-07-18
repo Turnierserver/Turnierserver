@@ -9,6 +9,7 @@ import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.S
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.KILL_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.RUN_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.TERM_AI;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.TERMINATED_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.COMPILE;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.KILLAI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.STARTAI;
@@ -164,7 +165,10 @@ public class BackendClient implements SocketObserver, Backend
 								cmd.getAiId(), cmd.getVersion(), cmd.getUuid());
 						Sandbox s = Sandboxes.send(scmd);
 						if (s == null)
-							System.out.println("todo:BackendClient:111: Hier sollte das Backend informiert werden.");
+						{
+							System.out.println("todo: BackendClient:169: hier sollte evtl kein T-result geschickt werden");
+							sendSandboxMessage(new SandboxMessage(TERMINATED_AI, cmd.getUuid()));
+						}
 						else
 							Sandboxes.sandboxJobs.put(cmd.getUuid(), s);
 					}
