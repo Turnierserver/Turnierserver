@@ -133,8 +133,9 @@ def qualify_ai(id):
 	#quali_ai = AI.query.get(-ai.type.id)
 	quali_ai = mock.Mock()
 	quali_ai.id = -ai.type.id
-	version = quali_ai.latest_version()
+	version = quali_ai.latest_qualified_version()
 	version.compiled, version.qualified, version.frozen = True, True, True
+	version.version_id = 1
 	quali_ai.name = "QualiKI"
 	quali_ai.user = User.query.filter(User.admin == True).first()
 	quali_ai.lang = Lang.query.first()
