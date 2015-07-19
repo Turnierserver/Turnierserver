@@ -2,12 +2,15 @@ package org.pixelgaffer.turnierserver.gamelogic.interfaces;
 
 import java.io.IOException;
 
+import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 
 import lombok.Setter;
 
 public class AiObject {
 
+	static final Logger logger = new Logger();
+	
     /**
      * True, wenn die AI schon verloren hat (z.B. wenn sie aufgegeben hat)
      */
@@ -113,7 +116,7 @@ public class AiObject {
 	millisLeft -= currentMillis - lastCalculationStart;
 	lastCalculationStart = currentMillis;
 	if (millisLeft <= 0) {
-	    System.out.println("Die AI " + ai.getId() + " hat verloren, da sie keine zeit mehr hat");
+	    logger.info("Die AI " + ai.getId() + " hat verloren, da sie keine zeit mehr hat");
 	    stopCalculationTimer();
 	}
     }
@@ -126,7 +129,7 @@ public class AiObject {
 		    finishGame = false;
 		    break;
 		}
-		System.out.println("AiObject:121: Die KI " + ai.getId() + " hat verloren");
+		logger.info("Die KI " + ai.getId() + " hat verloren");
 	    }
 	    if (finishGame) {
 		logic.endGame();
@@ -146,7 +149,7 @@ public class AiObject {
 		finishGame = false;
 		break;
 	    }
-	    System.out.println("AiObject:121: Die KI " + ai.getId() + " hat verloren");
+	    logger.info("AiObject:121: Die KI " + ai.getId() + " hat verloren");
 	}
 	if (finishGame) {
 	    logic.endGame();

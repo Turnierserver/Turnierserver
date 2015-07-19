@@ -3,8 +3,8 @@ package org.pixelgaffer.turnierserver.gamelogic;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
+import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.BuilderSolverAiObject;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.BuilderSolverGameState;
@@ -23,7 +23,7 @@ import com.google.gson.reflect.TypeToken;
  */
 public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G extends BuilderSolverGameState<?, B, S>, B, S> extends GameLogic<E, BuilderSolverResponse<B, S>> {
 	
-	public static Logger logger = Logger.getLogger("GameLogic");
+	public static Logger logger = new Logger();
 	
 	/**
 	 * True wenn building, sonst solving
@@ -156,7 +156,7 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 				sendToAi(change, ai);
 				getUserObject(ai).startCalculationTimer(10);
 			} catch (IOException e) {
-				logger.severe("Die Antwort konnte nicht gesendet werden, die AI wird nun Automatisch verlieren");
+				logger.critical("Die Antwort konnte nicht gesendet werden, die AI wird nun Automatisch verlieren");
 				getUserObject(ai).loose();
 			}
 		}
@@ -190,17 +190,17 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 		finished.clear();
 		
 		if(building) {
-			logger.fine("Die Ais fangen nun an zu solven");
+			logger.info("Die Ais fangen nun an zu solven");
 			startSolving();
 		}
 		else {
 			round();
 			if(allRoundsPlayed()) {
 				endGame();
-				logger.finest("Das Spiel wurde erfolgreich beendet");
+				logger.info("Das Spiel wurde erfolgreich beendet");
 				return;
 			}
-			logger.fine("Die Ais fangen nun an zu builden");
+			logger.info("Die Ais fangen nun an zu builden");
 			startBuilding();
 		}
 	}
