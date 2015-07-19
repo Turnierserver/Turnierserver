@@ -5,8 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import lombok.NoArgsConstructor;
-
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
@@ -16,6 +14,10 @@ import org.pixelgaffer.turnierserver.gamelogic.messages.RenderData;
 
 import com.google.common.collect.Ordering;
 import com.google.gson.reflect.TypeToken;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @param <E>
@@ -59,6 +61,9 @@ public abstract class GameLogic<E extends AiObject, R> {
 	private AiOrdering ordering = new AiOrdering();
 
 	private TypeToken<R> token;
+	
+	@Getter @Setter
+	protected boolean started;
 
 	public GameLogic(TypeToken<R> token) {
 		this.token = token;
