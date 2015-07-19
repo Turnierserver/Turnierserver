@@ -20,6 +20,7 @@
 #include "logger.h"
 
 #include <stdio.h>
+#include <unistd.h>
 
 #include <QDateTime>
 
@@ -33,13 +34,32 @@ Logger::Logger(const char *file, int line, const char *function, Category catego
 
 void Logger::operator << (const QVariant &variant) const
 {
+	bool escapeCodes = isatty(STDOUT_FILENO) == 1;
+	if (escapeCodes)
+		fprintf(stderr, "\033[36m");
 	fprintf(stderr, "[%s] ", qPrintable(QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss.zzz t")));
-	switch (_category)
+	if (escapeCodes)
 	{
-	case INFO:     fprintf(stderr, "INFO:     "); break;
-	case DEBUG:    fprintf(stderr, "DEBUG:    "); break;
-	case WARNING:  fprintf(stderr, "WARNING:  "); break;
-	case CRITICAL: fprintf(stderr, "CRITICAL: "); break;
+		fprintf(stderr, "\033[0m");
+		switch (_category)
+		{
+		case INFO:     fprintf(stderr, "\033[1mINFO "); break;
+		case DEBUG:    fprintf(stderr, "\033[1mDEBUG "); break;
+		case WARNING:  fprintf(stderr, "\033[1;33mWARNING "); break;
+		case CRITICAL: fprintf(stderr, "\033[1;31mCRITICAL "); break;
+		}
+		fprintf(stderr, "\033[0min \033[1;32m%s\033[0m \033[32m(%s:%d)\033[0m", qPrintable(_function), qPrintable(_file), _line);
 	}
-	fprintf(stderr, "%s\n", qPrintable(variant.toString()));
+	else
+	{
+		switch (_category)
+		{
+		case INFO:     fprintf(stderr, "INFO     "); break;
+		case DEBUG:    fprintf(stderr, "DEBUG    "); break;
+		case WARNING:  fprintf(stderr, "WARNING  "); break;
+		case CRITICAL: fprintf(stderr, "CRITICAL "); break;
+		}
+		fprintf(stderr, "in %s (%s:%d)", qPrintable(_function), qPrintable(_file), _line);
+	}
+	fprintf(stderr, ": %s\n", qPrintable(variant.toString()));
 }

@@ -86,7 +86,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 				}
 				catch (Exception e)
 				{
-					BackendMain.getLogger().severe("BackendConnectionHandler: while creating WorkerConnection: " + e);
+					BackendMain.getLogger().critical("Exception while creating WorkerConnection: " + e);
 				}
 			}
 			else
@@ -121,7 +121,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 						AiWrapper ai = Games.getAiWrapper(aicon.getUuid());
 						if (ai == null)
 						{
-							BackendMain.getLogger().severe("Unknown AI with UUID " + aicon.getUuid() + " connected");
+							BackendMain.getLogger().critical("Unknown AI with UUID " + aicon.getUuid() + " connected");
 							sendCommand(new WorkerCommand(WorkerCommand.KILLAI, -1, -1, -1, aicon.getUuid()));
 						}
 						else
@@ -134,15 +134,14 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 							Games.aiTerminated(l.getObject(SandboxMessage.class).getUuid());
 						else
 							Games.aiDisconnected(l.getObject(SandboxMessage.class).getUuid(), workerConnection);
-						System.out.println("todo: BackendWorkerConnectionHandler:131: hier muss die spiellogik informiert werden.");
+						BackendMain.getLogger().todo("hier muss die spiellogik informiert werden");
 					}
 					else
-						BackendMain.getLogger().severe("Unknown ProtocolLine Mode " + ((char)l.getMode()));
+						BackendMain.getLogger().critical("Unknown ProtocolLine Mode " + ((char)l.getMode()));
 				}
 				catch (Exception e)
 				{
-					BackendMain.getLogger().severe(
-							"BackendWorkerConnectionHandler: Failed to parse answer from Worker: " + e);
+					BackendMain.getLogger().critical("Failed to parse answer from Worker: " + e);
 					e.printStackTrace();
 				}
 			}

@@ -50,8 +50,6 @@ public class Jobs
 	 */
 	public static void storeJobs (File file) throws IOException
 	{
-		BackendMain.getLogger().entering("Jobs", "storeJobs");
-		
 		PrintStream out = new PrintStream(file);
 		synchronized (jobs)
 		{
@@ -77,8 +75,6 @@ public class Jobs
 	 */
 	public static void restoreJobs (File file) throws IOException
 	{
-		BackendMain.getLogger().entering("Jobs", "restoreJobs");
-		
 		BufferedReader in = new BufferedReader(new FileReader(file));
 		String line;
 		while ((line = in.readLine()) != null)
@@ -212,8 +208,7 @@ public class Jobs
 					}
 				}
 				else
-					BackendMain.getLogger().severe(
-							"Unknown action from Frontend: " + cmd.getAction());
+					BackendMain.getLogger().critical("Unknown action from Frontend: " + cmd.getAction());
 				
 				synchronized (pending)
 				{
@@ -233,7 +228,7 @@ public class Jobs
 		Job job = jobUuids.get(uuid);
 		if (job == null)
 		{
-			BackendMain.getLogger().severe("Couldn't find job with UUID " + uuid);
+			BackendMain.getLogger().critical("Couldn't find job with UUID " + uuid);
 			return;
 		}
 		
@@ -258,7 +253,6 @@ public class Jobs
 	 */
 	public static void workerDisconnected (@NonNull WorkerConnection worker)
 	{
-		BackendMain.getLogger().entering("Jobs", "workerDisconnected");
 		synchronized (jobs)
 		{
 			for (int i = 0; i < jobs.size();)
@@ -272,6 +266,5 @@ public class Jobs
 					i++;
 			}
 		}
-		BackendMain.getLogger().exiting("Jobs", "workerDisconnected");
 	}
 }

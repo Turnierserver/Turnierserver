@@ -1,14 +1,77 @@
 {% extends "base.html" %}
+
+{% block head %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
+<script src="{{ url_for('static', filename='sortablelist.js') }}"></script>
+{% endblock %}
+
 {% block body %}
 
-User: {{ user.name }}
+<div class="ui segment">
 
-<br />
+{% if current_user.is_authenticated() and current_user.can_access(user) %}
+<a class="ui teal right ribbon label" href="{{ url_for('authenticated.profile_id', id=user.id)}}">
+	Bearbeiten
+</a>
+{% endif %}
+
+
+<h1 class="ui center aligned header" style="font-size: 4em; margin-bottom: 0px;">{{ user.name }}</h1>
+
+<h1 class="ui center aligned sub header" style="font-size: 1.2em; margin-top: 0px;">
+	{% if user.name_public and (user.firstname or user.lastname) %}
+		( {% if user.firstname %}{{ user.firstname }}{% endif %}
+		{% if user.lastname %}{{ user.lastname }}{% endif %} )
+	{% endif %}
+</h1>
+
+<div class="ui divider"></div>
+
 KIs:
-<ul>
-{% for ai in user.ai_list %}
-	<li><a href="{{ url_for("anonymous.ai", id=ai.id) }}"> {{ ai.name }}</a></li>
-{% endfor %}
-</ul>
+
+<table id="ais" class="ui very basic sortable table">
+	<thead>
+		<tr>
+		<th class="left aligned one wide">Icon</th>
+		<th class="center aligned one wide data-rank">Platz</th>
+		<th class="center aligned two wide data-elo">ELO</th>
+		<th class="left aligned six wide data-name">Name</th>
+		<th class="right aligned three wide data-lang">Sprache</th>
+		</tr>
+	</thead>
+	<tbody class="list">
+		{% for ai in user.ai_list %}
+		<tr>
+			<td>
+				<img class="ui avatar image" src="{{ url_for('api.ai_icon', id=ai.id) }}">
+			</td>
+			<td class="center aligned data-rank">
+				{{ai.rank}}
+			</td>
+			<td class="center aligned data-elo">
+				{{ai.elo | int}}
+			</td>
+			<td class="left aligned data-name">
+				<a class="content" href="{{url_for('anonymous.ai', id=ai.id)}}">
+					<div class="header">{{ai.name}}</div>
+				</a>
+			</td>
+			<td class="right aligned data-lang">
+				<a class="content" href="{{ ai.lang.url }}">
+					<div class="header">{{ ai.lang.name }}</div>
+				</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+
+<script>
+var list = sortable_list("ais");
+list.toggle("data-rank");
+</script>
+
+</div>
 
 {% endblock %}

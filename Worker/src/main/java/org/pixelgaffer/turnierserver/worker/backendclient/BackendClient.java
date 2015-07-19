@@ -9,6 +9,7 @@ import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.S
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.KILL_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.RUN_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.TERM_AI;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.TERMINATED_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.COMPILE;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.KILLAI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.STARTAI;
@@ -89,7 +90,7 @@ public class BackendClient implements SocketObserver, Backend
 	@Override
 	public void connectionOpened (NIOSocket socket)
 	{
-		WorkerMain.getLogger().info("BackendClient: Established Connection to " + socket.getIp());
+		WorkerMain.getLogger().info("Verbunden mit " + socket.getIp());
 		connected = true;
 		try
 		{
@@ -133,7 +134,8 @@ public class BackendClient implements SocketObserver, Backend
 	@Override
 	public void connectionBroken (NIOSocket socket, Exception exception)
 	{
-		WorkerMain.getLogger().severe("BackendClient: Connection to Backend broken: " + exception);
+		WorkerMain.getLogger().critical("Das Backend hat die Verbindung getrennt"
+				+ exception != null ? ": " + exception : "");
 		connected = false;
 		synchronized (this)
 		{
@@ -153,7 +155,7 @@ public class BackendClient implements SocketObserver, Backend
 			try
 			{
 				WorkerCommand cmd = Parsers.getWorker().parse(line, WorkerCommand.class);
-				WorkerMain.getLogger().info("BackendClient: Empfangen: " + cmd);
+				WorkerMain.getLogger().info("Empfangen: " + cmd);
 				if (cmd.getAction() == COMPILE)
 					CompileQueue.addJob(cmd);
 				else if (cmd.getAction() == STARTAI)
@@ -164,13 +166,16 @@ public class BackendClient implements SocketObserver, Backend
 								cmd.getAiId(), cmd.getVersion(), cmd.getUuid());
 						Sandbox s = Sandboxes.send(scmd);
 						if (s == null)
-							System.out.println("todo:BackendClient:111: Hier sollte das Backend informiert werden.");
+						{
+							WorkerMain.getLogger().todo("hier sollte evtl kein T-result geschickt werden");
+							sendSandboxMessage(new SandboxMessage(TERMINATED_AI, cmd.getUuid()));
+						}
 						else
 							Sandboxes.sandboxJobs.put(cmd.getUuid(), s);
 					}
 					catch (Exception e)
 					{
-						WorkerMain.getLogger().severe("BackendClient: Fehler beim Senden des StartKI-Befehls: " + e);
+						WorkerMain.getLogger().critical("Fehler beim Senden des StartKI-Befehls: " + e);
 						e.printStackTrace();
 					}
 				}
@@ -182,24 +187,23 @@ public class BackendClient implements SocketObserver, Backend
 								cmd.getAiId(), cmd.getVersion(), cmd.getUuid());
 						Sandbox s = Sandboxes.sandboxJobs.get(cmd.getUuid());
 						if (s == null)
-							WorkerMain.getLogger().severe(
-									"Das Backend hat mich beauftragt die unbekannte KI " + cmd.getUuid()
-											+ " zu beenden.");
+							WorkerMain.getLogger().critical("Das Backend hat mich beauftragt die unbekannte KI "
+									+ cmd.getUuid() + " zu beenden.");
 						else
 							s.sendJob(scmd);
 					}
 					catch (IOException ioe)
 					{
-						WorkerMain.getLogger().severe("BackendClient: Fehler beim Senden des StopKI-Befehls: " + ioe);
+						WorkerMain.getLogger().critical("Fehler beim Senden des StopKI-Befehls: " + ioe);
 						ioe.printStackTrace();
 					}
 				}
 				else
-					WorkerMain.getLogger().severe("BackendClient: Unknown job " + cmd.getAction());
+					WorkerMain.getLogger().critical("Unbekannter Auftrag: " + cmd.getAction());
 			}
 			catch (Exception e)
 			{
-				WorkerMain.getLogger().severe("BackendClient: Failed to parse Command: " + e);
+				WorkerMain.getLogger().critical("Failed to parse Command: " + e);
 			}
 		}
 	}

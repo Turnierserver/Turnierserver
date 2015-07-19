@@ -198,6 +198,7 @@ class User(db.Model):
 	admin = db.Column(db.Boolean, default=False)
 	validation_code = db.Column(db.String(36), nullable=True)
 	pw_reset_token = db.Column(db.String(36), nullable=True)
+	name_public = db.Column(db.Boolean, default=True)
 
 	def __init__(self, *args, **kwargs):
 		super(User, self).__init__(*args, **kwargs)

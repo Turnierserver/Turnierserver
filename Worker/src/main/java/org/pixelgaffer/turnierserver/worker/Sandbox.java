@@ -50,7 +50,7 @@ public class Sandbox
 	 */
 	public synchronized boolean sendJob (SandboxCommand job) throws IOException
 	{
-		System.out.println("Sandbox::sendJob(" + job + ")");
+		WorkerMain.getLogger().debug("Sende " + job);
 		if (job.getCommand() == RUN_AI)
 		{
 			if (isBusy())
@@ -80,17 +80,17 @@ public class Sandbox
 				}
 				catch (IOException e)
 				{
-					WorkerMain.getLogger().severe("Sandbox: Fehler beim notifien des Backends (" + answer + "): " + e);
+					WorkerMain.getLogger().critical("Fehler beim notifien des Backends (" + answer + "): " + e);
 					e.printStackTrace();
 				}
 				busy = false;
 				break;
 			case STARTED_AI:
-				System.out.println("todo:Sandbox:89: Hier sollte ich mir überlegen ob ich iwas notifien soll");
+				WorkerMain.getLogger().todo("Hier sollte ich mir überlegen ob ich iwas notifien soll");
 				busy = true;
 				break;
 			default:
-				WorkerMain.getLogger().severe("Sandbox: Unknown event received:" + answer);
+				WorkerMain.getLogger().critical("Unknown event received:" + answer);
 				break;
 		}
 	}

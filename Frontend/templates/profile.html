@@ -51,6 +51,14 @@
 			<input id="lastname" placeholder="{% if user.firstname %}{{user.lastname}}{% endif %}" type="text">
 		</div>
 	</div>
+	<div class="ui segment" style="margin-top: 0px;">
+		<div class="field">
+			<div class="ui toggle checkbox">
+				<input type="checkbox" id="name_public" name="name_public" tabindex="0" class="hidden" {% if user.name_public %}checked=""{% endif %}>
+				<label>Zeige Namen im Profil</label>
+			</div>
+		</div>
+	</div>
 	<div class="field">
 		<label>Email-Adresse</label>
 		<input id="email" placeholder="{{user.email}}" type="email" name="email">
@@ -98,6 +106,8 @@
 
 
 <script>
+$(".ui.checkbox").checkbox()
+
 $("#password").on("input", function() {
 	var hidden = $("#confirm_pw").hasClass("hidden");
 	if ($("#password").val() !== "") {
@@ -131,6 +141,12 @@ $("#change_account").on("click", function() {
 		d.password = $("#password").val();
 	}
 
+	if ($("#name_public").is(":checked")) {
+		d.name_public = "true";
+	} else {
+		d.name_public = "false";
+	}
+
 	$("#profile_form").addClass("loading");
 	$.post("/api/user/{{user.id}}/update", d).done(function(data) {
 		console.log("User changed.");
@@ -138,6 +154,7 @@ $("#change_account").on("click", function() {
 	}).fail(function(xhr, textStatus, errorThrown) {
 		console.log(xhr.responseText.error);
 		alert(JSON.parse(xhr.responseText).error);
+		$("#profile_form").removeClass("loading");
 	});
 });
 

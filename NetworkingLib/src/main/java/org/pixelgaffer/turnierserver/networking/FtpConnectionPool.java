@@ -10,6 +10,7 @@ import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
 import lombok.Getter;
 import lombok.NonNull;
 
+import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.PropertyUtils;
 
 public class FtpConnectionPool
@@ -45,6 +46,7 @@ public class FtpConnectionPool
 				{
 					if (cons[i] == null)
 					{
+						new Logger().debug("Erstelle einen neuen Clienten zum FTP-Server");
 						FTPClient c = new FTPClient();
 						c = DatastoreFtpClient.connect(c);
 						cons[i] = new FtpConnection(c);

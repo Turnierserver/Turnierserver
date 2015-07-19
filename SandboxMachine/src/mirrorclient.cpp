@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 
+#include <QCryptographicHash>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -38,6 +39,17 @@ MirrorClient::MirrorClient(const QString &host, quint16 port, QObject *parent)
 	socket.connectToHost(host, port);
 }
 
+QByteArray sha256 (const QByteArray &salt)
+{
+	QByteArray hash = config->value("Worker/MirrorPassword").toByteArray();
+	for (int i = 0; i < config->value("Worker/MirrorPasswordRepeats").toInt(); i++)
+	{
+		QByteArray b = salt + hash;
+		hash = QCryptographicHash::hash(b, QCryptographicHash::Sha256);
+	}
+	return hash;
+}
+
 bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 {
 	if (!isConnected())
@@ -49,6 +61,14 @@ bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 		LOG_CRITICAL << "failed to write bytes to mirror";
 		return false;
 	}
+	
+	if (!socket.waitForReadyRead(timeout()))
+	{
+		LOG_CRITICAL << "MirrorClient::retrieveAi(): Failed to wait for data";
+		return false;
+	}
+	QByteArray salt = socket.read(config->value("Worker/MirrorSaltLength").toInt());
+	socket.write(sha256(salt).toBase64(QByteArray::KeepTrailingEquals) + "\n");
 	
 	Buffer buf;
 	QByteArray line;

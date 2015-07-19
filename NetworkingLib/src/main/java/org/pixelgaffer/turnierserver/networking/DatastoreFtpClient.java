@@ -17,6 +17,8 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.file.Files;
 
+import org.pixelgaffer.turnierserver.Logger;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -64,11 +66,10 @@ public class DatastoreFtpClient
 			client.connect(System.getProperty("turnierserver.datastore.host"),
 					Integer.parseInt(System.getProperty("turnierserver.datastore.port")));
 			// beim Server anmelden
-			System.out.println("logging in …");
+			new Logger().debug("Melde mich beim FTP-Server an");
 			String username = System.getProperty("turnierserver.datastore.username");
 			String password = System.getProperty("turnierserver.datastore.password");
 			client.login(username, password);
-			System.out.println("logged in");
 			// passiven Modus benutzen (Firewall …)
 			client.setPassive(true);
 		}
@@ -140,7 +141,6 @@ public class DatastoreFtpClient
 			con = cons.getClient();
 		FTPClient client = con.getFtpClient();
 		
-		System.out.println("retrieveDir: " + remote);
 		String cwd = client.currentDirectory();
 		client.changeDirectory(remote);
 		local.mkdirs();
@@ -251,7 +251,6 @@ public class DatastoreFtpClient
 			con = cons.getClient();
 		FTPClient client = con.getFtpClient();
 		
-		System.out.println("storeFile: " + client.currentDirectory() + " / " + remote);
 		client.upload(remote, local, 0, 0, null);
 		
 		if (conWasNull)
