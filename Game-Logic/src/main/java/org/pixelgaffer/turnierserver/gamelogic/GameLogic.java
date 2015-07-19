@@ -3,8 +3,8 @@ package org.pixelgaffer.turnierserver.gamelogic;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.logging.Logger;
 
+import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
@@ -28,7 +28,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public abstract class GameLogic<E extends AiObject, R> {
 
-	public static final Logger logger = Logger.getLogger("GameLogic");
+	public static final Logger logger = new Logger();
 	/**
 	 * Gibt an, wie viele Runden gespielt werden. -1 bei unbegrenzt vielen
 	 * Runden.
@@ -144,7 +144,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 			receive(Parsers.getWorker().parse(message, token.getType()), ai);
 //			logger.finest("Nachricht erfolgreich empfangen");
 		} catch (IOException e) {
-			logger.severe("Eine Nachricht konnte nicht gelesen werden: " + e);
+			logger.critical("Eine Nachricht konnte nicht gelesen werden: " + e);
 			e.printStackTrace();
 			getUserObject(ai).loose();
 		}
