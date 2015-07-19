@@ -72,7 +72,7 @@ public class CompileQueue implements Runnable
 			// wenn der job nicht null ist, den job ausführen
 			if (job != null)
 			{
-				WorkerMain.getLogger().info("CompileQueue: Starting Job: " + job);
+				WorkerMain.getLogger().info("Starte Kompiliervorgang: " + job);
 				try
 				{
 					String lang = DatastoreFtpClient.retrieveAiLanguage(job.getAiId());
@@ -88,7 +88,7 @@ public class CompileQueue implements Runnable
 				}
 				catch (Exception e)
 				{
-					WorkerMain.getLogger().critical("Failed to compile AI " + job.getAiId());
+					WorkerMain.getLogger().critical("Fehler beim Kompilieren der KI " + job.getAiId());
 					e.printStackTrace();
 					
 					try
@@ -112,7 +112,7 @@ public class CompileQueue implements Runnable
 						e1.printStackTrace();
 					}
 				}
-				WorkerMain.getLogger().info("CompileQueue: Finished Job: " + job);
+				WorkerMain.getLogger().info("Kompilierauftrag fertig: " + job);
 			}
 		}
 	}

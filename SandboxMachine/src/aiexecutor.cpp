@@ -62,7 +62,7 @@ AiExecutor::AiExecutor (int id, int version, const QUuid &uuid)
 		return;
 	}
 	gid = userInfo->pw_gid;
-	printf("Benutzer: %s:%d:%d:%s:%s\n", userInfo->pw_name, uid, gid, userInfo->pw_dir, userInfo->pw_shell);
+	LOG_DEBUG << QString("Benutzer: ") + userInfo->pw_name + ":" + QString::number(uid) + ":" + QString::number(gid) + ":" + userInfo->pw_dir + ":" + userInfo->pw_shell;
 	
 	// ein neues Verzeichnis für den Job im Home des Users anlegen
 	QString dirPath = QString(userInfo->pw_dir) + "/ai-XXXXXX";

@@ -51,7 +51,6 @@ public class BackendMain
 		}
 		
 		// Server starten
-		getLogger().info("BackendServer starting");
 		int port = getInt(BACKEND_WORKER_SERVER_PORT, BackendWorkerServer.DEFAULT_PORT);
 		int maxClients = getInt(BACKEND_WORKER_SERVER_MAX_CLIENTS, -1);
 		BackendWorkerServer server0 = new BackendWorkerServer(port, maxClients);
@@ -60,11 +59,12 @@ public class BackendMain
 		server0.setConnectionAcceptor(ConnectionAcceptor.ALLOW);
 		server1.setConnectionAcceptor(ConnectionAcceptor.ALLOW);
 		new Thread( () -> NetworkService.mainLoop(), "NetworkService").start();
-		getLogger().info("BackendServer started");
+		getLogger().info("Backend started");
 		
 		// eine ShutdownHook zum Speichern erstellen
 		Runtime.getRuntime().addShutdownHook(new Thread( () -> {
 			
+			getLogger().info("Received shutdown signal");
 			Workers.shutdown();
 			try
 			{

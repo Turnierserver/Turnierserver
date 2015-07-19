@@ -107,8 +107,7 @@ public class WorkerConnection
 	public synchronized WorkerCommand compile (int aiId, int version, int game) throws IOException
 	{
 		if (isCompiling())
-			BackendMain.getLogger().warning(
-					"WorkerConnection: Gebe Kompilierungsauftrag an beschägtigten Worker weiter.");
+			BackendMain.getLogger().warning("Gebe Kompilierungsauftrag an beschägtigten Worker weiter");
 		setCompiling(true);
 		WorkerCommand cmd = new WorkerCommand(WorkerCommand.COMPILE, aiId, version, game, UUID.randomUUID());
 		connection.sendCommand(cmd);

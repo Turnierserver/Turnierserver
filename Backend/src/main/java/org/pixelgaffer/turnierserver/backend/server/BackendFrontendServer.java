@@ -21,19 +21,19 @@ public class BackendFrontendServer extends Server<BackendFrontendConnectionPool>
 	public BackendFrontendServer (int port) throws IOException
 	{
 		super(port, new BackendFrontendConnectionPool());
-		BackendMain.getLogger().info("BackendServer opened successfully on port " + port);
+		BackendMain.getLogger().info("Server opened successfully on port " + port);
 	}
 	
 	@Override
 	public void acceptFailed (IOException exception)
 	{
-		BackendMain.getLogger().warning("BackendServer: accept failed: " + exception);
+		BackendMain.getLogger().warning("Accept failed: " + exception);
 	}
 	
 	@Override
 	public void serverSocketDied (Exception exception)
 	{
-		BackendMain.getLogger().warning("BackendServer: socket died: " + exception);
+		BackendMain.getLogger().warning("Socket died: " + exception);
 	}
 	
 	@Override

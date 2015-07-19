@@ -208,8 +208,7 @@ public class Jobs
 					}
 				}
 				else
-					BackendMain.getLogger().critical(
-							"Unknown action from Frontend: " + cmd.getAction());
+					BackendMain.getLogger().critical("Unknown action from Frontend: " + cmd.getAction());
 				
 				synchronized (pending)
 				{
