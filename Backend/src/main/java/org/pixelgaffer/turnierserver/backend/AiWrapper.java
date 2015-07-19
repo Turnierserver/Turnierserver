@@ -71,10 +71,10 @@ public class AiWrapper implements Ai
 		getGame().aiConnected();
 	}
 	
-	/** Empfängt eine Nachricht und leitet sie an die Speillogik weiter. */
+	/** Empfängt eine Nachricht und leitet sie an die Spiellogik weiter, wenn diese gestartet ist. */
 	public void receiveMessage (byte message[])
 	{
-		if (getGame().isStarted())
+		if (getGame().getLogic().isStarted())
 			getGame().getLogic().receiveMessage(message, this);
 	}
 	
