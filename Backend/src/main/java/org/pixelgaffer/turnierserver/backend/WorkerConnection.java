@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.backend;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import lombok.EqualsAndHashCode;
@@ -14,6 +15,7 @@ import org.pixelgaffer.turnierserver.backend.workerclient.WorkerClient;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo.SandboxInfo;
 
 /**
  * Diese Klasse speichert Informationen über einen verbundenen Worker.
@@ -26,15 +28,7 @@ public class WorkerConnection
 	private static long nid = 0;
 	private long id = nid++;
 	
-	/**
-	 * Die Anzahl der zur Verfügung stehenden Sandboxen.
-	 */
-	@Getter
-	@Setter
-	private int sandboxes;
-	
-	/** Die Anzahl der benutzten Sandboxen. */
-	private int usedSandboxes = 0;
+	private List<SandboxInfo> sandboxes;
 	
 	/** Gibt an, ob gerade ein Kompilierungsauftrag läuft. */
 	@Getter
@@ -86,7 +80,10 @@ public class WorkerConnection
 	 */
 	public synchronized boolean canStartAi ()
 	{
-		return (sandboxes > usedSandboxes);
+		for (SandboxInfo info : sandboxes)
+			if (!info.isBusy())
+				return true;
+		return false;
 	}
 	
 	/**
@@ -122,7 +119,6 @@ public class WorkerConnection
 	{
 		if (!canStartAi())
 			return false;
-		usedSandboxes++;
 		connection.sendCommand(new WorkerCommand(WorkerCommand.STARTAI,
 				ai.getAiId(), ai.getVersion(), game, ai.getUuid()));
 		return true;
@@ -169,6 +165,6 @@ public class WorkerConnection
 	 */
 	public synchronized void aiFinished ()
 	{
-		usedSandboxes--;
+		BackendMain.getLogger().todo("Brauche ich diese Methode?");
 	}
 }

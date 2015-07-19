@@ -48,7 +48,7 @@ WorkerClient::WorkerClient(QObject *parent)
 void WorkerClient::connected ()
 {
 	LOG_INFO << "Connected to Worker";
-	socket->write("S\n");
+	socket->write("S");
 	// Die unterstützten Programmiersprachen schicken
 	QJsonArray array;
 	for (QString lang : commands.keys())
