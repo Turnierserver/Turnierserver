@@ -81,13 +81,16 @@ void JobControl::killJob (const QUuid &uuid)
 
 void JobControl::jobFinished (const QUuid &uuid)
 {
-	LOG_INFO << "JobControl::jobFinished() called";
+	LOG_INFO << "JobControl::jobFinished() called for Job " + uuid.toString();
 	//mutex.lock();
 	if (current->uuid() == uuid)
 	{
 		delete current;
 		if (queue.isEmpty())
+		{
+			LOG_DEBUG << "Habe aktuell keinen Auftrag, setze current auf 0";
 			current = 0;
+		}
 		else
 			doJob(queue.dequeue());
 	}
