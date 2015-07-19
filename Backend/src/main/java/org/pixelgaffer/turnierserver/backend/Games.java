@@ -172,6 +172,13 @@ public class Games
 	 */
 	static class GameImpl implements Game
 	{
+		static enum GameState
+		{
+			WAITING,
+			STARTED,
+			FINISHED
+		}
+		
 		/** Die UUID dieses Spiels. */
 		@Getter
 		@NonNull
@@ -195,7 +202,7 @@ public class Games
 		
 		/** Gibt an ob das Spiel schon gestartet wurde. */
 		@Getter
-		private boolean started;
+		private GameState state = GameState.WAITING;
 		
 		private GameImpl (int gameId, @NonNull UUID uuid, int requestId, String ... ais) throws IOException
 		{
@@ -239,7 +246,7 @@ public class Games
 			BackendMain.getLogger().info("finishGame() wurde für das Spiel " + getUuid() + " aufgerufen");
 			for (AiWrapper ai : ais)
 				ai.disconnect();
-			if (started) // ist beim restart auf false
+			if (state == GameState.STARTED) // ist beim restart auf false
 			{
 				BackendMain.getLogger().info("alle kis disconnected, sende success an frontend");
 				BackendFrontendConnectionHandler.getFrontend().sendMessage(
@@ -250,8 +257,7 @@ public class Games
 					uuids.remove(getUuid());
 				}
 				
-				// started nicht auf false setzen damit das spiel nicht aus
-				// versehen neu gestartet wird
+				state = GameState.FINISHED;
 			}
 		}
 		
@@ -261,14 +267,14 @@ public class Games
 		 */
 		public synchronized void aiConnected ()
 		{
-			if (isStarted())
+			if (state != GameState.WAITING)
 				return;
 			for (AiWrapper ai : ais)
 				if (!ai.isConnected())
 					return;
 			BackendMain.getLogger().info("Alle KIs verbunden, starte Spiel " + getUuid());
 			getLogic().startGame(this);
-			started = true;
+			state = GameState.STARTED;
 			try
 			{
 				BackendFrontendConnectionHandler.getFrontend().sendMessage(
@@ -285,9 +291,15 @@ public class Games
 		 */
 		public synchronized void restart () throws IOException, InstantiationException, IllegalAccessException
 		{
+			if (state != GameState.STARTED)
+			{
+				BackendMain.getLogger().warning("Weigere mich nicht-laufendes Spiel " + getUuid() + " neu zu starten");
+				return;
+			}
+			
 			BackendMain.getLogger().info("Starte Spiel " + uuid + " neu");
 			
-			started = false;
+			state = GameState.WAITING;
 			logic = logic.getClass().newInstance();
 			BackendFrontendConnectionHandler.getFrontend().sendMessage(
 					Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(getRequestId(), "restarted")));
@@ -295,10 +307,12 @@ public class Games
 			for (int i = 0; i < ais.size(); i++)
 			{
 				AiWrapper aiw = ais.get(i);
-				aiw.getObject().stop();
+				if (aiw.getObject() != null)
+					aiw.getObject().stop();
 				aiw.disconnect();
 				
-				// da aiDisconnected aufgerufen wurde wird die alte UUID entfernt
+				// da aiDisconnected aufgerufen wurde wird die alte UUID
+				// entfernt
 				aiw.setUuid(randomUuid());
 				synchronized (lock)
 				{
