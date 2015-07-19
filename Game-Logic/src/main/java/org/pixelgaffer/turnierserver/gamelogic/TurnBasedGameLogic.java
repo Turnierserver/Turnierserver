@@ -51,6 +51,7 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameStat
 	@Override
 	public void startGame(Game game) {
 		super.startGame(game);
+		started = true;
 		try {
 			sendGameState();
 		} catch (IOException e) {

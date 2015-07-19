@@ -89,6 +89,7 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	public void startGame(Game game) {
 		super.startGame(game);
 		System.out.println("Das Spiel fängt an");
+		started = true;
 		startBuilding();
 	}
 	
