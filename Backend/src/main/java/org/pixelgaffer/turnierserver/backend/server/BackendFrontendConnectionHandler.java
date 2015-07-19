@@ -42,9 +42,15 @@ public class BackendFrontendConnectionHandler extends ConnectionHandler
 	@Override
 	protected void connected ()
 	{
-		BackendMain.getLogger().info(
-				"BackendFrontendConnectionHandler: Frontend (" + getClient().getIp() + ") connected.");
+		BackendMain.getLogger().info("Das Frontend (" + getClient().getIp() + ") hat sich verbunden");
 		frontend = this;
+	}
+	
+	@Override
+	protected void disconnected ()
+	{
+		BackendMain.getLogger().info("Das Frontend hat die Verbindung getrennt");
+		frontend = null;
 	}
 	
 	@Override
@@ -57,12 +63,12 @@ public class BackendFrontendConnectionHandler extends ConnectionHandler
 			try
 			{
 				BackendFrontendCommand cmd = Parsers.getFrontend().parse(line, BackendFrontendCommand.class);
-				BackendMain.getLogger().info("BackendFrontendConnectionHandler: Empfangen: " + cmd);
+				BackendMain.getLogger().info("Empfangen: " + cmd);
 				Jobs.processCommand(cmd);
 			}
 			catch (Exception e)
 			{
-				BackendMain.getLogger().critical("Failed to parse command from frontend: " + e);
+				BackendMain.getLogger().critical("Fehler beim Parsen des Befehls vom Frontend: " + e);
 			}
 		}
 	}

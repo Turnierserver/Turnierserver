@@ -1,7 +1,11 @@
 package org.pixelgaffer.turnierserver.worker.server;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.pixelgaffer.turnierserver.PropertyUtils.*;
+import static org.pixelgaffer.turnierserver.PropertyUtils.WORKER_MIRROR_PASSWORD;
+import static org.pixelgaffer.turnierserver.PropertyUtils.WORKER_MIRROR_PASSWORD_REPEATS;
+import static org.pixelgaffer.turnierserver.PropertyUtils.WORKER_MIRROR_SALT_LENGTH;
+import static org.pixelgaffer.turnierserver.PropertyUtils.getIntRequired;
+import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -17,7 +21,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Random;
 
-import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
 
@@ -47,7 +50,7 @@ public class MirrorServer extends Thread
 			try
 			{
 				Socket client = server.accept();
-				WorkerMain.getLogger().info("MirrorServer: " + client + " hat sich verbunden");
+				WorkerMain.getLogger().info(client.getInetAddress().getHostName() + " hat sich verbunden");
 				new Thread( () -> {
 					try
 					{

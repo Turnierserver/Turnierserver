@@ -20,7 +20,7 @@ public class Workers
 	 */
 	public static boolean registerWorker (@NonNull WorkerConnection worker)
 	{
-		BackendMain.getLogger().info("Workers: Neuer Worker registriert: " + worker);
+		BackendMain.getLogger().info("Neuer Worker registriert: " + worker);
 		boolean success;
 		synchronized (workerConnections)
 		{
@@ -71,7 +71,7 @@ public class Workers
 				}
 				catch (InterruptedException e)
 				{
-					BackendMain.getLogger().warning("Workers: Beim Warten auf einen verfügbaren Worker: " + e);
+					BackendMain.getLogger().warning("Exception beim Warten auf einen verfügbaren Worker: " + e);
 				}
 			}
 		}
@@ -99,7 +99,7 @@ public class Workers
 				}
 				catch (InterruptedException e)
 				{
-					BackendMain.getLogger().warning("Workers: Beim Warten auf einen verfügbaren Worker: " + e);
+					BackendMain.getLogger().warning("Exception beim Warten auf einen verfügbaren Worker: " + e);
 				}
 			}
 		}

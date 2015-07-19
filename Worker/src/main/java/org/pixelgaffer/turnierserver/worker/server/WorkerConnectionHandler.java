@@ -50,8 +50,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	public synchronized void sendJob (SandboxCommand job) throws IOException
 	{
 		if (type.getType() != SANDBOX)
-			WorkerMain.getLogger().warning("WorkerConnectionHandler: Submitting Job to " + type.getType()
-					+ " ( should be " + SANDBOX + ")");
+			WorkerMain.getLogger().warning("Schicke Job an " + type.getType() + " (sollte " + SANDBOX + " sein)");
 		getClient().write(Parsers.getSandbox().parse(job));
 		getClient().write("\n".getBytes(UTF_8));
 	}
@@ -62,8 +61,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	public synchronized void sendMessage (MessageForward mf)
 	{
 		if (type.getType() != AI)
-			WorkerMain.getLogger().warning("WorkerConnectionHandler: Submitting Message to " + type.getType()
-					+ " (should be " + AI + ")");
+			WorkerMain.getLogger().warning("Schicke Nachricht an " + type.getType() + " (sollte " + AI + " sein)");
 		getClient().write(mf.getMessage());
 		getClient().write("\n".getBytes(UTF_8));
 	}
@@ -71,8 +69,8 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	@Override
 	public void disconnected ()
 	{
-		WorkerMain.getLogger().info(
-				type + (type.getType() == SANDBOX ? " (" + sandbox + ")" : "") + " hat die Verbindung getrennt.");
+		WorkerMain.getLogger().info(type + (type.getType() == SANDBOX ? " (" + sandbox + ")" : "")
+				+ " hat die Verbindung getrennt.");
 		if (type != null)
 		{
 			switch (type.getType())
@@ -104,8 +102,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 				type = WorkerConnectionType.parse(linestr);
 				if (type == null)
 				{
-					WorkerMain.getLogger().critical(
-							"WorkerConnectionHandler: Can't parse WorkerConnectionType from " + linestr);
+					WorkerMain.getLogger().critical("Kann WorkerConnectionType nicht aus " + linestr + " lesen");
 					socket.close();
 					return;
 				}
@@ -130,7 +127,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 						Sandboxes.addSandbox(sandbox);
 						break;
 				}
-				WorkerMain.getLogger().info("WorkerConnectionHandler: Read type from " + socket.getIp() + ": " + type);
+				WorkerMain.getLogger().info("Habe Typ von " + socket.getIp() + " gelesen: " + type);
 				continue;
 			}
 			
@@ -150,11 +147,11 @@ public class WorkerConnectionHandler extends ConnectionHandler
 						}
 						catch (Exception e)
 						{
-							WorkerMain.getLogger().critical("WorkerConnectionHandler: Failed to forward: " + e);
+							WorkerMain.getLogger().critical("Fehler beim Weiterleiten: " + e);
 						}
 					}
 					else
-						WorkerMain.getLogger().critical("WorkerConnectionHandler: Connection to Backend not found.");
+						WorkerMain.getLogger().critical("Habe keine Verbindung zum Backend gefunden");
 					break;
 				
 				case BACKEND:
@@ -165,12 +162,12 @@ public class WorkerConnectionHandler extends ConnectionHandler
 						MessageForward mf = Parsers.getWorker().parse(line, MessageForward.class);
 						WorkerConnectionHandler con = WorkerServer.aiConnections.get(mf.getAi());
 						if (con == null)
-							throw new IllegalArgumentException("Unknown AI with UUID " + mf.getAi());
+							throw new IllegalArgumentException("Unbekannte KI mit der UUID " + mf.getAi());
 						con.sendMessage(mf);
 					}
 					catch (Exception e)
 					{
-						WorkerMain.getLogger().critical("WorkerConnectionHandler: Failed to forward: " + e);
+						WorkerMain.getLogger().critical("Fehler beim Weiterleiten: " + e);
 					}
 					break;
 				
@@ -182,8 +179,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					}
 					catch (Exception e)
 					{
-						WorkerMain.getLogger().critical(
-								"WorkerConnectionHandler: Failed to parse message from Sandbox: " + e);
+						WorkerMain.getLogger().critical("Fehler beim Lesen der Nachricht der Sandbox: " + e);
 					}
 					break;
 			}

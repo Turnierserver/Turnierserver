@@ -59,7 +59,7 @@ public class WorkerClient implements SocketObserver
 	@Override
 	public void connectionOpened (NIOSocket socket)
 	{
-		BackendMain.getLogger().info("WorkerClient: Established connection to " + socket.getIp());
+		BackendMain.getLogger().info("Established connection to " + socket.getIp());
 		connected = true;
 		socket.write("B\n".getBytes(UTF_8));
 	}
@@ -68,7 +68,7 @@ public class WorkerClient implements SocketObserver
 	public void connectionBroken (NIOSocket socket, Exception exception)
 	{
 		connected = false;
-		BackendMain.getLogger().warning("WorkerClient: Connection closed"
+		BackendMain.getLogger().warning("Connection closed"
 				+ (exception == null ? "" : ": " + exception));
 	}
 	
@@ -86,7 +86,7 @@ public class WorkerClient implements SocketObserver
 			}
 			catch (IOException e)
 			{
-				BackendMain.getLogger().critical("Worker Client: Failed to parse line: " + e);
+				BackendMain.getLogger().critical("Failed to parse line: " + e);
 			}
 		}
 	}

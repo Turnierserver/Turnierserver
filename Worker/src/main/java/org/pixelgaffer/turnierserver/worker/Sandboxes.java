@@ -70,8 +70,7 @@ public class Sandboxes
 	{
 		for (Sandbox s : sandboxes)
 		{
-			System.out.println(
-					"todo:Sandboxes:43: hier wärs schön wenn die supporteten sprachen geprüft werden würden");
+			WorkerMain.getLogger().todo("hier wärs schön wenn die supporteten sprachen geprüft werden würden");
 			if (!s.isBusy())
 			{
 				if (s.sendJob(job))

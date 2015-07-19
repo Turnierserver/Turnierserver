@@ -236,20 +236,12 @@ public class Games
 		@Override
 		public void finishGame () throws IOException
 		{
-			System.out.println("finishGame() wurde aufgerufen");
-			try
-			{
-				throw new Exception();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			BackendMain.getLogger().info("finishGame() wurde für das Spiel " + getUuid() + " aufgerufen");
 			for (AiWrapper ai : ais)
 				ai.disconnect();
 			if (started) // ist beim restart auf false
 			{
-				System.out.println("alle kis disconnected, sende success an frontend");
+				BackendMain.getLogger().info("alle kis disconnected, sende success an frontend");
 				BackendFrontendConnectionHandler.getFrontend().sendMessage(
 						Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), true)));
 				synchronized (lock)
@@ -307,9 +299,7 @@ public class Games
 				aiw.disconnect();
 				
 				// da aiDisconnected aufgerufen wurde wird die alte UUID entfernt
-				System.out.println("Games:309: " + aiw.getUuid());
 				aiw.setUuid(randomUuid());
-				System.out.println("Games:311: " + aiw.getUuid());
 				synchronized (lock)
 				{
 					aiWrappers.put(aiw.getUuid(), aiw);
@@ -353,7 +343,7 @@ public class Games
 		urls.add(jar.toURI().toURL());
 		for (File entry : libDir.listFiles())
 			urls.add(entry.toURI().toURL());
-		System.out.println(urls);
+		BackendMain.getLogger().todo("Hier ist ein ResourceLeak");
 		@SuppressWarnings("resource")
 		URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[0]));
 		Class<?> clazz = cl.loadClass(classname);
@@ -390,7 +380,7 @@ public class Games
 		UUID uuid = randomUuid();
 		
 		// die KIs herausfinden. QualiKI: -gameId version 1
-		System.out.println("Games:242: Nico muss mir die Anzahl der KIs sagen. Benutze default-Wert 2");
+		BackendMain.getLogger().todo("Nico muss mir die Anzahl der KIs sagen. Benutze default-Wert 2");
 		int numAis = 2;
 		String ais[] = new String[numAis];
 		ais[0] = ai;

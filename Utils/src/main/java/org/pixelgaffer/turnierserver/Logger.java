@@ -36,9 +36,12 @@ public class Logger
 		log(o, Category.CRITICAL);
 	}
 	
-	public void log (Object o, Category category)
+	protected void log (Object o, Category category)
 	{
 		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+		StackTraceElement caller = stacktrace[3];
+		String classname = caller.getClassName();
+		classname = classname.lastIndexOf('.') > 0 ? classname.substring(classname.lastIndexOf('.') + 1) : classname;
 		boolean escapeCodes = System.console() != null;
 		if (escapeCodes)
 			System.err.print("\033[36m");
@@ -61,8 +64,8 @@ public class Logger
 					System.err.print("\033[1;31mCRITICAL ");
 					break;
 			}
-			System.err.print("\033[0min \033[1;32m" + stacktrace[3].getMethodName() + "\033[0m \033[32m("
-					+ stacktrace[3].getFileName() + ":" + stacktrace[3].getLineNumber() + ")\033[0m");
+			System.err.print("\033[0min \033[1;32m" + classname + "::" + caller.getMethodName() + "\033[0m \033[32m("
+					+ caller.getFileName() + ":" + caller.getLineNumber() + ")\033[0m");
 		}
 		else
 		{
@@ -81,9 +84,24 @@ public class Logger
 					System.err.print("CRITICAL ");
 					break;
 			}
-			System.err.print("in " + stacktrace[3].getMethodName() + " (" + stacktrace[3].getFileName() + ":"
-					+ stacktrace[3].getLineNumber() + ")");
+			System.err.print("in " + classname + "::" + caller.getMethodName() + " (" + caller.getFileName() + ":"
+					+ caller.getLineNumber() + ")");
 		}
 		System.err.println(": " + o.toString());
+	}
+	
+	public void todo (String what)
+	{
+		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+		StackTraceElement caller = stacktrace[2];
+		String classname = caller.getClassName();
+		classname = classname.lastIndexOf('.') > 0 ? classname.substring(classname.lastIndexOf('.') + 1) : classname;
+		boolean escapeCodes = System.console() != null;
+		if (escapeCodes)
+			System.err.println("\033[1;33mTODO\033[0m in \033[1;32m" + classname + "::" + caller.getMethodName()
+					+ "\033[0m \033[32m(" + caller.getFileName() + ":" + caller.getLineNumber() + ")\033[0m: " + what);
+		else
+			System.err.println("TODO in " + classname + "::" + caller.getMethodName() + " (" + caller.getFileName()
+					+ ":" + caller.getLineNumber() + "): " + what);
 	}
 }
