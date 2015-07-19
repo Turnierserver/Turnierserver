@@ -224,6 +224,8 @@ def api_user_update(id):
 	user.firstname = request.form.get('firstname', user.firstname)
 	user.lastname = request.form.get('lastname', user.lastname)
 	user.email = request.form.get('email', user.email)
+	if "name_public" in request.form:
+		user.name_public = request.form["name_public"] in ["true", "True", "1"]
 	if "password" in request.form:
 		user.set_pw(request.form["password"])
 

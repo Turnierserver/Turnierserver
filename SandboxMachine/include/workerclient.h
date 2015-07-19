@@ -38,6 +38,7 @@ public slots:
 	// die Slots des QTcpSockets
 	void connected ();
 	void disconnected ();
+	void error (QAbstractSocket::SocketError error);
 	void readyRead ();
 	
 	/// schickt eine Nachricht an den Worker. uuid ist die UUID des Auftrags, event ist das char des Events,
@@ -45,8 +46,11 @@ public slots:
 	/// auf Auftrag des Backends/Workers/SIGKILL beendet) und 'K'illed Ai (KI auf Auftrag der Logik beendet).
 	void sendMessage (QUuid uuid, char event);
 	
+private slots:
+	void reconnect ();
+	
 private:
-	QTcpSocket *socket;
+	QTcpSocket *socket = 0;
 	JobControl jobControl;
 	
 };

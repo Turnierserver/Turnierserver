@@ -106,13 +106,13 @@ public class Games
 		}
 		if (aiw == null)
 		{
-			BackendMain.getLogger().severe("Konnte KI mit der UUID " + uuid + " nicht finden");
+			BackendMain.getLogger().critical("Konnte KI mit der UUID " + uuid + " nicht finden");
 			return;
 		}
 		GameImpl game = aiw.getGame();
 		if (game == null)
 		{
-			BackendMain.getLogger().severe("Die KI " + uuid + " hat kein Spiel");
+			BackendMain.getLogger().critical("Die KI " + uuid + " hat kein Spiel");
 			return;
 		}
 		game.restart();
@@ -236,20 +236,12 @@ public class Games
 		@Override
 		public void finishGame () throws IOException
 		{
-			System.out.println("finishGame() wurde aufgerufen");
-			try
-			{
-				throw new Exception();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			BackendMain.getLogger().info("finishGame() wurde für das Spiel " + getUuid() + " aufgerufen");
 			for (AiWrapper ai : ais)
 				ai.disconnect();
 			if (started) // ist beim restart auf false
 			{
-				System.out.println("alle kis disconnected, sende success an frontend");
+				BackendMain.getLogger().info("alle kis disconnected, sende success an frontend");
 				BackendFrontendConnectionHandler.getFrontend().sendMessage(
 						Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), true)));
 				synchronized (lock)
@@ -274,6 +266,7 @@ public class Games
 			for (AiWrapper ai : ais)
 				if (!ai.isConnected())
 					return;
+			BackendMain.getLogger().info("Alle KIs verbunden, starte Spiel " + getUuid());
 			getLogic().startGame(this);
 			started = true;
 			try
@@ -302,6 +295,7 @@ public class Games
 			for (int i = 0; i < ais.size(); i++)
 			{
 				AiWrapper aiw = ais.get(i);
+				aiw.getObject().stop();
 				aiw.disconnect();
 				
 				// da aiDisconnected aufgerufen wurde wird die alte UUID entfernt
@@ -349,7 +343,7 @@ public class Games
 		urls.add(jar.toURI().toURL());
 		for (File entry : libDir.listFiles())
 			urls.add(entry.toURI().toURL());
-		System.out.println(urls);
+		BackendMain.getLogger().todo("Hier ist ein ResourceLeak");
 		@SuppressWarnings("resource")
 		URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[0]));
 		Class<?> clazz = cl.loadClass(classname);
@@ -386,7 +380,7 @@ public class Games
 		UUID uuid = randomUuid();
 		
 		// die KIs herausfinden. QualiKI: -gameId version 1
-		System.out.println("Games:242: Nico muss mir die Anzahl der KIs sagen. Benutze default-Wert 2");
+		BackendMain.getLogger().todo("Nico muss mir die Anzahl der KIs sagen. Benutze default-Wert 2");
 		int numAis = 2;
 		String ais[] = new String[numAis];
 		ais[0] = ai;
