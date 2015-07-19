@@ -10,24 +10,68 @@ import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.T
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.SANDBOX;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.UUID;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.ToString;
 
 import org.pixelgaffer.turnierserver.networking.messages.SandboxCommand;
 import org.pixelgaffer.turnierserver.networking.messages.SandboxMessage;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo.SandboxInfo;
 import org.pixelgaffer.turnierserver.worker.server.WorkerConnectionHandler;
 
 /**
  * Repräsentiert eine Sandbox.
  */
-@ToString
+@ToString(exclude = { "connection" })
 public class Sandbox
 {
-	/** Gibt an ob die Sandbox busy ist. */
 	@Getter
-	private boolean busy = false;
+	private SandboxInfo sandboxInfo = new SandboxInfo();
+	
+	private void setBusy (boolean busy)
+	{
+		if (isBusy() != busy)
+		{
+			sandboxInfo.setBusy(busy);
+			try
+			{
+				WorkerMain.notifyInfoUpdated();
+			}
+			catch (IOException e)
+			{
+				WorkerMain.getLogger().critical("Failed to notify Backend that the Worker changed: " + e);
+			}
+		}
+	}
+	
+	public boolean isBusy ()
+	{
+		return sandboxInfo.isBusy();
+	}
+	
+	public void setLangs (@NonNull String langs[])
+	{
+		if (!Arrays.equals(langs, getLangs()))
+		{
+			sandboxInfo.setLangs(langs);
+			try
+			{
+				WorkerMain.notifyInfoUpdated();
+			}
+			catch (IOException e)
+			{
+				WorkerMain.getLogger().critical("Failed to notify Backend that the Worker changed: " + e);
+			}
+		}
+	}
+	
+	public String[] getLangs ()
+	{
+		return sandboxInfo.getLangs();
+	}
 	
 	/** Die UUID des aktuell in der Sandbox ausgeführten Jobs. */
 	private UUID currentJob;
@@ -55,10 +99,10 @@ public class Sandbox
 		{
 			if (isBusy())
 				return false;
-			busy = true;
+			setBusy(true);
 		}
 		else if ((job.getCommand() == KILL_AI) || (job.getCommand() == TERM_AI))
-			busy = false;
+			setBusy(false);
 		currentJob = job.getUuid();
 		connection.sendJob(job);
 		return true;
@@ -83,11 +127,11 @@ public class Sandbox
 					WorkerMain.getLogger().critical("Fehler beim notifien des Backends (" + answer + "): " + e);
 					e.printStackTrace();
 				}
-				busy = false;
+				setBusy(false);
 				break;
 			case STARTED_AI:
 				WorkerMain.getLogger().todo("Hier sollte ich mir überlegen ob ich iwas notifien soll");
-				busy = true;
+				setBusy(true);
 				break;
 			default:
 				WorkerMain.getLogger().critical("Unknown event received:" + answer);

@@ -28,7 +28,7 @@ public class Sandboxes
 	public static boolean addSandbox (Sandbox sandbox)
 	{
 		boolean success = sandboxes.add(sandbox);
-		WorkerMain.workerInfo.setSandboxes(sandboxes.size());
+		WorkerMain.workerInfo.getSandboxes().add(sandbox.getSandboxInfo());
 		try
 		{
 			WorkerMain.notifyInfoUpdated();
@@ -49,7 +49,7 @@ public class Sandboxes
 		WorkerMain.getLogger().info("Die Sandbox " + sandbox + " hat sich disconnected");
 		sandbox.disconnected();
 		boolean success = sandboxes.remove(sandbox);
-		WorkerMain.workerInfo.setSandboxes(sandboxes.size());
+		WorkerMain.workerInfo.getSandboxes().remove(sandbox.getSandboxInfo());
 		try
 		{
 			WorkerMain.notifyInfoUpdated();

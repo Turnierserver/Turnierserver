@@ -109,6 +109,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 				switch (type.getType())
 				{
 					case AI:
+						WorkerMain.getLogger().info("Die KI " + type.getUuid() + " hat sich verbunden");
 						WorkerServer.aiConnections.put(type.getUuid(), this);
 						try
 						{
@@ -121,13 +122,15 @@ public class WorkerConnectionHandler extends ConnectionHandler
 						break;
 					case BACKEND:
 						WorkerServer.backendConnection = this;
+						WorkerMain.getLogger().info("Das Backend hat sich verbunden");
 						break;
 					case SANDBOX:
 						sandbox = new Sandbox(this);
+						sandbox.setLangs(type.getLangs());
+						WorkerMain.getLogger().info("Eine neue Sandbox hat sich verbunden: " + sandbox);
 						Sandboxes.addSandbox(sandbox);
 						break;
 				}
-				WorkerMain.getLogger().info("Habe Typ von " + socket.getIp() + " gelesen: " + type);
 				continue;
 			}
 			

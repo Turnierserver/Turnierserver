@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import org.json.JSONArray;
+
 /**
  * Diese Klasse speichert Informationen über eine Verbindung zum Worker ab.
  * Dieses Objekt wird immer am Anfang einer Verbindung gesendet.
@@ -26,10 +28,13 @@ public class WorkerConnectionType
 	@Getter
 	private UUID uuid;
 	
+	@Getter
+	private String[] langs;
+	
 	@Override
 	public String toString ()
 	{
-		return type + (uuid==null ? "" : uuid.toString());
+		return type + (uuid == null ? "" : uuid.toString());
 	}
 	
 	/**
@@ -45,7 +50,15 @@ public class WorkerConnectionType
 		{
 			char type = m.group(1).charAt(0);
 			UUID uuid = (type == AI ? UUID.fromString(m.group(2)) : null);
-			return new WorkerConnectionType(type, uuid);
+			String langs[] = null;
+			if (type == SANDBOX)
+			{
+				JSONArray jsonlangs = new JSONArray(m.group(2));
+				langs = new String[jsonlangs.length()];
+				for (int i = 0; i < langs.length; i++)
+					langs[i] = jsonlangs.getString(i);
+			}
+			return new WorkerConnectionType(type, uuid, langs);
 		}
 		return null;
 	}
