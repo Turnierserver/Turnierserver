@@ -26,7 +26,11 @@ def timestamp():
 db = SQLAlchemy(session_options={"expire_on_commit": False})
 
 def refresh_session():
-	db.session.query(User).first()
+	## TODO: ne bessere Art, die verbindung zur DB zu refreshen
+	try:
+		db.session.query(User).first()
+	except SQLAlchemy.exc.OperationalError:
+		print("OperationalError abgefangen")
 	print("refreshed session.")
 
 class SyncedFTPError(Exception):
