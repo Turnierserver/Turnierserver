@@ -25,6 +25,10 @@ def timestamp():
 
 db = SQLAlchemy(session_options={"expire_on_commit": False})
 
+def refresh_session():
+	db.session.query(User).first()
+	print("refreshed session.")
+
 class SyncedFTPError(Exception):
 	pass
 
