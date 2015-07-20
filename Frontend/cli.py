@@ -74,7 +74,8 @@ def _make_data_container(game_id):
 		os.chdir("tmp")
 		zipdir('AiLibraries', zipf)
 		zipdir('SimplePlayers', zipf)
-		zipf.write("info.pdf")
+		if ftp.ftp_host.path.exists("Games/"+game_id+"/info.pdf"):
+			zipf.write("info.pdf")
 		os.chdir("..")
 		zipf.close()
 
