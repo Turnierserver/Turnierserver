@@ -20,11 +20,14 @@ import java.util.jar.Manifest;
 import lombok.Getter;
 
 import org.pixelgaffer.turnierserver.codr.GameBase;
+import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.Version;
+import org.pixelgaffer.turnierserver.codr.utilities.Libraries;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
+import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 
 public class CodrGameImpl implements Game, Frontend
 {
@@ -42,11 +45,19 @@ public class CodrGameImpl implements Game, Frontend
 		JarFile jarFile = new JarFile(jar);
 		Manifest mf = jarFile.getManifest();
 		String classname = mf.getMainAttributes().getValue("Logic-Class");
+		String requiredLibs[] = mf.getMainAttributes().getValue("Required-Libs").split("\\s+");
 		jarFile.close();
 		
 		// klasse laden
+		List<URL> urls = new ArrayList<>();
+		urls.add(jar.toURI().toURL());
+		Libraries libs = new Libraries();
+		for (String lib : requiredLibs)
+			if (!lib.isEmpty())
+				for (File f : libs.getLib("Java", lib))
+					urls.add(f.toURI().toURL());
 		@SuppressWarnings("resource")
-		URLClassLoader cl = new URLClassLoader(new URL[] { jar.toURI().toURL() });
+		URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[0]));
 		Class<?> clazz = cl.loadClass(classname);
 		return (GameLogic<?, ?>)clazz.newInstance();
 	}
