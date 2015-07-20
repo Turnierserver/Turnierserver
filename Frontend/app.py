@@ -15,12 +15,14 @@ from commons import cache
 from api import api, login_manager
 from views.anonymous import anonymous_blueprint
 from views.authenticated import authenticated_blueprint
-from database import db
+from database import db, refresh_session
 from backend import backend
 from _cfg import env
 from activityfeed import Activity
 from errorhandling import handle_errors
 from cli import manage
+
+import time
 
 
 app = Flask("Turnierserver - Frontend")
@@ -66,6 +68,16 @@ def inject_globals():
 		if current_user.is_authenticated():
 			logged_in = True
 	return dict(env=env, logged_in=logged_in)
+
+
+db_session_timeout = time.time()
+
+@app.before_request
+def refresh_db_session():
+	global db_session_timeout
+	if time.time() > db_session_timeout + 60*5:
+		db_session_timeout = time.time()
+		refresh_session()
 
 @manager.command
 def run():
