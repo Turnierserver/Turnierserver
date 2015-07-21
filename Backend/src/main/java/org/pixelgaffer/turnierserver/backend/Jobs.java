@@ -137,7 +137,7 @@ public class Jobs
 				try
 				{
 					WorkerConnection worker = Workers.getCompilableWorker();
-					WorkerCommand wcmd = worker.compile(cmd.getId(), cmd.getGametype());
+					WorkerCommand wcmd = worker.compile(cmd.getId(), null, cmd.getGametype());
 					Job job = new Job(wcmd, cmd, worker);
 					addJob(job);
 					BackendFrontendConnectionHandler.getFrontend().sendMessage(

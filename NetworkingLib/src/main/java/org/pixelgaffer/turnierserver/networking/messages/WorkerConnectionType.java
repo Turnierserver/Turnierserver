@@ -1,5 +1,7 @@
 package org.pixelgaffer.turnierserver.networking.messages;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +31,7 @@ public class WorkerConnectionType
 	private UUID uuid;
 	
 	@Getter
-	private String[] langs;
+	private Set<String> langs;
 	
 	@Override
 	public String toString ()
@@ -50,13 +52,12 @@ public class WorkerConnectionType
 		{
 			char type = m.group(1).charAt(0);
 			UUID uuid = (type == AI ? UUID.fromString(m.group(2)) : null);
-			String langs[] = null;
+			Set<String> langs = new HashSet<>();
 			if (type == SANDBOX)
 			{
 				JSONArray jsonlangs = new JSONArray(m.group(2));
-				langs = new String[jsonlangs.length()];
-				for (int i = 0; i < langs.length; i++)
-					langs[i] = jsonlangs.getString(i);
+				for (int i = 0; i < jsonlangs.length(); i++)
+					langs.add(jsonlangs.getString(i));
 			}
 			return new WorkerConnectionType(type, uuid, langs);
 		}
