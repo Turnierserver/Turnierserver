@@ -64,14 +64,18 @@ def _make_data_container(game_id):
 					print(root+"/"+file, "->", new_path+"/"+file)
 					ftp.ftp_host.download(root+"/"+file, new_path+"/"+file)
 
-		print("Games/"+game_id+"/info.pdf", "->", "tmp/info.pdf")
-		ftp.ftp_host.download("Games/"+game_id+"/info.pdf", "tmp/info.pdf")
+		if ftp.ftp_host.path.exists("Games/"+game_id+"/info.pdf"):
+			print("Games/"+game_id+"/info.pdf", "->", "tmp/info.pdf")
+			ftp.ftp_host.download("Games/"+game_id+"/info.pdf", "tmp/info.pdf")
+		else:
+			print("[W] info.pdf not found")
 
 		zipf = zipfile.ZipFile('tmp/data_container.zip', 'w')
 		os.chdir("tmp")
 		zipdir('AiLibraries', zipf)
 		zipdir('SimplePlayers', zipf)
-		zipf.write("info.pdf")
+		if ftp.ftp_host.path.exists("Games/"+game_id+"/info.pdf"):
+			zipf.write("info.pdf")
 		os.chdir("..")
 		zipf.close()
 
