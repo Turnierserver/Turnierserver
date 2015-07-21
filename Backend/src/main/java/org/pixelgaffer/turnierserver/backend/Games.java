@@ -228,7 +228,7 @@ public class Games
 				}
 				
 				// einen Worker mit der KI beauftragen
-				WorkerConnection w = Workers.getStartableWorker();
+				WorkerConnection w = Workers.getStartableWorker(aiw.getLang());
 				w.addJob(aiw, gameId);
 				aiw.setConnection(w);
 			}
@@ -320,7 +320,7 @@ public class Games
 				}
 				
 				// einen Worker mit der KI beauftragen
-				WorkerConnection w = Workers.getStartableWorker();
+				WorkerConnection w = Workers.getStartableWorker(aiw.getLang());
 				w.addJob(aiw, gameId);
 				aiw.setConnection(w);
 			}
@@ -357,7 +357,7 @@ public class Games
 		urls.add(jar.toURI().toURL());
 		for (File entry : libDir.listFiles())
 			urls.add(entry.toURI().toURL());
-		BackendMain.getLogger().todo("Hier ist ein ResourceLeak");
+		BackendMain.getLogger().todo("Hier ist ein ResourceLeak (auch im codr fixen)");
 		@SuppressWarnings("resource")
 		URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[0]));
 		Class<?> clazz = cl.loadClass(classname);

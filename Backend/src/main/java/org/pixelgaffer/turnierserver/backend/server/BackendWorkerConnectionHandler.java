@@ -122,7 +122,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 						if (ai == null)
 						{
 							BackendMain.getLogger().critical("Unknown AI with UUID " + aicon.getUuid() + " connected");
-							sendCommand(new WorkerCommand(WorkerCommand.KILLAI, -1, -1, -1, aicon.getUuid()));
+							sendCommand(new WorkerCommand(WorkerCommand.KILLAI, -1, -1, null, -1, aicon.getUuid()));
 						}
 						else
 							ai.connected();
