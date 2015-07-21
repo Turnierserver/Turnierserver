@@ -27,8 +27,9 @@ public class CodrAiServerConnectionHandler extends Thread
 	
 	public void send (byte b[]) throws IOException
 	{
-		System.out.println("Sende " + new String(b, UTF_8));
+		System.out.println("Sende an " + uuid + ": " + new String(b, UTF_8));
 		client.getOutputStream().write(b);
+		client.getOutputStream().write("\n".getBytes(UTF_8));
 		client.getOutputStream().flush();
 	}
 	
