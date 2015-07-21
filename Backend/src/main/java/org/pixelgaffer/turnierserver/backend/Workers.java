@@ -53,16 +53,24 @@ public class Workers
 	 * Gibt einen Worker mit mindestens einer unbeschäftigten Sandbox zurück.
 	 * Diese Methode blockiert, bis ein solcher Worker verfügbar ist.
 	 */
-	public static WorkerConnection getStartableWorker ()
+	public static WorkerConnection getStartableWorker (String lang)
 	{
 		while (true)
 		{
+			BackendMain.getLogger().debug("Searching for a startable worker for the language " + lang);
 			synchronized (workerConnections)
 			{
 				for (WorkerConnection worker : workerConnections)
-					if (worker.canStartAi())
+				{
+					if (worker.canStartAi(lang))
+					{
+						BackendMain.getLogger().debug(
+								"Found a startable worker for the language " + lang + ": " + worker);
 						return worker;
+					}
+				}
 			}
+			BackendMain.getLogger().debug("Waiting for a startable worker for the language " + lang);
 			synchronized (lock)
 			{
 				try

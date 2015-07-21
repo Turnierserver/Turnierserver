@@ -31,6 +31,10 @@ public class WorkerCommand
 	@Getter
 	private int version;
 	
+	/** Die Sprache der KI. */
+	@Getter
+	private String lang;
+	
 	/** Das zugehörige Spiel. */
 	@Getter
 	private int game;

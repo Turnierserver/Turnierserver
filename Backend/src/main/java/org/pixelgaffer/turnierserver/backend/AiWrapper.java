@@ -1,5 +1,10 @@
 package org.pixelgaffer.turnierserver.backend;
 
+import it.sauronsoftware.ftp4j.FTPAbortedException;
+import it.sauronsoftware.ftp4j.FTPDataTransferException;
+import it.sauronsoftware.ftp4j.FTPException;
+import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
+
 import java.io.IOException;
 import java.util.UUID;
 
@@ -12,6 +17,7 @@ import lombok.Setter;
 import org.pixelgaffer.turnierserver.backend.Games.GameImpl;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
+import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 
 /**
@@ -60,6 +66,32 @@ public class AiWrapper implements Ai
 	@Getter
 	private boolean connected;
 	
+	/** Die Programmiersprache dieser KI. */
+	private String lang = null;
+	
+	/**
+	 * Gibt die Programmiersprache dieser KI zurück. Wenn ein Fehler beim
+	 * Abrufen enstanden ist wird null zurückgegeben.
+	 */
+	public String getLang ()
+	{
+		if (lang == null)
+		{
+			try
+			{
+				lang = DatastoreFtpClient.retrieveAiLanguage(getAiId());
+			}
+			catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
+					| FTPAbortedException e)
+			{
+				BackendMain.getLogger().critical("Fehler beim Abrufen der Sprache für die KI " + getAiId() + ": " + e);
+				e.printStackTrace();
+				lang = null;
+			}
+		}
+		return lang;
+	}
+	
 	/**
 	 * Wird aufgerufen wenn die KI mit dem Worker verbunden wurde. Wenn alle KIs
 	 * verbunden sind, wird das Spiel endgültig gestartet.
@@ -71,7 +103,10 @@ public class AiWrapper implements Ai
 		getGame().aiConnected();
 	}
 	
-	/** Empfängt eine Nachricht und leitet sie an die Spiellogik weiter, wenn diese gestartet ist. */
+	/**
+	 * Empfängt eine Nachricht und leitet sie an die Spiellogik weiter, wenn
+	 * diese gestartet ist.
+	 */
 	public void receiveMessage (byte message[])
 	{
 		if (getGame().getLogic().isStarted())

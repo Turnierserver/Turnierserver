@@ -1,5 +1,10 @@
 package org.pixelgaffer.turnierserver.backend;
 
+import it.sauronsoftware.ftp4j.FTPAbortedException;
+import it.sauronsoftware.ftp4j.FTPDataTransferException;
+import it.sauronsoftware.ftp4j.FTPException;
+import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -12,6 +17,7 @@ import lombok.ToString;
 
 import org.pixelgaffer.turnierserver.backend.server.BackendWorkerConnectionHandler;
 import org.pixelgaffer.turnierserver.backend.workerclient.WorkerClient;
+import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
@@ -78,10 +84,10 @@ public class WorkerConnection
 	 * Gibt an, ob der Worker gerade eine KI starten kann oder ob alle Worker
 	 * komplett ausgelastet sind.
 	 */
-	public synchronized boolean canStartAi ()
+	public synchronized boolean canStartAi (String lang)
 	{
 		for (SandboxInfo info : sandboxes)
-			if (!info.isBusy())
+			if ((lang == null || info.getLangs().contains(lang)) && !info.isBusy())
 				return true;
 		return false;
 	}
@@ -90,23 +96,28 @@ public class WorkerConnection
 	 * Schickt einen Kompilieren-Befehl an den Worker, ai enthält
 	 * ${ai-id}v${ai-version}.
 	 */
-	public WorkerCommand compile (String ai, int game) throws IOException
+	public WorkerCommand compile (String ai, String lang, int game)
+			throws IOException, NumberFormatException, FTPIllegalReplyException, FTPException,
+			FTPDataTransferException, FTPAbortedException
 	{
 		String s[] = ai.split("v");
 		if (s.length != 2)
 			throw new IllegalArgumentException(ai);
-		return compile(Integer.parseInt(s[0]), Integer.parseInt(s[1]), game);
+		return compile(Integer.parseInt(s[0]), Integer.parseInt(s[1]), lang, game);
 	}
 	
 	/**
 	 * Schickt einen Kompilieren-Befehl an den Worker.
 	 */
-	public synchronized WorkerCommand compile (int aiId, int version, int game) throws IOException
+	public synchronized WorkerCommand compile (int aiId, int version, String lang, int game)
+			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
 	{
 		if (isCompiling())
 			BackendMain.getLogger().warning("Gebe Kompilierungsauftrag an beschägtigten Worker weiter");
 		setCompiling(true);
-		WorkerCommand cmd = new WorkerCommand(WorkerCommand.COMPILE, aiId, version, game, UUID.randomUUID());
+		if (lang == null)
+			lang = DatastoreFtpClient.retrieveAiLanguage(aiId);
+		WorkerCommand cmd = new WorkerCommand(WorkerCommand.COMPILE, aiId, version, lang, game, UUID.randomUUID());
 		connection.sendCommand(cmd);
 		return cmd;
 	}
@@ -117,10 +128,10 @@ public class WorkerConnection
 	 */
 	public synchronized boolean addJob (AiWrapper ai, int game) throws IOException
 	{
-		if (!canStartAi())
+		if (!canStartAi(ai.getLang()))
 			return false;
 		connection.sendCommand(new WorkerCommand(WorkerCommand.STARTAI,
-				ai.getAiId(), ai.getVersion(), game, ai.getUuid()));
+				ai.getAiId(), ai.getVersion(), ai.getLang(), game, ai.getUuid()));
 		return true;
 	}
 	
@@ -130,7 +141,7 @@ public class WorkerConnection
 	public void terminateJob (AiWrapper ai) throws IOException
 	{
 		connection.sendCommand(new WorkerCommand(WorkerCommand.TERMAI,
-				ai.getAiId(), ai.getVersion(), -1, ai.getUuid()));
+				ai.getAiId(), ai.getVersion(), ai.getLang(), -1, ai.getUuid()));
 	}
 	
 	/**
@@ -139,7 +150,7 @@ public class WorkerConnection
 	public void killJob (AiWrapper ai) throws IOException
 	{
 		connection.sendCommand(new WorkerCommand(WorkerCommand.KILLAI,
-				ai.getAiId(), ai.getVersion(), -1, ai.getUuid()));
+				ai.getAiId(), ai.getVersion(), ai.getLang(), -1, ai.getUuid()));
 	}
 	
 	/**
@@ -157,6 +168,9 @@ public class WorkerConnection
 	{
 		BackendMain.getLogger().info("Der Worker " + id + " hat sich geupdated: " + info);
 		sandboxes = info.getSandboxes();
+		
+		// Workers notifien
+		Workers.workerIsAvailable();
 	}
 	
 	/**
