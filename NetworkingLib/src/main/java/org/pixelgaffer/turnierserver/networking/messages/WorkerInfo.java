@@ -1,7 +1,9 @@
 package org.pixelgaffer.turnierserver.networking.messages;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -28,7 +30,7 @@ public class WorkerInfo
 		@NonNull
 		@Getter
 		@Setter
-		private String langs[];
+		private Set<String> langs;
 		
 		@Getter
 		@Setter
@@ -36,7 +38,7 @@ public class WorkerInfo
 		
 		public SandboxInfo ()
 		{
-			this(new String[] {});
+			this(Collections.emptySet());
 		}
 	}
 	

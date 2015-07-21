@@ -11,6 +11,7 @@ import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnection
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.UUID;
 
 import lombok.Getter;
@@ -52,9 +53,9 @@ public class Sandbox
 		return sandboxInfo.isBusy();
 	}
 	
-	public void setLangs (@NonNull String langs[])
+	public void setLangs (@NonNull Set<String> langs)
 	{
-		if (!Arrays.equals(langs, getLangs()))
+		if (!langs.equals(getLangs()))
 		{
 			sandboxInfo.setLangs(langs);
 			try
@@ -68,7 +69,7 @@ public class Sandbox
 		}
 	}
 	
-	public String[] getLangs ()
+	public Set<String> getLangs ()
 	{
 		return sandboxInfo.getLangs();
 	}

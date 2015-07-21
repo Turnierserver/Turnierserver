@@ -29,6 +29,10 @@ public class SandboxCommand
 	@Getter
 	private int version;
 	
+	/** Die Sprache der KI. */
+	@Getter
+	private String lang;
+	
 	/** Die UUID die das Backend der KI zugewiesen hat. */
 	@Getter
 	private UUID uuid;

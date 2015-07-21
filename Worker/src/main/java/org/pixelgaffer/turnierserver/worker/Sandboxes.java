@@ -27,7 +27,11 @@ public class Sandboxes
 	 */
 	public static boolean addSandbox (Sandbox sandbox)
 	{
-		boolean success = sandboxes.add(sandbox);
+		boolean success;
+		synchronized (sandboxes)
+		{
+			success = sandboxes.add(sandbox);
+		}
 		WorkerMain.workerInfo.getSandboxes().add(sandbox.getSandboxInfo());
 		try
 		{
@@ -48,7 +52,11 @@ public class Sandboxes
 	{
 		WorkerMain.getLogger().info("Die Sandbox " + sandbox + " hat sich disconnected");
 		sandbox.disconnected();
-		boolean success = sandboxes.remove(sandbox);
+		boolean success;
+		synchronized (sandboxes)
+		{
+			success = sandboxes.remove(sandbox);
+		}
 		WorkerMain.workerInfo.getSandboxes().remove(sandbox.getSandboxInfo());
 		try
 		{
@@ -68,13 +76,15 @@ public class Sandboxes
 	 */
 	public static Sandbox send (SandboxCommand job) throws IOException
 	{
-		for (Sandbox s : sandboxes)
+		synchronized (sandboxes)
 		{
-			WorkerMain.getLogger().todo("hier wärs schön wenn die supporteten sprachen geprüft werden würden");
-			if (!s.isBusy())
+			for (Sandbox s : sandboxes)
 			{
-				if (s.sendJob(job))
-					return s;
+				if (s.getLangs().contains(job.getLang()) && !s.isBusy())
+				{
+					if (s.sendJob(job))
+						return s;
+				}
 			}
 		}
 		return null;
