@@ -61,10 +61,16 @@ class AIWrapper:
 	def run(self):
 		self.connect()
 		while True:
-			r = self.sock.recv(1024*1024).decode("utf-8")
+			r = self.sock.recv(1024**2 * 64).decode("utf-8")
 			if not r or r == "\n":
 				continue
-			updates = json.loads(r)
+			try:
+				updates = json.loads(r)
+			except ValueError as e:
+				print("Fehler beim json parsen!!!")
+				print(r)
+				print(e)
+				continue
 			print("Empfangen:")
 			pprint(updates)
 			resp = self.update(self.getState(updates))
