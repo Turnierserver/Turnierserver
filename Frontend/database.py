@@ -17,6 +17,7 @@ import os
 import shutil
 import urllib
 import unittest.mock
+import sqlalchemy.exc
 
 
 def timestamp():
@@ -29,7 +30,7 @@ def refresh_session():
 	## TODO: ne bessere Art, die verbindung zur DB zu refreshen
 	try:
 		db.session.query(User).first()
-	except SQLAlchemy.exc.OperationalError:
+	except sqlalchemy.exc.OperationalError:
 		print("OperationalError abgefangen")
 	print("refreshed session.")
 
