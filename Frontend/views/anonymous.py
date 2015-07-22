@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, abort, flash, url_for, request
+from flask import Blueprint, render_template, abort, flash, url_for, request, Markup
 from flask.ext.login import current_user
+import markdown
 from database import AI, User, Game, GameType, Game_inprogress
 from activityfeed import Activity
 from backend import backend
@@ -9,7 +10,10 @@ anonymous_blueprint = Blueprint("anonymous", __name__)
 
 @anonymous_blueprint.route("/")
 def index():
-	return render_template("index.html")
+	with open("../aktuelles.md", "r") as f:
+		aktuelles = f.read()
+	aktuelles = Markup(markdown.markdown(aktuelles))
+	return render_template("index.html", aktuelles=aktuelles)
 
 @anonymous_blueprint.route("/ai_list")
 def ai_list():
