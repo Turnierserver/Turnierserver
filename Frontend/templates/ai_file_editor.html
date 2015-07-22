@@ -28,8 +28,24 @@
 		{% endfor %}
 
 		<div class="divider"></div>
-		<button id="save" class="ui basic mini {% if readonly %}disabled{% endif %} button" data-content="Du kannst auch speichern, indem du Ctrl + S drückst.">speichern</button>
-		<a id="compile" class="ui basic mini {% if readonly %}disabled{% endif %} button" href="{{url_for("authenticated.compile_ai", id=ai.id)}}">Kompilieren</a>
+		<button id="save" class="ui basic small {% if readonly %}disabled{% endif %} button" data-content="Du kannst auch speichern, indem du Ctrl + S drückst.">speichern</button>
+		<a id="compile" class="ui basic small {% if readonly %}disabled{% endif %} button" href="{{url_for("authenticated.compile_ai", id=ai.id)}}">Kompilieren</a>
+		<div class="ui compact selection dropdown" style="font-size: 0.69em;">
+			<input type="hidden" name="editor_theme">
+			<div class="default text">Farbstil</div>
+			<i class="dropdown icon"></i>
+			<div class="menu">
+				<div class="item" data-value="chrome">Standart</div>
+				<div class="item" data-value="eclipse">Eclipse</div>
+				<div class="item" data-value="monokai">Monokai</div>
+				<div class="item" data-value="solarized_dark">Solarized</div>
+			</div>
+		</div>
+
+		<div class="ui ignored ignored icon buttons">
+			<div class="ui basic show button" id="increase_font_size"><i class="plus icon"></i></div>
+			<div class="ui basic hide button" id="decrease_font_size"><i class="minus icon"></i></div>
+		</div>
 	</div>
 	<div id="editor">{{ code }}</div>
 
@@ -60,6 +76,7 @@
 
 
 	var editor = ace.edit("editor");
+	var font_size = 12;
 	//editor.setTheme("ace/theme/monokai");
 	editor.getSession().setMode("ace/mode/{{ai.lang.ace_name}}");
 	{% if readonly %}
@@ -78,6 +95,24 @@
 	});
 
 	console.log("editorized, mode: ace/mode/{{ai.lang.ace_name}}")
+
+	$(".ui.dropdown").dropdown({
+		onChange: function(text, value) {
+			editor.setTheme("ace/theme/"+text);
+		}
+	});
+
+	$("#increase_font_size").on("click", function() {
+		font_size++;
+		$("#editor").css("font-size", font_size);
+	});
+
+	$("#decrease_font_size").on("click", function() {
+		font_size--;
+		font_size = Math.max(font_size, 5);
+		$("#editor").css("font-size", font_size);
+	});
+
 	</script>
 </div>
 
