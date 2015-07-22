@@ -104,7 +104,7 @@ $('#caform').form({
 					prompt : 'Du brauchst ein Passwort'
 				},
 				{
-					type   : 'length[3]',
+					type   : 'minLength[3]',
 					prompt : 'Dein Passwort sollte länger als 3 Zeichen sein'
 				}
 			]
@@ -130,7 +130,7 @@ $("#create-account").on("click", function () {
 <form id="pw_reset_form" class="ui form segment" method="POST" action="/api/user/password_reset">
 	<div class="required field">
 		<label>Nutzername</label>
-		<input id="username" placeholder="penis_cola69" type="text" name="username">
+		<input id="username" placeholder="max_mustermann" type="text" name="username">
 	</div>
 	<div class="required field">
 		<label>Email-Adresse</label>
