@@ -27,5 +27,8 @@ ftp://msrd0.duckdns.org/
 Beispiels-Implementation von Minesweeper und Prisoners Dilemma:
 https://github.com/msrd0/Turnierserver-Examples
 
+Groker-Implementation:
+https://github.com/nicosio2/Groker
+
 Privates Config-Repo:
 https://github.com/nicosio2/Turnierserver-Config
