@@ -73,7 +73,7 @@ class AIWrapper:
 				continue
 			print("Empfangen:")
 			pprint(updates)
-			resp = self.update(self.getState(updates))
+			resp = self.update(updates)
 			print("Antwort:")
 			fakeresp = deepcopy(resp)
 			self.del_output(fakeresp)
@@ -97,7 +97,7 @@ class AIWrapper:
 	def del_output(self, d):
 		"""Diese Methode nimmt eine Antwort und entfernt das Output, um sie anzuzeigen."""
 		raise NotImplementedError()
-	
+
 	def add_output(self, d, o):
 		"""Diese Methode nimmt eine Antwort und Output und hängt das Output an die Antwort."""
 		raise NotImplementedError()
