@@ -25,6 +25,7 @@
 #include <QDir>
 #include <QEventLoop>
 #include <QHttpMultiPart>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkReply>
@@ -191,6 +192,8 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 			}
 			QString destination = match.captured("destination");
 			
+			fprintf(stderr, "WARNUNG: Benutze unsicheres http-Protokol\n");
+			
 			// wenn der NetworkManager 0 ist diesen erstellen
 			if (!mgr)
 			{
@@ -295,11 +298,102 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 				}
 			}
 			
+			// schauen ob es den gametype schon gibt
+			bool gameExists = false;
+			QNetworkRequest checkRequest("http://" + host + "/api/gametypes"); // sollte https werden
+			QEventLoop loop1;
+			QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop1, SLOT(quit()));
+			QNetworkReply *reply = mgr->get(checkRequest);
+			loop1.exec();
+			if (reply->error() != QNetworkReply::NoError)
+			{
+				fprintf(stderr, "Fehler beim Abrufen der Spiele: %s\n", qPrintable(reply->errorString()));
+				if (reply->header(QNetworkRequest::ContentTypeHeader).toString() == "application/json")
+				{
+					QJsonDocument jsondoc = QJsonDocument::fromJson(reply->readAll());
+					QJsonObject json = jsondoc.object();
+					fprintf(stderr, "Fehler: %s\n", qPrintable(json.value("error").toString()));
+				}
+				else
+					fprintf(stderr, "%s\n", reply->readAll().data());
+				delete reply;
+				return 1;
+			}
+			QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+			QJsonArray gametypes = jsonDoc.array();
+			for (int i = 0; i < gametypes.size(); i++)
+			{
+				QJsonObject gametype = gametypes[i].toObject();
+				if (gametype.value("id").toInt() == instructions().values().value("GAMEID").toInt())
+				{
+					if (gametype.value("name").toString() == instructions().values().value("NAME"))
+						gameExists = true;
+					else
+					{
+						printf("Das Spiel mit der id %d heißt %s statt %s\n", gametype.value("id").toInt(), qPrintable(gametype.value("name").toString()), qPrintable(instructions().values().value("NAME")));
+						printf("Alle Spiele:\n");
+						printf("%s\n", jsonDoc.toJson(QJsonDocument::Indented).data());
+						return 1;
+					}
+				}
+			}
+			delete reply;
+			
+			if (!gameExists)
+			{
+				printf("Das Spiel %d (%s) existiert noch nicht. Möchtest du es anlegen? [y/n] ", instructions().values().value("GAMEID").toInt(), qPrintable(instructions().values().value("NAME")));
+				if (getc(stdin) == 'y')
+				{
+					QNetworkRequest createRequest("http://" + host + "/api/add_gametype/" + instructions().values().value("NAME"));
+					QEventLoop loop;
+					QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+					reply = mgr->get(createRequest);
+					if (reply->error() != QNetworkReply::NoError)
+					{
+						fprintf(stderr, "Fehler beim Erstellen des Spiels: %s\n", qPrintable(reply->errorString()));
+						if (reply->header(QNetworkRequest::ContentTypeHeader).toString() == "application/json")
+						{
+							QJsonDocument jsondoc = QJsonDocument::fromJson(reply->readAll());
+							QJsonObject json = jsondoc.object();
+							fprintf(stderr, "Fehler: %s\n", qPrintable(json.value("error").toString()));
+						}
+						else
+							fprintf(stderr, "%s\n", reply->readAll().data());
+						delete reply;
+						return 1;
+					}
+					QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+					QJsonObject gameObj = jsonDoc.object();
+					if (gameObj.value("id").toInt() == instructions().values().value("GAMEID").toInt())
+					{
+						printf("Das neue Spiel wurde erfolgreich angelegt\n");
+						delete reply;
+					}
+					else
+					{
+						printf("Das Spiel wurde unter einer anderen id erstellt: %d. Bitte trage die neue id in die game.txt ein\n", gameObj.value("id").toInt());
+						delete reply;
+						return 1;
+					}
+				}
+				else
+					return 1;
+			}
+			
 			// die Datei hochladen
 			QFile in(file);
 			if (!in.open(QIODevice::ReadOnly))
 			{
 				fprintf(stderr, "Kann Datei %s nicht öffnen", qPrintable(file));
+				if (reply->header(QNetworkRequest::ContentTypeHeader).toString() == "application/json")
+				{
+					QJsonDocument jsondoc = QJsonDocument::fromJson(reply->readAll());
+					QJsonObject json = jsondoc.object();
+					fprintf(stderr, "Fehler: %s\n", qPrintable(json.value("error").toString()));
+				}
+				else
+					fprintf(stderr, "%s\n", reply->readAll().data());
+				delete reply;
 				return 1;
 			}
 			QNetworkRequest request("http://" + host + destination); // sollte https werden
@@ -307,10 +401,10 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 			request.setHeader(QNetworkRequest::ContentTypeHeader, "application/octet-stream");
 			request.setHeader(QNetworkRequest::UserAgentHeader, "GameBuilder (QtNetwork " QT_VERSION_STR ")");
 			request.setRawHeader("X-FileName", fileInfo.fileName().toUtf8());
-			QEventLoop loop;
-			QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
-			QNetworkReply *reply = mgr->post(request, &in);
-			loop.exec();
+			QEventLoop loop2;
+			QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop2, SLOT(quit()));
+			reply = mgr->post(request, &in);
+			loop2.exec();
 			if (reply->error() != QNetworkReply::NoError)
 			{
 				fprintf(stderr, "Fehler beim Hochladen von %s: %s\n", qPrintable(file), qPrintable(reply->errorString()));
@@ -322,8 +416,10 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 				}
 				else
 					fprintf(stderr, "%s\n", reply->readAll().data());
+				delete reply;
 				return 1;
 			}
+			delete reply;
 		}
 		else
 		{
