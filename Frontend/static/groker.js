@@ -8,15 +8,15 @@ var pane = {
 
 var complete_diff_data = [];
 var diff_chart = new Chartist.Line('#unterschied', {
-	labels: ['1', '2', '3', '4'],
-	series: [
-		[-50, 0, 50, -100],
-	]
+	labels: ["0"],
+	series: [[0],]
 }, {
 	fullWidth: true,
 	chartPadding: {
 		right: 40
-	}
+	},
+	high: 100,
+	low: -100,
 });
 
 
