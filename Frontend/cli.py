@@ -157,6 +157,7 @@ def manage(manager, app):
 
 	@manager.command
 	def compile_quali_ai():
+		"Kompiliert die QualiKis"
 		for gt in GameType.query.all():
 			if not prompt_bool("Compile for '" + gt.name + "'?"):
 				continue
@@ -179,6 +180,7 @@ def manage(manager, app):
 
 	@manager.command
 	def recompile_ais():
+		"Kompiliert KIs"
 		all = prompt_bool("Compile all?")
 		for ai in AI.query.all():
 			if all or prompt_bool("Compile '"+ai.name + "' by " + ai.user.name):
@@ -192,5 +194,6 @@ def manage(manager, app):
 
 	@manager.command
 	def add_gametype():
+		"Fügt Spieltyp hinzu"
 		name = prompt("Name")
 		_add_gametype(name)
