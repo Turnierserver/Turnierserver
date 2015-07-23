@@ -994,9 +994,11 @@ def game_list_sse():
 					)
 					yield (html, "new_game")
 			if "update" in update:
+				if not "display" in update:
+					update["display"] = "Schritt " + str(update["update"])
 				yield (json.dumps({
 					"id": update["requestid"],
-					"status": "## Schritt "+str(update["update"])
+					"status": update["display"]
 				}), "update")
 
 			if "finished_game_obj" in d:
