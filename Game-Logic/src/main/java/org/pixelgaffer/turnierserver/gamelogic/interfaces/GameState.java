@@ -1,8 +1,10 @@
 package org.pixelgaffer.turnierserver.gamelogic.interfaces;
 
 /**
- * @param <C> Das Veränderungsobjekt, welches an die Ai gesendet werden soll
- * @param <R> Die Antwort der Ai
+ * @param <C>
+ *            Das Veränderungsobjekt, welches an die Ai gesendet werden soll
+ * @param <R>
+ *            Die Antwort der Ai
  */
 public interface GameState<C, R> {
 	
@@ -13,12 +15,14 @@ public interface GameState<C, R> {
 	 * @return Die Änderungen, welche an diesem Gamestate vollzogen wurden
 	 */
 	public C getChanges(Ai ai);
+	
 	/**
 	 * Leert alle Veränderungen für eine Ai
 	 * 
 	 * @param ai Die Ai, für welche die Veränderungen geleert werden sollen
 	 */
 	public void clearChanges(Ai ai);
+	
 	/**
 	 * Führt Änderungen durch, welche eine Ai vorgenommen hat. Wird nur auf der GameLogic aufgerufen.
 	 * 
@@ -26,6 +30,7 @@ public interface GameState<C, R> {
 	 * @param ai Die Ai, welche geantwortet hat
 	 */
 	public void applyChanges(R response, Ai ai);
+	
 	/**
 	 * Führt Änderungen durch, welche von der GameLogic vorgenommen wurden. Wird nur auf der Ai aufgerufen.
 	 * 

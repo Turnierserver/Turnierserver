@@ -2,8 +2,8 @@ package org.pixelgaffer.turnierserver.gamelogic.interfaces;
 
 import java.io.IOException;
 
-public interface Frontend
-{
+public interface Frontend {
+	
 	/**
 	 * Gibt die RequestId des Auftrags zurück.
 	 */

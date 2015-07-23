@@ -13,17 +13,21 @@ import org.pixelgaffer.turnierserver.gamelogic.messages.BuilderSolverResponse;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * @param <E> Das AiObject
- * @param <G> Der GameState
- * @param <B> Die BuilderResponse
- * @param <S> Die SolverResponse
+ * @param <E>
+ *            Das AiObject
+ * @param <G>
+ *            Der GameState
+ * @param <B>
+ *            Die BuilderResponse
+ * @param <S>
+ *            Die SolverResponse
  */
 public abstract class OneBuilderAllSolverLogic<E extends BuilderSolverAiObject<G>, G extends BuilderSolverGameState<?, B, S>, B, S> extends BuilderSolverLogic<E, G, B, S> {
 	
 	public OneBuilderAllSolverLogic(TypeToken<BuilderSolverResponse<B, S>> token) {
 		super(token);
 	}
-
+	
 	@Override
 	public List<Ai> getBuilder() {
 		return new ArrayList<>(Arrays.asList(getBuilder(null)));

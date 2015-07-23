@@ -9,15 +9,17 @@ import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * @param <E> Das AiObject
- * @param <R> Die Antwort der Ai
+ * @param <E>
+ *            Das AiObject
+ * @param <R>
+ *            Die Antwort der Ai
  */
 public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> extends GameStateLogic<E, R> {
 	
 	public AlternatingTurnBasedGameLogic(TypeToken<R> token) {
 		super(token);
 	}
-
+	
 	/**
 	 * Die Ai, die gerade am Zug ist
 	 */
@@ -32,19 +34,19 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 	
 	@Override
 	protected final void receive(R response, Ai ai) {
-		if(turn == null || turn != ai) {
-			getUserObject(ai).loose();
+		if (turn == null || turn != ai) {
+			getUserObject(ai).loose("Die KI ist nicht am Zug, hat jedoch etwas geschickt");
 			return;
 		}
 		
-		if(getUserObject(ai).stopCalculationTimer()) {
+		if (getUserObject(ai).stopCalculationTimer()) {
 			return;
 		}
 		
 		gamestate.applyChanges(response, ai);
 		
 		Object update = update();
-		if(update != null) {
+		if (update != null) {
 			sendRenderData(update);
 		}
 		
@@ -57,18 +59,18 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 			sendGameState(ai);
 			getUserObject(ai).startCalculationTimer(10);
 		} catch (IOException e) {
-			getUserObject(ai).loose();
+			getUserObject(ai).loose("Es gab ein Problem mit der Kommunikation mit der KI");
 		}
 	}
 	
 	private void turn() {
-		if(turn == null) {
+		if (turn == null) {
 			turn(game.getAis().get(0));
 			return;
 		}
-		if(turn.getIndex() == game.getAis().size() - 1) {
-			if(maxTurns == playedRounds) {
-				endGame();
+		if (turn.getIndex() == game.getAis().size() - 1) {
+			if (maxTurns == playedRounds) {
+				endGame("Die maximale Anzahl an Runden (" + maxTurns + ") wurde gespielt");
 				return;
 			}
 			round();
@@ -77,12 +79,11 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 	}
 	
 	/**
-	 * super.lost(Ai ai) MUSS AUFGERUFEN WERDEN!!
-	 * Es ist möglich, dass das Spiel vorbei ist, sobald diese Methode zurückgibt
+	 * super.lost(Ai ai) MUSS AUFGERUFEN WERDEN!! Es ist möglich, dass das Spiel vorbei ist, sobald diese Methode zurückgibt
 	 */
 	@Override
 	public void lost(Ai ai) {
-		if(ai == turn) {
+		if (ai == turn) {
 			turn();
 		}
 	}

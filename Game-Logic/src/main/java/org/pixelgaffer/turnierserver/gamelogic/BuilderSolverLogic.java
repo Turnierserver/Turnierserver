@@ -16,10 +16,14 @@ import org.pixelgaffer.turnierserver.gamelogic.messages.BuilderSolverResponse;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * @param <E> Das AiObject
- * @param <G> Der GameState
- * @param <B> Die BuilderResponse
- * @param <S> Die SolverResponse
+ * @param <E>
+ *            Das AiObject
+ * @param <G>
+ *            Der GameState
+ * @param <B>
+ *            Die BuilderResponse
+ * @param <S>
+ *            Die SolverResponse
  */
 public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G extends BuilderSolverGameState<?, B, S>, B, S> extends GameLogic<E, BuilderSolverResponse<B, S>> {
 	
@@ -100,8 +104,8 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	public void lost(Ai ai) {
 		logger.info("Ai hat verloren: " + ai.getIndex());
 		List<Ai> list = building ? getBuilder() : getSolver();
-		if(list.contains(ai)) {
-			if(!finished.contains(ai)) {
+		if (list.contains(ai)) {
+			if (!finished.contains(ai)) {
 				finished.add(ai);
 				failed(building, ai);
 				check();
@@ -110,34 +114,29 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	}
 	
 	@Override
-	protected void receive(BuilderSolverResponse<B, S> response, Ai ai) {		
-		if(finished.contains(ai)) {
-			logger.warning("Eine Ai hat 2 mal hintereinander ein Antwort geschickt!");
-			getUserObject(ai).loose();
+	protected void receive(BuilderSolverResponse<B, S> response, Ai ai) {
+		if (finished.contains(ai)) {
+			getUserObject(ai).loose("Die KI ist für diese Runde schon fertig und hat trotzdem noch einmal etwas gesendet");
 			return;
 		}
 		
-		if(getUserObject(ai).stopCalculationTimer()) {
-			logger.warning("Der Ai ist die Zeit ausgegangen");
+		if (getUserObject(ai).stopCalculationTimer()) {
 			return;
 		}
 		
 		Response<?> result = null;
-		if(building) {
-			if(response.build == null) {
-				logger.warning("Die Ai hat kein builder Objekt gesendet, obwohl sie eins hätte senden sollen!");
-				getUserObject(ai).loose();
+		if (building) {
+			if (response.build == null) {
+				getUserObject(ai).loose("Die KI hat kein Builder Objekt gesendet");
 				return;
 			}
 			
 			result = getUserObject(ai).building.build(response.build);
 			System.out.println(getUserObject(ai).building.getClass().getName());
 			logger.info("Wurde das Feld erfolgreich gebaut?: " + result.valid);
-		}
-		else {
-			if(response.solve == null) {
-				logger.warning("Die AI hat kein solver Objekt gesendet, obwohl sie eins hätte senden sollen!");
-				getUserObject(ai).loose();
+		} else {
+			if (response.solve == null) {
+				getUserObject(ai).loose("Die KI hat kein Solver Objekt gesendet");
 				return;
 			}
 			result = getUserObject(ai).solving.solve(response.solve);
@@ -145,10 +144,10 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 		
 		logger.info("Antwort, die gesendet wird: " + result);
 		
-		if(result.renderData != null) {
+		if (result.renderData != null) {
 			sendRenderData(result.renderData);
 		}
-		if(result.changes != null) {
+		if (result.changes != null) {
 			try {
 				BuilderSolverChange<Object> change = new BuilderSolverChange<>();
 				change.change = result.changes;
@@ -156,22 +155,20 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 				sendToAi(change, ai);
 				getUserObject(ai).startCalculationTimer(10);
 			} catch (IOException e) {
-				logger.critical("Die Antwort konnte nicht gesendet werden, die AI wird nun Automatisch verlieren");
-				getUserObject(ai).loose();
+				getUserObject(ai).loose("Es gab ein Problem mit der Kommunikation mit der KI");
 			}
 		}
-		if(result.finished) {
+		if (result.finished) {
 			logger.info("Die Aufgabe wurde beendet!");
-			if(getUserObject(ai).stopCalculationTimer()) {
+			if (getUserObject(ai).stopCalculationTimer()) {
 				logger.warning("Die ai hat keine Zeit mehr und hat nun verloren");
 				return;
 			}
 			finished.add(ai);
-			if(!result.valid) {
+			if (!result.valid) {
 				logger.info("Die Aufgabe wurde nicht erfolgreich beendet!");
 				failed(building, ai);
-			}
-			else {
+			} else {
 				logger.info("Die Aufgabe wurde erfolgreich beendet!");
 				succeeded(building, ai);
 				getUserObject(ai).succesful = true;
@@ -183,20 +180,19 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	}
 	
 	private void check() {
-		if(finished.size() != game.getAis().size()) {
+		if (finished.size() != game.getAis().size()) {
 			return;
 		}
 		
 		finished.clear();
 		
-		if(building) {
+		if (building) {
 			logger.info("Die Ais fangen nun an zu solven");
 			startSolving();
-		}
-		else {
+		} else {
 			round();
-			if(allRoundsPlayed()) {
-				endGame();
+			if (allRoundsPlayed()) {
+				endGame("Die maximale Anzahl an Runden (" + maxTurns + ") wurde gespielt");
 				logger.info("Das Spiel wurde erfolgreich beendet");
 				return;
 			}
@@ -209,13 +205,13 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 		building = false;
 		BuilderSolverChange<Object> change = new BuilderSolverChange<>();
 		change.building = false;
-		for(Ai ai : getSolver()) {
-			if(getUserObject(ai).lost) {
+		for (Ai ai : getSolver()) {
+			if (getUserObject(ai).lost) {
 				finished.add(ai);
 				return;
 			}
 			Ai builder = getBuilder(ai);
-			if(!getUserObject(builder).succesful || getUserObject(ai).lost) {
+			if (!getUserObject(builder).succesful || getUserObject(ai).lost) {
 				succeeded(false, ai);
 				finished.add(ai);
 				return;
@@ -228,7 +224,7 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 				sendToAi(change, ai);
 				getUserObject(ai).startCalculationTimer(10);
 			} catch (IOException e) {
-				getUserObject(ai).loose();
+				getUserObject(ai).loose("Es gab ein Problem mit der Kommunikation mit der KI");
 			}
 		}
 	}
@@ -237,8 +233,8 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 		building = true;
 		BuilderSolverChange<Object> change = new BuilderSolverChange<>();
 		change.building = true;
-		for(Ai ai : getBuilder()) {
-			if(getUserObject(ai).lost) {
+		for (Ai ai : getBuilder()) {
+			if (getUserObject(ai).lost) {
 				finished.add(ai);
 				continue;
 			}
@@ -248,9 +244,9 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 				sendToAi(change, ai);
 				getUserObject(ai).startCalculationTimer(10);
 			} catch (IOException e) {
-				getUserObject(ai).loose();
+				getUserObject(ai).loose("Es gab ein Problem mit der Kommunikation mit der KI");
 			}
 		}
 	}
-		
+	
 }
