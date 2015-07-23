@@ -36,11 +36,12 @@ struct Job
 	{
 	}
 	// standart-ctor
-	Job(int id, int version, const QUuid &uuid) : id(id), version(version), uuid(uuid)
+	Job(int id, int version, const QString &lang, const QUuid &uuid) : id(id), version(version), lang(lang), uuid(uuid)
 	{
 	}
 	
 	int id, version;
+	QString lang;
 	QUuid uuid;
 	
 	/// vergleicht die UUID dieses Auftrags und other
@@ -60,7 +61,7 @@ public slots:
 	/// fügt den Job zur Queue hinzu und führt ihn direkt aus wenn die Queue leer ist
 	void addJob (const Job &job);
 	/// fügt den Job zur Queue hinzu und führt ihn direkt aus wenn die Queue leer ist
-	void addJob (int id, int version, const QUuid &uuid) { addJob(Job{id, version, uuid}); }
+	void addJob (int id, int version, const QString &lang, const QUuid &uuid) { addJob(Job{id, version, lang, uuid}); }
 	
 	/// terminiert (= vom Worker/Backend befohlen) den Job mit der uuid
 	void terminateJob (const QUuid &uuid);

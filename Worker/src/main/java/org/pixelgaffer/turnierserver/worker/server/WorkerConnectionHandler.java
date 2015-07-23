@@ -69,10 +69,10 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	@Override
 	public void disconnected ()
 	{
-		WorkerMain.getLogger().info(type + (type.getType() == SANDBOX ? " (" + sandbox + ")" : "")
-				+ " hat die Verbindung getrennt.");
 		if (type != null)
 		{
+			WorkerMain.getLogger().info(type + (type.getType() == SANDBOX ? " (" + sandbox + ")" : "")
+					+ " hat die Verbindung getrennt.");
 			switch (type.getType())
 			{
 				case AI:
@@ -86,6 +86,8 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					break;
 			}
 		}
+		else
+			WorkerMain.getLogger().info(getClient().getIp() + " hat sich disconnected bevor er irgendwas gesendet hat");
 	}
 	
 	@Override
