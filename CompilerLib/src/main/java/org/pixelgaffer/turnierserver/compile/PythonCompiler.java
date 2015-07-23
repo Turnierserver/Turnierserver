@@ -63,7 +63,9 @@ public class PythonCompiler extends Compiler
 		PrintWriter script = new PrintWriter(new FileOutputStream(scriptFile));
 		script.println("#!/bin/sh");
 		// ## wenn libs pypy: pypy, p2k: python2
-		script.println("python3 wrapper.py \"" + p.getProperty("filename") + "\" ${@}");
+		script.println("pythonExecutable=python3");
+		script.println("if [ -x \"$2\" ]; then\n\tpythonExecutable=\"$2\"\nfi");
+		script.println("\"$pythonExecutable\" wrapper.py \"" + p.getProperty("filename") + "\" \"$1\"");
 		script.close();
 		setCommand(new String[] { "python3", "wrapper.py", p.getProperty("filename") });
 		output.println("fertig");

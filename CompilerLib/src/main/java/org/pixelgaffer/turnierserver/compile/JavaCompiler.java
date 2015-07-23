@@ -107,7 +107,7 @@ public class JavaCompiler extends Compiler
 			return false;
 		}
 		PrintWriter script = new PrintWriter(new FileOutputStream(scriptFile));
-		script.println("#!/bin/sh");
+		script.println("#!/bin/bash");
 		String mainclass = p.getProperty("mainclass");
 		if (!Pattern.matches("[a-zA-Z0-9_\\.]+", mainclass))
 		{
@@ -130,11 +130,13 @@ public class JavaCompiler extends Compiler
 		String command[] = { "java", "-classpath", classpath, "-Xmx500M", mainclass };
 		setCommand(command);
 		String commandStr = "";
-		for (String s : command)
-			commandStr += "'" + s + "' ";
+		for (int i = 1; i < command.length; i++)
+			commandStr += "'" + command[i] + "' ";
 		commandStr = commandStr.trim();
-		script.println("echo \"" + commandStr + "\"");
-		script.println(commandStr + " ${@}");
+		script.println("javaExecutable=java");
+		script.println("if [ -x \"$2\" ]; then\n\tjavaExecutable=\"$2\"\nfi");
+		script.println("echo \"\\\"$javaExecutable\\\" " + commandStr + " \\\"$1\\\"\"");
+		script.println("\"$javaExecutable\" " + commandStr + " \"$1\"");
 		script.close();
 		output.println("done");
 		
