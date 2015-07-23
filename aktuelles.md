@@ -1,4 +1,4 @@
-Chapter
+Aktuelle Infos
 =======
 
 Section

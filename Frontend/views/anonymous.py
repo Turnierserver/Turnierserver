@@ -71,10 +71,3 @@ def inprogress_game(id):
 
 	stream = url_for("api.game_inprogress_log", id=game.id)
 	return render_template(game.type.viz, game=game, inprogress=True, ai0=game.ais[0], ai1=game.ais[1], stream=stream)
-
-@anonymous_blueprint.route("/settings")
-def settings():
-	print(request.cookies)
-	current_gametype = GameType.selected(None, latest_on_none=False)
-	return render_template("settings.html", current_gametype=current_gametype,
-		latest_gametype=GameType.latest(), gametypes=GameType.query.all())

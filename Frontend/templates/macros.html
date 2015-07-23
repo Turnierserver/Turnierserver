@@ -21,3 +21,40 @@
 	</div>
 </div>
 {% endmacro %}
+
+{% macro render_settings(gametypes, current_gametype) %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.0.0-beta.1/js.cookie.min.js"></script>
+<div class="ui dropdown item" id="gametype">
+	<i class="settings icon"></i>
+	<div class="menu">
+		<div class="item">
+			<i class="dropdown icon"></i>
+			<span class="text">Spieltyp</span>
+			<div class="menu">
+				{% for gametype in gametypes %}
+					<div data-value="{{gametype.name}}" class="gt_select {% if gametype == current_gametype %}active {% endif %}item">{{gametype.name}}</div>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="item">#Yoloswag</div>
+		<div class="item" id="delete_all">Einstellungen zurücksetzen</div>
+	</div>
+</div>
+<script>
+$("#gametype").dropdown({
+	onChange: function(text, value, elem) {
+		console.log(text, value, elem)
+		if ($(elem).hasClass("gt_select")) {
+			console.log("setting gt to " + text);
+			Cookies.set("gametype", text);
+			location.reload();
+		}
+	}
+});
+
+$("#delete_all").on("click", function() {
+	Cookies.remove("gametype");
+	location.reload()
+});
+</script>
+{% endmacro %}
