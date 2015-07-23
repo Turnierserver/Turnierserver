@@ -31,11 +31,11 @@ class AiExecutor : public QObject
 	Q_OBJECT
 	
 public:
-	explicit AiExecutor (int id, int version, const QUuid &uuid);
+	explicit AiExecutor (int id, int version, const QString &lang, const QUuid &uuid);
 	
 	int id () const { return _id; }
 	int version () const { return _version; }
-	
+	QString lang () const { return _lang; }
 	QUuid uuid () const { return _uuid; }
 	
 public slots:
@@ -73,6 +73,7 @@ protected:
 	
 private:
 	int _id, _version;
+	QString _lang;
 	QUuid _uuid;
 	
 	// wenn Fehler aufgetreten sind

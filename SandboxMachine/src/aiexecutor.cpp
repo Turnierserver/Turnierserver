@@ -35,9 +35,10 @@
 #include <QRegularExpression>
 #include <QTemporaryDir>
 
-AiExecutor::AiExecutor (int id, int version, const QUuid &uuid)
+AiExecutor::AiExecutor (int id, int version, const QString &lang, const QUuid &uuid)
 	: _id(id)
 	, _version(version)
+	, _lang(lang)
 	, _uuid(uuid)
 {
 	// die UID herausfinden
@@ -271,7 +272,7 @@ void AiExecutor::executeAi ()
 	else if (pid == 0)
 	{
 		QString cmd = "sandboxd_helper -u " + QString::number(uid) + " -g " + QString::number(gid) + " -d \"" + binDir.absolutePath()
-				+ "\" -c \"./start.sh " + aiProp + "\"";
+				+ "\" -c \"./start.sh " + aiProp + " " + commands.value(lang()) + "\"";
 //				+ "\" -c id";
 		printf("$ %s\n", qPrintable(cmd));
 		int retval = system(qPrintable(cmd));
