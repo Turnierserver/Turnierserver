@@ -22,7 +22,7 @@ var data = {
 		}
 	]
 };
-var myLineChart = new Chart(document.getElementById("unterschied").getContext("2d")).Line(data);
+var diff_chart = new Chart(document.getElementById("unterschied").getContext("2d")).Line(data);
 
 function draw() {
 
