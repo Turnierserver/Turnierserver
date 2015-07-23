@@ -6,18 +6,22 @@ import org.pixelgaffer.turnierserver.gamelogic.messages.BuilderSolverResponse;
 import lombok.Getter;
 import lombok.Setter;
 
-
 /**
- * @param <C> Das Veränderungsobjekt, welches an die Ai gesendet werden soll
- * @param <B> Die BuildResponse
- * @param <B> Die SolveResponse
+ * @param <C>
+ *            Das Veränderungsobjekt, welches an die Ai gesendet werden soll
+ * @param <B>
+ *            Die BuildResponse
+ * @param <B>
+ *            Die SolveResponse
  */
 public abstract class BuilderSolverGameState<C, B, S> implements GameState<BuilderSolverChange<C>, BuilderSolverResponse<B, S>> {
 	
-	@Getter @Setter
+	@Getter
+	@Setter
 	private Ai ai;
 	
 	public static class Response<C> {
+		
 		/**
 		 * True wenn die Antwort der Ai valide war
 		 */
@@ -75,5 +79,5 @@ public abstract class BuilderSolverGameState<C, B, S> implements GameState<Build
 	public void clearChanges(Ai ai) {
 		throw new IllegalStateException();
 	}
-		
+	
 }

@@ -3,8 +3,8 @@ package org.pixelgaffer.turnierserver.gamelogic.interfaces;
 import java.io.IOException;
 import java.util.List;
 
-public interface Game
-{
+public interface Game {
+	
 	/**
 	 * Gibt die Liste mitden diesem Spiel angehörigen Ais zurück
 	 * 

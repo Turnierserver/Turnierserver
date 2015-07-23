@@ -20,4 +20,9 @@ public class GameFinished {
 	 * Die requestid des Frontendauftrages
 	 */
 	public int requestid;
+	/**
+	 * Der Grund, warum das Spiel beendet wurde
+	 */
+	public String reason;
+	
 }

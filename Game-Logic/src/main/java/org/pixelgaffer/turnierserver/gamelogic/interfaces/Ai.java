@@ -2,8 +2,8 @@ package org.pixelgaffer.turnierserver.gamelogic.interfaces;
 
 import java.io.IOException;
 
-public interface Ai
-{
+public interface Ai {
+	
 	/**
 	 * Gibt den Index in der Ai-List zurück
 	 * 
