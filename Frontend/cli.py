@@ -95,6 +95,25 @@ def _make_data_container(game_id):
 	gt.updated()
 
 
+def _add_gametype(name):
+	gt = GameType(name=name)
+	db.session.add(gt)
+	db.session.commit()
+
+	@ftp.safe
+	def f():
+		paths = ["Games/"+str(gt.id)]
+		for l in Lang.query:
+			b = "Games/{}/{}".format(gt.id, l.name)
+			paths.append(b)
+			paths.append(b+"/ailib")
+			paths.append(b+"/example_ai")
+		for p in paths:
+			print("MKDIR:", p)
+			ftp.ftp_host.mkdir(p)
+	f()
+	return gt
+
 def manage(manager, app):
 	@manager.command
 	def clean_db():
@@ -174,25 +193,4 @@ def manage(manager, app):
 	@manager.command
 	def add_gametype():
 		name = prompt("Name")
-		default_viz = "vizs/" + name.lower() + ".html"
-		viz = prompt("Visualisierungsdatei", default=default_viz)
-		if not prompt_bool("Spieltyp " + name + " erstellen?"):
-			return
-		gt = GameType(name=name, viz=viz)
-		db.session.add(gt)
-		db.session.commit()
-
-
-		@ftp.safe
-		def f():
-			paths = ["Games/"+str(gt.id)]
-			for l in Lang.query:
-				b = "Games/{}/{}".format(gt.id, l.name)
-				paths.append(b)
-				paths.append(b+"/ailib")
-				paths.append(b+"/example_ai")
-			for p in paths:
-				print("MKDIR:", p)
-				ftp.ftp_host.mkdir(p)
-
-		f()
+		_add_gametype(name)

@@ -14,7 +14,7 @@ from pprint import pprint
 from collections import defaultdict
 
 from database import AI, User, Game, Lang, GameType, db, populate, ftp, Game_inprogress, timestamp
-from cli import zipdir, _make_data_container
+from cli import zipdir, _make_data_container, _add_gametype
 from backend import backend
 from commons import authenticated, cache, CommonErrors
 from _cfg import env
@@ -1096,6 +1096,16 @@ def make_data_container(game_id):
 	_make_data_container(str(game_id))
 	return {"error": False}, 200
 
+@api.route("/add_gametype/<string:name>/")
+@json_out
+@admin_required
+def add_gametype(name):
+	if GameType.query(GameType.name == name).first():
+		return {"error": "GameType '" + name + "'already exists"}, 503
+	gt = _add_gametype(name)
+	ret = gt.info()
+	ret["error"] = False
+	return ret, 200
 
 @api.route("/upload_codr", methods=["POST"])
 @json_out

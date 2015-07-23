@@ -631,7 +631,6 @@ class GameType(db.Model):
 	__tablename__ = 't_gametypes'
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	name = db.Column(db.Text, nullable=False)
-	viz = db.Column(db.Text, nullable=False)
 	games = db.relationship("Game", order_by="Game.id", backref="GameType", cascade="all, delete, delete-orphan")
 	roles = db.relationship("GameTypeRole", backref="GameType", cascade="all, delete, delete-orphan")
 	last_modified = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
@@ -641,6 +640,11 @@ class GameType(db.Model):
 		db_obj_init_msg(self)
 		if not self.last_modified:
 			self.last_modified = timestamp()
+
+	@property
+	def viz(self):
+	    return "vizs/"+self.name.lower()+".html"
+
 
 	@classmethod
 	def latest(cls):
