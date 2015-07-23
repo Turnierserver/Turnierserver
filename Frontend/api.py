@@ -1102,7 +1102,7 @@ def make_data_container(game_id):
 @json_out
 @admin_required
 def add_gametype(name):
-	if GameType.query(GameType.name == name).first():
+	if GameType.query.filter(GameType.name == name).first():
 		return {"error": "GameType '" + name + "'already exists"}, 503
 	gt = _add_gametype(name)
 	ret = gt.info()
