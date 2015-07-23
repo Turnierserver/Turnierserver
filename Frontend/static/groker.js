@@ -6,26 +6,37 @@ var pane = {
 };
 
 
-
-var data = {
-	labels: [],
-	datasets: [
-		{
-			label: "Unterschied",
-			fillColor: "rgba(220,220,220,0.2)",
-			strokeColor: "rgba(220,220,220,1)",
-			pointColor: "rgba(220,220,220,1)",
-			pointStrokeColor: "#fff",
-			pointHighlightFill: "#fff",
-			pointHighlightStroke: "rgba(220,220,220,1)",
-			data: []
-		}
+var complete_diff_data = [];
+var diff_chart = new Chartist.Line('#unterschied', {
+	labels: ['1', '2', '3', '4'],
+	series: [
+		[-50, 0, 50, -100],
 	]
-};
-var diff_chart = new Chart(document.getElementById("unterschied").getContext("2d")).Line(data);
+}, {
+	fullWidth: true,
+	chartPadding: {
+		right: 40
+	}
+});
+
+
+function set_chart_data() {
+	//diff_data.datasets[0].data = complete_diff_data.slice(0, pane.step)
+	start = Math.max(0, pane.step - 20);
+	end = Math.min(complete_diff_data.length-1, pane.step + 20)
+	diff_chart.data.labels = []
+	diff_chart.data.series[0] = []
+	for (var i = start; i < end; i++) {
+		diff_chart.data.labels.push(i);
+		diff_chart.data.series[0].push(complete_diff_data[i]);
+	};
+	diff_chart.update();
+	// = complete_diff_data.slice(0, pane.step)
+}
 
 function draw() {
-
+	update();
+	var d = pane.data[pane.step];
 }
 
 $("#step_slider").slider({
@@ -43,9 +54,9 @@ $("#step_slider").slider({
 
 function update() {
 	var d = pane.data[pane.step];
-	if (d !== undefined) {
-		$("#ai_"+pane.name+"_output").val(d.output);
-	}
+	$.map(d.output, function(value, key) {
+		$("#ai_"+key+"_output").val(value);
+	})
 
 	if (pane.is_playing) {
 		$("#play_button").addClass("active");
@@ -54,6 +65,8 @@ function update() {
 		$("#play_button").removeClass("active");
 		$("#pause_button").addClass("active");
 	}
+
+	set_chart_data();
 }
 
 $(document).ready(function () {
@@ -77,7 +90,7 @@ $(document).ready(function () {
 		//NProgress.set(d.progress);
 		$("#step_slider").slider("option", "max", pane.data.length-1);
 		var values = $.map(d.wonChips, function (value, key) {return value})
-		diff_chart.addData([values[0] - values[1]], pane.data.length)
+		complete_diff_data.push(values[0] - values[1])
 		draw();
 	});
 

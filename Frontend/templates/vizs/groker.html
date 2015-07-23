@@ -2,7 +2,8 @@
 
 {% block viz %}
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/chartist/0.9.1/chartist.min.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/chartist/0.9.1/chartist.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css">
 <link href="//code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" rel="stylesheet">
@@ -17,7 +18,7 @@ canvas {
 	{% if current_user.can_access(ai) -%}
 	<div class="ui segment">
 		Debugausgaben von "{{ai.name}}":
-		<textarea id="ai_{{desc}}_output" style="width: 100%; height: auto; min-height: 20em;"></textarea>
+		<textarea id="ai_{{ai.id}}v{{ai.latest_qualified_version().version_id}}_output" style="width: 100%; height: auto; min-height: 20em;"></textarea>
 	</div>
 	{%- endif %}
 	{% endif %}
@@ -29,12 +30,10 @@ canvas {
 
 <div class="ui segment">
 	<center>
-		<canvas id="unterschied">
+		<div class="ct-chart ct-perfect-fourth" id="unterschied"></div>
+		<!--<canvas id="einsätze">
 			<h1>Du musst Javascript aktiviert haben, um Spiele zu sehen.</h1>
-		</canvas>
-		<canvas id="einsätze">
-			<h1>Du musst Javascript aktiviert haben, um Spiele zu sehen.</h1>
-		</canvas>
+		</canvas>-->
 	</center>
 
 	<div id="step_slider"></div>
