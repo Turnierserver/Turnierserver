@@ -9,8 +9,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Map;
-import java.util.logging.Logger;
 
+import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.PropertyUtils;
 
@@ -24,7 +24,7 @@ import com.google.gson.reflect.TypeToken;
  */
 public abstract class Ai<E, R> implements Runnable {
 
-    public static Logger logger = Logger.getLogger("Ai");
+    public static Logger logger = new Logger();
 
     /**
      * Die Connection zum Worker
@@ -54,7 +54,7 @@ public abstract class Ai<E, R> implements Runnable {
 	this.token = token;
 	try {
 	    PropertyUtils.loadProperties(args.length > 0 ? args[0] : "ai.prop");
-	    logger.fine("Connecting to " + PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST) + ":" + PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
+	    logger.info("Connecting to " + PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST) + ":" + PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
 	    con = new Socket(PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST), PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
 	    out = new PrintWriter(con.getOutputStream(), true);
 	    in = new BufferedReader(new InputStreamReader(con.getInputStream()));
