@@ -68,7 +68,7 @@ def inject_globals():
 		if current_user.is_authenticated():
 			logged_in = True
 
-	current_gametype = GameType.selected(None, latest_on_none=False)
+	current_gametype = GameType.selected(None, latest_on_none=True)
 	return dict(env=env, logged_in=logged_in, current_gametype=current_gametype,
 		latest_gametype=GameType.latest(), gametypes=GameType.query.all())
 
