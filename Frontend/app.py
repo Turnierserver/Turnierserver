@@ -15,7 +15,7 @@ from commons import cache
 from api import api, login_manager
 from views.anonymous import anonymous_blueprint
 from views.authenticated import authenticated_blueprint
-from database import db, refresh_session
+from database import db, refresh_session, GameType
 from backend import backend
 from _cfg import env
 from activityfeed import Activity
@@ -67,7 +67,10 @@ def inject_globals():
 	if current_user:
 		if current_user.is_authenticated():
 			logged_in = True
-	return dict(env=env, logged_in=logged_in)
+
+	current_gametype = GameType.selected(None, latest_on_none=False)
+	return dict(env=env, logged_in=logged_in, current_gametype=current_gametype,
+		latest_gametype=GameType.latest(), gametypes=GameType.query.all())
 
 
 db_session_timeout = time.time()

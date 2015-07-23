@@ -1,3 +1,5 @@
+{% from "macros.html" import render_settings %}
+
 {% set nav_menu = [
 	(url_for("anonymous.ai_list"), "ai_list", "KIs"),
 	(url_for("anonymous.user_list"), "user_list", "Nutzer"),
@@ -90,10 +92,7 @@
 				$('.ui.checkbox').checkbox();
 			</script>
 			{% endif %}
-			<div class="{{'active' if active_page == 'settings'}} item" style="cursor: pointer;">
-				<i class="settings icon" style="font-size: 1.5em;" onclick="location.href='/settings'"></i>
-				<!-- ## -->
-			</div>
+			{{render_settings(gametypes=gametypes, current_gametype=current_gametype)}}
 		</div>
 	</nav>
 	{% block rawbody %}
