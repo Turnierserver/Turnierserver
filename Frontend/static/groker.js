@@ -76,7 +76,7 @@ $(document).ready(function () {
 		pane.data.push(d);
 		//NProgress.set(d.progress);
 		$("#step_slider").slider("option", "max", pane.data.length-1);
-		var values = $.map(d.wallet, function (value, key) {return value})
+		var values = $.map(d.wonChips, function (value, key) {return value})
 		diff_chart.addData([values[0] - values[1]], pane.data.length)
 		draw();
 	});
