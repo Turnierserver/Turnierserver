@@ -663,6 +663,13 @@ class GameType(db.Model):
 	def info(self):
 		return {"id": self.id, "name": self.name, "last_modified": self.last_modified}
 
+	def delete(self):
+		print("Deleting", self)
+		for ai in AI.query.filter(AI.type == self):
+			ai.delete()
+		db.session.delete(self)
+		db.session.commit()
+
 	def __repr__(self):
 		return "<GameType(id={}, name={})>".format(self.id, self.name)
 
