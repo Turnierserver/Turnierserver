@@ -110,10 +110,11 @@ void WorkerClient::readyRead ()
 			{
 				int id = json.value("id").toInt();
 				int version = json.value("version").toInt();
+				QString lang = json.value("lang").toString();
 				QUuid uuid = json.value("uuid").toVariant().toUuid();
 				LOG_INFO << "Auftrag erhalten: Run AI " + QString::number(id) + "v" + QString::number(version) + " " + uuid.toString();
 				
-				jobControl.addJob(id, version, uuid);
+				jobControl.addJob(id, version, lang, uuid);
 			}
 			else if (cmd == "T")
 			{
