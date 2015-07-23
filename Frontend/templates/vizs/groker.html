@@ -1,0 +1,62 @@
+{% extends "game.html" %}
+
+{% block viz %}
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css">
+<link href="//code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" rel="stylesheet">
+<style type="text/css">
+canvas {
+	width: 100%;
+}
+</style>
+
+{% macro render_output(ai, side, desc) -%}
+	{% if logged_in %}
+	{% if current_user.can_access(ai) -%}
+	<div class="ui segment">
+		Debugausgaben von "{{ai.name}}":
+		<textarea id="ai_{{desc}}_output" style="width: 100%; height: auto; min-height: 20em;"></textarea>
+	</div>
+	{%- endif %}
+	{% endif %}
+{%- endmacro %}
+
+
+
+
+
+<div class="ui segment">
+	<center>
+		<canvas id="unterschied">
+			<h1>Du musst Javascript aktiviert haben, um Spiele zu sehen.</h1>
+		</canvas>
+		<canvas id="einsätze">
+			<h1>Du musst Javascript aktiviert haben, um Spiele zu sehen.</h1>
+		</canvas>
+	</center>
+
+	<div id="step_slider"></div>
+
+	<div class="ui two column grid">
+		<div class="column">
+			<div class="ui horizontal segment">
+				{{render_output(ai0, "left", "left")}}
+			</div>
+		</div>
+		<div class="column">
+			<div class="ui horizontal segment">
+				{{render_output(ai1, "right", "right")}}
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$(".ui.popup").popup();
+</script>
+
+<script id="game_script" type="text/javascript" src="{{url_for('static', filename='groker.js')}}" stream="{{stream}}"></script>
+
+{% endblock %}
