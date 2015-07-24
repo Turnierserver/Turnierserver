@@ -25,7 +25,7 @@ public class GameOnline extends GameBase {
 		JSONArray aiArray = json.getJSONArray("ais");
 		for(int i = 0; i < aiArray.length(); i++) {
 			JSONObject aiObject = aiArray.getJSONObject(i);
-			ais.add(new AiOnline(json, connector));
+			ais.add(new AiOnline(json, connector, false));
 		}
 	}
 	
