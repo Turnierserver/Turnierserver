@@ -90,9 +90,10 @@ public class ControllerStartPage {
 			clickTheme(newValue);
 		});
 		
-		cbGameTypes.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-			MainApp.actualGameType.set(newValue);
+		MainApp.actualGameType.bindBidirectional(cbGameTypes.valueProperty());
+		cbGameTypes.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			MainApp.aiManager.loadAis();
+			mainApp.loadOnlineAis();
 		});
 		
 		cbGameTypes.setItems(MainApp.gametypes);
