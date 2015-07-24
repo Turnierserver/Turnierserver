@@ -1125,3 +1125,28 @@ def download_codr():
 		else:
 			abort(503)
 	return f()
+
+@api.route("/upload_simple_player/<int:game_id>/<string:lang>/", methods=["POST"])
+@json_out
+@admin_required
+def upload_simple_player(game_id, lang):
+	if request.mimetype == "multipart/form-data":
+		if len(request.files) != 1:
+			return {"error": "Invalid number of files attached."}, 400
+		content = list(request.files.values())[0].read()
+	else:
+		content = request.data
+
+	tmpdir = tempfile.mkdtemp()
+	_, tmpzip = tempfile.mkstemp()
+
+	with open(tmpzip, "wb") as f:
+		f.write(content)
+	with zipfile.ZipFile(tmpzip, "r") as zipf:
+		zipf.extractall(tmpdir)
+
+	@ftp.safe
+	def f():
+		ftp.upload_tree(tmpzip, "Games/"+str(game_id)+"/"+lang+"/example_ai", overwrite=True)
+		return {"error": False}, 200
+	return f()

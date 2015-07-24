@@ -643,7 +643,7 @@ class GameType(db.Model):
 
 	@property
 	def viz(self):
-	    return "vizs/"+self.name.lower()+".html"
+		return "vizs/" + self.name.lower().replace(" ", "") + ".html"
 
 
 	@classmethod
