@@ -3,11 +3,11 @@ import socket
 import json
 import sys
 import time
-from activityfeed import Activity
 import threading
 from queue import Queue, Empty
 from weakref import WeakSet
 from database import db, Game, AI
+from commons import logger
 
 from pprint import pprint
 
@@ -32,15 +32,14 @@ class Backend(threading.Thread):
 			return False
 
 	def connect(self):
-		a = Activity('Verbinde zum Backend @ {}:{}'.format(env.backend_url, env.backend_port))
+		logger.info('Verbinde zum Backend @ {}:{}'.format(env.backend_url, env.backend_port))
 		try:
 			self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			self.sock.connect((env.backend_url, env.backend_port))
 			self.sock.sendall(b"")
 			self.connected = True
 		except socket.error as e:
-			print(e)
-			a.extratext = str(e)
+			logger.error(e)
 			self.sock = None
 			self.connected = False
 
@@ -54,7 +53,7 @@ class Backend(threading.Thread):
 		self.requests[reqid] = d
 		self.send_dict(d)
 		self.requests[reqid]["queue"] = Queue()
-		Activity("Backend [{}]: Kompilierung von {} gestartet".format(reqid, ai.name))
+		logger.info("Backend [{}]: Kompilierung von {} gestartet".format(reqid, ai.name))
 		return reqid
 
 
@@ -116,8 +115,8 @@ class Backend(threading.Thread):
 		d = {'action': 'start', 'ais': [], 'gametype': ais[0].type.id, 'requestid': reqid}
 		for ai in ais:
 			if not ai.latest_qualified_version():
-				print(ais)
-				print(ai)
+				logger.debug(ais)
+				logger.debug(ai)
 				raise RuntimeError("Nich qualifizierte KI in request_game()")
 			d['ais'].append(str(ai.id) + 'v' + str(ai.latest_qualified_version().version_id))
 		self.requests[reqid] = d
@@ -129,7 +128,7 @@ class Backend(threading.Thread):
 		self.requests[reqid]["ai_objs"] = ais
 		self.requests[reqid]["states"] = []
 		self.requests[reqid]["status_text"] = "In Wartschlange"
-		Activity("Backend[{}]: Spiel mit {} gestartet".format(reqid, [ai.name for ai in ais]))
+		logger.info("Backend[{}]: Spiel mit {} gestartet".format(reqid, [ai.name for ai in ais]))
 		return reqid
 
 	def request_qualify(self, ai):
@@ -145,7 +144,7 @@ class Backend(threading.Thread):
 		self.requests[reqid]["ai1"] = AI.query.get(-ai.type.id)
 		self.requests[reqid]["ai_objs"] = [ai, AI.query.get(-ai.type.id)]
 		self.requests[reqid]["states"] = []
-		Activity("Backend[{}]: Quali-Spiel mit '{}' gestartet".format(reqid, ai.name))
+		logger.info("Backend[{}]: Quali-Spiel mit '{}' gestartet".format(reqid, ai.name))
 		return reqid
 
 	def send_dict(self, d):
@@ -159,18 +158,18 @@ class Backend(threading.Thread):
 
 	def parse(self, d):
 		if not "requestid" in d:
-			print("Invalid Response!")
+			logger.warning("Invalid Response!")
 			pprint(d)
 			return
 
 		reqid = d["requestid"]
 
 		if not reqid in self.requests:
-			print("Requestid isnt known ({})".format(reqid))
+			logger.warning("Requestid isnt known ({})".format(reqid))
 			pprint(d)
 			return
 
-		#Activity("Backend [{}]: {}".format(reqid, d))
+		#logger.info("Backend [{}]: {}".format(reqid, d))
 		pprint(d)
 
 		self.requests[reqid].update(d)
@@ -181,9 +180,9 @@ class Backend(threading.Thread):
 				if not self.app:
 					raise RuntimeError("Spiel vor verbindung mit App")
 				with self.app.app_context():
-					print("game finished!")
+					logger.info("game finished!")
 					g = Game.from_inprogress(self.requests[reqid])
-					print(g)
+					logger.debug(g)
 					self.requests[reqid]["finished_game_obj"] = g
 					pprint(self.requests[reqid])
 
@@ -209,12 +208,12 @@ class Backend(threading.Thread):
 		try:
 			return self.requests[reqid]["queue"].get(timeout=timeout)
 		except Empty:
-			print("TIMEOUT FOR", reqid)
+			logger.debug("TIMEOUT FOR " + reqid)
 			return False
 
 	def subscribe_game_update(self):
-		print("New SSe")
-		print(len(self.game_update_queues))
+		logger.debug("New SSe")
+		logger.debug(len(self.game_update_queues))
 		q = Queue()
 		self.game_update_queues.add(q)
 		return q
@@ -264,7 +263,7 @@ class Backend(threading.Thread):
 				elif "success" in update:
 					yield update, "success"
 				else:
-					print("no data in frame.", update)
+					logger.debug("no data in frame. " + update)
 				if "finished_game_obj" in d:
 					yield (d["finished_game_obj"], "finished_game_obj")
 			except Empty:
@@ -273,7 +272,7 @@ class Backend(threading.Thread):
 
 
 	def run(self):
-		Activity("Backend Thread running!")
+		logger.info("Backend Thread running!")
 		self.listen()
 
 	def listen(self):
@@ -283,10 +282,9 @@ class Backend(threading.Thread):
 			if self.connected:
 				r = self.sock.recv(1024*1024).decode("utf-8")
 				if r == '':
-					print(".", end="")
 					time.sleep(10)
 					continue
-				print('recvd', r)
+				logger.debug('recvd ' + r)
 				## zerstückelte blöcke?
 				for d in r.split("\n"):
 					if d == '':
@@ -297,7 +295,7 @@ class Backend(threading.Thread):
 					else:
 						self.parse(json.loads(d))
 			else:
-				print("No connection to Backend...")
+				logger.debug("No connection to Backend...")
 				time.sleep(3*60)
 
 

@@ -16,9 +16,8 @@ from collections import defaultdict
 from database import AI, User, Game, Lang, GameType, db, populate, ftp, Game_inprogress, timestamp
 from cli import zipdir, _make_data_container, _add_gametype
 from backend import backend
-from commons import authenticated, cache, CommonErrors
+from commons import authenticated, cache, CommonErrors, logger
 from _cfg import env
-from activityfeed import Activity
 from sse import sse_stream
 
 
@@ -180,7 +179,7 @@ def game_inprogress_log(id):
 		elif data_type == "finished_game_obj":
 			yield url_for("anonymous.game", id=data.id), "game_finished"
 		else:
-			print("invalid log_sse type:", data_type, data)
+			logger.error("invalid log_sse type: " + data_type + " " + data)
 
 
 @api.route("/users", methods=["GET"])
@@ -218,7 +217,7 @@ def api_user_update(id):
 	if not current_user.can_access(user):
 		return CommonErrors.NO_ACCESS
 
-	a = Activity("User " + user.name + " geaendert")
+	a = logger.info("User " + user.name + " geaendert")
 	a.extratext = str(user) + " -> "
 
 	user.firstname = request.form.get('firstname', user.firstname)
@@ -292,7 +291,7 @@ def api_user_delete(id):
 	if not current_user.can_access(user):
 		return CommonErrors.NO_ACCESS
 
-	Activity("User " + user.name + " von " + current_user.name + " geloescht!")
+	logger.info("User " + user.name + " von " + current_user.name + " geloescht!")
 	user.delete()
 	return {"error": False}
 
@@ -315,7 +314,7 @@ def activate(id, uuid):
 		return CommonErrors.INVALID_ID
 
 	if user.validate(uuid):
-		Activity(user.name + " hat sich erfolgreich validiert.")
+		logger.info(user.name + " hat sich erfolgreich validiert.")
 		flash("Dein Account ist jetzt aktiviert.", "info")
 		login_user(user)
 		return redirect("/")
@@ -357,7 +356,7 @@ def api_login():
 	login_user(user, remember=remember)
 	flash("Du hast dich eingeloggt.", "positive")
 
-	Activity(user.name + " hat sich erfolgreich eingeloggt.")
+	logger.info(user.name + " hat sich erfolgreich eingeloggt.")
 
 	return {'error': False}
 
@@ -485,7 +484,6 @@ def upload_single_file(request, path, image=False):
 
 	if image:
 		mime = magic.from_buffer(content, mime=True).decode("ascii")
-		print(mime, magic.from_buffer(content))
 		if not "image/" in mime:
 			## no gifs?
 			return {"error": "Invalid mimetype for an image.", "mimetype": mime}, 400
@@ -556,7 +554,7 @@ def api_ai_update(id):
 	if not current_user.can_access(ai):
 		return CommonErrors.NO_ACCESS
 
-	a = Activity("AI " + ai.name + " geaendert")
+	a = logger.info("AI " + ai.name + " geaendert")
 	a.extratext = str(ai) + " -> "
 
 	ai.set_name(request.form.get('name', ai.name))
@@ -615,7 +613,7 @@ def api_ai_delete(id):
 	if not current_user.can_access(ai):
 		return CommonErrors.NO_ACCESS
 
-	Activity("AI " + ai.name + " von " + current_user.name + " geloescht!")
+	logger.info("AI " + ai.name + " von " + current_user.name + " geloescht!")
 	ai.delete()
 	return {"error": False}
 
@@ -909,16 +907,16 @@ def start_game():
 		return CommonErrors.INVALID_ID
 
 	ais = request.form.getlist("ai[]")
-	print(ais)
+	logger.debug(ais)
 	for i1, ai1 in enumerate(ais):
 		for i2, ai2 in enumerate(ais):
 			if i1 != i2 and ai1 == ai2:
-				print("Nen Gegen die selben KIs")
-				print(ais)
+				logger.warning("Nen Gegen die selben KIs")
+				logger.warning(ais)
 				return {"error": "No duplicate AIs allowed."}, 400
 
 	ais = [AI.query.get(ai) for ai in ais]
-	print(ais)
+	logger.debug(ais)
 	if not all(ais):
 		return CommonErrors.INVALID_ID
 
@@ -939,21 +937,12 @@ def start_game():
 @json_out
 @admin_required
 def admin_ftp_sync():
-	Activity(current_user.name + " hat FTP-Sync ausgelöst.")
+	logger.info(current_user.name + " hat FTP-Sync ausgelöst.")
 	for ai in AI.query.all():
 		try:
 			ai.updated()
 		except ftp.err:
-			print("failed to Sync " + ai.name)
-	return {"error": False}
-
-@api.route("/admin/clear_db")
-@json_out
-@admin_required
-def admin_clear_db():
-	Activity(current_user.name + " hat Datenbanklöschung ausgelöst.")
-	db.drop_all()
-	populate()
+			logger.error("failed to Sync " + ai.name)
 	return {"error": False}
 
 
@@ -1035,7 +1024,7 @@ def upload_game_libs(id, lang):
 	try:
 		return f()
 	except ftp.err:
-		print("FTP ERR @ upload_game_libs")
+		logger.error("FTP ERR @ upload_game_libs")
 		return CommonErrors.FTP_ERROR
 
 @api.route("/upload_game_logic/<int:id>", methods=["POST"])
@@ -1066,7 +1055,6 @@ def lib(lang, name, version):
 		ftp.download_tree(p, tmpdir)
 
 		_, tmpzip_path = tempfile.mkstemp()
-		print(tmpzip_path)
 
 		currdir = os.getcwd()
 		os.chdir(tmpdir)

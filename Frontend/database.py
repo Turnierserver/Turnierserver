@@ -1,7 +1,7 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask import send_file, abort, request
 from _cfg import env
-from activityfeed import Activity
+from commons import logger
 from io import BytesIO
 from functools import wraps
 from threading import RLock
@@ -31,8 +31,8 @@ def refresh_session():
 	try:
 		db.session.query(User).first()
 	except sqlalchemy.exc.OperationalError:
-		print("OperationalError abgefangen")
-	print("refreshed session.")
+		logger.debug("OperationalError abgefangen")
+	logger.debug("refreshed session.")
 
 class SyncedFTPError(Exception):
 	pass
@@ -45,7 +45,7 @@ class SyncedFTP:
 		self.err = SyncedFTPError
 
 	def connect(self):
-		Activity("Verbinde zum FTP @ " + env.ftp_url)
+		logger.info("Verbinde zum FTP @ " + env.ftp_url)
 		self.ftp_host = ftputil.FTPHost(env.ftp_url, env.ftp_uname, env.ftp_pw, timeout=10)
 
 
@@ -71,12 +71,12 @@ class SyncedFTP:
 							self.connect()
 						return meth(*args, **kwargs)
 					except (ftputil.error.FTPError, socket.error) as e:
-						print(e)
+						logger.warning(e)
 						self.connect()
 						raise e
 				except (ftputil.error.FTPError, socket.error) as e:
-					print(e)
-					Activity("SL_FTP_E "+str(e))
+					logger.warning(e)
+					logger.info("SL_FTP_E "+str(e))
 					raise self.err()
 		return wrapper
 
@@ -87,12 +87,12 @@ class SyncedFTP:
 		return f(path)
 
 	def send_file(self, path):
-		print("Downloading from FTP: ", path)
+		logger.debug("Downloading from FTP: " + path)
 		if not self.ftp_host.path.exists(path):
-			Activity("Datei '" + path + "' existiert auf dem FTP nicht.")
+			logger.info("Datei '" + path + "' existiert auf dem FTP nicht.")
 			abort(404)
 		with self.ftp_host.open(path, "rb") as remote_obj:
-			print(path)
+			logger.debug(path)
 			data = remote_obj.read()
 			f = BytesIO(data)
 			f.seek(0)
@@ -102,24 +102,24 @@ class SyncedFTP:
 		pass
 
 	def copy_tree(self, from_dir, to_dir, overwrite=True):
-		print("COPY_TREE", from_dir, to_dir, overwrite)
+		logger.info(" ".join("COPY_TREE ", from_dir, to_dir, overwrite))
 		@self.safe
 		def f():
 			if overwrite:
 				if self.ftp_host.path.isdir(to_dir):
-					print("DEL:", to_dir)
+					logger.debug("DEL: " + to_dir)
 					self.ftp_host.rmtree(to_dir)
-				print("MKDIR:", to_dir)
+				logger.debug("MKDIR: " + to_dir)
 				self.ftp_host.mkdir(to_dir)
 
 			for root, dirs, files in self.ftp_host.walk(from_dir, topdown=True, followlinks=False):
 				t_dir = to_dir + root[len(from_dir):] + "/"
 				s_dir = root + "/"
 				for d in dirs:
-					print("MKDIR:", t_dir + d)
+					logger.debug("MKDIR: " + t_dir + d)
 					self.ftp_host.mkdir(t_dir+d)
 				for f in files:
-					print(s_dir+f, "->", t_dir+f)
+					logger.debug(s_dir+f + " -> " + t_dir+f)
 					with self.ftp_host.open(s_dir+f, "r", encoding="utf-8") as source:
 						with self.ftp_host.open(t_dir+f, "w", encoding="utf-8") as target:
 							target.write(source.read())
@@ -128,7 +128,7 @@ class SyncedFTP:
 		try:
 			return f()
 		except self.err:
-			print("copy_tree failed!")
+			logger.warning("copy_tree failed!")
 			return False
 
 	def upload_tree(self, from_dir, to_dir, overwrite=True):
@@ -136,64 +136,62 @@ class SyncedFTP:
 		def f():
 			if overwrite:
 				if self.ftp_host.path.isdir(to_dir):
-					print("DEL:", to_dir)
+					logger.debug("DEL: " + to_dir)
 					self.ftp_host.rmtree(to_dir)
-				print("MKDIR:", to_dir)
+				logger.debug("MKDIR: " + to_dir)
 				self.ftp_host.mkdir(to_dir)
 
 			for root, dirs, files in os.walk(from_dir, topdown=True, followlinks=False):
 				t_dir = to_dir + root[len(from_dir):] + "/"
 				s_dir = root + "/"
 				for d in dirs:
-					print("MKDIR:", t_dir + d)
+					logger.debug("MKDIR: " + t_dir + d)
 					self.ftp_host.mkdir(t_dir+d)
 				for f in files:
-					print(s_dir+f, "->", t_dir+f)
+					logger.debug(s_dir+f + " -> " + t_dir+f)
 					self.ftp_host.upload(s_dir+f, t_dir+f)
 			return True
 
 		try:
 			return f()
 		except self.err:
-			print("upload_tree failed!")
+			logger.warning("upload_tree failed!")
 			return False
 
 
 	def download_tree(self, from_dir, to_dir, overwrite=True):
-		print("DOWNLOAD_TREE", from_dir, to_dir)
+		logger.info("DOWNLOAD_TREE " + from_dir + " " + to_dir)
 		@self.safe
 		def f():
 			if overwrite:
 				if os.path.isdir(to_dir):
-					print("DEL:", to_dir)
+					logger.debug("DEL: " + to_dir)
 					shutil.rmtree(to_dir)
-				print("MKDIR:", to_dir)
+				logger.debug("MKDIR: " + to_dir)
 				os.mkdir(to_dir)
 
 			for root, dirs, files in self.ftp_host.walk(from_dir, topdown=True, followlinks=False):
 				t_dir = to_dir + root[len(from_dir):] + "/"
 				s_dir = root + "/"
 				for d in dirs:
-					print("MKDIR:", t_dir + d)
+					logger.debug("MKDIR: " + t_dir + d)
 					self.ftp_host.mkdir(t_dir+d)
 				for f in files:
-					print(s_dir+f, "->", t_dir+f)
+					logger.debug(s_dir+f + " -> " + t_dir+f)
 					self.ftp_host.download(s_dir+f, t_dir+f)
 			return True
 
 		try:
 			return f()
 		except self.err:
-			print("upload_tree failed!")
+			logger.warning("upload_tree failed!")
 			return False
 
 
 ftp = SyncedFTP()
 
 def db_obj_init_msg(obj):
-	import inspect
-	callername = inspect.getouterframes(inspect.currentframe(), 2)[5][3]
-	Activity(str(obj) + " erschafft.", extratext="Aufgerufen von '" + callername + "'.")
+	logger.debug(str(obj) + " erschafft.")
 
 class User(db.Model):
 	__tablename__ = 't_users'
@@ -217,7 +215,7 @@ class User(db.Model):
 	def validate(self, uuid):
 		if self.validation_code == uuid:
 			self.validation_code = None
-			print("sucessfully validated", self.name)
+			logger.info("sucessfully validated " + self.name)
 			db.session.commit()
 		return self.validated
 
@@ -336,7 +334,7 @@ class AI(db.Model):
 		try:
 			f()
 		except ftp.err:
-			print("Icon reset failed")
+			logger.warning("Icon reset failed")
 
 		db_obj_init_msg(self)
 
@@ -389,13 +387,13 @@ class AI(db.Model):
 			try:
 				self.ftp_sync()
 			except ftp.err:
-				print("Failed to sync", self.name)
+				logger.warning("Failed to sync " + self.name)
 				return False
 		return True
 
 	@ftp.safe
 	def ftp_sync(self):
-		print("FTP-Sync von " + self.name)
+		logger.info("FTP-Sync von " + self.name)
 		bd = "AIs/"+str(self.id)
 		if not ftp.ftp_host.path.isdir(bd):
 			ftp.ftp_host.mkdir(bd)
@@ -501,12 +499,12 @@ class AI_Version(db.Model):
 
 		@ftp.safe
 		def f():
-			print("removing AI_Version data...")
+			logger.info("removing AI_Version data...")
 			ftp.ftp_host.rmtree(path)
 		try:
 			f()
 		except ftp.err:
-			print("couldn't delete version data!")
+			logger.warning("couldn't delete version data!")
 
 		db.session.delete(self)
 		db.session.commit()
@@ -583,11 +581,11 @@ class Game(db.Model):
 	@classmethod
 	def from_inprogress(cls, d):
 		if "exception" in d:
-			print("Game Exception!", d["exception"])
+			logger.info("Game Exception! " + str(d["exception"]))
 			return
 		ais = [d["ai0"], d["ai1"]]
-		print(ais)
-		print(ais[0] == ais[1])
+		logger.debug(ais)
+		logger.debug(ais[0] == ais[1])
 		g = Game(type=ais[0].type)
 		g.log = d["states"]
 		db.session.add(g)
@@ -668,7 +666,7 @@ class GameType(db.Model):
 		return {"id": self.id, "name": self.name, "last_modified": self.last_modified}
 
 	def delete(self):
-		print("Deleting", self)
+		logger.info("Deleting " + self)
 		for ai in AI.query.filter(AI.type == self):
 			ai.delete()
 		db.session.delete(self)
