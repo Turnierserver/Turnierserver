@@ -76,8 +76,8 @@
 
 
 	var editor = ace.edit("editor");
-	var font_size = 12;
-	//editor.setTheme("ace/theme/monokai");
+	if (Cookies.get("editor_theme"))
+		editor.setTheme(Cookies.get("editor_theme"));
 	editor.getSession().setMode("ace/mode/{{ai.lang.ace_name}}");
 	{% if readonly %}
 	editor.setReadOnly(true);
@@ -94,23 +94,33 @@
 		upload(editor)
 	});
 
+
+	var font_size = 14;
+	if (Cookies.get("editor_font_size"))
+		font_size = parseInt(Cookies.get("editor_font_size"));
+	$("#editor").css("font-size", font_size);
+	console.log(font_size)
+
 	console.log("editorized, mode: ace/mode/{{ai.lang.ace_name}}")
 
 	$(".ui.dropdown").dropdown({
 		onChange: function(text, value) {
 			editor.setTheme("ace/theme/"+text);
+			Cookies.set("editor_theme", "ace/theme/"+text);
 		}
 	});
 
 	$("#increase_font_size").on("click", function() {
 		font_size++;
 		$("#editor").css("font-size", font_size);
+		Cookies.set("editor_font_size", font_size);
 	});
 
 	$("#decrease_font_size").on("click", function() {
 		font_size--;
 		font_size = Math.max(font_size, 5);
 		$("#editor").css("font-size", font_size);
+		Cookies.set("editor_font_size", font_size);
 	});
 
 	</script>
