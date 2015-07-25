@@ -138,8 +138,13 @@ public abstract class GameLogic<E extends AiObject, R> {
 		if (getUserObject(ai).lost) {
 			return;
 		}
-		if (new String(message, StandardCharsets.UTF_8).equals("SURRENDER")) {
+		String string = new String(message, StandardCharsets.UTF_8);
+		if (string.equals("SURRENDER")) {
 			getUserObject(ai).loose("Die KI hat Aufgegeben");
+			return;
+		}
+		if (string.startsWith("CRASH ")) {
+			getUserObject(ai).loose("Die KI ist gecrashed: " + string.substring("CRASH ".length()));
 			return;
 		}
 		try {
