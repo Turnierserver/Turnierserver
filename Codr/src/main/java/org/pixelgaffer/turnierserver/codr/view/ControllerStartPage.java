@@ -7,6 +7,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 
+import org.pixelgaffer.turnierserver.codr.MainApp;
+import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
+import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.codr.utilities.Settings;
+
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -26,12 +31,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-
-import org.pixelgaffer.turnierserver.codr.MainApp;
-import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
-import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.codr.utilities.Settings;
-import org.pixelgaffer.turnierserver.codr.utilities.WebConnector;
 
 
 
@@ -93,7 +92,7 @@ public class ControllerStartPage {
 		MainApp.actualGameType.bindBidirectional(cbGameTypes.valueProperty());
 		cbGameTypes.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			MainApp.aiManager.loadAis();
-			mainApp.loadOnlineAis();
+			mainApp.loadOnlineRanking();
 		});
 		
 		cbGameTypes.setItems(MainApp.gametypes);

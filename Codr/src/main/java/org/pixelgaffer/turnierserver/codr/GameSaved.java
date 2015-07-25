@@ -18,22 +18,23 @@ import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 
 
-
 public class GameSaved extends GameBase {
-	
-	
-	public GameSaved(String idOrLogic, GameMode mmode) {
-		super(mmode);
-		if (mode == GameMode.saved) {
-			ID = idOrLogic;
-			loadProps();
-		} else if (mode == GameMode.playing) {
-			logic = idOrLogic;
-			getNewID();
-		}
+
+
+	public GameSaved(String llogic) {
+		super(GameMode.playing);
+		logic = llogic;
+		getNewID();
 	}
-	
-	
+
+
+	public GameSaved(int iid) {
+		super(GameMode.saved);
+		ID = iid;
+		loadProps();
+	}
+
+
 	public void loadProps() {
 		if (mode != GameMode.saved && mode != GameMode.playing) {
 			ErrorLog.write("dies ist kein lesbares Objekt (Game.loadProps)");
@@ -49,63 +50,63 @@ public class GameSaved extends GameBase {
 			logic = prop.getProperty("logic");
 			state = prop.getProperty("state");
 			judged = prop.getProperty("judged");
-			
+
 			int amount = Integer.parseInt(prop.getProperty("participantAmount"));
 			for (int i = 0; i < amount; i++) {
 				participants.get(i).playerName.set(prop.getProperty("playerName" + participants.get(i).number));
-				participants.get(i).kiName.set(prop.getProperty("kiName" + participants.get(i).number));
+				participants.get(i).aiName.set(prop.getProperty("kiName" + participants.get(i).number));
 				participants.get(i).duration.set(prop.getProperty("duration" + participants.get(i).number));
 				participants.get(i).moveCount.set(prop.getProperty("moveCount" + participants.get(i).number));
 				participants.get(i).points.set(prop.getProperty("points" + participants.get(i).number));
 				participants.get(i).won.set(prop.getProperty("won" + participants.get(i).number));
 			}
-			
+
 		} catch (IOException e) {
 			ErrorLog.write("Fehler bei Laden aus der properties.txt (Game)");
 		}
 	}
-	
-	
+
+
 	public void storeProps() {
 		if (mode != GameMode.playing) {
 			ErrorLog.write("dies ist kein speicherbares Objekt (Game.storeProps)");
 			return;
 		}
-		
-		if (ID == null) {
+
+		if (ID == -1) {
 			getNewID();
 		}
-		
+
 		Properties prop = new Properties();
 		prop.setProperty("date", date);
 		prop.setProperty("duration", duration);
 		prop.setProperty("logic", logic);
 		prop.setProperty("state", state);
 		prop.setProperty("judged", judged);
-		
+
 		prop.setProperty("participantAmount", participants.size() + "");
 		for (int i = 0; i < participants.size(); i++) {
 			prop.setProperty("playerName" + participants.get(i).number.get(), participants.get(i).playerName.get());
-			prop.setProperty("kiName" + participants.get(i).number.get(), participants.get(i).kiName.get());
+			prop.setProperty("kiName" + participants.get(i).number.get(), participants.get(i).aiName.get());
 			prop.setProperty("duration" + participants.get(i).number.get(), participants.get(i).duration.get());
 			prop.setProperty("moveCount" + participants.get(i).number.get(), participants.get(i).moveCount.get());
 			prop.setProperty("points" + participants.get(i).number.get(), participants.get(i).points.get());
 			prop.setProperty("won" + participants.get(i).number.get(), participants.get(i).won.get());
 		}
-		
+
 		try {
 			File dir = new File(Paths.game(this));
 			dir.mkdirs();
-			
+
 			Writer writer = new FileWriter(Paths.gameProperties(this));
-			prop.store(writer, ID);
+			prop.store(writer, ID + "");
 			writer.close();
 		} catch (IOException e) {
 			ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Game)");
 		}
 	}
-	
-	
+
+
 	/**
 	 * Setzt den date-String auf die aktuelle Zeit
 	 */
@@ -114,26 +115,26 @@ public class GameSaved extends GameBase {
 		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm,ss");
 		date = format.format(now);
 	}
-	
-	
+
+
 	public void getNewID() {
 		for (int i = 1; i < 10000; i++) {
-			File dir = new File(Paths.game("Game" + i));
+			File dir = new File(Paths.game(i));
 			if (dir.mkdirs()) {
-				ID = "Game" + i;
+				ID = i;
 				return;
 			}
 		}
 		ErrorLog.write("GetNewID-ERROR: Mehr als 10.000 Spielordner wurden ausprobiert: Möglicherweise gibt es keine Zugriffsberechtigung.");
 	}
-	
-	
+
+
 	public void play(List<Version> opponents) {
 		try {
 			game = new CodrGameImpl(this, opponents);
 			CodrAiServer server = new CodrAiServer(game);
 			server.start();
-			
+
 			Properties p = new Properties();
 			p.put("turnierserver.worker.host", "localhost");
 			p.put("turnierserver.worker.server.port", Integer.toString(server.getPort()));
@@ -144,14 +145,13 @@ public class GameSaved extends GameBase {
 		} catch (IOException | ReflectiveOperationException e) {
 			e.printStackTrace();
 		}
-		
+
 		for (int i = 0; i < opponents.size(); i++) {
-			participants.add(new ParticipantResult(this, "Lokal", opponents.get(i).ai.title + "v" + opponents.get(i).number, "100ms", "5", "20", "Ja"));
+			participants.add(new ParticipantResult(this, "Lokal", 0, opponents.get(i).ai.title + "v" + opponents.get(i).number, 0, "100ms", "5", "20", "Ja"));
 		}
 		setDateNow();
 		duration = "500ms";
 	}
-	
-	
-	
+
+
 }

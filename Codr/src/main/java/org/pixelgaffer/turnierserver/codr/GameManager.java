@@ -3,12 +3,11 @@ package org.pixelgaffer.turnierserver.codr;
 
 import java.io.File;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
-import org.pixelgaffer.turnierserver.codr.GameBase.GameMode;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 
 
@@ -31,7 +30,7 @@ public class GameManager {
 		}
 		for (int i = 0; i < dirs.length; i++) {
 			if (dirs[i].isDirectory())
-				games.add(new GameSaved(dirs[i].getName(), GameMode.saved));
+				games.add(new GameSaved(Integer.parseInt(dirs[i].getName())));
 		}
 		
 	}

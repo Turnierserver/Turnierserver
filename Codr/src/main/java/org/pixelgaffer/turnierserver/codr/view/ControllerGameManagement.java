@@ -132,7 +132,7 @@ public class ControllerGameManagement {
 		btOffline.selectedProperty().set(false);
 		btOnline.selectedProperty().set(true);
 		
-		mainApp.loadOnlineAis();
+		mainApp.loadOnlineRanking();
 		lvPlayer1.getItems().clear();
 		lvPlayer1.getItems().addAll(MainApp.ownOnlineAis);
 		lvPlayer2.getItems().clear();
@@ -161,7 +161,7 @@ public class ControllerGameManagement {
 			if (lvPlayer1.getSelectionModel().getSelectedItem() != null && lvPlayer2.getSelectionModel().getSelectedItem() != null) {
 				Task<Boolean> play = new Task<Boolean>() {
 					public Boolean call() {
-						runningGame = new GameSaved(MainApp.actualGameType.get(), GameMode.playing);
+						runningGame = new GameSaved(MainApp.actualGameType.get());
 						List<Version> players = new ArrayList<>();
 						players.add(lvPlayer1.getSelectionModel().getSelectedItem().lastVersion());
 						players.add(lvPlayer2.getSelectionModel().getSelectedItem().lastVersion());
