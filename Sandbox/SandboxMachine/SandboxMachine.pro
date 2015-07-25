@@ -7,7 +7,7 @@
 QT       += core network
 QT       -= gui
 
-TARGET = sandboxd
+TARGET = ../sandboxd
 CONFIG   += console
 CONFIG   -= app_bundle
 

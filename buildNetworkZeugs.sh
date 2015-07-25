@@ -21,7 +21,7 @@ done
 echo -e "#!/bin/sh\ncd \`dirname \$0\`\njava -cp '*' org.pixelgaffer.turnierserver.backend.BackendMain \${@}" > build/backend.sh
 echo -e "#!/bin/sh\ncd \`dirname \$0\`\njava -cp '*' org.pixelgaffer.turnierserver.worker.WorkerMain \${@}" > build/worker.sh
 
-projects="SandboxHelper SandboxMachine"
+projects="Sandbox"
 for project in $projects
 do
 	cd $project

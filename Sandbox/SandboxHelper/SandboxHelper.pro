@@ -7,7 +7,7 @@
 QT       += core
 QT       -= gui
 
-TARGET = sandboxd_helper
+TARGET = ../sandboxd_helper
 CONFIG   += console
 CONFIG   -= app_bundle
 
