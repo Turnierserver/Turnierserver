@@ -1,16 +1,13 @@
 import arrow
-print("\n"*2 + "-"*36)
-print("Turnierserver - Frontend - ", arrow.utcnow().to('local').format("HH:mm:ss"))
-print("-"*36 + "\n"*2)
-
 from flask import Flask, got_request_exception
 from werkzeug.contrib.fixers import ProxyFix
 from flask.ext.login import current_user
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 
-from commons import cache
+from commons import cache, logger
 
+logger.info("Starte Frontend")
 
 from api import api, login_manager
 from views.anonymous import anonymous_blueprint
@@ -18,7 +15,6 @@ from views.authenticated import authenticated_blueprint
 from database import db, refresh_session, GameType
 from backend import backend
 from _cfg import env
-from activityfeed import Activity
 from errorhandling import handle_errors
 from cli import manage
 
@@ -29,7 +25,7 @@ app = Flask("Turnierserver - Frontend")
 app.config.from_object("_cfg.env")
 login_manager.init_app(app)
 
-print("Connecting to", env.SQLALCHEMY_DATABASE_URI)
+logger.info("Connecting to " + env.SQLALCHEMY_DATABASE_URI)
 db.init_app(app)
 
 migrate = Migrate(app, db)
@@ -46,7 +42,7 @@ handle_errors(app)
 
 if env.airbrake:
 	#airbrake.io
-	print("Initializing Airbrake")
+	logger.info("Initializing Airbrake")
 	import airbrake
 	airbrake_logger = airbrake.getLogger(api_key=env.airbrake_key, project_id=env.airbrake_id)
 	def log_exception(sender, exception, **extra):
@@ -95,7 +91,7 @@ def run():
 
 manage(manager, app)
 
-Activity("Serverstart abgeschlossen...", extratext="Hier gehts los.\nAlle vorherigen Events sollten nicht wichtig sein.")
+logger.info("Module geladen")
 
 if __name__ == '__main__':
 	manager.run()

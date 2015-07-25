@@ -1,8 +1,7 @@
 from flask import Blueprint, render_template, abort, redirect, url_for
 from flask.ext.login import current_user
 from database import AI, User, Game, Lang, GameType, db, ftp
-from commons import authenticated_web
-from activityfeed import activity_feed
+from commons import authenticated_web, logger
 from errorhandling import error
 from unittest import mock
 
@@ -117,7 +116,7 @@ def file_browser(id, path=""):
 	try:
 		return f()
 	except ftp.err:
-		print("err")
+		logger.warning("err")
 		return render_template("ai_file_browser.html", connected=False, ai=ai)
 
 
@@ -162,21 +161,14 @@ def ais_challenge():
 	if len(all_ais) < 2:
 		return error(403, body="Es gibt noch nicht genug KIs.")
 
-	print(all_ais)
+	logger.debug(all_ais)
 	all_ais = [ai for ai in all_ais if ai.latest_qualified_version()]
-	print(all_ais)
+	logger.debug(all_ais)
 	if len(all_ais) < 2:
 		return error(403, body="Es gibt nicht genug qualifizierte KIs.")
 	#roles = ["Rolle"+str(i) for i, r in enumerate(gametype.roles)]
 	return render_template("challenge.html", own=own_ais, all=all_ais, ownfirst=own_ais[0], allfirst=all_ais[0])
 
-
-@authenticated_blueprint.route("/activityfeed")
-@authenticated_web
-def activityfeed():
-	if not current_user.admin:
-		abort(401)
-	return render_template("activityfeed.html", activities=activity_feed.feed[::-1])
 
 @authenticated_blueprint.route("/admin")
 @authenticated_web

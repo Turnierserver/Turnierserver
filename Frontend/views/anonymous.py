@@ -2,8 +2,8 @@ from flask import Blueprint, render_template, abort, flash, url_for, request, Ma
 from flask.ext.login import current_user
 import markdown
 from database import AI, User, Game, GameType, Game_inprogress
-from activityfeed import Activity
 from backend import backend
+from commons import logger
 import json
 
 anonymous_blueprint = Blueprint("anonymous", __name__)
@@ -65,7 +65,7 @@ def inprogress_game(id):
 	if not backend.request(id):
 		abort(404)
 	if not backend.request(id)["action"] == "start":
-		print("Invalid gameid!")
+		logger.warning("Invalid gameid!")
 		abort(404)
 	game = Game_inprogress(id, backend.request(id))
 

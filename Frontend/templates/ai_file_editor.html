@@ -79,6 +79,8 @@
 	if (Cookies.get("editor_theme"))
 		editor.setTheme(Cookies.get("editor_theme"));
 	editor.getSession().setMode("ace/mode/{{ai.lang.ace_name}}");
+	editor.getSession().setUseSoftTabs(false);
+	editor.setOption("showInvisibles", true)
 	{% if readonly %}
 	editor.setReadOnly(true);
 	{% endif %}
