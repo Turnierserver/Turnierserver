@@ -7,11 +7,10 @@ import javafx.collections.ObservableList;
 import org.pixelgaffer.turnierserver.codr.simulator.CodrGameImpl;
 
 
-
 public class GameBase {
-	
+
 	public final GameMode mode;
-	public String ID = null;
+	public int ID = -1;
 	public String date;
 	public String duration;
 	public String logic;
@@ -19,17 +18,16 @@ public class GameBase {
 	public String judged;
 	public CodrGameImpl game;
 	public ObservableList<ParticipantResult> participants = FXCollections.observableArrayList();
-	
-	
+
+
 	public static enum GameMode {
 		playing, saved, onlineLoaded
 	}
-	
-	
+
+
 	protected GameBase(GameMode mmode) {
 		mode = mmode;
 	}
-	
-	
-	
+
+
 }

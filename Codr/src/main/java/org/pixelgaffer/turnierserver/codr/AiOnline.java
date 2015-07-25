@@ -25,11 +25,7 @@ public class AiOnline extends AiBase {
 	public String elo = "leere Elo";
 	private ObjectProperty<Image> picture = new SimpleObjectProperty<Image>();
 	public ObservableList<GameOnline> onlineGames = FXCollections.observableArrayList();
-	
-	
-	public AiOnline(JSONObject json, WebConnector connector) {
-		this(json, connector, true);
-	}
+	public ObservableList<Integer> onlineGameIDs = FXCollections.observableArrayList();
 	
 	/**
 	 * Erstellt eine neue Online-Ai aus einem JSONObject
@@ -38,7 +34,7 @@ public class AiOnline extends AiBase {
 	 * @param loadGames true wenn die Spiele geladen werden sollen
 	 * @throws
 	 */
-	public AiOnline(JSONObject json, WebConnector connector, boolean loadGames) {
+	public AiOnline(JSONObject json, WebConnector connector) {
 		super(json.getString("name"), AiMode.online);
 		
 		userName = json.getString("author");
@@ -51,9 +47,7 @@ public class AiOnline extends AiBase {
 		for (int i = 0; i < versions.length(); i++) {
 			newVersion(versions.getJSONObject(i));
 		}
-		if(loadGames) {
-			onlineGames.addAll(connector.getGames(id));
-		}
+		onlineGameIDs.addAll(connector.getGameIDs(id));
 		
 		Task<Image> imageLoader = new Task<Image>() {
 			public Image call() {

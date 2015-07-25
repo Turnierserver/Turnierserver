@@ -137,7 +137,7 @@ public class Paths
 	/**
 	 * Gibt den Pfad zum Ordner eines bestimmten Spiels zurück
 	 */
-	public static String game (String id)
+	public static String game (int id)
 	{
 		return gameFolder() + "/" + id;
 	}

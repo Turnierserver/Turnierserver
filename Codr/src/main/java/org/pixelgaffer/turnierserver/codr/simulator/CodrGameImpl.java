@@ -17,17 +17,15 @@ import java.util.UUID;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import lombok.Getter;
-
 import org.pixelgaffer.turnierserver.codr.GameBase;
-import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Libraries;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
-import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
+
+import lombok.Getter;
 
 public class CodrGameImpl implements Game, Frontend
 {
