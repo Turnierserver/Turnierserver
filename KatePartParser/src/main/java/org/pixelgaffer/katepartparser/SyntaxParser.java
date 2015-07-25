@@ -127,7 +127,7 @@ public class SyntaxParser
 					}
 					else
 					{
-						//System.err.println("Unbekanntes Element: " + e);
+						System.err.println("Unbekanntes Element: " + e);
 					}
 				}
 			}
@@ -272,7 +272,7 @@ public class SyntaxParser
 					{
 						Context toInclude = contexts.get(e.getAttribute("context"));
 						if (toInclude == null)
-							;//System.err.println("Unbekannter Context in " + file.getName() + ": " + e.getAttribute("context"));
+							System.err.println("Unbekannter Context in " + file.getName() + ": " + e.getAttribute("context"));
 						else
 							c.getRules().addAll(toInclude.getRules());
 					}
