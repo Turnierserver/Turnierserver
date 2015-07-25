@@ -66,8 +66,7 @@ public abstract class Ai<E, R> implements Runnable {
 				}
 			}));
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			crash(e);
 		}
 	}
 	
@@ -107,9 +106,8 @@ public abstract class Ai<E, R> implements Runnable {
 					send(response);
 				}
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
+		} catch (Exception e) {
+			crash(e);
 		}
 	}
 	
@@ -122,8 +120,8 @@ public abstract class Ai<E, R> implements Runnable {
 		try {
 			Parsers.escape(Parsers.getWorker().parse(o), con.getOutputStream());
 			con.getOutputStream().write(0xa);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			crash(e);
 		}
 	}
 	
@@ -136,6 +134,14 @@ public abstract class Ai<E, R> implements Runnable {
 	}
 	
 	/**
+	 * ACHTUNG: Mit dieser Methode signalisiert man einen Crash -> Die KI verliert
+	 */
+	public final void crash(Throwable t) {
+		out.println("CRASH " + t.getMessage());
+		System.exit(1);
+	}
+	
+	/**
 	 * Muss in der Main-Methode aufgerufen werden, damit die KI sich zum Worker verbinden kann
 	 */
 	public final void start() {
@@ -144,7 +150,7 @@ public abstract class Ai<E, R> implements Runnable {
 			try {
 				wait();
 			} catch (InterruptedException e) {
-				surrender();
+				crash(e);
 			}
 		}
 	}
