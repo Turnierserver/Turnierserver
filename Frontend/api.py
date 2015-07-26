@@ -217,8 +217,7 @@ def api_user_update(id):
 	if not current_user.can_access(user):
 		return CommonErrors.NO_ACCESS
 
-	a = logger.info("User " + user.name + " geaendert")
-	a.extratext = str(user) + " -> "
+	logger.info("User " + user.name + " geaendert")
 
 	user.firstname = request.form.get('firstname', user.firstname)
 	user.lastname = request.form.get('lastname', user.lastname)
@@ -231,8 +230,6 @@ def api_user_update(id):
 
 	# es muss zur Datenbank geschrieben werden, um die aktuellen Infos zu bekommen
 	db.session.commit()
-
-	a.extratext += str(user)
 
 	flash("Änderungen gespeichert.", "info")
 
@@ -554,8 +551,7 @@ def api_ai_update(id):
 	if not current_user.can_access(ai):
 		return CommonErrors.NO_ACCESS
 
-	a = logger.info("AI " + ai.name + " geaendert")
-	a.extratext = str(ai) + " -> "
+	logger.info("AI " + ai.name + " geaendert")
 
 	ai.set_name(request.form.get('name', ai.name))
 	ai.desc = request.form.get('description', ai.desc)
@@ -573,8 +569,6 @@ def api_ai_update(id):
 
 	# es muss zur Datenbank geschrieben werden, um die aktuellen Infos zu bekommen
 	db.session.commit()
-
-	a.extratext += str(ai)
 
 	ai.updated()
 
