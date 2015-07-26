@@ -25,7 +25,10 @@ app = Flask("Turnierserver - Frontend")
 app.config.from_object("_cfg.env")
 login_manager.init_app(app)
 
-logger.info("Connecting to " + env.SQLALCHEMY_DATABASE_URI)
+db_uri = env.SQLALCHEMY_DATABASE_URI.split("@")
+db_uri[0] = ":".join(db_uri[0].split(":")[:2] + ["******"])
+db_uri = "@".join(db_uri)
+logger.info("Connecting to " + db_uri)
 db.init_app(app)
 
 migrate = Migrate(app, db)
