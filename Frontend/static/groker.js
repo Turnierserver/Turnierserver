@@ -1,16 +1,23 @@
-// JS Debounce (http://davidwalsh.name/function-debounce)
-function debounce(func, wait, immediate) {
-	var timeout;
-	return function() {
-		var context = this, args = arguments;
-		var later = function() {
-			timeout = null;
-			if (!immediate) func.apply(context, args);
-		};
-		var callNow = immediate && !timeout;
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-		if (callNow) func.apply(context, args);
+// https://remysharp.com/2010/07/21/throttling-function-calls
+function throttle(fn, threshhold, scope) {
+	threshhold || (threshhold = 250);
+	var last,
+			deferTimer;
+	return function () {
+		var context = scope || this;
+		var now = +new Date,
+				args = arguments;
+		if (last && now < last + threshhold) {
+			// hold on to it
+			clearTimeout(deferTimer);
+			deferTimer = setTimeout(function () {
+				last = now;
+				fn.apply(context, args);
+			}, threshhold);
+		} else {
+			last = now;
+			fn.apply(context, args);
+		}
 	};
 };
 
@@ -78,16 +85,16 @@ function update_chart() {
 	var svg = d3.select("#unterschied").transition();
 
 	svg.select(".line")
-		.duration(500)
+		.duration(750)
 		.attr("d", line(data));
 	svg.select(".x.axis")
-		.duration(500)
+		.duration(750)
 		.call(xAxis);
 	svg.select(".y.axis")
-		.duration(500)
+		.duration(750)
 		.call(yAxis);
 }
-update_chart = debounce(update_chart, 500)
+update_chart = throttle(update_chart, 750)
 
 function draw() {
 	update();
