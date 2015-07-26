@@ -39,7 +39,7 @@ class Backend(threading.Thread):
 			self.sock.sendall(b"")
 			self.connected = True
 		except socket.error as e:
-			logger.error(e)
+			logger.warning(e)
 			self.sock = None
 			self.connected = False
 
