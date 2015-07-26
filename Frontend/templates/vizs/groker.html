@@ -35,7 +35,7 @@
 	{% if current_user.can_access(ai) -%}
 	<div class="ui segment">
 		Debugausgaben von "{{ai.name}}":
-		<textarea id="ai_{{ai.id}}v{{ai.latest_qualified_version().version_id}}_output" style="width: 100%; height: auto; min-height: 20em;"></textarea>
+		<textarea id="ai_{{ai.id}}_output" style="width: 100%; height: auto; min-height: 20em;"></textarea>
 	</div>
 	{%- endif %}
 	{% endif %}

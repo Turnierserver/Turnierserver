@@ -117,7 +117,8 @@ $("#step_slider").slider({
 function update() {
 	var d = pane.data[pane.step];
 	$.map(d.output, function(value, key) {
-		$("#ai_"+key+"_output").val(value);
+		var id = key.slice(0, key.indexOf("v"));
+		$("#ai_" + id + "_output").val(value);
 	})
 
 	if (pane.is_playing) {
