@@ -263,7 +263,7 @@ class Backend(threading.Thread):
 				elif "success" in update:
 					yield update, "success"
 				else:
-					logger.debug("no data in frame. " + update)
+					logger.debug("no data in frame. " + str(update))
 				if "finished_game_obj" in d:
 					yield (d["finished_game_obj"], "finished_game_obj")
 			except Empty:
