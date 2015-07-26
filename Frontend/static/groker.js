@@ -1,3 +1,20 @@
+// JS Debounce (http://davidwalsh.name/function-debounce)
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
+
+
 var pane = {
 	step: 0,
 	data: [],
@@ -6,33 +23,71 @@ var pane = {
 };
 
 
-var complete_diff_data = [];
-var diff_chart = new Chartist.Line('#unterschied', {
-	labels: ["0"],
-	series: [[0],]
-}, {
-	fullWidth: true,
-	chartPadding: {
-		right: 40
-	},
-	high: 100,
-	low: -100,
-});
-
-
-function set_chart_data() {
-	//diff_data.datasets[0].data = complete_diff_data.slice(0, pane.step)
-	start = Math.max(0, pane.step - 20);
-	end = Math.min(complete_diff_data.length-1, pane.step + 20)
-	diff_chart.data.labels = []
-	diff_chart.data.series[0] = []
-	for (var i = start; i < end; i++) {
-		diff_chart.data.labels.push(i);
-		diff_chart.data.series[0].push(complete_diff_data[i]);
-	};
-	diff_chart.update();
-	// = complete_diff_data.slice(0, pane.step)
+var data = [];
+var vis = d3.select("#unterschied")
+var margin = {
+		top: 20,
+		right: 20,
+		bottom: 20,
+		left: 50
 }
+var width = 800 - margin.left - margin.right
+var height = 250 - margin.top - margin.bottom
+var x = d3.time.scale().range([0, width]);
+var y = d3.scale.linear().range([height, 0]);
+var xAxis = d3.svg.axis()
+	.scale(x)
+	.orient("bottom");
+var yAxis = d3.svg.axis()
+	.scale(y)
+	.orient("left");
+
+
+var line = d3.svg.line()
+	.x(function(d) { return x(d.step); })
+	.y(function(d) { return y(d.diff); })
+
+var svg = d3.select("#unterschied").append("svg")
+	.attr("width", width + margin.left + margin.right)
+	.attr("height", height + margin.top + margin.bottom)
+	.append("g")
+	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+svg.append("g")
+	.attr("class", "x axis")
+	.attr("transform", "translate(0," + height + ")")
+	.call(xAxis)
+svg.append("g")
+	.attr("class", "y axis")
+	.call(yAxis)
+	.append("text")
+	.attr("transform", "rotate(-90)")
+	.attr("y", 6)
+	.attr("dy", ".71em")
+	.style("text-anchor", "end")
+
+svg.append("path")
+	.attr("class", "line")
+	.attr("d", line(data));
+
+function update_chart() {
+	// start = Math.max(0, pane.step - 20);
+	// end = Math.min(diff_data.length-1, pane.step + 20)
+	x.domain(d3.extent(data, function(d) { return d.step; }));
+	y.domain(d3.extent(data, function(d) { return d.diff; }));
+	var svg = d3.select("#unterschied").transition();
+
+	svg.select(".line")
+		.duration(500)
+		.attr("d", line(data));
+	svg.select(".x.axis")
+		.duration(500)
+		.call(xAxis);
+	svg.select(".y.axis")
+		.duration(500)
+		.call(yAxis);
+}
+update_chart = debounce(update_chart, 500)
 
 function draw() {
 	update();
@@ -66,7 +121,7 @@ function update() {
 		$("#pause_button").addClass("active");
 	}
 
-	set_chart_data();
+	//update_chart();
 }
 
 $(document).ready(function () {
@@ -90,7 +145,15 @@ $(document).ready(function () {
 		//NProgress.set(d.progress);
 		$("#step_slider").slider("option", "max", pane.data.length-1);
 		var values = $.map(d.wonChips, function (value, key) {return value})
-		complete_diff_data.push(values[0] - values[1])
+		var d = {}
+		d.diff = values[0] - values[1];
+		d.ai1_abs = 0;
+		d.ai2_abs = 1;
+		d.ai1_gain = values[0];
+		d.ai2_gain = values[1];
+		d.step = pane.data.length;
+		data.push(d);
+		update_chart();
 		draw();
 	});
 

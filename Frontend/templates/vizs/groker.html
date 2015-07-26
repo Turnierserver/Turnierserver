@@ -2,15 +2,32 @@
 
 {% block viz %}
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/chartist/0.9.1/chartist.min.js"></script>
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/chartist/0.9.1/chartist.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.address/1.6/jquery.address.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css">
 <link href="//code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" rel="stylesheet">
 <style type="text/css">
-canvas {
+.chart {
 	width: 100%;
+	display: block;
+	position: relative;
+	height: 30vh;
+	font: 11px sans-serif;
 }
+.axis path,
+.axis line {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+
+.line {
+	fill: none;
+	stroke: steelblue;
+	stroke-width: 2px;
+}
+
 </style>
 
 {% macro render_output(ai, side, desc) -%}
@@ -29,12 +46,27 @@ canvas {
 
 
 <div class="ui segment">
-	<center>
-		<div class="ct-chart ct-perfect-fourth" id="unterschied"></div>
-		<!--<canvas id="einsätze">
-			<h1>Du musst Javascript aktiviert haben, um Spiele zu sehen.</h1>
-		</canvas>-->
-	</center>
+	<div class="ui pointing secondary menu">
+		<div class="active item" data-tab="spielspezifisch">Spielspezifisch</div>
+		<div class="item" data-tab="spielinfos">Spielinfos</div>
+		<div class="item" data-tab="rechenpunkte">Rechenpunkte</div>
+	</div>
+	<div class="ui bottom attached active tab segment" data-tab="spielspezifisch">
+		<center>
+			<div class="divider">Unterschied</div>
+			<div class="chart" id="unterschied"></div>
+			<div class="divider">Insgesammt</div>
+			<div class="chart" id="absolut"></div>
+		</center>
+	</div>
+	<div class="ui bottom attached tab segment" data-tab="spielinfos">
+		{{game}}
+		{{ai0.name}}
+		{{ai1.name}}
+	</div>
+	<div class="ui bottom attached tab segment" data-tab="rechenpunkte">
+		<div class="chart" id="rechenpunkte"></div>
+	</div>
 
 	<div id="step_slider"></div>
 
@@ -54,6 +86,7 @@ canvas {
 
 <script>
 	$(".ui.popup").popup();
+	$('.ui.menu .item').tab({history: true});
 </script>
 
 <script id="game_script" type="text/javascript" src="{{url_for('static', filename='groker.js')}}" stream="{{stream}}"></script>
