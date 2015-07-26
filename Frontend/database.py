@@ -296,6 +296,7 @@ class AI_Game_Assoc(db.Model):
 	score = db.Column(db.Integer)
 	#role_id = db.Column(db.Integer, db.ForeignKey('t_gametyperoles.id'), primary_key=True)
 	#role = db.relationship("GameTypeRole", backref="assocs")
+	## TODO: rechenpunkte speichern
 
 	def __repr__(self):
 		return "<AI_Game_Assoc(game={}, ai={})".format(self.game.id, self.ai.name)
@@ -572,7 +573,9 @@ class Game(db.Model):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
 
 	def info(self):
-		return {"id": self.id, "ais": [assoc.ai.info() for assoc in self.ai_assocs], "type": self.type.info()}
+		return {"id": self.id, "ais": [assoc.ai.info() for assoc in self.ai_assocs],
+				"type": self.type.info(), "scores": {assoc.ai.id: assoc.score for assoc in self.ai_assocs},
+				"moves": len(self.log)}
 
 	def delete(self):
 		db.session.delete(self)
