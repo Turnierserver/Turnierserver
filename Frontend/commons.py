@@ -25,7 +25,7 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 
 class ColorfulFormatter(logging.Formatter):
-	orig_format = hellblau + "[%(asctime)s] {}" + in_str + " %(module)s (%(filename)s:%(lineno)d) " + normal + "%(message)s"
+	orig_format = hellblau + "[%(asctime)s]" + normal + " {}" + in_str + " %(funcName)s (%(filename)s:%(lineno)d)" + normal + " %(message)s"
 
 	def format(self, record):
 		s = level_strings.get(record.levelno, "\033[1;31mUNKNOWN_LEVEL("+str(record.levelno)+")")
