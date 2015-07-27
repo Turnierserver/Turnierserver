@@ -60,26 +60,32 @@ class AIWrapper:
 
 	def run(self):
 		self.connect()
-		while True:
-			r = self.sock.recv(1024**2 * 64).decode("utf-8")
-			if not r or r == "\n":
-				continue
-			try:
-				updates = json.loads(r)
-			except ValueError as e:
-				print("Fehler beim json parsen!!!")
-				print(r)
-				print(e)
-				continue
-			print("Empfangen:")
-			pprint(updates)
-			resp = self.update(updates)
-			print("Antwort:")
-			fakeresp = deepcopy(resp)
-			self.del_output(fakeresp)
-			pprint(fakeresp)
-			self.add_output(resp, self.output.read())
-			self.send(json.dumps(resp))
+		try:
+			while True:
+				r = self.sock.recv(1024**2 * 64).decode("utf-8")
+				if not r or r == "\n":
+					continue
+				try:
+					updates = json.loads(r)
+				except ValueError as e:
+					print("Fehler beim json parsen!!!")
+					print(r)
+					print(e)
+					continue
+				print("Empfangen:")
+				pprint(updates)
+				resp = self.update(updates)
+				print("Antwort:")
+				fakeresp = deepcopy(resp)
+				self.del_output(fakeresp)
+				pprint(fakeresp)
+				self.add_output(resp, self.output.read())
+				self.send(json.dumps(resp))
+		except Exception as e:
+			print(e)
+			print("Sende 'CRASH " + str(e) + "'")
+			self.send("CRASH "+str(e))
+			raise e
 
 	def getState(self, updates):
 		"""In dieser Methode werden die empfangenen Daten zu einem Zustand verarbeitet."""
@@ -113,6 +119,7 @@ if __name__ == '__main__':
 	pprint(props)
 	usermodule = import_module(".".join(sys.argv[1].split(".")[:-1]))
 	if not hasattr(usermodule, "AI"):
+		##TODO CRASH senden
 		raise RuntimeError("No AI class in " + sys.argv[1])
 	gw = GameWrapper(usermodule.AI, props)
 	gw.run()
