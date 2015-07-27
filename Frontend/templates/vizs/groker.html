@@ -28,6 +28,14 @@
 	stroke-width: 2px;
 }
 
+.hover-line {
+	stroke: #6E7B8B;
+}
+
+.hover-line .hide {
+	opacity: 0;
+}
+
 </style>
 
 {% macro render_output(ai, side, desc) -%}
@@ -55,8 +63,8 @@
 		<center>
 			<div class="divider">Unterschied</div>
 			<div class="chart" id="unterschied"></div>
-			<div class="divider">Insgesammt</div>
-			<div class="chart" id="absolut"></div>
+			<!--<div class="divider">Insgesammt</div>
+			<div class="chart" id="absolut"></div>-->
 		</center>
 	</div>
 	<div class="ui bottom attached tab segment" data-tab="spielinfos">
