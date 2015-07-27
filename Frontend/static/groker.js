@@ -77,6 +77,34 @@ svg.append("path")
 	.attr("class", "line")
 	.attr("d", line(data));
 
+
+var hoverLineGroup = svg.append("svg:g")
+						.attr("class", "hover-line");
+var hoverLine = hoverLineGroup
+					.append("svg:line")
+					.attr("x1", 10).attr("x2", 10)
+					.attr("y1", 0).attr("y2", height);
+var container = document.querySelector('#unterschied');
+
+var hoverLineXOffset, hoverLineYOffset;
+
+$(container).mousemove(function(event) {
+	var mouseX = event.pageX - hoverLineXOffset;
+	var mouseY = event.pageY - hoverLineYOffset;
+	if(mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+		hoverLine.attr("x1", mouseX).attr("x2", mouseX);
+	}
+});
+
+function on_resize() {
+	hoverLineXOffset = margin.left + $(container).offset().left;
+	hoverLineYOffset = margin.top + $(container).offset().top;
+}
+
+on_resize()
+
+$(window).on("resize", throttle(on_resize, 250))
+
 function update_chart() {
 	// start = Math.max(0, pane.step - 20);
 	// end = Math.min(diff_data.length-1, pane.step + 20)
