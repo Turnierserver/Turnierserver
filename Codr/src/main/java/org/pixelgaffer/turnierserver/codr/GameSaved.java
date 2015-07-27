@@ -46,19 +46,20 @@ public class GameSaved extends GameBase {
 			prop.load(reader);
 			reader.close();
 			date = prop.getProperty("date");
-			duration = prop.getProperty("duration");
+			duration = Integer.parseInt(prop.getProperty("duration"));
 			logic = prop.getProperty("logic");
-			state = prop.getProperty("state");
-			judged = prop.getProperty("judged");
+			judged = Boolean.parseBoolean(prop.getProperty("judged"));
 
 			int amount = Integer.parseInt(prop.getProperty("participantAmount"));
 			for (int i = 0; i < amount; i++) {
 				participants.get(i).playerName.set(prop.getProperty("playerName" + participants.get(i).number));
-				participants.get(i).aiName.set(prop.getProperty("kiName" + participants.get(i).number));
-				participants.get(i).duration.set(prop.getProperty("duration" + participants.get(i).number));
-				participants.get(i).moveCount.set(prop.getProperty("moveCount" + participants.get(i).number));
-				participants.get(i).points.set(prop.getProperty("points" + participants.get(i).number));
-				participants.get(i).won.set(prop.getProperty("won" + participants.get(i).number));
+				participants.get(i).aiName.set(prop.getProperty("aiName" + participants.get(i).number));
+				participants.get(i).playerID.set(Integer.parseInt(prop.getProperty("playerID" + participants.get(i).number)));
+				participants.get(i).aiID.set(Integer.parseInt(prop.getProperty("aiID" + participants.get(i).number)));
+				participants.get(i).duration.set(Integer.parseInt(prop.getProperty("duration" + participants.get(i).number)));
+				participants.get(i).moveCount.set(Integer.parseInt(prop.getProperty("moveCount" + participants.get(i).number)));
+				participants.get(i).points.set(Integer.parseInt(prop.getProperty("points" + participants.get(i).number)));
+				participants.get(i).won.set(Boolean.parseBoolean(prop.getProperty("won" + participants.get(i).number)));
 			}
 
 		} catch (IOException e) {
@@ -79,19 +80,20 @@ public class GameSaved extends GameBase {
 
 		Properties prop = new Properties();
 		prop.setProperty("date", date);
-		prop.setProperty("duration", duration);
+		prop.setProperty("duration", duration + "");
 		prop.setProperty("logic", logic);
-		prop.setProperty("state", state);
-		prop.setProperty("judged", judged);
+		prop.setProperty("judged", judged + "");
 
 		prop.setProperty("participantAmount", participants.size() + "");
 		for (int i = 0; i < participants.size(); i++) {
 			prop.setProperty("playerName" + participants.get(i).number.get(), participants.get(i).playerName.get());
-			prop.setProperty("kiName" + participants.get(i).number.get(), participants.get(i).aiName.get());
-			prop.setProperty("duration" + participants.get(i).number.get(), participants.get(i).duration.get());
-			prop.setProperty("moveCount" + participants.get(i).number.get(), participants.get(i).moveCount.get());
-			prop.setProperty("points" + participants.get(i).number.get(), participants.get(i).points.get());
-			prop.setProperty("won" + participants.get(i).number.get(), participants.get(i).won.get());
+			prop.setProperty("aiName" + participants.get(i).number.get(), participants.get(i).aiName.get());
+			prop.setProperty("playerID" + participants.get(i).number.get(), participants.get(i).playerID.get() + "");
+			prop.setProperty("aiID" + participants.get(i).number.get(), participants.get(i).aiID.get() + "");
+			prop.setProperty("duration" + participants.get(i).number.get(), participants.get(i).duration.get() + "");
+			prop.setProperty("moveCount" + participants.get(i).number.get(), participants.get(i).moveCount.get() + "");
+			prop.setProperty("points" + participants.get(i).number.get(), participants.get(i).points.get() + "");
+			prop.setProperty("won" + participants.get(i).number.get(), participants.get(i).won.get() + "");
 		}
 
 		try {
@@ -147,10 +149,10 @@ public class GameSaved extends GameBase {
 		}
 
 		for (int i = 0; i < opponents.size(); i++) {
-			participants.add(new ParticipantResult(this, "Lokal", 0, opponents.get(i).ai.title + "v" + opponents.get(i).number, 0, "100ms", "5", "20", "Ja"));
+			participants.add(new ParticipantResult(this, "Lokal", 0, opponents.get(i).ai.title + "v" + opponents.get(i).number, 0, 100, 5, 20, true));
 		}
 		setDateNow();
-		duration = "500ms";
+		duration = 500;
 	}
 
 

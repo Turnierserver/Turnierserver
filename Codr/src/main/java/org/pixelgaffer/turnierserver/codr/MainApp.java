@@ -475,6 +475,7 @@ public class MainApp extends Application {
 				ai.onlineGames.add(games.get(id));
 			}
 		}
+		return;
 	}
 
 
