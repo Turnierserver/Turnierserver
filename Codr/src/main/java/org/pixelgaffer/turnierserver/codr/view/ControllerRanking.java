@@ -4,6 +4,7 @@ package org.pixelgaffer.turnierserver.codr.view;
 import org.pixelgaffer.turnierserver.codr.AiOnline;
 import org.pixelgaffer.turnierserver.codr.GameOnline;
 import org.pixelgaffer.turnierserver.codr.MainApp;
+import org.pixelgaffer.turnierserver.codr.ParticipantResult;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
 
@@ -200,11 +201,69 @@ public class ControllerRanking {
 		TableColumn<GameOnline, String> colG3 = new TableColumn<>("gespielte Zeit");
 		TableColumn<GameOnline, String> colG4 = new TableColumn<>("Gewonnen?");
 
+		colG0.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
+
+			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
+				String enemies = "";
+				for (ParticipantResult part : p.getValue().participants){
+					if (part.aiID.get() != ai.id){
+						enemies = enemies + part.aiName.get() + ", ";
+					}
+				}
+				if (enemies.length() >= 2){
+					enemies = enemies.substring(0, enemies.length() - 2);
+				}
+				return new SimpleStringProperty(enemies);
+			}
+		});
+		colG1.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
+
+			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
+				return new SimpleStringProperty("Spiel " + p.getValue().ID);
+			}
+		});
+		colG2.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
+
+			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
+				return new SimpleStringProperty(p.getValue().date);
+			}
+		});
+		colG3.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
+
+			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
+				return new SimpleStringProperty(p.getValue().duration + "ms");
+			}
+		});
+		colG4.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
+
+			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
+				if (ai == null)
+					return new SimpleStringProperty("Unbekannt");
+
+				for (ParticipantResult part : p.getValue().participants){
+					if (part.playerID.get() == ai.id){
+						if (part.won.get()) 
+							return new SimpleStringProperty("Ja");
+						else
+							return new SimpleStringProperty("Nein");
+					}
+				}
+				return new SimpleStringProperty("Unbekannt");
+			}
+		});
+
+		colG0.setStyle("-fx-alignment: CENTER;");
+		colG1.setStyle("-fx-alignment: CENTER;");
+		colG2.setStyle("-fx-alignment: CENTER;");
+		colG3.setStyle("-fx-alignment: CENTER;");
+		colG4.setStyle("-fx-alignment: CENTER;");
+		
 		tvGames.getColumns().add(colG0);
 		tvGames.getColumns().add(colG1);
 		tvGames.getColumns().add(colG2);
 		tvGames.getColumns().add(colG3);
 		tvGames.getColumns().add(colG4);
+		tvGames.setFixedCellSize(25);
 
 	}
 
@@ -228,7 +287,7 @@ public class ControllerRanking {
 
 			tvVersions.setItems(ai.versions);
 			if (ai.versions.size() != 0) {
-				tvVersions.prefHeightProperty().bind(tvVersions.fixedCellSizeProperty().multiply(Bindings.size(tvVersions.getItems()).add(1.25)));
+				tvVersions.prefHeightProperty().bind(tvVersions.fixedCellSizeProperty().multiply(Bindings.size(tvVersions.getItems()).add(1.01)));
 				tvVersions.minHeightProperty().bind(tvVersions.prefHeightProperty());
 				tvVersions.maxHeightProperty().bind(tvVersions.prefHeightProperty());
 			} else {
@@ -241,7 +300,7 @@ public class ControllerRanking {
 			}
 			tvGames.setItems(ai.onlineGames);
 			if (ai.onlineGames.size() != 0) {
-				tvGames.prefHeightProperty().bind(tvGames.fixedCellSizeProperty().multiply(Bindings.size(tvGames.getItems()).add(1.25)));
+				tvGames.prefHeightProperty().bind(tvGames.fixedCellSizeProperty().multiply(Bindings.size(tvGames.getItems()).add(1.01)));
 				tvGames.minHeightProperty().bind(tvGames.prefHeightProperty());
 				tvGames.maxHeightProperty().bind(tvGames.prefHeightProperty());
 			} else {

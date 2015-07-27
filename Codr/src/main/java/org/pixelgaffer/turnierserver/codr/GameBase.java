@@ -12,10 +12,9 @@ public class GameBase {
 	public final GameMode mode;
 	public int ID = -1;
 	public String date;
-	public String duration;
+	public int duration;
 	public String logic;
-	public String state;
-	public String judged;
+	public boolean judged;
 	public CodrGameImpl game;
 	public ObservableList<ParticipantResult> participants = FXCollections.observableArrayList();
 

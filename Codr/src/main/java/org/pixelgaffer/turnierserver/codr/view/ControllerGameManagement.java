@@ -110,7 +110,7 @@ public class ControllerGameManagement {
 			else
 				lbMode.setText("Offline");
 			lbDate.setText(game.date);
-			lbDuration.setText(game.duration);
+			lbDuration.setText(game.duration + "");
 			lbLogic.setText(game.logic);
 			tableResult.setItems(game.participants);
 		} else {
