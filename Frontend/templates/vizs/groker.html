@@ -12,7 +12,11 @@
 	width: 100%;
 	display: block;
 	position: relative;
-	height: 30vh;
+	{% if logged_in and (current_user.can_access(ai0) or current_user.can_access(ai1)) %}
+	height: 27vh;
+	{% else %}
+	height: 37vh;
+	{% endif %}
 	font: 11px sans-serif;
 }
 .axis path,
@@ -39,19 +43,17 @@
 </style>
 
 {% macro render_output(ai, side, desc) -%}
-	{% if logged_in %}
+	{% if logged_in -%}
 	{% if current_user.can_access(ai) -%}
-	<div class="ui segment">
-		Debugausgaben von "{{ai.name}}":
-		<textarea id="ai_{{ai.id}}_output" style="width: 100%; height: auto; min-height: 20em;"></textarea>
+	<div class="column">
+		<div class="ui segment">
+			Debugausgaben von "{{ai.name}}":
+			<textarea id="ai_{{ai.id}}_output" style="width: 100%; height: auto; min-height: 20em;"></textarea>
+		</div>
 	</div>
 	{%- endif %}
-	{% endif %}
+	{%- endif %}
 {%- endmacro %}
-
-
-
-
 
 <div class="ui segment">
 	<div class="ui pointing secondary menu">
@@ -63,8 +65,8 @@
 		<center>
 			<div class="divider">Unterschied</div>
 			<div class="chart" id="unterschied"></div>
-			<!--<div class="divider">Insgesammt</div>
-			<div class="chart" id="absolut"></div>-->
+			<div class="divider">Insgesammt</div>
+			<div class="chart" id="absolut"></div>
 		</center>
 	</div>
 	<div class="ui bottom attached tab segment" data-tab="spielinfos">
@@ -78,18 +80,12 @@
 
 	<div id="step_slider"></div>
 
+	{% if logged_in and (current_user.can_access(ai0) or current_user.can_access(ai1)) %}
 	<div class="ui two column grid">
-		<div class="column">
-			<div class="ui horizontal segment">
-				{{render_output(ai0, "left", "left")}}
-			</div>
-		</div>
-		<div class="column">
-			<div class="ui horizontal segment">
-				{{render_output(ai1, "right", "right")}}
-			</div>
-		</div>
+		{{render_output(ai0, "left", "left")}}
+		{{render_output(ai1, "right", "right")}}
 	</div>
+	{% endif %}
 </div>
 
 <script>
