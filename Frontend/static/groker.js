@@ -99,6 +99,13 @@ $(container).mousemove(function(event) {
 function on_resize() {
 	hoverLineXOffset = margin.left + $(container).offset().left;
 	hoverLineYOffset = margin.top + $(container).offset().top;
+	width = $("#unterschied").width() - margin.left - margin.right;
+	height = $("#unterschied").height() - margin.top - margin.bottom;
+	d3.select("#unterschied svg").attr("width", width + margin.left + margin.right)
+								 .attr("height", height + margin.top + margin.bottom)
+	svg.select(".line")
+		.attr("d", line(data))
+		.attr("transform", null);
 }
 
 on_resize()
