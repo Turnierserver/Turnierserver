@@ -102,7 +102,7 @@ class SyncedFTP:
 		pass
 
 	def copy_tree(self, from_dir, to_dir, overwrite=True):
-		logger.info(" ".join("COPY_TREE ", from_dir, to_dir, overwrite))
+		logger.info("COPY_TREE " + from_dir + " " + to_dir + " " + str(overwrite))
 		@self.safe
 		def f():
 			if overwrite:
