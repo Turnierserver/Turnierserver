@@ -155,7 +155,7 @@ def ais_challenge():
 	own_ais = [ai for ai in own_ais if ai.latest_version().qualified]
 
 	if len(own_ais) < 1:
-		return error(403, body="Du hast keine qualifizierten KIs.")
+		return error(403, body="Du hast keine KIs deren letzte Version qualifiziert ist.")
 
 	all_ais = AI.filtered().order_by(AI.id).all()
 	if len(all_ais) < 2:

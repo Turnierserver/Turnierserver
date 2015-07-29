@@ -512,7 +512,7 @@ def ai_upload_icon(id):
 def api_ai_reset_icon(id):
 	ai = AI.query.get(id)
 	if ai:
-		cache.delete_memoized(api_ai_icon, id)
+		cache.delete_memoized(ai_icon, id)
 		@ftp.safe
 		def f():
 			path = "AIs/"+str(id)+"/icon.png"
