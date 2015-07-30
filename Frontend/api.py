@@ -16,7 +16,8 @@ from collections import defaultdict
 from database import AI, User, Game, Lang, GameType, db, populate, ftp, Game_inprogress, timestamp
 from cli import zipdir, _make_data_container, _add_gametype
 from backend import backend
-from commons import authenticated, cache, CommonErrors, logger
+from commons import authenticated, cache, CommonErrors
+from logger import logger
 from _cfg import env
 from sse import sse_stream
 

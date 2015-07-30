@@ -70,9 +70,24 @@
 		</center>
 	</div>
 	<div class="ui bottom attached tab segment" data-tab="spielinfos">
-		{{game}}
-		{{ai0.name}}
-		{{ai1.name}}
+		<table class="ui table">
+			<tbody>
+				<tr>
+					<td>repr(game)</td>
+					<td>{{game}}</td>
+				</tr>
+				{% for assoc in game.ai_assocs %}
+				<tr>
+					<td>Ki{{loop.index}}</td>
+					<td>{{assoc.ai.name}}</td>
+				</tr>
+				{% endfor %}
+				<tr>
+					<td>Beendigungsgrund</td>
+					<td>{{game.reason}}</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 	<div class="ui bottom attached tab segment" data-tab="rechenpunkte">
 		<div class="chart" id="rechenpunkte"></div>
