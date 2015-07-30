@@ -184,7 +184,7 @@ class Backend(threading.Thread):
 					g = Game.from_inprogress(self.requests[reqid])
 					logger.debug(g)
 					self.requests[reqid]["finished_game_obj"] = g
-					pprint(self.requests[reqid])
+					#pprint(self.requests[reqid])
 
 			if "data" in d:
 				self.requests[reqid]["states"].append(d["data"])
