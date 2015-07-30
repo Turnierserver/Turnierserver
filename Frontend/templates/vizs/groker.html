@@ -58,7 +58,9 @@
 <div class="ui segment">
 	<div class="ui pointing secondary menu">
 		<div class="active item" data-tab="spielspezifisch">Spielspezifisch</div>
+		{% if not qualify and not inprogress %}
 		<div class="item" data-tab="spielinfos">Spielinfos</div>
+		{% endif %}
 		<div class="item" data-tab="rechenpunkte">Rechenpunkte</div>
 	</div>
 	<div class="ui bottom attached active tab segment" data-tab="spielspezifisch">
@@ -69,6 +71,7 @@
 			<div class="chart" id="absolut"></div>
 		</center>
 	</div>
+	{% if not qualify and not inprogress %}
 	<div class="ui bottom attached tab segment" data-tab="spielinfos">
 		<table class="ui table">
 			<tbody>
@@ -89,6 +92,7 @@
 			</tbody>
 		</table>
 	</div>
+	{% endif %}
 	<div class="ui bottom attached tab segment" data-tab="rechenpunkte">
 		<div class="chart" id="rechenpunkte"></div>
 	</div>
