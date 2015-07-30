@@ -10,28 +10,14 @@ if [ $# -lt 3 ]; then
   echo " vdi-file: The file of the hard disk for the virtual machine"
   exit
 fi
+binDir="$(realpath "$2")"
+logDir="$(realpath "$3")"
 if [ $# -ge 4 ]; then
-  SANDBOX_VDI="$4"
+  SANDBOX_VDI="$(realpath "$4")"
 fi
 
-# if the vdi is already registered, unregister it because we will create a new clone
-vdi="/var/cache/sandbox-$1.vdi"
-if [ "$(VBoxManage list hdds | grep "$vdi")" != "" ]; then
-  echo "- Unregistering the old hard disk ..."
-  VBoxManage closemedium disk "$vdi"
-fi
-
-# download and clone the hard disk image
-if [ ! -e "$SANDBOX_VDI" ]; then
-  SANDBOX_VDI=/var/cache/sandbox.vdi
-  if [ ! -e "$SANDBOX_VDI" ]; then
-    echo "- Downloading the hard disk image ..."
-    wget -O $SANDBOX_VDI 'https://www.dropbox.com/s/shtmc1uue4ql6gh/sandbox.vdi?dl=0'
-  fi
-fi
-test ! -e "$vdi" || rm -f "$vdi"
-echo "- Cloning the hard disk ..."
-VBoxManage clonehd "$SANDBOX_VDI" "$vdi"
+# go into the directory where this script is located
+cd "$(dirname "$0")"
 
 # make sure the host only interface exists
 if [ "$(VBoxManage list hostonlyifs | grep vboxnet0)" == "" ]; then
@@ -51,6 +37,26 @@ if [ "$(VBoxManage list vms | grep "$1")" != "" ]; then
 # else create the vm
 else
   export $(cat defaults.prop)
+  
+  # if the vdi is already registered, unregister it because we will create a new clone
+  vdi="/var/cache/sandbox-$1.vdi"
+  if [ "$(VBoxManage list hdds | grep "$vdi")" != "" ]; then
+    echo "- Unregistering the old hard disk ..."
+    VBoxManage closemedium disk "$vdi"
+  fi
+  
+  # download and clone the hard disk image
+  if [ ! -e "$SANDBOX_VDI" ]; then
+    SANDBOX_VDI=/var/cache/sandbox.vdi
+    if [ ! -e "$SANDBOX_VDI" ]; then
+      echo "- Downloading the hard disk image ..."
+      wget -O $SANDBOX_VDI 'https://www.dropbox.com/s/shtmc1uue4ql6gh/sandbox.vdi?dl=0'
+    fi
+  fi
+  test ! -e "$vdi" || rm -f "$vdi"
+  echo "- Cloning the hard disk ..."
+  VBoxManage clonehd "$SANDBOX_VDI" "$vdi"
+  
   echo "- Creating VM ..."
   VBoxManage createvm --name "$1" --ostype $defOs --register
   echo "- Settings up VM ..."
@@ -63,8 +69,8 @@ else
   echo "- Adding the hard disk ..."
   VBoxManage storageattach "$1" --storagectl SATA --port 1 --medium "$vdi" --type hdd
   echo "- Adding the shared folders ..."
-  VBoxManage sharedfolder add "$1" --name "Sandbox" --hostpath "$(realpath "$2")" --readonly
-  VBoxManage sharedfolder add "$1" --name "logs" --hostpath "$(realpath "$3")"
+  VBoxManage sharedfolder add "$1" --name "Sandbox" --hostpath "$binDir" --readonly
+  VBoxManage sharedfolder add "$1" --name "logs" --hostpath "$logDir"
   echo "- Creating a snapshot ..."
   VBoxManage snapshot "$1" take 'new' --description 'snapshot just after the startVM.sh script created the vm'
   
