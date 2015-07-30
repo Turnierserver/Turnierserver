@@ -24,6 +24,7 @@ import time
 
 app = Flask("Turnierserver - Frontend")
 app.config.from_object("_cfg.env")
+app.url_map.strict_slashes = False
 login_manager.init_app(app)
 
 db_uri = env.SQLALCHEMY_DATABASE_URI.split("@")
