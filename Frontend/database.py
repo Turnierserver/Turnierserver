@@ -566,6 +566,10 @@ class Game(db.Model):
 	def log(self):
 		return json.loads(self._log)
 
+	@property
+	def moves(self):
+		return len(self.log)
+
 	@log.setter
 	def log(self, log):
 		self._log = json.dumps(log)
@@ -576,7 +580,7 @@ class Game(db.Model):
 	def info(self):
 		return {"id": self.id, "ais": [assoc.ai.info() for assoc in self.ai_assocs],
 				"type": self.type.info(), "scores": {assoc.ai.id: assoc.score for assoc in self.ai_assocs},
-				"moves": len(self.log)}
+				"moves": self.moves, "reason": self.reason}
 
 	def delete(self):
 		db.session.delete(self)
