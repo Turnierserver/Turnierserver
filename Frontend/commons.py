@@ -12,7 +12,6 @@ level_strings_len = max([len(level_strings[key][1]) for key in level_strings])
 for key in level_strings:
 	color, text = level_strings[key]
 	text = "{:>{}}".format(text, level_strings_len)
-	## TODO: textzentrierung?
 	level_strings[key] = (color, text)
 
 normal = "\033[0m"
@@ -40,6 +39,28 @@ ch.setFormatter(formatter)
 
 logger.addHandler(fh)
 logger.addHandler(ch)
+
+
+formatter = logging.Formatter(hellblau + "[%(asctime)s]" + normal + " WERKZEUG" + normal + " %(message)s")
+formatter.datefmt = "%d.%m %H:%M:%S"
+wl = logging.getLogger('werkzeug')
+wl.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+ch.setFormatter(formatter)
+wl.addHandler(ch)
+
+
+import werkzeug.serving
+from werkzeug._internal import _log
+WSGIRequestHandler = werkzeug.serving.WSGIRequestHandler
+
+def log(self, type, message, *args):
+	_log(type, '%s - %s\n' % (self.address_string(),
+								message % args))
+WSGIRequestHandler.log = log
+werkzeug.serving.WSGIRequestHandler = WSGIRequestHandler
+
 
 from database import db
 from flask import abort
