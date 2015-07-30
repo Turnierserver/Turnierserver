@@ -550,6 +550,7 @@ class Game(db.Model):
 	status = db.Column(db.Text)
 	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
 	type = db.relationship("GameType", backref=db.backref('t_games', order_by=id))
+	reason = db.Column(db.Text)
 	_log = db.Column(db.Text)
 
 	def __init__(self, *args, **kwargs):
