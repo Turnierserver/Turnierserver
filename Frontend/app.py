@@ -5,7 +5,8 @@ from flask.ext.login import current_user
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 
-from commons import cache, logger
+from commons import cache
+from logger import logger
 
 logger.info("Starte Frontend")
 

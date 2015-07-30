@@ -3,7 +3,7 @@ from flask.ext.login import current_user
 import markdown
 from database import AI, User, Game, GameType, Game_inprogress
 from backend import backend
-from commons import logger
+from logger import logger
 import json
 
 anonymous_blueprint = Blueprint("anonymous", __name__)
