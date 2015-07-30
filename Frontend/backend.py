@@ -208,7 +208,7 @@ class Backend(threading.Thread):
 		try:
 			return self.requests[reqid]["queue"].get(timeout=timeout)
 		except Empty:
-			logger.debug("TIMEOUT FOR " + reqid)
+			logger.debug("TIMEOUT FOR " + str(reqid))
 			return False
 
 	def subscribe_game_update(self):
