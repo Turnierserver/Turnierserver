@@ -79,16 +79,30 @@
 					<td>repr(game)</td>
 					<td>{{game}}</td>
 				</tr>
+				<tr>
+					<td>Spieltyp</td>
+					<td>{{game.type.name}}</td>
+				</tr>
+				<tr>
+					<td>Spiel-ID</td>
+					<td>{{game.id}}</td>
+				</tr>
+				<tr>
+					<td>Spielzüge</td>
+					<td>{{game.moves}}</td>
+				</tr>
 				{% for assoc in game.ai_assocs %}
 				<tr>
-					<td>Ki{{loop.index}}</td>
+					<td>Ki{{loop.index}} - {{assoc.score}} Punkte</td>
 					<td>{{assoc.ai.name}}</td>
 				</tr>
 				{% endfor %}
+				{% if game.reason %}
 				<tr>
 					<td>Beendigungsgrund</td>
 					<td>{{game.reason}}</td>
 				</tr>
+				{% endif %}
 			</tbody>
 		</table>
 	</div>
