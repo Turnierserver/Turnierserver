@@ -1,7 +1,7 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask import send_file, abort, request
 from _cfg import env
-from commons import logger
+from logger import logger
 from io import BytesIO
 from functools import wraps
 from threading import RLock
