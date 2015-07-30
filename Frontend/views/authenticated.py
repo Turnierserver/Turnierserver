@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, abort, redirect, url_for
 from flask.ext.login import current_user
 from database import AI, User, Game, Lang, GameType, db, ftp
-from commons import authenticated_web, logger
+from commons import authenticated_web
+from logger import logger
 from errorhandling import error
 from unittest import mock
 

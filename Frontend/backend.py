@@ -7,7 +7,7 @@ import threading
 from queue import Queue, Empty
 from weakref import WeakSet
 from database import db, Game, AI
-from commons import logger
+from logger import logger
 
 from pprint import pprint
 
