@@ -1109,7 +1109,7 @@ def download_codr():
 			abort(503)
 	return f()
 
-@api.route("/upload_simple_player/<int:game_id>/<string:lang>/", methods=["POST"])
+@api.route("/upload_simple_player/<int:game_id>/<string:lang>", methods=["POST"])
 @json_out
 @admin_required
 def upload_simple_player(game_id, lang):
