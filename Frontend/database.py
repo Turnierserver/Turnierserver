@@ -585,13 +585,13 @@ class Game(db.Model):
 	@classmethod
 	def from_inprogress(cls, d):
 		if "exception" in d:
-			logger.info("Game Exception! " + str(d["exception"]))
+			logger.warning("Game Exception! " + str(d["exception"]))
 			return
 		ais = [d["ai0"], d["ai1"]]
-		logger.debug(ais)
-		logger.debug(ais[0] == ais[1])
 		g = Game(type=ais[0].type)
 		g.log = d["states"]
+		if "reason" in d:
+			g.reason = d["reason"]
 		db.session.add(g)
 		db.session.commit()
 		g.ai_assocs = [AI_Game_Assoc(game_id=g.id, ai_id=ai.id) for ai in ais]
@@ -602,6 +602,7 @@ class Game(db.Model):
 			AI_Game_Assoc.query.filter(AI_Game_Assoc.game == g).filter(AI_Game_Assoc.ai == ai).one().score = score
 		db.session.add(g)
 		db.session.commit()
+		logger.info("neues Spiel " + str(g))
 		return g
 
 	def __repr__(self):
