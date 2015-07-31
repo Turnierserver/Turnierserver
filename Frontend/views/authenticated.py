@@ -84,7 +84,7 @@ def file_browser(id, path=""):
 	ftp_url = "AIs/{}/v{}/{}".format(id, ai.latest_version().version_id, path)
 
 	root_url = url_for("authenticated.file_browser", id=id, path="")
-	path_url = [(ai.name, root_url)]
+	path_url = [(ai.name, url_for("authenticated.edit_ai", id=id)), ("(root)", root_url)]
 	url = root_url[:-1]
 	for p in path.split("/"):
 		url += "/" + p
