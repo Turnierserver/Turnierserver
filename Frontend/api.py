@@ -180,7 +180,7 @@ def game_inprogress_log(id):
 		elif data_type == "finished_game_obj":
 			yield url_for("anonymous.game", id=data.id), "game_finished"
 		else:
-			logger.error("invalid log_sse type: " + data_type + " " + data)
+			logger.error("invalid log_sse type: " + str(data_type) + " " + str(data))
 
 
 @api.route("/users", methods=["GET"])

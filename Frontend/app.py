@@ -79,7 +79,7 @@ db_session_timeout = time.time()
 @app.before_request
 def refresh_db_session():
 	global db_session_timeout
-	if time.time() > db_session_timeout + 60*5:
+	if time.time() > db_session_timeout + 60:
 		db_session_timeout = time.time()
 		refresh_session()
 
