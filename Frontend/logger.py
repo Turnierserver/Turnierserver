@@ -18,8 +18,10 @@ in_str = "\033[0min\033[1;32m"
 logger = logging.getLogger('Frontend')
 logger.setLevel(logging.DEBUG)
 logger.propagate = False
-fh = logging.FileHandler('frontend.log')
+fh = logging.FileHandler('debug.log')
 fh.setLevel(logging.DEBUG)
+fh_err = logging.FileHandler('error.log')
+fh_err.setLevel(logging.ERROR)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 
@@ -35,9 +37,11 @@ class ColorfulFormatter(logging.Formatter):
 formatter = ColorfulFormatter()
 formatter.datefmt = "%d.%m %H:%M:%S"
 fh.setFormatter(formatter)
+fh_err.setFormatter(formatter)
 ch.setFormatter(formatter)
 
 logger.addHandler(fh)
+logger.addHandler(fh_err)
 logger.addHandler(ch)
 
 
