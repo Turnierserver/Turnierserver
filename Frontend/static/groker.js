@@ -40,7 +40,7 @@ var margin = {
 }
 var width = 800 - margin.left - margin.right
 var height = 250 - margin.top - margin.bottom
-var x = d3.time.scale().range([0, width]);
+var x = d3.scale.linear().range([0, width]);
 var y = d3.scale.linear().range([height, 0]);
 var xAxis = d3.svg.axis()
 	.scale(x)
@@ -103,9 +103,21 @@ function on_resize() {
 	height = $("#unterschied").height() - margin.top - margin.bottom;
 	d3.select("#unterschied svg").attr("width", width + margin.left + margin.right)
 								 .attr("height", height + margin.top + margin.bottom)
-	svg.select(".line")
+	x = d3.scale.linear().range([0, width]);
+	y = d3.scale.linear().range([height, 0]);
+	xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom");
+	yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left");
+	svg.selectAll("g .x.axis").call(xAxis)
+		.attr("transform", "translate(0," + height + ")");
+	svg.selectAll("g .y.axis").call(yAxis);
+	svg.select("g .line")
 		.attr("d", line(data))
 		.attr("transform", null);
+	update_chart()
 }
 
 on_resize()
