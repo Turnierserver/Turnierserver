@@ -31,121 +31,43 @@ var pane = {
 
 
 var data = [];
-var vis = d3.select("#unterschied")
-var margin = {
-		top: 20,
-		right: 20,
-		bottom: 20,
-		left: 50
-}
-var width = 800 - margin.left - margin.right
-var height = 250 - margin.top - margin.bottom
-var x = d3.scale.linear().range([0, width]);
-var y = d3.scale.linear().range([height, 0]);
-var xAxis = d3.svg.axis()
-	.scale(x)
-	.orient("bottom");
-var yAxis = d3.svg.axis()
-	.scale(y)
-	.orient("left");
 
+var diff_chart = new LineChart("#diff_chart",
+	{
+		x: function (d) {
+			return d.step;
+		},
+		y: function (d) {
+			return d.diff;
+		}
+	}, data
+);
 
-var line = d3.svg.line()
-	.x(function(d) { return x(d.step); })
-	.y(function(d) { return y(d.diff); })
+// var abs_chart = new LineChart("#insgesammt",
+// 	[{
+// 		x: function (d) {
+// 			return d.step;
+// 		},
+// 		y: function (d) {
+// 			return d.ai1_abs;
+// 		}
+// 	},
+// 	{
+// 		x: function (d) {
+// 			return d.step;
+// 		},
+// 		y: function (d) {
+// 			return d.ai2_abs;
+// 		}
+// 	}], data
+// );
 
-var svg = d3.select("#unterschied").append("svg")
-	.attr("width", width + margin.left + margin.right)
-	.attr("height", height + margin.top + margin.bottom)
-	.append("g")
-	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-svg.append("g")
-	.attr("class", "x axis")
-	.attr("transform", "translate(0," + height + ")")
-	.call(xAxis)
-svg.append("g")
-	.attr("class", "y axis")
-	.call(yAxis)
-	.append("text")
-	.attr("transform", "rotate(-90)")
-	.attr("y", 6)
-	.attr("dy", ".71em")
-	.style("text-anchor", "end")
-
-svg.append("path")
-	.attr("class", "line")
-	.attr("d", line(data));
-
-
-var hoverLineGroup = svg.append("svg:g")
-						.attr("class", "hover-line");
-var hoverLine = hoverLineGroup
-					.append("svg:line")
-					.attr("x1", 10).attr("x2", 10)
-					.attr("y1", 0).attr("y2", height);
-var container = document.querySelector('#unterschied');
-
-var hoverLineXOffset, hoverLineYOffset;
-
-$(container).mousemove(function(event) {
-	var mouseX = event.pageX - hoverLineXOffset;
-	var mouseY = event.pageY - hoverLineYOffset;
-	if(mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
-		hoverLine.attr("x1", mouseX).attr("x2", mouseX);
-	}
-});
-
-function on_resize() {
-	hoverLineXOffset = margin.left + $(container).offset().left;
-	hoverLineYOffset = margin.top + $(container).offset().top;
-	width = $("#unterschied").width() - margin.left - margin.right;
-	height = $("#unterschied").height() - margin.top - margin.bottom;
-	d3.select("#unterschied svg").attr("width", width + margin.left + margin.right)
-								 .attr("height", height + margin.top + margin.bottom)
-	x = d3.scale.linear().range([0, width]);
-	y = d3.scale.linear().range([height, 0]);
-	xAxis = d3.svg.axis()
-		.scale(x)
-		.orient("bottom");
-	yAxis = d3.svg.axis()
-		.scale(y)
-		.orient("left");
-	svg.selectAll("g .x.axis").call(xAxis)
-		.attr("transform", "translate(0," + height + ")");
-	svg.selectAll("g .y.axis").call(yAxis);
-	svg.select("g .line")
-		.attr("d", line(data))
-		.attr("transform", null);
-	update_chart()
-}
-
-on_resize()
-
-$(window).on("resize", throttle(on_resize, 250))
-
-function update_chart() {
-	// start = Math.max(0, pane.step - 20);
-	// end = Math.min(diff_data.length-1, pane.step + 20)
-	x.domain(d3.extent(data, function(d) { return d.step; }));
-	y.domain(d3.extent(data, function(d) { return d.diff; }));
-	var svg = d3.select("#unterschied").transition();
-
-	svg.select(".line")
-		.duration(750)
-		.attr("d", line(data));
-	svg.select(".x.axis")
-		.duration(750)
-		.call(xAxis);
-	svg.select(".y.axis")
-		.duration(750)
-		.call(yAxis);
-}
-update_chart = throttle(update_chart, 750)
+$(window).on("resize", throttle(diff_chart.on_resize, 1000))
+diff_chart.update_chart = throttle(diff_chart.update_chart, 750)
 
 function draw() {
 	update();
-	var d = pane.data[pane.step];
+	//var d = pane.data[pane.step];
 }
 
 $("#step_slider").slider({
@@ -175,8 +97,6 @@ function update() {
 		$("#play_button").removeClass("active");
 		$("#pause_button").addClass("active");
 	}
-
-	//update_chart();
 }
 
 $(document).ready(function () {
@@ -208,7 +128,7 @@ $(document).ready(function () {
 		d.ai2_gain = values[1];
 		d.step = pane.data.length;
 		data.push(d);
-		update_chart();
+		diff_chart.update_chart();
 		draw();
 	});
 
