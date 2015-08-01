@@ -1,0 +1,250 @@
+---
+swagger: '2.0'
+info:
+  title: Turnierserver
+  description: Turnierserver API
+  version: "494212a9f0"
+host: thuermchen.com
+schemes:
+# - https
+  - http
+basePath: /api
+produces:
+  - application/json
+paths:
+  /:
+    get:
+      summary: Ping
+      responses:
+        200:
+          description: Pong
+
+  /ais:
+    get:
+      summary: KIs
+      responses:
+        200:
+          description: Eine Liste mit AIs des aktuellen Spieltyps
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ai'
+  /ais/{gametype}:
+    get:
+      summary: KIs des Spieltyps {gametype}.
+      responses:
+        200:
+          description: Eine Liste mit AIs des angegebenen Spieltyps
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ai'
+      parameters:
+        - name: gametype
+          in: path
+          description: Spieltyp-ID
+          required: true
+          type: number
+          format: int
+  /ai/{id}:
+    get:
+      summary: KI mit ID {id}.
+      responses:
+        200:
+          description: Die KI mit der ID.
+          schema:
+            $ref: '#/definitions/ai'
+        404:
+          description: Die KI wurde nicht gefunden.
+      parameters:
+        - name: id
+          in: path
+          description: ID
+          required: true
+          type: number
+          format: int
+  /ai/{id}/games:
+    get:
+      summary: Spiele von der KI.
+      responses:
+        200:
+          description: Spiele von der KI mit id {id}
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ai'
+        404:
+          description: Die KI wurde nicht gefunden.
+      parameters:
+        - name: id
+          in: path
+          description: ID
+          required: true
+          type: number
+          format: int
+
+  /games:
+    get:
+      summary: Spiele
+      responses:
+        200:
+          description: Eine Liste mit Spielen des aktuellen Spieltyps
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/game'
+  /games/{gametype}:
+    get:
+      summary: KIs des Spieltyps {gametype}.
+      responses:
+        200:
+          description: Eine Liste mit Spielen des angegebenen Spieltyps
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/game'
+      parameters:
+        - name: gametype
+          in: path
+          description: Spieltyp-ID
+          required: true
+          type: number
+          format: int
+
+  /game/{id}:
+    get:
+      summary: Spiel mit ID {id}.
+      responses:
+        200:
+          description: Spiel mit ID {id}.
+          schema:
+            $ref: '#/definitions/game'
+        404:
+          description: Das Spiel wurde nicht gefunden.
+      parameters:
+        - name: id
+          in: path
+          description: ID
+          required: true
+          type: number
+          format: int
+
+  /game/{id}/log:
+    get:
+      summary: Log des Spiels.
+      responses:
+        200:
+          description: Log des Spiels als SSE-Stream.
+        404:
+          description: Das Spiel wurde nicht gefunden.
+      parameters:
+        - name: id
+          in: path
+          description: ID
+          required: true
+          type: number
+          format: int
+definitions:
+  ai:
+    properties:
+      name:
+        type: string
+        description: Name der KI.
+      author:
+        type: string
+        description: Name des Authors
+      author_id:
+        type: number
+        format: int
+        description: ID des Authors
+      description:
+        type: string
+        description: Beschreibung der KI
+      lang:
+        $ref: '#/definitions/lang'
+      gametype:
+        $ref: '#/definitions/gametype'
+      version:
+        type: array
+        items:
+          $ref: '#/definitions/ai_version'
+      id:
+        type: number
+        format: int
+        description: ID der KI
+  ai_version:
+    properties:
+      id:
+        type: number
+        format: int
+        description: Versionsnummer
+      compiled:
+        type: boolean
+        description: Ob die Version kompiliert ist
+      qualified:
+        type: boolean
+        description: Ob die Version qualifiziert ist
+      frozen:
+        type: boolean
+        description: Ob die Version eingefroren wurde
+  user:
+    properties:
+      id:
+        type: number
+        format: int
+        description: ID des Benutzers.
+      ais:
+        type: array
+        description: KIs des Benutzers (Ohne Author-Feld).
+        items:
+          $ref: '#/definitions/ai'
+      name:
+        type: string
+        description: Name des Nutzers.
+  lang:
+    properties:
+      id:
+        type: number
+        format: int
+        description: ID der Sprache
+      name:
+        type: string
+        description: Name der Sprache
+      url:
+        type: string
+        description: Website der Sprache
+  gametype:
+    properties:
+      id:
+        type: number
+        format: int
+        description: ID des Spieltyps
+      name:
+        type: string
+        description: Name des Spieltyps
+      last_modified:
+        type: number
+        format: timestamp
+        description: letzte Änderung an dem Datencontainer des Spieltyps
+  game:
+    properties:
+      id:
+        type: number
+        format: int
+        description: ID des Spiels
+      ais:
+        type: array
+        items:
+          $ref: '#/definitions/ai'
+      type:
+        $ref: '#/definitions/gametype'
+      scores:
+        type: object
+        description: Dict mit ID:score
+      moves:
+        type: number
+        format: int
+        description: Anzahl der Spielzüge
+      reason:
+        type: string
+        description: Beendigungsgrund
