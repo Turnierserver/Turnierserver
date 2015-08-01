@@ -218,8 +218,6 @@ def api_user_update(id):
 	if not current_user.can_access(user):
 		return CommonErrors.NO_ACCESS
 
-	logger.info("User " + user.name + " geaendert")
-
 	user.firstname = request.form.get('firstname', user.firstname)
 	user.lastname = request.form.get('lastname', user.lastname)
 	user.email = request.form.get('email', user.email)
@@ -228,10 +226,10 @@ def api_user_update(id):
 	if "password" in request.form:
 		user.set_pw(request.form["password"])
 
-
 	# es muss zur Datenbank geschrieben werden, um die aktuellen Infos zu bekommen
 	db.session.commit()
 
+	logger.info("User '" + user.name + "' geaendert")
 	flash("Änderungen gespeichert.", "info")
 
 	return {"error": False, "user": user.info()}, 200
@@ -446,15 +444,15 @@ def api_ai_create():
 	if not lang:
 		return {'error': 'Invalid Language'}, 404
 
-	type = request.args.get('type')
-	if type:
-		type = GameType.query.get(type)
-		if not type:
+	gametype = request.args.get('type')
+	if gametype:
+		gametype = GameType.query.get(gametype)
+		if not gametype:
 			return {"error": "Invalid type."}, 400
 	else:
-		type = GameType.selected()
+		gametype = GameType.selected()
 
-	ai = AI(name=name, user=current_user, desc=desc, lang=lang, type=type)
+	ai = AI(name=name, user=current_user, desc=desc, lang=lang, type=gametype)
 	db.session.add(ai)
 	# es muss zur Datenbank geschrieben werden, um die ID zu bekommen
 	db.session.commit()
