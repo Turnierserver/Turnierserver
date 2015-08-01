@@ -144,6 +144,255 @@ paths:
           required: true
           type: number
           format: int
+  /users:
+    get:
+      summary: Nutzer
+      responses:
+        200:
+          description: Eine Liste von allen Nutzern
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/user'
+  /user/{id}:
+    get:
+      summary: Nutzer mit ID {id}.
+      responses:
+        200:
+          description: Nutzer mit ID {id}.
+          schema:
+            $ref: '#/definitions/user'
+        404:
+          description: Nutzer wurde nicht gefunden.
+      parameters:
+        - name: id
+          in: path
+          description: ID
+          required: true
+          type: number
+          format: int
+  /user/{id}/update:
+    post:
+      summary: Bearbeitet Nutzer.
+      consumes:
+        - "application/json"
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      - name: body
+        in: body
+        required: true
+        description: "Infos über den Nutzer, die geändert werden sollen. (alle optional)"
+        schema:
+          properties:
+            firstname:
+              type: string
+              description: Vorname des Nutzers
+            lastname:
+              type: string
+              description: Nachname des Nutzers
+            email:
+              type: string
+              format: email
+              description: Email des Nutzers
+            name_public:
+              type: boolean
+              description: Ob Nach- und Vorname öffentlich sein sollen.
+            password:
+              type: string
+              format: password
+              description: Das Passwort des Nutzers
+      responses:
+        200:
+          description: Die neuen Daten
+          schema:
+            properties:
+              error:
+                type: boolean
+              user:
+                $ref: '#/definitions/user'
+#      security:
+#        - Cookie-Auth:
+#          - "logged_in"
+  /user/{id}/delete:
+    post:
+      summary: "Löscht einen Nutzer"
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      responses:
+        200:
+          description: Ok
+          
+  /langs:
+    get:
+      summary: Sprachen
+      responses:
+        200:
+          description: Eine Liste mit allen Sprachen
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/lang'
+  /gametypes:
+    get:
+      summary: Spieltypen
+      responses:
+        200:
+          description: Eine Liste mit allen Spieltypen
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/gametype'
+      
+  /activate/{id}/{uuid}:
+    post:
+      summary: Aktiviert einen Account
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      - name: uuid
+        in: path
+        description: Aktivierungstoken
+        required: true
+        type: string
+        format: uuid4
+      responses:
+        302:
+          description: Redirect zu "/"
+  /login:
+    post:
+      summary: Loggt einen Nutzer ein
+      responses:
+        200:
+          description: Ok
+      parameters:
+      - name: body
+        in: body
+        required: true
+        description: Passwort und Email des Nutzers.
+        schema:
+          properties:
+            firstname:
+              type: string
+              format: email
+              description: Email des Nutzers
+            password:
+              type: string
+              format: password
+              description: Passwort des Nutzers
+            remember:
+              type: boolean
+              description: Ob der Cookie länger halten soll (optional)
+  /logout:
+    post:
+      summary: Loggt einen Nutzer aus.
+      responses:
+        200:
+          description: Ok
+  /loggedin:
+    get:
+      summary: Gibt die Infos des aktuellen Nutzers zurück (falls eingeloggt).
+      responses:
+        200:
+          description: Die Infos des eingeloggten Nutzers
+          schema:
+            $ref: '#/definitions/user'
+    post:
+      summary: Gibt die Infos des aktuellen Nutzers zurück (falls eingeloggt).
+      responses:
+        200:
+          description: Die Infos des eingeloggten Nutzers
+          schema:
+            $ref: '#/definitions/user'
+  /user/create:
+    post:
+      consumes:
+      - "application/json"
+      - "application/x-www-form-urlencoded"
+      parameters:
+      - name: body
+        in: body
+        required: true
+        description: Infos über den Nutzer, die geändert werden sollen.
+        schema:
+          properties:
+            username:
+              type: string
+              description: Nutername des Nutzers (kann dannach nicht mehr geändert werden)
+            firstname:
+              type: string
+              description: Vorname des Nutzers
+            lastname:
+              type: string
+              description: Nachname des Nutzers
+            email:
+              type: string
+              format: email
+              description: Email des Nutzers
+            password:
+              type: string
+              format: password
+              description: Das Passwort des Nutzers (min 3 Zeichen)
+      responses:
+        200:
+          description: Die Infos des neuen Nutzers.
+  
+  /ai/create:
+    post:
+      consumes:
+      - "application/json"
+      - "application/x-www-form-urlencoded"
+      parameters:
+      - name: lang
+        in: query
+        description: Sprache der KI
+        type: number
+        format: int
+        required: true
+      - name: name
+        in: query
+        type: string
+        description: Name der neuen KI
+        required: false
+      - name: type
+        in: query
+        description: Spieltyp der KI
+        type: number
+        format: int
+        required: false
+      
+      responses:
+        200:
+          description: Die Infos des neuen Nutzers.
+
+  /ai/{id}/icon:
+    get:
+      parameters:
+      - name: id
+        in: path
+        description: ID der KI
+        type: number
+        format: int
+      
+      responses:
+        200:
+          description: Das Bild der KI
+      
+
+
 definitions:
   ai:
     properties:
