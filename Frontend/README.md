@@ -23,6 +23,9 @@ Der Server wird dann mit
 gestartet.
 
 ##API-Spezifikation
-[Hier implementiert](https://github.com/LuckyLukert/Turnierserver/blob/master/Frontend/api.py) gibt es die aktuelle API implementation.
-[Hier dokumentiert](https://github.com/LuckyLukert/Turnierserver/blob/master/Frontend/api.yaml) gibt es die aktuelle API implementation.
-[Hier online anguckbar](http://petstore.swagger.io/?url=http://thuermchen.com/api.yaml)
+Status: <img src="http://online.swagger.io/validator?url=http://thuermchen.com/api.yaml">
+
+[Hier implementiert](https://github.com/LuckyLukert/Turnierserver/blob/master/Frontend/api.py) gibt es die aktuelle API implementation, die [hier dokumentiert](https://github.com/LuckyLukert/Turnierserver/blob/master/Frontend/api.yaml) ist.
+
+Die Dokumentation ist [hier](http://petstore.swagger.io/?url=http://thuermchen.com/api.yaml) online erreichbar.
+
