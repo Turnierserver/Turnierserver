@@ -20,6 +20,8 @@ UI_DIR  = gen/ui
 
 TEMPLATE = app
 
+LIBS += -larchive
+
 INCLUDEPATH += include/
 
 SOURCES += \

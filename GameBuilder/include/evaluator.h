@@ -46,6 +46,8 @@ public:
 private:
 	int target(const QString &target, LangSpec *spec);
 	
+	QString createZip(const QDir &dir, const char *filename = 0);
+	
 	BuildInstructions _instructions;
 	QList<LangSpec*> langSpecs;
 	
