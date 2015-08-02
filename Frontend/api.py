@@ -554,13 +554,14 @@ def api_ai_update(id):
 
 	ai.set_name(request.form.get('name', ai.name))
 	ai.desc = request.form.get('description', ai.desc)
-	if 'lang' in request.form:
-		l = Lang.query.get(request.form.get('lang'))
-		if l:
-			## remove versions, prompt user?
-			ai.lang = l
-			#for version in ai.version_list:
-			#	version.delete()
+	# if 'lang' in request.form:
+	# 	l = Lang.query.get(request.form.get('lang'))
+	# 	if l:
+	# 		## TODO: remove versions, prompt user?
+	# 		logger.warning("Sprache von AI geändert")
+	# 		ai.lang = l
+	# 		#for version in ai.version_list:
+	# 		#	version.delete()
 
 	if 'extra[]' in request.form:
 		extras = request.form.getlist("extra[]")
@@ -730,8 +731,6 @@ def ai_new_version_from_zip(id):
 	if any([not v.frozen for v in ai.version_list]):
 		return {"error": "You need to freeze all prior versions to create a new one."}, 400
 	ai.new_version()
-
-
 
 	tmpdir = tempfile.mkdtemp()
 	_, tmpzip = tempfile.mkstemp()

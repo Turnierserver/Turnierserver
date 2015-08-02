@@ -29,6 +29,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/ai'
+
   /ais/{gametype}:
     get:
       summary: KIs des Spieltyps {gametype}.
@@ -46,6 +47,7 @@ paths:
           required: true
           type: number
           format: int
+
   /ai/{id}:
     get:
       summary: KI mit ID {id}.
@@ -63,6 +65,7 @@ paths:
           required: true
           type: number
           format: int
+
   /ai/{id}/games:
     get:
       summary: Spiele von der KI.
@@ -93,6 +96,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/game'
+
   /games/{gametype}:
     get:
       summary: KIs des Spieltyps {gametype}.
@@ -144,6 +148,7 @@ paths:
           required: true
           type: number
           format: int
+
   /users:
     get:
       summary: Nutzer
@@ -154,6 +159,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/user'
+
   /user/{id}:
     get:
       summary: Nutzer mit ID {id}.
@@ -171,6 +177,7 @@ paths:
           required: true
           type: number
           format: int
+
   /user/{id}/update:
     post:
       summary: Bearbeitet Nutzer.
@@ -218,6 +225,7 @@ paths:
 #      security:
 #        - Cookie-Auth:
 #          - "logged_in"
+
   /user/{id}/delete:
     post:
       summary: "Löscht einen Nutzer"
@@ -231,7 +239,7 @@ paths:
       responses:
         200:
           description: Ok
-          
+
   /langs:
     get:
       summary: Sprachen
@@ -242,6 +250,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/lang'
+
   /gametypes:
     get:
       summary: Spieltypen
@@ -252,7 +261,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/gametype'
-      
+
   /activate/{id}/{uuid}:
     post:
       summary: Aktiviert einen Account
@@ -272,6 +281,7 @@ paths:
       responses:
         302:
           description: Redirect zu "/"
+
   /login:
     post:
       summary: Loggt einen Nutzer ein
@@ -296,12 +306,14 @@ paths:
             remember:
               type: boolean
               description: Ob der Cookie länger halten soll (optional)
+
   /logout:
     post:
       summary: Loggt einen Nutzer aus.
       responses:
         200:
           description: Ok
+
   /loggedin:
     get:
       summary: Gibt die Infos des aktuellen Nutzers zurück (falls eingeloggt).
@@ -317,8 +329,10 @@ paths:
           description: Die Infos des eingeloggten Nutzers
           schema:
             $ref: '#/definitions/user'
+
   /user/create:
     post:
+      summary: Erstellt einen neuen Nutzer
       consumes:
       - "application/json"
       - "application/x-www-form-urlencoded"
@@ -349,9 +363,10 @@ paths:
       responses:
         200:
           description: Die Infos des neuen Nutzers.
-  
+
   /ai/create:
     post:
+      summary: Erstellt eine KI
       consumes:
       - "application/json"
       - "application/x-www-form-urlencoded"
@@ -373,24 +388,308 @@ paths:
         type: number
         format: int
         required: false
-      
+
       responses:
         200:
           description: Die Infos des neuen Nutzers.
 
   /ai/{id}/icon:
     get:
+      summary: Liefert das Icon einer KI 
       parameters:
       - name: id
         in: path
         description: ID der KI
         type: number
         format: int
-      
       responses:
         200:
           description: Das Bild der KI
+        404:
+          description: KI wurde nicht gefunden.
+          
+  /ai/{id}/upload_icon:
+    post:
+      summary: Lädt ein Icon für KI {id} hoch.
+      parameters:
+      - name: id
+        in: path
+        description: ID der KI
+        type: number
+        format: int
+      - name: body
+        in: body
+        description: Das neue Bild (im POST-Body)
+        required: true
+        schema:
+          properties:
+            data:
+              type: string
+              format: binary
       
+      responses:
+        200:
+          description: Ok
+        404:
+          description: KI wurde nicht gefunden.
+  
+  /ai/{id}/reset_icon:
+    post:
+      summary: Setzt das Icon der KI auf den Standart zurück.
+      parameters:
+      - name: id
+        in: path
+        description: ID der KI
+        type: number
+        format: int
+      responses:
+        200:
+          description: Ok
+        404:
+          description: KI wurde nicht gefunden.
+
+
+  /ai/{id}/update:
+    post:
+      summary: Bearbeitet KI.
+      consumes:
+      - "application/x-www-form-urlencoded"
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      - name: body
+        in: body
+        required: true
+        description: "Infos über die KI, die geändert werden sollen. (alle optional)"
+        schema:
+          properties:
+            name:
+              type: string
+              description: Name der KI
+            description:
+              type: string
+              description: Beschreibung der KI
+      responses:
+        200:
+          description: Die neuen Daten
+          schema:
+              $ref: '#/definitions/ai'
+
+  /ai/{id}/copy_example_code:
+    post:
+      summary: Kopiert Simple-Player.
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      responses:
+        200:
+          description: Ok
+
+  /ai/{id}/delete:
+    post:
+      summary: Löscht KI.
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      responses:
+        200:
+          description: Ok
+
+  /ai/{id}/compile:
+    get:
+      summary: SSE-Stream vom kompilieren.
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      responses:
+        200:
+          description: SSE-Stream vom kompilieren.
+
+  /ai/{id}/compile_blocking:
+    get:
+      summary: Kompilierungslog im JSON Format.
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      responses:
+        200:
+          description: Kompilierungslog im JSON Format.
+
+  /ai/{id}/qualify:
+    get:
+      summary: SSE-Stream vom Qualifizieren.
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      responses:
+        200:
+          description: SSE-Stream vom Qualifizieren.
+
+  /ai/{id}/freeze:
+    post:
+      summary: Gibt aktuellste Version frei.
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      responses:
+        200:
+          description: Ok
+
+  /ai/{id}/new_version:
+    post:
+      summary: Erstellt neue Version.
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      responses:
+        200:
+          description: Ok
+
+  /ai/{id}/new_version_from_zip:
+    post:
+      summary: Erstellt neue Version von einem ZIP.
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      - name: body
+        in: body
+        description: Das ZIP (im POST-Body)
+        required: true
+        schema:
+          properties:
+            data:
+              type: string
+              format: binary
+      responses:
+        200:
+          description: Ok
+
+  /ai/{id}/upload:
+    post:
+      summary: Lädt eine Datei zur KI hoch.
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      - name: body
+        in: body
+        required: true
+        schema:
+          properties:
+            path:
+              type: string
+            filename:
+              type: string
+            data:
+              type: string
+              format: binary
+      responses:
+        200:
+          description: Ok
+
+  /ai/{id}/delete_file:
+    post:
+      summary: Löscht eine Datei der KI.
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      - name: body
+        in: body
+        required: true
+        schema:
+          properties:
+            path:
+              type: string
+            filename:
+              type: string
+      responses:
+        200:
+          description: Ok
+
+  /ai/{id}/create_folder:
+    post:
+      summary: Erstellt einen Ordner.
+      parameters:
+      - name: id
+        in: path
+        description: ID
+        required: true
+        type: number
+        format: int
+      - name: body
+        in: body
+        required: true
+        schema:
+          properties:
+            path:
+              type: string
+            filename:
+              type: string
+      responses:
+        200:
+          description: Ok
+
+  /games/start:
+    post:
+      summary: Startet ein Spiel
+      parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          properties:
+            ai[]:
+              type: array
+              items:
+                type: number
+                format: int
+                description: ID der KI
+      responses:
+        200:
+          description: Ok
 
 
 definitions:
