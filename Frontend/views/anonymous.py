@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, abort, flash, url_for, request, Markup
+from flask import Blueprint, render_template, abort, flash, url_for, request, Markup, send_file
 from flask.ext.login import current_user
 import markdown
 from database import AI, User, Game, GameType, Game_inprogress
@@ -71,3 +71,7 @@ def inprogress_game(id):
 
 	stream = url_for("api.game_inprogress_log", id=game.id)
 	return render_template(game.type.viz, game=game, inprogress=True, ai0=game.ais[0], ai1=game.ais[1], stream=stream)
+
+@anonymous_blueprint.route("/api.yaml")
+def api_yaml():
+	return send_file("api.yaml")
