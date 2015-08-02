@@ -21,7 +21,7 @@ basePath: /api
 produces:
   - application/json
 paths:
-  /:
+  /ping:
     get:
       summary: Ping
       responses:
@@ -771,7 +771,7 @@ paths:
       responses:
         200:
           description: Ok
-  
+
   /admin/ftp_sync:
     get:
       tags:
@@ -780,7 +780,7 @@ paths:
       responses:
         200:
           description: Ok
-  
+
   /upload_game_libs/{id}/{lang}:
     post:
       tags:
@@ -878,7 +878,7 @@ paths:
       responses:
         200:
           description: Ok
-  
+
   /add_gametype/{name}:
     post:
       tags:

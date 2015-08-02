@@ -27,5 +27,5 @@ Status: <img src="http://online.swagger.io/validator?url=http://thuermchen.com/a
 
 [Hier implementiert](https://github.com/LuckyLukert/Turnierserver/blob/master/Frontend/api.py) gibt es die aktuelle API implementation, die [hier dokumentiert](https://github.com/LuckyLukert/Turnierserver/blob/master/Frontend/api.yaml) ist.
 
-Die Dokumentation ist [hier](http://petstore.swagger.io/?url=http://thuermchen.com/api.yaml) online erreichbar.
+Die Dokumentation ist [hier](http://thuermchen.com/api) online erreichbar.
 
