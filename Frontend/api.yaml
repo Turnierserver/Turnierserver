@@ -440,6 +440,7 @@ paths:
         description: ID der KI
         type: number
         format: int
+        required: true
       responses:
         200:
           description: Das Bild der KI
@@ -458,6 +459,7 @@ paths:
         description: ID der KI
         type: number
         format: int
+        required: true
       - name: body
         in: body
         description: Das neue Bild (im POST-Body)
@@ -486,6 +488,7 @@ paths:
         description: ID der KI
         type: number
         format: int
+        required: true
       responses:
         200:
           description: Ok
@@ -792,10 +795,12 @@ paths:
         description: ID des Spiels
         type: number
         format: int
+        required: true
       - name: lang
         in: path
         description: Sprache
         type: string
+        required: true
       responses:
         200:
           description: Ok
@@ -811,6 +816,7 @@ paths:
         description: ID des Spiels
         type: number
         format: int
+        required: true
       responses:
         200:
           description: Ok
@@ -819,11 +825,12 @@ paths:
     get:
       summary: Liefert Spiellogik.
       parameters:
-        - name: id
-          in: path
-          description: ID des Spiels
-          type: number
-          format: int
+      - name: id
+        in: path
+        description: ID des Spiels
+        type: number
+        format: int
+        required: true
       responses:
         200:
           description: Gamelogic (als .jar)
@@ -838,15 +845,18 @@ paths:
         in: path
         description: Sprache der Lib
         type: string
+        required: true
       - name: name
         in: path
         description: Name der Lib
         type: string
+        required: true
       - name: version
         in: path
         description: Version der lib
         type: number
         format: int
+        required: true
       responses:
         200:
           description: Lib (als .zip)
@@ -855,11 +865,12 @@ paths:
     get:
       summary: Liefert Codr-Datenconatiner
       parameters:
-        - name: game_id
-          in: path
-          description: ID des Spieltyps
-          type: number
-          format: int
+      - name: game_id
+        in: path
+        description: ID des Spieltyps
+        type: number
+        format: int
+        required: true
       responses:
         200:
           description: Codr-Datencontainer (als .zip)
@@ -870,11 +881,12 @@ paths:
       - Admin
       summary: Erstellt Codr-Datencontainer
       parameters:
-        - name: game_id
-          in: path
-          description: ID des Spieltyps
-          type: number
-          format: int
+      - name: game_id
+        in: path
+        description: ID des Spieltyps
+        type: number
+        format: int
+        required: true
       responses:
         200:
           description: Ok
@@ -889,6 +901,7 @@ paths:
         in: path
         description: Name des neuen Spieltyps
         type: string
+        required: true
       responses:
         200:
           description: Infos über den neuen Spieltyp
@@ -927,15 +940,17 @@ paths:
       - Admin
       summary: Lädt Simple-Player hoch.
       parameters:
-        - name: game_id
-          in: path
-          description: GameID
-          type: number
-          format: int
-        - name: lang
-          in: path
-          description: Sprache
-          type: string
+      - name: game_id
+        in: path
+        description: GameID
+        type: number
+        format: int
+        required: true
+      - name: lang
+        in: path
+        description: Sprache
+        type: string
+        required: true
       responses:
         200:
           description: Ok
