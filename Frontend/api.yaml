@@ -5,6 +5,15 @@ info:
   description: Turnierserver API
   version: "494212a9f0"
 host: thuermchen.com
+tags:
+- name: "KI"
+  description: "Zeugs mit KIs"
+- name: "Nutzer"
+  description: "Zeugs mit Nutzern"
+- name: "Auth"
+  description: "Dinge, für die man eingeloggt sein muss"
+- name: "Admin"
+  description: "Dinge, die Admin-Zugang brauchen"
 schemes:
 # - https
   - http
@@ -21,6 +30,8 @@ paths:
 
   /ais:
     get:
+      tags:
+      - KI
       summary: KIs
       responses:
         200:
@@ -32,6 +43,8 @@ paths:
 
   /ais/{gametype}:
     get:
+      tags:
+      - KI
       summary: KIs des Spieltyps {gametype}.
       responses:
         200:
@@ -50,6 +63,8 @@ paths:
 
   /ai/{id}:
     get:
+      tags:
+      - KI
       summary: KI mit ID {id}.
       responses:
         200:
@@ -68,6 +83,8 @@ paths:
 
   /ai/{id}/games:
     get:
+      tags:
+      - KI
       summary: Spiele von der KI.
       responses:
         200:
@@ -151,6 +168,8 @@ paths:
 
   /users:
     get:
+      tags:
+      - Nutzer
       summary: Nutzer
       responses:
         200:
@@ -162,6 +181,8 @@ paths:
 
   /user/{id}:
     get:
+      tags:
+      - Nutzer
       summary: Nutzer mit ID {id}.
       responses:
         200:
@@ -180,6 +201,9 @@ paths:
 
   /user/{id}/update:
     post:
+      tags:
+      - Nutzer
+      - Auth
       summary: Bearbeitet Nutzer.
       consumes:
         - "application/json"
@@ -228,6 +252,9 @@ paths:
 
   /user/{id}/delete:
     post:
+      tags:
+      - Nutzer
+      - Auth
       summary: "Löscht einen Nutzer"
       parameters:
       - name: id
@@ -264,6 +291,8 @@ paths:
 
   /activate/{id}/{uuid}:
     post:
+      tags:
+      - Nutzer
       summary: Aktiviert einen Account
       parameters:
       - name: id
@@ -316,6 +345,8 @@ paths:
 
   /loggedin:
     get:
+      tags:
+      - Auth
       summary: Gibt die Infos des aktuellen Nutzers zurück (falls eingeloggt).
       responses:
         200:
@@ -332,6 +363,8 @@ paths:
 
   /user/create:
     post:
+      tags:
+      - Nutzer
       summary: Erstellt einen neuen Nutzer
       consumes:
       - "application/json"
@@ -366,6 +399,9 @@ paths:
 
   /ai/create:
     post:
+      tags:
+      - KI
+      - Auth
       summary: Erstellt eine KI
       consumes:
       - "application/json"
@@ -395,7 +431,9 @@ paths:
 
   /ai/{id}/icon:
     get:
-      summary: Liefert das Icon einer KI 
+      tags:
+      - KI
+      summary: Liefert das Icon einer KI
       parameters:
       - name: id
         in: path
@@ -407,9 +445,12 @@ paths:
           description: Das Bild der KI
         404:
           description: KI wurde nicht gefunden.
-          
+
   /ai/{id}/upload_icon:
     post:
+      tags:
+      - KI
+      - Auth
       summary: Lädt ein Icon für KI {id} hoch.
       parameters:
       - name: id
@@ -426,15 +467,18 @@ paths:
             data:
               type: string
               format: binary
-      
+
       responses:
         200:
           description: Ok
         404:
           description: KI wurde nicht gefunden.
-  
+
   /ai/{id}/reset_icon:
     post:
+      tags:
+      - KI
+      - Auth
       summary: Setzt das Icon der KI auf den Standart zurück.
       parameters:
       - name: id
@@ -451,6 +495,9 @@ paths:
 
   /ai/{id}/update:
     post:
+      tags:
+      - KI
+      - Auth
       summary: Bearbeitet KI.
       consumes:
       - "application/x-www-form-urlencoded"
@@ -481,6 +528,9 @@ paths:
 
   /ai/{id}/copy_example_code:
     post:
+      tags:
+      - KI
+      - Auth
       summary: Kopiert Simple-Player.
       parameters:
       - name: id
@@ -495,6 +545,9 @@ paths:
 
   /ai/{id}/delete:
     post:
+      tags:
+      - KI
+      - Auth
       summary: Löscht KI.
       parameters:
       - name: id
@@ -509,6 +562,9 @@ paths:
 
   /ai/{id}/compile:
     get:
+      tags:
+      - KI
+      - Auth
       summary: SSE-Stream vom kompilieren.
       parameters:
       - name: id
@@ -523,6 +579,9 @@ paths:
 
   /ai/{id}/compile_blocking:
     get:
+      tags:
+      - KI
+      - Auth
       summary: Kompilierungslog im JSON Format.
       parameters:
       - name: id
@@ -537,6 +596,9 @@ paths:
 
   /ai/{id}/qualify:
     get:
+      tags:
+      - KI
+      - Auth
       summary: SSE-Stream vom Qualifizieren.
       parameters:
       - name: id
@@ -551,6 +613,9 @@ paths:
 
   /ai/{id}/freeze:
     post:
+      tags:
+      - KI
+      - Auth
       summary: Gibt aktuellste Version frei.
       parameters:
       - name: id
@@ -565,6 +630,8 @@ paths:
 
   /ai/{id}/new_version:
     post:
+      tags:
+      - KI
       summary: Erstellt neue Version.
       parameters:
       - name: id
@@ -579,6 +646,9 @@ paths:
 
   /ai/{id}/new_version_from_zip:
     post:
+      tags:
+      - KI
+      - Auth
       summary: Erstellt neue Version von einem ZIP.
       parameters:
       - name: id
@@ -602,6 +672,9 @@ paths:
 
   /ai/{id}/upload:
     post:
+      tags:
+      - KI
+      - Auth
       summary: Lädt eine Datei zur KI hoch.
       parameters:
       - name: id
@@ -628,6 +701,9 @@ paths:
 
   /ai/{id}/delete_file:
     post:
+      tags:
+      - KI
+      - Auth
       summary: Löscht eine Datei der KI.
       parameters:
       - name: id
@@ -651,6 +727,9 @@ paths:
 
   /ai/{id}/create_folder:
     post:
+      tags:
+      - KI
+      - Auth
       summary: Erstellt einen Ordner.
       parameters:
       - name: id
@@ -674,6 +753,8 @@ paths:
 
   /games/start:
     post:
+      tags:
+      - Auth
       summary: Startet ein Spiel
       parameters:
       - name: body
@@ -687,6 +768,174 @@ paths:
                 type: number
                 format: int
                 description: ID der KI
+      responses:
+        200:
+          description: Ok
+  
+  /admin/ftp_sync:
+    get:
+      tags:
+      - Admin
+      summary: Löst einen FTP-Sync aus.
+      responses:
+        200:
+          description: Ok
+  
+  /upload_game_libs/{id}/{lang}:
+    post:
+      tags:
+      - Admin
+      summary: Lädt Spiellibraries hoch.
+      parameters:
+      - name: id
+        in: path
+        description: ID des Spiels
+        type: number
+        format: int
+      - name: lang
+        in: path
+        description: Sprache
+        type: string
+      responses:
+        200:
+          description: Ok
+
+  /upload_game_logic/{id}:
+    post:
+      tags:
+      - Admin
+      summary: Lädt Spiellogik hoch.
+      parameters:
+      - name: id
+        in: path
+        description: ID des Spiels
+        type: number
+        format: int
+      responses:
+        200:
+          description: Ok
+
+  /gamelogic/{id}:
+    get:
+      summary: Liefert Spiellogik.
+      parameters:
+        - name: id
+          in: path
+          description: ID des Spiels
+          type: number
+          format: int
+      responses:
+        200:
+          description: Gamelogic (als .jar)
+
+  /lib/{lang}/{name}/{version}:
+    get:
+      tags:
+      - Admin
+      summary: Lädt Library hoch.
+      parameters:
+      - name: lang
+        in: path
+        description: Sprache der Lib
+        type: string
+      - name: name
+        in: path
+        description: Name der Lib
+        type: string
+      - name: version
+        in: path
+        description: Version der lib
+        type: number
+        format: int
+      responses:
+        200:
+          description: Lib (als .zip)
+
+  /data_container/{game_id}:
+    get:
+      summary: Liefert Codr-Datenconatiner
+      parameters:
+        - name: game_id
+          in: path
+          description: ID des Spieltyps
+          type: number
+          format: int
+      responses:
+        200:
+          description: Codr-Datencontainer (als .zip)
+
+  /make_data_container/{game_id}:
+    post:
+      tags:
+      - Admin
+      summary: Erstellt Codr-Datencontainer
+      parameters:
+        - name: game_id
+          in: path
+          description: ID des Spieltyps
+          type: number
+          format: int
+      responses:
+        200:
+          description: Ok
+  
+  /add_gametype/{name}:
+    post:
+      tags:
+      - Admin
+      summary: Erstellt Spieltyp
+      parameters:
+      - name: name
+        in: path
+        description: Name des neuen Spieltyps
+        type: string
+      responses:
+        200:
+          description: Infos über den neuen Spieltyp
+          schema:
+            $ref: '#/definitions/gametype'
+
+  /upload_codr:
+    post:
+      tags:
+      - Admin
+      summary: Lädt Codr.jar hoch.
+      parameters:
+      - name: body
+        in: body
+        description: Die .jar (im POST-Body)
+        required: true
+        schema:
+          properties:
+            data:
+              type: string
+              format: binary
+      responses:
+        200:
+          description: Ok
+
+  /download_codr:
+    get:
+      summary: Liefert Codr.jar
+      responses:
+        200:
+          description: Die codr.jar
+
+  /upload_simple_player/{game_id}/{lang}:
+    post:
+      tags:
+      - Admin
+      summary: Lädt Simple-Player hoch.
+      parameters:
+        - name: game_id
+          in: path
+          description: GameID
+          type: number
+          format: int
+        - name: lang
+          in: path
+          description: Sprache
+          type: string
       responses:
         200:
           description: Ok
