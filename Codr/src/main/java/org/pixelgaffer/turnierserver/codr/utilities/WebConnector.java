@@ -451,7 +451,7 @@ public class WebConnector {
 	 */
 	public boolean ping() {
 		try {
-			String result = toString(sendGet(null));
+			String result = toString(sendGet("ping"));
 			return result != null && result.equals("PONG!");
 		} catch (IOException e) {
 			return false;
