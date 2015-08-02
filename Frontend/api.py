@@ -86,7 +86,11 @@ api = Blueprint("api", __name__, url_prefix="/api")
 
 @api.route("/", methods=["GET"])
 def api_index():
-	return "PONG!"
+	return send_file("static/swagger_ui.html")
+
+@api.route("/ping")
+def ping():
+	return "Pong"
 
 @api.route("/ais", methods=["GET"])
 @api.route("/ais/<int:gametype>", methods=["GET"])
