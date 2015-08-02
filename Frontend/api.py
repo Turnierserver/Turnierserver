@@ -1078,7 +1078,7 @@ def make_data_container(game_id):
 	_make_data_container(str(game_id))
 	return {"error": False}, 200
 
-@api.route("/add_gametype/<string:name>")
+@api.route("/add_gametype/<string:name>", methods=["POST"])
 @json_out
 @admin_required
 def add_gametype(name):
