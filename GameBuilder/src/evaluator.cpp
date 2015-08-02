@@ -21,6 +21,8 @@
 #include "evaluator.h"
 #include "langspec.h"
 
+#include <stdio.h>
+
 #include <QDebug>
 #include <QDir>
 #include <QEventLoop>
@@ -31,6 +33,9 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QRegularExpression>
+
+#include <archive.h>
+#include <archive_entry.h>
 
 // zeugs zum passwort lesen
 #include <iostream>
@@ -185,9 +190,9 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 			
 			QString file = match.captured("file");
 			QFileInfo fileInfo(file);
-			if (!fileInfo.exists() || !fileInfo.isFile())
+			if (!fileInfo.exists())
 			{
-				fprintf(stderr, "%s ist keine Datei\n", qPrintable(file));
+				fprintf(stderr, "%s existiert nicht\n", qPrintable(file));
 				return 1;
 			}
 			QString destination = match.captured("destination");
@@ -348,6 +353,7 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 					QEventLoop loop;
 					QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
 					reply = mgr->get(createRequest);
+					loop.exec();
 					if (reply->error() != QNetworkReply::NoError)
 					{
 						fprintf(stderr, "Fehler beim Erstellen des Spiels: %s\n", qPrintable(reply->errorString()));
@@ -378,6 +384,13 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 				}
 				else
 					return 1;
+			}
+			
+			if (QFileInfo(file).isDir())
+			{
+				fprintf(stderr, "Baue ZIP-Datei für '%s' ...", qPrintable(file));
+				file = createZip(file);
+				fprintf(stderr, " '%s'\n", qPrintable(file));
 			}
 			
 			// die Datei hochladen
@@ -437,4 +450,54 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 		}
 	}
 	return 0;
+}
+
+void addDir (struct archive *a, const QDir &dir, const QString &path = QString())
+{
+	for (QFileInfo file : dir.entryInfoList(QDir::NoDotAndDotDot))
+	{
+		if (file.isDir())
+			addDir(a, file.absolutePath(), path + "/" + file.fileName());
+		else
+		{
+			const char *filename = qPrintable(path + "/" + file.fileName());
+			const char *filepath = qPrintable(file.absolutePath());
+			
+			struct stat st;
+			stat(filepath, &st);
+			
+			struct archive_entry *entry = archive_entry_new();
+			archive_entry_set_pathname(entry, filename);
+			archive_entry_set_size(entry, st.st_size);
+			archive_entry_set_filetype(entry, AE_IFREG);
+			archive_entry_set_perm(entry, st.st_mode);
+			archive_write_header(a, entry);
+			
+			FILE *file = fopen(filepath, "r");
+			char buff[8192];
+			size_t len;
+			while ((len = fread(buff, 1, 8192, file)) > 0)
+				archive_write_data(a, buff, len);
+			fclose(file);
+			archive_entry_free(entry);
+		}
+	}
+}
+
+QString Evaluator::createZip(const QDir &dir, const char *filename)
+{
+	if (!filename)
+		filename = qPrintable(dir.absolutePath() + ".zip");
+	QString qfilename(filename);
+	
+	struct archive *a = archive_write_new();
+	archive_write_set_format_zip(a);
+	archive_write_open_filename(a, filename);
+	
+	addDir(a, dir);
+	
+	archive_write_close(a);
+	archive_write_free(a);
+	
+	return qfilename;
 }
