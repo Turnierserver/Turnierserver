@@ -98,9 +98,6 @@ class SyncedFTP:
 			f.seek(0)
 			return send_file(f, mimetype=magic.from_buffer(data, mime=True).decode("ascii"))
 
-	def send_cached(self, path):
-		pass
-
 	def copy_tree(self, from_dir, to_dir, overwrite=True):
 		logger.info("COPY_TREE " + from_dir + " " + to_dir + " " + str(overwrite))
 		@self.safe
@@ -337,6 +334,8 @@ class AI(db.Model):
 		except ftp.err:
 			logger.warning("Icon reset failed")
 
+		self.copy_example_code()
+
 		db_obj_init_msg(self)
 
 	def info(self):
@@ -490,7 +489,7 @@ class AI_Version(db.Model):
 		}
 
 	def extras(self, e=False):
-		if e:
+		if isinstance(e, list):
 			self.extras_str = json.dumps(e)
 		return json.loads(self.extras_str)
 

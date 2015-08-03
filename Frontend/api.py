@@ -429,7 +429,7 @@ def api_user_create():
 	return {'error': False, 'user': user.info()}, 200
 
 
-@api.route("/ai/create")
+@api.route("/ai/create", methods=['GET', 'POST'])
 @json_out
 @authenticated
 def api_ai_create():
@@ -566,10 +566,14 @@ def api_ai_update(id):
 	# 		ai.lang = l
 	# 		#for version in ai.version_list:
 	# 		#	version.delete()
-
 	if 'extra[]' in request.form:
 		extras = request.form.getlist("extra[]")
+		print("extra[] in reqform")
 		ai.latest_version().extras(extras)
+	elif 'extra' in request.form:
+		print("extra in reqform")
+		# das Web-Interface schickt bei nem leeren Feld statt 'extra[]' 'extra'
+		ai.latest_version().extras([])
 
 	# es muss zur Datenbank geschrieben werden, um die aktuellen Infos zu bekommen
 	db.session.commit()
