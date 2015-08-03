@@ -53,11 +53,11 @@
 
 <div class="ui segment">
 	<div class="ui pointing secondary menu">
-		<div class="active item" data-tab="spielspezifisch">Spielspezifisch</div>
+		<div class="active item" data-tab="spielspezifisch" id="spielspezifisch">Spielspezifisch</div>
 		{% if not qualify and not inprogress %}
 		<div class="item" data-tab="spielinfos">Spielinfos</div>
 		{% endif %}
-		<div class="item" data-tab="rechenpunkte">Rechenpunkte</div>
+		<div class="item" data-tab="rechenpunkte" id="rechenpunkte">Rechenpunkte</div>
 	</div>
 	<div class="ui bottom attached active tab segment" data-tab="spielspezifisch">
 		<center>
@@ -104,7 +104,7 @@
 	</div>
 	{% endif %}
 	<div class="ui bottom attached tab segment" data-tab="rechenpunkte">
-		<div class="chart" id="rechenpunkte"></div>
+		<div class="chart" id="td_chart"></div>
 	</div>
 
 	<div id="step_slider"></div>
