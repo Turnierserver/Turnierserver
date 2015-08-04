@@ -33,51 +33,66 @@ var pane = {
 var data = [];
 
 var diff_chart = new LineChart("#diff_chart",
-	{
+	[{
 		x: function (d) { return d.step; },
-		y: function (d) { return d.diff; }
-	}, data
+		y: function (d) { return d.diff; },
+		label: function() { return; }
+	}], data
 );
-
-diff_chart.on_hover_change = function (index) {
-	pane.step = index;
-	$("#step_slider").slider("option", "value", index);
-	draw();
-};
-
-// var abs_chart = new LineChart("#insgesammt",
-// 	[{
-// 		x: function (d) {
-// 			return d.step;
-// 		},
-// 		y: function (d) {
-// 			return d.ai1_abs;
-// 		}
-// 	},
-// 	{
-// 		x: function (d) {
-// 			return d.step;
-// 		},
-// 		y: function (d) {
-// 			return d.ai2_abs;
-// 		}
-// 	}], data
-// );
 
 $("#spielspezifisch").on("click", diff_chart.on_resize);
 $(window).on("resize", throttle(diff_chart.on_resize, 1000));
 diff_chart.update_chart = throttle(diff_chart.update_chart, 750);
 
-var td_chart = new LineChart("#td_chart",
+var abs_chart = new LineChart("#abs_chart",
+	[{
+		x: function (d) { return d.step; },
+		y: function (d) { return d.ai1_abs; },
+		label: function() { return "Ai1"; }
+	},
 	{
 		x: function (d) { return d.step; },
-		y: function (d) { return d.ai1_td; }
-	}, data
+		y: function (d) { return d.ai2_abs; },
+		label: function() { return "Ai2"; }
+	}], data
+);
+
+$("#spielspezifisch").on("click", abs_chart.on_resize);
+$(window).on("resize", throttle(abs_chart.on_resize, 1000));
+abs_chart.update_chart = throttle(abs_chart.update_chart, 750);
+
+var td_chart = new LineChart("#td_chart",
+	[{
+		x: function (d) { return d.step; },
+		y: function (d) { return d.ai1_td; },
+		label: function() { return "Ai1"; }
+	},
+	{
+		x: function (d) { return d.step; },
+		y: function (d) { return d.ai2_td; },
+		label: function() { return "Ai2"; }
+	}], data
 );
 
 $("#rechenpunkte").on("click", td_chart.on_resize);
 $(window).on("resize", throttle(td_chart.on_resize, 1000));
 td_chart.update_chart = throttle(td_chart.update_chart, 750);
+
+
+var charts = [diff_chart, abs_chart, td_chart];
+
+function on_hover_change(index) {
+	pane.step = index;
+	$("#step_slider").slider("option", "value", index);
+	draw();
+	$.each(charts, function () {
+		this.set_hover(index);
+	});
+}
+
+$.map(charts, function(chart) {
+	chart.on_hover_change = on_hover_change;
+});
 
 function draw() {
 	update();
@@ -93,7 +108,9 @@ $("#step_slider").slider({
 	slide: function (event, ui) {
 		pane.step = ui.value;
 		draw();
-		diff_chart.set_hover(pane.step);
+		$.map(charts, function(chart) {
+			chart.set_hover(pane.step);
+		});
 	}
 });
 
@@ -136,17 +153,22 @@ $(document).ready(function () {
 		$("#step_slider").slider("option", "max", pane.data.length-1);
 		var values = $.map(d.wonChips, function (value, key) {return value});
 		var d = {};
-		d.diff = values[0] - values[1];
-		d.ai1_abs = 0;
-		d.ai2_abs = 1;
+		d.diff = Math.abs(values[0] - values[1]);
+		d.ai1_abs = values[0];
+		d.ai2_abs = values[1];
 		d.ai1_gain = values[0];
 		d.ai2_gain = values[1];
+		if (data.length > 0) {
+			d.ai1_gain -= data[data.length-1].ai1_abs;
+			d.ai2_gain -= data[data.length-1].ai2_abs;
+		}
 		d.ai1_td = Math.random();
 		d.ai2_td = Math.random();
 		d.step = pane.data.length;
 		data.push(d);
-		diff_chart.update_chart();
-		td_chart.update_chart();
+		$.map(charts, function (chart) {
+			chart.update_chart();
+		});
 		draw();
 	});
 
