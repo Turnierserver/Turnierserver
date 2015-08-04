@@ -18,9 +18,15 @@ function LineChart(divID, line_functions, data) {
 		.scale(y)
 		.orient("left");
 
-	var line = d3.svg.line()
-		.x(function(d) { return x(line_functions.x(d)) })
-		.y(function(d) { return y(line_functions.y(d)) });
+	var lines = $.map(line_functions, function(line_function) {
+		return d3.svg.line()
+			.x(function (d) {
+				return x(line_function.x(d));
+			})
+			.y(function (d) {
+				return y(line_function.y(d));
+			})
+	});
 
 	var svg = d3.select(divID).append("svg")
 		.attr("width", width + margin.left + margin.right)
@@ -41,9 +47,12 @@ function LineChart(divID, line_functions, data) {
 		.attr("dy", ".71em")
 		.style("text-anchor", "end");
 
-	svg.append("path")
-		.attr("class", "line")
-		.attr("d", line(data));
+	$.each(lines, function(index) {
+		svg.append("path")
+			.attr("class", "line line" + (index + 1))
+			.attr("d", lines[index](data))
+			.attr("data-index", index);
+	});
 
 
 	var hoverLineGroup = svg.append("svg:g")
@@ -97,12 +106,24 @@ function LineChart(divID, line_functions, data) {
 
 
 	this.update_chart = function() {
-		x.domain(d3.extent(data, line_functions.x));
-		y.domain(d3.extent(data, line_functions.y));
+		var xvars = d3.extent(data, line_functions[0].x);
+		var yvars = d3.extent(data, line_functions[0].y);
+		$.map(line_functions, function(line_function) {
+			var xvars_ = d3.extent(data, line_function.x);
+			var yvars_ = d3.extent(data, line_function.y);
+			xvars[0] = Math.min(xvars_[0], xvars[0]);
+			xvars[1] = Math.max(xvars_[1], xvars[1]);
+			yvars[0] = Math.min(yvars_[0], yvars[0]);
+			yvars[1] = Math.max(yvars_[1], yvars[1]);
+		})
+		x.domain(xvars);
+		y.domain(yvars);
 		var svg = d3.select(divID).transition();
-		svg.select("g .line")
+		svg.selectAll("g .line")
 			.duration(750)
-			.attr("d", line(data));
+			.attr("d", function() {
+				return lines[$(this).attr("data-index")](data);
+			});
 		svg.select(".x.axis")
 			.duration(750)
 			.call(xAxis);
@@ -118,7 +139,7 @@ function LineChart(divID, line_functions, data) {
 
 		// Calculate the value from this date by determining the 'index'
 		// within the data array that applies to this value
-		var index = Math.round(xValue - line_functions.x(data[0]));
+		var index = Math.round(xValue - line_functions[0].x(data[0]));
 		index = Math.max(0, Math.min(data.length-1, index));
 		return index;
 	};
@@ -130,7 +151,7 @@ function LineChart(divID, line_functions, data) {
 			xAxis: xAxis,
 			yAxis: yAxis,
 			svg: svg,
-			line: line,
+			lines: lines,
 			data: data,
 			line_functions: line_functions
 		};
