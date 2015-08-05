@@ -189,6 +189,10 @@ public abstract class GameLogic<E extends AiObject, R> {
 		if (display != null) {
 			renderData.display = display;
 		}
+		renderData.calculationPoints = new HashMap<>();
+		for(Ai ai : game.getAis()) {
+			renderData.calculationPoints.put(ai.getId(), getUserObject(ai).millisLeft);
+		}
 		sendToFronted(renderData);
 	}
 	
