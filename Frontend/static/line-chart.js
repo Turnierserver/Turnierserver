@@ -67,7 +67,7 @@ function LineChart(divID, line_functions, data) {
 
 	this.on_hover_change = function(index) {};
 	this.set_hover = function(index) {
-		var posX = x(index);
+		var posX = x(index + line_functions[0].x(data[0]));
 		hoverLine.attr("x1", posX).attr("x2", posX);
 	};
 
