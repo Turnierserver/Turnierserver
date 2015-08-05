@@ -1,5 +1,7 @@
 package org.pixelgaffer.turnierserver.gamelogic.messages;
 
+import java.util.HashMap;
+
 public class RenderData {
 	
 	/**
@@ -26,5 +28,8 @@ public class RenderData {
 	 * Der Fortschritt des Spieles zwischen 0 und 1, -1 wenn kein Fortschritt angezeigt werden soll
 	 */
 	public double progress = -1;
-	
+	/**
+	 * Die übrigen Rechenpunkte der AIs
+	 */
+	public HashMap<String, Integer> calculationPoints;
 }
