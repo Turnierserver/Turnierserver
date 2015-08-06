@@ -187,6 +187,7 @@ class Backend(threading.Thread):
 					#pprint(self.requests[reqid])
 
 			if "data" in d:
+				d["data"]["calculationPoints"] = d["calculationPoints"]
 				self.requests[reqid]["states"].append(d["data"])
 
 			if "status" in d and d["status"] == "restarted":
