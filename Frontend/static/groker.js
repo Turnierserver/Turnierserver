@@ -151,6 +151,9 @@ $(document).ready(function () {
 		//NProgress.set(d.progress);
 		$("#step_slider").slider("option", "max", pane.data.length-1);
 		var values = $.map(d.wonChips, function (value, key) {return value});
+		var calculationPoints = [0, 0]
+		if (d.hasOwnProperty("calculationPoints"))
+			calculationPoints = $.map(d.calculationPoints, function (value, key) {return value});
 		var d = {};
 		d.diff = Math.abs(values[0] - values[1]);
 		d.ai1_abs = values[0];
@@ -161,8 +164,8 @@ $(document).ready(function () {
 			d.ai1_gain -= data[data.length-1].ai1_abs;
 			d.ai2_gain -= data[data.length-1].ai2_abs;
 		}
-		d.ai1_td = Math.random();
-		d.ai2_td = Math.random();
+		d.ai1_td = calculationPoints[0];
+		d.ai2_td = calculationPoints[1];
 		d.step = pane.data.length;
 		data.push(d);
 		$.map(charts, function (chart) {
