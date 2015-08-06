@@ -613,8 +613,8 @@ class Game(db.Model):
 	def filter_output(cls, chunk):
 		## TODO: kein lookup jedes mal
 		for ai in chunk["output"]:
-			ai_id = ai.split("v")
-			if not (current_user or current_user.is_authenticated() or current_user.can_access(AI.query.get(ai_id))):
+			ai_id = ai.split("v")[0]
+			if not (current_user and current_user.is_authenticated() and current_user.can_access(AI.query.get(ai_id))):
 				chunk["output"][ai] = ""
 
 	def __repr__(self):
