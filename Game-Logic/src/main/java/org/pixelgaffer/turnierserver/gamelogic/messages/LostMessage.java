@@ -10,4 +10,9 @@ public class LostMessage {
 	public String reason;
 	@NonNull
 	public String id;
+	/**
+	 * Die requestid des Frontendauftrages
+	 */
+	@NonNull
+	public int requestid;
 }
