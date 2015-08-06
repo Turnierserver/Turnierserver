@@ -144,9 +144,8 @@ $(document).ready(function () {
 	};
 
 	evtSrc.addEventListener("state", function(e) {
-		NProgress.inc();
-		console.log(e.data);
 		d = JSON.parse(e.data);
+		NProgress.set(d.progress);
 		console.log(d);
 		pane.data.push(d);
 		//NProgress.set(d.progress);
@@ -174,7 +173,6 @@ $(document).ready(function () {
 
 
 	evtSrc.addEventListener("stream_stopped", function (e) {
-		console.log(e);
 		console.log("stream_stopped");
 		evtSrc.close();
 		NProgress.done();

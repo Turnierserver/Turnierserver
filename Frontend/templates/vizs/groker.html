@@ -50,7 +50,7 @@
 	{% if logged_in -%}
 	{% if current_user.can_access(ai) -%}
 	<div class="column">
-		<div class="ui segment">
+		<div class="ui basic segment">
 			Debugausgaben von "{{ai.name}}":
 			<textarea id="ai_{{ai.id}}_output" style="width: 100%; height: auto; min-height: 20em;"></textarea>
 		</div>
@@ -118,7 +118,11 @@
 	<div id="step_slider"></div>
 
 	{% if logged_in and (current_user.can_access(ai0) or current_user.can_access(ai1)) %}
-	<div class="ui two column grid">
+	{% if current_user.can_access(ai0) and current_user.can_access(ai1) %}
+	<div class="ui two column grid" style="padding-top: 1em;">
+	{% else %}
+	<div class="ui one column grid" style="padding-top: 1em;">
+	{% endif %}
 		{{render_output(ai0, "left", "left")}}
 		{{render_output(ai1, "right", "right")}}
 	</div>
