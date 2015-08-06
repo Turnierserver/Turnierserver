@@ -162,6 +162,7 @@ def game_log(id):
 	if game:
 		for i, chunk in enumerate(game.log):
 			chunk["progress"] = i/len(game.log)
+			Game.filter_output(chunk)
 			yield json.dumps(chunk), "state"
 		yield "", "finished_transmitting"
 
@@ -180,6 +181,7 @@ def game_inprogress_log(id):
 
 	for data, data_type in gen:
 		if data_type == "state":
+			Game.filter_output(data)
 			yield json.dumps(data), data_type
 		elif data_type == "finished_game_obj":
 			yield url_for("anonymous.game", id=data.id), "game_finished"
@@ -999,8 +1001,6 @@ def game_list_sse():
 		except Empty:
 			# falls es keine Verbindung mehr gibt wird der Generator hier beendet.
 			yield None
-	yield ("", "new_game")
-	yield ("""{"id": 1, "status": "1/42"}""", "update")
 
 
 @api.route("/upload_game_libs/<int:id>/<string:lang>", methods=["POST"])
