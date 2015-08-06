@@ -92,6 +92,7 @@ function LineChart(divID, line_functions, data) {
 		hoverLine.attr("y2", height);
 		x = d3.scale.linear().range([0, width]);
 		y = d3.scale.linear().range([height, 0]);
+		self.set_axis_domain();
 		xAxis = d3.svg.axis()
 			.scale(x)
 			.orient("bottom");
@@ -104,8 +105,7 @@ function LineChart(divID, line_functions, data) {
 		self.update_chart();
 	};
 
-
-	this.update_chart = function() {
+	this.set_axis_domain = function() {
 		var xvars = d3.extent(data, line_functions[0].x);
 		var yvars = d3.extent(data, line_functions[0].y);
 		$.map(line_functions, function(line_function) {
@@ -118,6 +118,10 @@ function LineChart(divID, line_functions, data) {
 		})
 		x.domain(xvars);
 		y.domain(yvars);
+	}
+
+	this.update_chart = function() {
+		self.set_axis_domain();
 		var svg = d3.select(divID).transition();
 		svg.selectAll("g .line")
 			.duration(750)
