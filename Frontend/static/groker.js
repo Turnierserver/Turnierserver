@@ -44,22 +44,22 @@ $("#spielspezifisch").on("click", diff_chart.on_resize);
 $(window).on("resize", throttle(diff_chart.on_resize, 1000));
 diff_chart.update_chart = throttle(diff_chart.update_chart, 750);
 
-var abs_chart = new LineChart("#abs_chart",
+var gain_chart = new LineChart("#gain_chart",
 	[{
 		x: function (d) { return d.step; },
-		y: function (d) { return d.ai1_abs; },
+		y: function (d) { return d.ai1_gain; },
 		label: function() { return "Ai1"; }
 	},
 	{
 		x: function (d) { return d.step; },
-		y: function (d) { return d.ai2_abs; },
+		y: function (d) { return d.ai2_gain; },
 		label: function() { return "Ai2"; }
 	}], data
 );
 
-$("#spielspezifisch").on("click", abs_chart.on_resize);
-$(window).on("resize", throttle(abs_chart.on_resize, 1000));
-abs_chart.update_chart = throttle(abs_chart.update_chart, 750);
+$("#spielspezifisch").on("click", gain_chart.on_resize);
+$(window).on("resize", throttle(gain_chart.on_resize, 1000));
+gain_chart.update_chart = throttle(gain_chart.update_chart, 750);
 
 var td_chart = new LineChart("#td_chart",
 	[{
@@ -78,8 +78,24 @@ $("#rechenpunkte").on("click", td_chart.on_resize);
 $(window).on("resize", throttle(td_chart.on_resize, 1000));
 td_chart.update_chart = throttle(td_chart.update_chart, 750);
 
+var tabs_chart = new LineChart("#tabs_chart",
+	[{
+		x: function (d) { return d.step; },
+		y: function (d) { return d.ai1_tabs; },
+		label: function() { return "Ai1"; }
+	},
+	{
+		x: function (d) { return d.step; },
+		y: function (d) { return d.ai2_tabs; },
+		label: function() { return "Ai2"; }
+	}], data
+);
 
-var charts = [diff_chart, abs_chart, td_chart];
+$("#rechenpunkte").on("click", tabs_chart.on_resize);
+$(window).on("resize", throttle(tabs_chart.on_resize, 1000));
+tabs_chart.update_chart = throttle(tabs_chart.update_chart, 750);
+
+var charts = [diff_chart, gain_chart, td_chart, tabs_chart];
 
 function on_hover_change(index) {
 	pane.step = index;
@@ -164,8 +180,17 @@ $(document).ready(function () {
 			d.ai1_gain -= data[data.length-1].ai1_abs;
 			d.ai2_gain -= data[data.length-1].ai2_abs;
 		}
-		d.ai1_td = calculationPoints[0];
-		d.ai2_td = calculationPoints[1];
+		d.ai1_tabs = calculationPoints[0];
+		d.ai2_tabs = calculationPoints[1];
+
+
+		d.ai1_td = 0;
+		d.ai2_td = 0;
+		if (data.length > 0) {
+			d.ai1_td = (data[data.length-1].ai1_tabs - calculationPoints[0]);
+			d.ai2_td = (data[data.length-1].ai2_tabs - calculationPoints[1]);
+		}
+
 		d.step = pane.data.length;
 		data.push(d);
 		$.map(charts, function (chart) {
