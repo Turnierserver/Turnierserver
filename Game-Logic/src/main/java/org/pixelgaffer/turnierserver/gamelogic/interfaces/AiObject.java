@@ -123,7 +123,7 @@ public class AiObject {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		logic.sendToFronted(new LostMessage(reason, ai.getId()));
+		logic.sendToFronted(new LostMessage(reason, ai.getId(), logic.getGame().getFrontend().getRequestId()));
 		lost = true;
 		logic.lost(ai);
 		boolean finishGame = true;
