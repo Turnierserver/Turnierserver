@@ -69,10 +69,10 @@
 	</div>
 	<div class="ui bottom attached active tab segment" data-tab="spielspezifisch">
 		<center>
-			<div class="divider">Unterschied</div>
+			<div class="divider">Punktedifferenz</div>
 			<div class="chart" id="diff_chart"></div>
-			<div class="divider">Insgesammt</div>
-			<div class="chart" id="abs_chart"></div>
+			<div class="divider">Züge</div>
+			<div class="chart" id="gain_chart"></div>
 		</center>
 	</div>
 	{% if not qualify and not inprogress %}
@@ -112,7 +112,12 @@
 	</div>
 	{% endif %}
 	<div class="ui bottom attached tab segment" data-tab="rechenpunkte">
-		<div class="chart" id="td_chart"></div>
+		<center>
+			<div class="divider">Insgesammt</div>
+			<div class="chart" id="tabs_chart"></div>
+			<div class="divider">∆</div>
+			<div class="chart" id="td_chart"></div>
+		</center>
 	</div>
 
 	<div id="step_slider"></div>
