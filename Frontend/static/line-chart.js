@@ -76,8 +76,10 @@ function LineChart(divID, line_functions, data) {
 		var mouseY = event.pageY - hoverLineYOffset;
 		if(mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
 			hoverLine.attr("x1", mouseX).attr("x2", mouseX);
-			var index = self.getIndexFromPosition(mouseX);
-			self.on_hover_change(index);
+			if (data.length > 0) {
+				var index = self.getIndexFromPosition(mouseX);
+				self.on_hover_change(index);
+			}
 		}
 	});
 
