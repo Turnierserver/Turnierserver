@@ -633,7 +633,6 @@ def api_ai_compile(id):
 	if not current_user.can_access(ai):
 		return (CommonErrors.NO_ACCESS[0]["error"], "error")
 
-
 	if ai.latest_version().frozen:
 		return {"error": "AI_Version is frozen"}, 400
 	ai.latest_version().compiled = True
