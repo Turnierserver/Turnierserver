@@ -20,6 +20,7 @@ from errorhandling import handle_errors
 from cli import manage
 
 import time
+import json
 
 
 app = Flask("Turnierserver - Frontend")
@@ -38,6 +39,7 @@ migrate = Migrate(app, db)
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
+app.jinja_env.filters["escapejs"] = lambda val: json.dumps(str(val))
 app.jinja_env.add_extension("jinja2.ext.do")
 
 app.register_blueprint(api)
@@ -79,7 +81,7 @@ db_session_timeout = time.time()
 @app.before_request
 def refresh_db_session():
 	global db_session_timeout
-	if time.time() > db_session_timeout + 60:
+	if time.time() > db_session_timeout + 10:
 		db_session_timeout = time.time()
 		refresh_session()
 

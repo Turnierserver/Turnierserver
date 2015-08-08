@@ -32,8 +32,7 @@ def refresh_session():
 	try:
 		db.session.query(User).first()
 	except sqlalchemy.exc.OperationalError:
-		logger.debug("OperationalError abgefangen")
-	logger.debug("refreshed session.")
+		logger.debug("refreshed session.")
 
 class SyncedFTPError(Exception):
 	pass
@@ -362,6 +361,11 @@ class AI(db.Model):
 	def latest_qualified_version(self):
 		for v in self.version_list[::-1]:
 			if v.qualified:
+				return v
+
+	def latest_frozen_version(self):
+		for v in self.version_list[::-1]:
+			if v.frozen:
 				return v
 
 	def new_version(self):

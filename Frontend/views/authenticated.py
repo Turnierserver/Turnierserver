@@ -153,20 +153,19 @@ def ais_challenge():
 	if len(own_ais) < 1:
 		return error(403, body="Du hast nicht genug eigene KIs.")
 
-	own_ais = [ai for ai in own_ais if ai.latest_version().qualified]
+	own_ais = [ai for ai in own_ais if ai.latest_version().frozen]
+	# TODO: ki workflow verbessern
 
 	if len(own_ais) < 1:
-		return error(403, body="Du hast keine KIs deren letzte Version qualifiziert ist.")
+		return error(403, body="Du hast keine KIs deren letzte Version freigegeben ist.")
 
 	all_ais = AI.filtered().order_by(AI.id).all()
 	if len(all_ais) < 2:
 		return error(403, body="Es gibt noch nicht genug KIs.")
 
-	logger.debug(all_ais)
-	all_ais = [ai for ai in all_ais if ai.latest_qualified_version()]
-	logger.debug(all_ais)
+	all_ais = [ai for ai in all_ais if ai.latest_frozen_version()]
 	if len(all_ais) < 2:
-		return error(403, body="Es gibt nicht genug qualifizierte KIs.")
+		return error(403, body="Es gibt nicht genug freigegebene KIs.")
 	#roles = ["Rolle"+str(i) for i, r in enumerate(gametype.roles)]
 	return render_template("challenge.html", own=own_ais, all=all_ais, ownfirst=own_ais[0], allfirst=all_ais[0])
 

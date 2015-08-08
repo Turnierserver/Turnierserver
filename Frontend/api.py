@@ -925,8 +925,8 @@ def start_game():
 	if not any([current_user.can_access(ai) for ai in ais]):
 		return CommonErrors.NO_ACCESS
 
-	if not all([ai.latest_qualified_version() for ai in ais]):
-		return {"error": "All AIs have to be qualified"}, 400
+	if not all([ai.latest_frozen_version() for ai in ais]):
+		return {"error": "All AIs have to be frozen"}, 400
 
 	backend.request_game(ais)
 
