@@ -71,6 +71,7 @@
 		}).fail(function(xhr, textStatus, errorThrown) {
 			console.log(xhr.responseText.error)
 			alert(JSON.parse(xhr.responseText).error)
+			$("#code-seg").removeClass("loading");
 		})
 	}
 

@@ -44,6 +44,8 @@ class Backend(threading.Thread):
 			self.connected = False
 
 	def request_compile(self, ai):
+		if ai.latest_version().frozen:
+			logger.error("request_compile mit freigegebener KI aufgerufen!")
 		reqid = self.latest_request_id
 		self.latest_request_id += 1
 		d = {
@@ -132,6 +134,8 @@ class Backend(threading.Thread):
 		return reqid
 
 	def request_qualify(self, ai):
+		if ai.latest_version().frozen:
+			logger.error("request_qualify mit freigegebener KI aufgerufen!")
 		reqid = self.latest_request_id
 		self.latest_request_id += 1
 		d = {'action': 'qualify', 'id': str(ai.id)+'v'+str(ai.latest_version().version_id),
