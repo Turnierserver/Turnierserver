@@ -39,7 +39,7 @@ public class ControllerGameManagement {
 	@FXML public Label lbJudged;
 	@FXML public ToggleButton btOffline;
 	@FXML public ToggleButton btOnline;
-	@FXML public ChoiceBox<String> cbLogic;
+	@FXML public ChoiceBox<String> cbLogic;  //entfernen
 	@FXML public ListView<AiBase> lvPlayer1;
 	@FXML public ListView<AiBase> lvPlayer2;
 	@FXML public ProgressIndicator progress;
@@ -111,7 +111,7 @@ public class ControllerGameManagement {
 				lbMode.setText("Offline");
 			lbDate.setText(game.date);
 			lbDuration.setText(game.duration + "");
-			lbLogic.setText(game.logic);
+			lbLogic.setText(game.gameType);
 			tableResult.setItems(game.participants);
 		} else {
 			lbMode.setText("Offline");

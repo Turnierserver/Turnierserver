@@ -11,7 +11,11 @@ import javafx.scene.image.Image;
 import org.apache.commons.lang.NotImplementedException;
 
 
-
+/**
+ * Grundklasse für KIs
+ * 
+ * @author Philip
+ */
 public class AiBase {
 	
 	public final String title;
@@ -26,10 +30,10 @@ public class AiBase {
 		saved, online, simplePlayer, extern, fake
 	}
 	
+	
 	public static enum NewVersionType {
 		fromFile, simplePlayer, lastVersion
 	}
-	
 	
 	
 	/**
@@ -40,12 +44,8 @@ public class AiBase {
 	protected AiBase(String tit, AiMode mmode) {
 		title = tit;
 		mode = mmode;
-		//mode = this.getClass();/////////////////TODO: vielleicht funktionierts
 		gametype = MainApp.actualGameType.get();
 	}
-	
-	
-	
 	
 	
 	/**
@@ -60,8 +60,6 @@ public class AiBase {
 			return null;
 		}
 	}
-	
-	
 	
 	
 	/**
@@ -82,6 +80,8 @@ public class AiBase {
 	public void setPicture(Image img) {
 		throw new NotImplementedException();
 	}
+	
+	
 	/**
 	 * Speichert das Bild des Spielers in der Datei picture.png.
 	 * 
