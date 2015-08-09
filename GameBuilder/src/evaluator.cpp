@@ -34,8 +34,7 @@
 #include <QNetworkRequest>
 #include <QRegularExpression>
 
-#include <archive.h>
-#include <archive_entry.h>
+#include <quazip5/JlCompress.h>
 
 // zeugs zum passwort lesen
 #include <iostream>
@@ -452,52 +451,12 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 	return 0;
 }
 
-void addDir (struct archive *a, const QDir &dir, const QString &path = QString())
+QString Evaluator::createZip(const QDir &dir, QString filename)
 {
-	for (QFileInfo file : dir.entryInfoList(QDir::NoDotAndDotDot))
-	{
-		if (file.isDir())
-			addDir(a, file.absolutePath(), path + "/" + file.fileName());
-		else
-		{
-			const char *filename = qPrintable(path + "/" + file.fileName());
-			const char *filepath = qPrintable(file.absolutePath());
-			
-			struct stat st;
-			stat(filepath, &st);
-			
-			struct archive_entry *entry = archive_entry_new();
-			archive_entry_set_pathname(entry, filename);
-			archive_entry_set_size(entry, st.st_size);
-			archive_entry_set_filetype(entry, AE_IFREG);
-			archive_entry_set_perm(entry, st.st_mode);
-			archive_write_header(a, entry);
-			
-			FILE *file = fopen(filepath, "r");
-			char buff[8192];
-			size_t len;
-			while ((len = fread(buff, 1, 8192, file)) > 0)
-				archive_write_data(a, buff, len);
-			fclose(file);
-			archive_entry_free(entry);
-		}
-	}
-}
-
-QString Evaluator::createZip(const QDir &dir, const char *filename)
-{
-	if (!filename)
-		filename = qPrintable(dir.absolutePath() + ".zip");
-	QString qfilename(filename);
+	if (filename.isEmpty())
+		filename = dir.absolutePath() + ".zip";
 	
-	struct archive *a = archive_write_new();
-	archive_write_set_format_zip(a);
-	archive_write_open_filename(a, filename);
+	JlCompress::compressDir(filename, dir.absolutePath());
 	
-	addDir(a, dir);
-	
-	archive_write_close(a);
-	archive_write_free(a);
-	
-	return qfilename;
+	return filename;
 }
