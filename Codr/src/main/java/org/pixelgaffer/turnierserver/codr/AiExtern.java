@@ -14,12 +14,20 @@ import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 
 
-
+/**
+ * Diese KIs werden nicht im Codr-Verzeichnis gespeichert.
+ * Es wird lediglich der Pfad zum Verzeichnis gespeichert.
+ * 
+ * @author Philip
+ */
 public class AiExtern extends AiSaved {
 	
 	public String path;
 	
 	
+	/**
+	 * Wenn die Ki aus dem Verzeichnis geladen wird, wird dieser Konstruktor verwendet.
+	 */
 	public AiExtern(String ttitle) {
 		super(ttitle, AiMode.extern);
 		loadProps();
@@ -27,6 +35,9 @@ public class AiExtern extends AiSaved {
 	}
 	
 	
+	/**
+	 * Wenn die Ki neu erstellt wird, wird dieser Konstruktor verwendet.
+	 */
 	public AiExtern(String ttitle, String lang, String ppath) {
 		super(ttitle, AiMode.extern);
 		path = ppath;
@@ -46,11 +57,11 @@ public class AiExtern extends AiSaved {
 	}
 	
 	
-	
 	/**
 	 * Lädt aus dem Dateiverzeichnis die Eigenschaften des Players.
 	 */
-	@Override public void loadProps() {
+	@Override
+	public void loadProps() {
 		try {
 			Reader reader = new FileReader(Paths.aiProperties(this));
 			Properties prop = new Properties();
@@ -67,11 +78,11 @@ public class AiExtern extends AiSaved {
 	}
 	
 	
-	
 	/**
 	 * Speichert die Eigenschaften des Players in das Dateiverzeichnis.
 	 */
-	@Override public void storeProps() {
+	@Override
+	public void storeProps() {
 		
 		Properties prop = new Properties();
 		prop.setProperty("description", description);
@@ -89,26 +100,26 @@ public class AiExtern extends AiSaved {
 	}
 	
 	
-	
 	/**
 	 * Lädt die Versionen aus dem Dateisystem, mit Hilfe der versionAmount-Property
 	 */
-	@Override public void loadVersions() {
+	@Override
+	public void loadVersions() {
 		versions.clear();
 		versions.add(new Version(this, 0, AiMode.extern));
 	}
 	
 	
-	
-	@Override public Version newVersion(NewVersionType type) {
+	@Override
+	public Version newVersion(NewVersionType type) {
 		return null;
 	}
 	
 	
-	@Override public Version newVersion(NewVersionType type, String path) {
+	@Override
+	public Version newVersion(NewVersionType type, String path) {
 		return null;
 	}
-	
 	
 	
 }

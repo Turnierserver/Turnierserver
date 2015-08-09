@@ -10,7 +10,14 @@ import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 
 
-
+/**
+ * Managet das Laden der
+ * - in Codr gespeicherten KIs
+ * - extern gespeicherten KIs
+ * - SimplePlayer-KIs
+ * 
+ * @author Philip
+ */
 public class AiManager {
 	
 	
@@ -22,6 +29,7 @@ public class AiManager {
 	 */
 	public void loadAis() {
 		
+		// in Codr gespeicherte KIs
 		ais.clear();
 		File dir = new File(Paths.aiFolder());
 		dir.mkdirs();
@@ -35,7 +43,7 @@ public class AiManager {
 				ais.add(new AiSaved(playerDirs[i].getName()));
 		}
 		
-		
+		// extern gespeicherte KIs
 		File externDir = new File(Paths.aiExternFolder());
 		externDir.mkdirs();
 		File[] externDirs = externDir.listFiles();
@@ -48,6 +56,7 @@ public class AiManager {
 				ais.add(new AiExtern(externDirs[i].getName()));
 		}
 		
+		// simplePlayer, die aus dem Download-Ordner geladen werden
 		File simpleDir = new File(Paths.simplePlayerFolder(MainApp.actualGameType.get()));
 		simpleDir.mkdirs();
 		File[] simpleDirs = simpleDir.listFiles();

@@ -19,9 +19,13 @@ import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
 
 
-
+/**
+ * Managet das Laden der SimplePlayer aus dem Downloads-Ordner.
+ * Ist auẞerdem der Grundbaustein für AiSaved, da hier schon die loadAi-Methode existiert.
+ * 
+ * @author Philip
+ */
 public class AiSimple extends AiBase {
-	
 	
 	
 	/**
@@ -41,7 +45,6 @@ public class AiSimple extends AiBase {
 	}
 	
 	
-	
 	/**
 	 * Lädt aus dem Dateiverzeichnis die Eigenschaften des Players.
 	 */
@@ -59,7 +62,6 @@ public class AiSimple extends AiBase {
 			ErrorLog.write("Fehler bei Laden aus der aiProperties.txt");
 		}
 	}
-	
 	
 	
 	/**
@@ -83,7 +85,6 @@ public class AiSimple extends AiBase {
 	}
 	
 	
-	
 	/**
 	 * Gibt das gespeicherte Bild des Spielers zurück.
 	 * 
@@ -97,19 +98,22 @@ public class AiSimple extends AiBase {
 		return img;
 	}
 	
-	public File getPictureFile(){
+	
+	public File getPictureFile() {
 		return new File(Paths.aiPicture(this));
 	}
+	
 	
 	/**
 	 * Speichert das Bild des Spielers in der Datei picture.png.
 	 * 
 	 * @param img das zu speichernde Bild
 	 */
-	@Override public void setPicture(File file) {
+	@Override
+	public void setPicture(File file) {
 		if (Paths.aiPicture(this) != null)
 			new File(Paths.aiPicture(this)).delete();
-		if (file.getName().equals("")){
+		if (file.getName().equals("")) {
 			return;
 		}
 		
@@ -124,8 +128,8 @@ public class AiSimple extends AiBase {
 			ending = "bmp";
 		if (file.getName().endsWith(".gif"))
 			ending = "gif";
-		
-		if (ending == null){
+			
+		if (ending == null) {
 			Dialog.error("Dieses Bildformat wird nicht unterstützt");
 			return;
 		}

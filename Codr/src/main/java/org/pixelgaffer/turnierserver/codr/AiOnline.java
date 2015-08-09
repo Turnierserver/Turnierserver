@@ -17,7 +17,12 @@ import org.pixelgaffer.turnierserver.codr.utilities.Resources;
 import org.pixelgaffer.turnierserver.codr.utilities.WebConnector;
 
 
-
+/**
+ * Stellt eine Online-KI dar, die auf dem Turnierserver existiert.
+ * Dabei wird nichts im Dateisystem gespeichert.
+ * 
+ * @author Philip
+ */
 public class AiOnline extends AiBase {
 	
 	public String userName = "";
@@ -26,6 +31,7 @@ public class AiOnline extends AiBase {
 	private ObjectProperty<Image> picture = new SimpleObjectProperty<Image>();
 	public ObservableList<GameOnline> onlineGames = FXCollections.observableArrayList();
 	public ObservableList<Integer> onlineGameIDs = FXCollections.observableArrayList();
+	
 	
 	/**
 	 * Erstellt eine neue Online-Ai aus einem JSONObject
@@ -50,11 +56,12 @@ public class AiOnline extends AiBase {
 		onlineGameIDs.addAll(connector.getGameIDs(id));
 		
 		Task<Image> imageLoader = new Task<Image>() {
+			
 			public Image call() {
 				try {
 					Image img = connector.getImage(json.getInt("id"));
 					if (img == null) {
-						img = connector.getImage(json.getInt("id"));  // zweiter Versuch (das geht aber auch elleganter :D)
+						img = connector.getImage(json.getInt("id")); // zweiter Versuch (das geht aber auch elleganter :D)
 						if (img == null) {
 							return Resources.defaultPicture();
 						} else
@@ -75,7 +82,6 @@ public class AiOnline extends AiBase {
 		thread.setDaemon(true);
 		thread.start();
 	}
-	
 	
 	
 	/**
@@ -117,7 +123,8 @@ public class AiOnline extends AiBase {
 	 * 
 	 * @param img das zu speichernde Bild
 	 */
-	@Override public void setPicture(Image img) {
+	@Override
+	public void setPicture(Image img) {
 		if (img == null)
 			picture.set(Resources.defaultPicture());
 		else

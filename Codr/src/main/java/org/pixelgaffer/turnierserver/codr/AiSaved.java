@@ -12,9 +12,12 @@ import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 
 
-
+/**
+ * Speichert eine KI lokal ab.
+ * 
+ * @author Philip
+ */
 public class AiSaved extends AiSimple {
-	
 	
 	
 	protected AiSaved(String ttitle, AiMode mmode) {
@@ -50,7 +53,6 @@ public class AiSaved extends AiSimple {
 	}
 	
 	
-	
 	/**
 	 * Fügt eine neue Version der Versionsliste hinzu.
 	 * 
@@ -63,7 +65,6 @@ public class AiSaved extends AiSimple {
 		}
 		return newVersion(type, "");
 	}
-	
 	
 	
 	/**
@@ -95,7 +96,6 @@ public class AiSaved extends AiSimple {
 	}
 	
 	
-	
 	/**
 	 * Speichert die Eigenschaften des Players in das Dateiverzeichnis.
 	 */
@@ -115,7 +115,6 @@ public class AiSaved extends AiSimple {
 			ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Ai)");
 		}
 	}
-	
 	
 	
 	/**

@@ -10,7 +10,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 
-
+/**
+ * Managet das Laden der Spiele aus dem Dateisystem.
+ * 
+ * @author Philip
+ */
 public class GameManager {
 	
 	public ObservableList<GameBase> games = FXCollections.observableArrayList();

@@ -92,7 +92,7 @@ public class CodrGameImpl implements Game, Frontend
 	public CodrGameImpl (GameBase game, Collection<Version> opponents) throws IOException, ReflectiveOperationException
 	{
 		renderData = new FileOutputStream(Paths.gameRenderData(game));
-		logic = loadGameLogic(game.logic);
+		logic = loadGameLogic(game.gameType);
 		
 		for (Version v : opponents)
 		{
