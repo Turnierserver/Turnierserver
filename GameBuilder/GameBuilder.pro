@@ -20,7 +20,7 @@ UI_DIR  = gen/ui
 
 TEMPLATE = app
 
-LIBS += -larchive
+LIBS += -lquazip5
 
 INCLUDEPATH += include/
 
