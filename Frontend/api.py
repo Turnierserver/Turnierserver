@@ -566,6 +566,8 @@ def api_ai_update(id):
 			## TODO: remove versions, prompt user?
 			logger.warning("Sprache von AI geändert")
 			ai.lang = l
+			ai.ftp_sync()
+			ai.copy_example_code()
 	# 		#for version in ai.version_list:
 	# 		#	version.delete()
 	if 'extra[]' in request.form:
