@@ -14,7 +14,7 @@ from pprint import pprint
 from collections import defaultdict
 
 from database import AI, User, Game, Lang, GameType, db, populate, ftp, Game_inprogress, timestamp
-from cli import zipdir, _make_data_container, _add_gametype
+from cli import zipdir, _make_data_container, _add_gametype, _compile_quali_ai
 from backend import backend
 from commons import authenticated, cache, CommonErrors
 from logger import logger
@@ -1133,6 +1133,11 @@ def upload_simple_player(game_id, lang):
 		zipf.extractall(tmpdir)
 
 	if ftp.upload_tree(tmpdir, "Games/"+str(game_id)+"/"+lang+"/example_ai", overwrite=True):
+		gt = GameType.query.get(game_id)
+		if gt and lang == "Java":
+			_compile_quali_ai(gt)
+			return {"error:" False, "compiled": True}, 200
 		return {"error": False}, 200
  
 	return CommonErrors.FTP_ERROR
+
