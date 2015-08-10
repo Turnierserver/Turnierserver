@@ -45,7 +45,8 @@ public slots:
 	void startFrontend();
 	void startBackend();
 	void startCodr();
-	void startWorker();
+	void startWorker(uint sandboxes = 0);
+	void startSandbox(uint number);
 	
 	void update();
 	

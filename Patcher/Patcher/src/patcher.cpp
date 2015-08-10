@@ -139,7 +139,7 @@ void Patcher::startBackend()
 	backend = start(module);
 }
 
-void Patcher::startWorker()
+void Patcher::startWorker(uint sandboxes)
 {
 	_modules << "Worker";
 	static Module module(_config, _tmp, "Worker");
@@ -147,6 +147,16 @@ void Patcher::startWorker()
 	if (ret != 0)
 		exit(ret);
 	worker = start(module);
+	
+	for (uint i = 0; i < sandboxes; i++)
+		startSandbox(i);
+}
+
+void Patcher::startSandbox(uint number)
+{
+	system(qPrintable(QString("VBoxManage controlvm patcher-sandbox-" + QString::number(number) + " poweroff")));
+	system(qPrintable(QString(_tmp->value("RepoClonePath").toString() + "/Sandbox/VM/startVM.sh patcher-sandbox-" + QString::number(number)
+							  + " Sandbox/ logs/worker0/sandbox" + QString::number(number))));
 }
 
 void Patcher::startFrontend()

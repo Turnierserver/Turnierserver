@@ -43,7 +43,8 @@ int main(int argc, char *argv[])
 	parser.addHelpOption();
 	QCommandLineOption backendOption(QStringList() << "b" << "backend", "Wenn angegeben wird das Backend gestartet");
 	parser.addOption(backendOption);
-	QCommandLineOption workerOption(QStringList() << "w" << "worker", "Wenn angegeben wird ein Worker gestartet.");
+	QCommandLineOption workerOption(QStringList() << "w" << "worker", "Wenn angegeben wird ein Worker und die angegebene Anzahl "
+																	  "an Sandboxen gestartet.", "sandboxes", "0");
 	parser.addOption(workerOption);
 	QCommandLineOption frontendOption(QStringList() << "f" << "frontend", "Wenn angegeben wird das Frontend gestartet.");
 	parser.addOption(frontendOption);
@@ -92,7 +93,7 @@ int main(int argc, char *argv[])
 	if (parser.isSet(backendOption))
 		patcher.startBackend();
 	if (parser.isSet(workerOption))
-		patcher.startWorker();
+		patcher.startWorker(parser.value(workerOption).toUInt());
 	if (parser.isSet(frontendOption))
 		patcher.startFrontend();
 	if (parser.isSet(codrOption))
