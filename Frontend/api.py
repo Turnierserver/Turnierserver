@@ -1132,8 +1132,7 @@ def upload_simple_player(game_id, lang):
 	with zipfile.ZipFile(tmpzip, "r") as zipf:
 		zipf.extractall(tmpdir)
 
-	@ftp.safe
-	def f():
-		ftp.upload_tree(tmpzip, "Games/"+str(game_id)+"/"+lang+"/example_ai", overwrite=True)
+	if ftp.upload_tree(tmpdir, "Games/"+str(game_id)+"/"+lang+"/example_ai", overwrite=True):
 		return {"error": False}, 200
-	return f()
+ 
+	return CommonErrors.FTP_ERROR
