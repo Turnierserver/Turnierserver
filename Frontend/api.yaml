@@ -951,6 +951,13 @@ paths:
         description: Sprache
         type: string
         required: true
+      - name: file
+        in: formData
+        required: true
+        paramType: body
+        dataType: file
+        allowMultiple: false
+        description: Die Daten im ZIP-Format
       responses:
         200:
           description: Ok
