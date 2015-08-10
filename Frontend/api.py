@@ -560,20 +560,18 @@ def api_ai_update(id):
 
 	ai.set_name(request.form.get('name', ai.name))
 	ai.desc = request.form.get('description', ai.desc)
-	# if 'lang' in request.form:
-	# 	l = Lang.query.get(request.form.get('lang'))
-	# 	if l:
-	# 		## TODO: remove versions, prompt user?
-	# 		logger.warning("Sprache von AI geändert")
-	# 		ai.lang = l
+	if 'lang' in request.form:
+		l = Lang.query.get(request.form.get('lang'))
+		if l and l is not ai.lang:
+			## TODO: remove versions, prompt user?
+			logger.warning("Sprache von AI geändert")
+			ai.lang = l
 	# 		#for version in ai.version_list:
 	# 		#	version.delete()
 	if 'extra[]' in request.form:
 		extras = request.form.getlist("extra[]")
-		print("extra[] in reqform")
 		ai.latest_version().extras(extras)
 	elif 'extra' in request.form:
-		print("extra in reqform")
 		# das Web-Interface schickt bei nem leeren Feld statt 'extra[]' 'extra'
 		ai.latest_version().extras([])
 
