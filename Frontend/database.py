@@ -368,7 +368,7 @@ class AI(db.Model):
 			if v.frozen:
 				return v
 
-	def new_version(self):
+	def new_version(self, copy_prev=True):
 		try:
 			self.ftp_sync()
 		except ftp.err:
@@ -376,7 +376,7 @@ class AI(db.Model):
 		if any([not v.frozen for v in self.version_list]):
 			return False
 		self.version_list.append(AI_Version(version_id=len(self.version_list) + 1))
-		if len(self.version_list) > 1:
+		if len(self.version_list) > 1 and copy_prev:
 			## copy AI code from prev version...
 			new_path = "AIs/{}/v{}".format(self.id, self.version_list[-1].version_id)
 			self.version_list[-2].copy_code(new_path)
@@ -442,6 +442,11 @@ class AI(db.Model):
 		return True
 
 	def copy_example_code(self):
+		if self.latest_version().frozen:
+			self.new_version()
+		self.latest_version().copiled = False
+		self.latest_version().qualified = False
+		db.session.commit()
 		source_dir_base = "Games/{}/{}/example_ai".format(self.type.id, self.lang.name)
 		target_dir_base = "AIs/{}/v{}".format(self.id, self.latest_version().version_id)
 		ret = ftp.copy_tree(source_dir_base, target_dir_base)
