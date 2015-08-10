@@ -114,6 +114,25 @@ def _add_gametype(name):
 	f()
 	return gt
 
+def _compile_quali_ai(gt):
+	ai = Mock()
+	ai.id = -gt.id
+	ai.lang = Lang.query.filter(Lang.name == "Java").first()
+	ai.type = gt
+	ai.name = "QualiKi-"+gt.name
+	v = ai.latest_version()
+	v.version_id = 1
+	v.qualified, v.compiled, v.frozen = False, False, False
+	v.extras.return_value = []
+	ai.version_list = [v]
+	ai.ftp_sync = lambda: AI.ftp_sync(ai)
+	ai.copy_example_code = lambda: AI.copy_example_code(ai)
+	ai.copy_example_code()
+	for data, event in backend.compile(ai):
+		print(event, ":", data)
+
+
+
 def manage(manager, app):
 	@manager.command
 	def clean_db():
@@ -161,21 +180,7 @@ def manage(manager, app):
 		for gt in GameType.query.all():
 			if not prompt_bool("Compile for '" + gt.name + "'?"):
 				continue
-			ai = Mock()
-			ai.id = -gt.id
-			ai.lang = Lang.query.filter(Lang.name == "Java").first()
-			ai.type = gt
-			ai.name = "QualiKi-"+gt.name
-			v = ai.latest_version()
-			v.version_id = 1
-			v.qualified, v.compiled, v.frozen = True, True, True
-			v.extras.return_value = []
-			ai.version_list = [v]
-			ai.ftp_sync = lambda: AI.ftp_sync(ai)
-			ai.copy_example_code = lambda: AI.copy_example_code(ai)
-			ai.copy_example_code()
-			for data, event in backend.compile(ai):
-				print(event, ":", data)
+			_compile_quali_ai(gt)
 
 
 	@manager.command
