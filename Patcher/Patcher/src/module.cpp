@@ -100,6 +100,24 @@ int Module::build(const QString &currentHash)
 		}
 		ELSE_UNKNOWN
 	}
+	else if (lang() == "Cpp")
+	{
+		if (build() == "QMake")
+		{
+			if (chdir(_tmp->value("RepoClonePath").toByteArray()) != 0)
+			{
+				perror("Konnte nicht ins Verzeichnis des geklonten Repositories wechseln");
+				RETURN_ERROR
+			}
+			if (chdir(_config->value(name() + "/Folder").toByteArray()) != 0)
+			{
+				perror("Konnte nicht ins Verzeichnis des Moduls wechseln");
+				RETURN_ERROR
+			}
+			RETURN_BUILD(system("qmake-qt5 -makefile && make -j2"))
+		}
+		ELSE_UNKNOWN
+	}
 	else if (lang() == "Python")
 	{
 		if (build() == "")
