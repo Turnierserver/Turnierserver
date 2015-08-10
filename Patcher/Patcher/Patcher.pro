@@ -15,8 +15,14 @@ TEMPLATE = app
 
 QMAKE_CXXFLAGS += -std=c++11
 
-LIBS += ../libQitHubAPI.so
-PRE_TARGETDEPS += ../libQitHubAPI.so
+unix: {
+	LIBS += ../libQitHubAPI.so
+	PRE_TARGETDEPS += ../libQitHubAPI.so
+}
+else: {
+	LIBS += ../QitHubAPI.dll
+	PRE_TARGETDEPS += ../QitHubAPI.dll
+}
 INCLUDEPATH += ../../Patcher/QitHubAPI/include/
 
 LIBS += -larchive
