@@ -1136,7 +1136,7 @@ def upload_simple_player(game_id, lang):
 		gt = GameType.query.get(game_id)
 		if gt and lang == "Java":
 			_compile_quali_ai(gt)
-			return {"error:" False, "compiled": True}, 200
+                        return {"error": False, "compiled": True}, 200
 		return {"error": False}, 200
  
 	return CommonErrors.FTP_ERROR
