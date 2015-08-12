@@ -98,6 +98,7 @@ public abstract class Ai<E, R> implements Runnable {
 				String line = in.readLine();
 				if (line == null) throw new EOFException();
 				logger.info("JSON erhalten: " + line);
+				logger.debug("um " + System.currentTimeMillis());
 				R updates = Parsers.getWorker().parse(Parsers.escape(line.getBytes("UTF-8")), token.getType());
 				logger.info("Geparsed zu: " + updates);
 				Object response = update(getState(updates));
@@ -105,6 +106,7 @@ public abstract class Ai<E, R> implements Runnable {
 				if (response != null) {
 					send(response);
 				}
+				logger.debug("um " + System.currentTimeMillis());
 			}
 		} catch (Exception e) {
 			crash(e);
