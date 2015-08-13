@@ -5,20 +5,20 @@
 {% macro render_inprogress_game(game) %}
 <tr id="inprogress_{{game.id}}">
 	<td class="left aligned">
-		<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai0.id)}}" id="ai0">
+		<a class="ui label yellow" href="{{url_for("anonymous.ai", id=game.ai0.id)}}" id="ai0">
 			<img class="ui right spaced image" src="/api/ai/{{ game.ai0.id }}/icon">
 			{{ game.ai0.name }}
 		</a>
 	</td>
-	<td class="left aligned"><p id="points0">0</></p></td>
+	<td class="left aligned"><p class="yellow" id="points0">0</p></td>
 	<td class="center aligned">
 		<a id="link" class="ui button content" href="{{url_for("anonymous.inprogress_game", id=game.id)}}">
 			<div class="header" id="progress">{% if game.inqueue %}In Warteschlange{% else %}{{ game.status }}{% endif %}</div>
 		</a>
 	</td>
-	<td class="right aligned"><p id="points1">0</p></td>
+	<td class="right aligned"><p class="yellow" id="points1">0</p></td>
 	<td class="right aligned">
-		<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai1.id)}}"  id="ai1">
+		<a class="ui label yellow" href="{{url_for("anonymous.ai", id=game.ai1.id)}}"  id="ai1">
 			{{ game.ai1.name }}
 			<img class="ui left spaced image" src="/api/ai/{{ game.ai1.id }}/icon">
 		</a>
@@ -32,6 +32,9 @@ p.green {
 }
 p.red {
 	color: #DB2828 !important;
+}
+p.yellow {
+	color: "yellow" !important;
 }
 </style>
 {% endblock %}
@@ -115,10 +118,10 @@ function set_scores(scores, id) {
 		points0.attr("class", "red");
 	}
 	else {
-		ai0.attr("class", "ui label");
-		ai1.attr("class", "ui label");
-		points0.attr("class", "")
-		points1.attr("class", "")
+		ai0.attr("class", "ui label yellow");
+		ai1.attr("class", "ui label yellow");
+		points0.attr("class", "yellow")
+		points1.attr("class", "yellow")
 	}
 
 	points0.text(scores[0]);
