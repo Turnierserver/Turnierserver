@@ -190,8 +190,10 @@ public abstract class GameLogic<E extends AiObject, R> {
 			renderData.display = display;
 		}
 		renderData.calculationPoints = new HashMap<>();
+		renderData.points = new HashMap<>();
 		for(Ai ai : game.getAis()) {
 			renderData.calculationPoints.put(ai.getId(), getUserObject(ai).millisLeft);
+			renderData.points.put(ai.getId(), getUserObject(ai).score);
 		}
 		sendToFronted(renderData);
 	}
