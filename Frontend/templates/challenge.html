@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% set active_page = "challenge" %}
+{% macro ainv(ai) %}{{ai.name}} v{{ai.latest_frozen_version().version_id}}{% endmacro %}
 {% block body %}
 Deine:
 <div id="own_dropdown" class="ui fluid selection dropdown">
@@ -7,13 +8,13 @@ Deine:
 	<i class="dropdown icon"></i>
 	<div class="text">
 		<img class="ui mini avatar image" src="/api/ai/{{ ownfirst.id }}/icon">
-		{{ ownfirst.name }}
+		{{ ainv(ownfirst) }}
 	</div>
 	<div class="menu transition hidden">
 	{% for ai in own %}
 		<div class="{% if allfirst.id == ai.id %}disabled{% endif %} item" data-value="{{ ai.id }}">
 			<img class="ui mini avatar image" src="/api/ai/{{ ai.id }}/icon">
-			{{ ai.name }}
+			{{ ainv(ai) }}
 		</div>
 	{% endfor %}
 	</div>
@@ -26,13 +27,13 @@ Gegen:
 	<i class="dropdown icon"></i>
 	<div class="text">
 		<img class="ui mini avatar image" src="/api/ai/{{ allfirst.id }}/icon">
-		{{ allfirst.name }}
+		{{ ainv(allfirst) }}
 	</div>
 	<div class="menu transition hidden">
 	{% for ai in all %}
 		<div class="{% if ownfirst.id == ai.id %}disabled{% endif %} item" data-value="{{ ai.id }}">
 			<img class="ui mini avatar image" src="/api/ai/{{ ai.id }}/icon">
-			{{ ai.name }}
+			{{ ainv(ai) }}
 		</div>
 	{% endfor %}
 	</div>

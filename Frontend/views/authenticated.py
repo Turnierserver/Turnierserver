@@ -153,7 +153,7 @@ def ais_challenge():
 	if len(own_ais) < 1:
 		return error(403, body="Du hast nicht genug eigene KIs.")
 
-	own_ais = [ai for ai in own_ais if ai.latest_version().frozen]
+	own_ais = [ai for ai in own_ais if ai.latest_frozen_version()]
 	# TODO: ki workflow verbessern
 
 	if len(own_ais) < 1:

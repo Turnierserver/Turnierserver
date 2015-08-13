@@ -29,14 +29,13 @@ var pane = {
 	is_playing: false,
 };
 
-
 var data = [];
 
 var diff_chart = new LineChart("#diff_chart",
 	[{
 		x: function (d) { return d.step; },
 		y: function (d) { return d.diff; },
-		label: function() { return; }
+		label: function(d) { return "Schritt: " + d.step + " Diff: " + d.diff; }
 	}], data
 );
 
@@ -48,12 +47,13 @@ var gain_chart = new LineChart("#gain_chart",
 	[{
 		x: function (d) { return d.step; },
 		y: function (d) { return d.ai1_gain; },
-		label: function() { return "Ai1"; }
+		ylabel: function(d) { return d.ai1_name; },
+		xlabel: function(d) { return d.step; }
 	},
 	{
 		x: function (d) { return d.step; },
 		y: function (d) { return d.ai2_gain; },
-		label: function() { return "Ai2"; }
+		ylabel: function(d) { return d.ai2_name; }
 	}], data
 );
 
@@ -147,6 +147,17 @@ function update() {
 	}
 }
 
+function map_sorted(obj, func) {
+	var sorted_keys = $.map(obj, function(element,index) {return index}).sort();
+	return $.map(sorted_keys, function (key) {
+		return func(key, obj[key]);
+	});
+}
+
+function return_val(key, value) {
+	return value;
+}
+
 $(document).ready(function () {
 	console.log("Streaming game data from", window.location.origin + $("#game_script").attr("stream"));
 	var evtSrc = new EventSource(window.location.origin + $("#game_script").attr("stream"));
@@ -166,10 +177,12 @@ $(document).ready(function () {
 		pane.data.push(d);
 		//NProgress.set(d.progress);
 		$("#step_slider").slider("option", "max", pane.data.length-1);
-		var values = $.map(d.wonChips, function (value, key) {return value});
-		var calculationPoints = [0, 0]
-		if (d.hasOwnProperty("calculationPoints"))
-			calculationPoints = $.map(d.calculationPoints, function (value, key) {return value});
+		var values = map_sorted(d.wonChips, return_val);
+		var calculationPoints = map_sorted(d.calculationPoints, return_val);
+		var labels = map_sorted(d.calculationPoints, function(key, value) {
+			var id = key.slice(0, key.indexOf("v"));
+			return ais[id];
+		});
 		var d = {};
 		d.diff = Math.abs(values[0] - values[1]);
 		d.ai1_abs = values[0];
@@ -182,14 +195,15 @@ $(document).ready(function () {
 		}
 		d.ai1_tabs = calculationPoints[0];
 		d.ai2_tabs = calculationPoints[1];
-
-
 		d.ai1_td = 0;
 		d.ai2_td = 0;
 		if (data.length > 0) {
 			d.ai1_td = (data[data.length-1].ai1_tabs - calculationPoints[0]);
 			d.ai2_td = (data[data.length-1].ai2_tabs - calculationPoints[1]);
 		}
+
+		d.ai1_name = labels[0];
+		d.ai2_name = labels[1];
 
 		d.step = pane.data.length;
 		data.push(d);

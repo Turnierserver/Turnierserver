@@ -54,6 +54,32 @@ function LineChart(divID, line_functions, data) {
 			.attr("data-index", index);
 	});
 
+	// legend
+
+	var label_group = vis.append("svg:g")
+		.attr("class", "legend-group")
+		.selectAll("g")
+		.data("topkek")
+		.enter().append("g")
+		.attr("class", "legend-labels");
+
+	label_group.append("svg:text")
+		.attr("class", "legend legend1")
+		.text(function(d, i) {
+			return "kektop";
+		})
+		.attr("y", function(d, i) {
+			return height+28;
+		})
+
+
+	label_group.append("svg:text")
+		.attr("class", "legend value")
+		.attr("y", function(d, i) {
+			return height+28;
+		})
+
+	// hover-line
 
 	var hoverLineGroup = svg.append("svg:g")
 							.attr("class", "hover-line");
