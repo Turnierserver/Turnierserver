@@ -12,7 +12,7 @@
 	</td>
 	<td class="left aligned"></td>
 	<td class="center aligned">
-		<a id="link" class="content" href="{{url_for("anonymous.inprogress_game", id=game.id)}}">
+		<a id="link" class="ui button content" href="{{url_for("anonymous.inprogress_game", id=game.id)}}">
 			<div class="header" id="progress">{% if game.inqueue %}In Warteschlange{% else %}{{ game.status }}{% endif %}</div>
 		</a>
 	</td>
