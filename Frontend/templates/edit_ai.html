@@ -175,7 +175,7 @@
 					{% endif %}
 				</td>
 				<td class="center aligned">
-					{% if version.current %}
+					{% if version.current and not version.frozen %}
 					<button class="ui basic teal button">ZIP hochladen</button>
 					{% else %}
 					<button class="ui basic teal button">als ZIP runterladen</button>
