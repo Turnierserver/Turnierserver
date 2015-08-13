@@ -56,7 +56,11 @@
 				</a>
 			</td>
 			<td class="left aligned">
+				{% if game.ai_assocs[0].score > game.ai_assocs[1].score %}
+				<b>{{ game.ai_assocs[0].score }}</b>
+				{% else %}
 				{{ game.ai_assocs[0].score }}
+				{% endif %}
 			</td>
 			<td class="center aligned">
 				<a class="content" href="{{url_for("anonymous.game", id=game.id)}}">
@@ -64,7 +68,11 @@
 				</a>
 			</td>
 			<td class="right aligned">
+				{% if game.ai_assocs[1].score > game.ai_assocs[0].score %}
+				<b>{{ game.ai_assocs[1].score }}</b>
+				{% else %}
 				{{ game.ai_assocs[1].score }}
+				{% endif %}
 			</td>
 			<td class="right aligned">
 				<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[1].ai.id)}}">

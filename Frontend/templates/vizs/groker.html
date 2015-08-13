@@ -139,6 +139,12 @@
 	$('.ui.menu .item').tab({history: true});
 </script>
 
+<script>
+	var ais = {
+		"{{ai0.id}}": {{ai0.name | escapejs | safe}},
+		"{{ai1.id}}": {{ai1.name | escapejs | safe}}
+	};
+</script>
 <script id="game_script" type="text/javascript" src="{{url_for('static', filename='groker.js')}}" stream="{{stream}}"></script>
 
 {% endblock %}
