@@ -5,20 +5,20 @@
 {% macro render_inprogress_game(game) %}
 <tr id="inprogress_{{game.id}}">
 	<td class="left aligned">
-		<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai0.id)}}">
+		<a class="ui label yellow" href="{{url_for("anonymous.ai", id=game.ai0.id)}}" id="ai0">
 			<img class="ui right spaced image" src="/api/ai/{{ game.ai0.id }}/icon">
 			{{ game.ai0.name }}
 		</a>
 	</td>
-	<td class="left aligned"></td>
+	<td class="left aligned"><p style="color:yellow" id="points0">0</font></td>
 	<td class="center aligned">
 		<a id="link" class="ui button content" href="{{url_for("anonymous.inprogress_game", id=game.id)}}">
 			<div class="header" id="progress">{% if game.inqueue %}In Warteschlange{% else %}{{ game.status }}{% endif %}</div>
 		</a>
 	</td>
-	<td class="right aligned"></td>
+	<td class="right aligned"><p style="color:yellow" id="points1">0</font></td>
 	<td class="right aligned">
-		<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai1.id)}}">
+		<a class="ui label yellow" href="{{url_for("anonymous.ai", id=game.ai1.id)}}"  id="ai1">
 			{{ game.ai1.name }}
 			<img class="ui left spaced image" src="/api/ai/{{ game.ai1.id }}/icon">
 		</a>
@@ -56,7 +56,7 @@
 				</a>
 			</td>
 			<td class="left aligned">
-				<font color="{% if game.ai_assocs[0].score > game.ai_assocs[1].score %}green{% else %}red{% endif %}">{{ game.ai_assocs[0].score }}</font>
+				<p style="color:{% if game.ai_assocs[0].score > game.ai_assocs[1].score %}green{% else %}red{% endif %}">{{ game.ai_assocs[0].score }}</p>
 			</td>
 			<td class="center aligned">
 				<a class="ui button content" href="{{url_for("anonymous.game", id=game.id)}}">
@@ -64,7 +64,7 @@
 				</a>
 			</td>
 			<td class="right aligned">
-				<font color="{% if game.ai_assocs[0].score < game.ai_assocs[1].score %}green{% else %}red{% endif %}">{{ game.ai_assocs[1].score }}</font>
+				<p style="color:{% if game.ai_assocs[0].score < game.ai_assocs[1].score %}green{% else %}red{% endif %}">{{ game.ai_assocs[1].score }}</p>
 			</td>
 			<td class="right aligned">
 				<a class="{% if game.ai_assocs[0].score < game.ai_assocs[1].score %}green{% else %}red{% endif %} ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[1].ai.id)}}">
@@ -90,6 +90,41 @@ evtSrc.addEventListener("update", function(e) {
 	var d = JSON.parse(e.data);
 	console.log(d);
 	$("#inprogress_"+d.id).find("#progress").text(d.status);
+	
+	var ai0 = $("#inprogress"+d.id).find("#ai0");
+	var ai1 = $("#inprogress"+d.id).find("#ai1");
+
+	var points0 = $("#inprogress"+d.id).find("#points0");
+	var points1 = $("#inprogress"+d.id).find("#points1");
+
+	ai0.removeClass("red");
+	ai0.removeClass("yellow");
+	ai0.removeClass("green");
+	ai1.removeClass("red");
+	ai1.removeClass("yellow");
+	ai1.removeClass("green");
+
+	if(d.points[0] > d.points[1]) {
+		ai0.addClass("green");
+		points0.css("style:green");
+		ai1.addClass("red");
+		points1.css("style:red");
+	}
+	else if(d.points[0] < d.points[1]) {
+		ai1.addClass("green");
+		points1.css("style:green");
+		ai0.addClass("red");
+		points0.css("style:red");
+	}
+	else if(d.points[0] == d.points[1]) {
+		ai0.addClass("yellow");
+		points0.css("style:yellow");
+		ai1.addClass("yellow");
+		points1.css("style:yellow");
+	}
+
+	points0.text(d.points[0]);
+	points1.text(d.points[1]);
 });
 
 evtSrc.addEventListener("new_game", function(e) {
