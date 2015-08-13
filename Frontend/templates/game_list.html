@@ -50,32 +50,24 @@
 		{% for game in game_list %}
 		<tr>
 			<td class="left aligned">
-				<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[0].ai.id)}}">
+				<a class="{% if game.ai_assocs[0].score > game.ai_assocs[1].score %}green{% else %}red{% endif %} ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[0].ai.id)}}">
 					<img class="ui right spaced image" src="/api/ai/{{ game.ai_assocs[0].ai.id }}/icon">
 					{{ game.ai_assocs[0].ai.name }}
 				</a>
 			</td>
 			<td class="left aligned">
-				{% if game.ai_assocs[0].score > game.ai_assocs[1].score %}
-				<b>{{ game.ai_assocs[0].score }}</b>
-				{% else %}
-				{{ game.ai_assocs[0].score }}
-				{% endif %}
+				<font color="{% if game.ai_assocs[0].score > game.ai_assocs[1].score %}green{% else %}red{% endif %}">{{ game.ai_assocs[0].score }}</font>
 			</td>
 			<td class="center aligned">
 				<a class="ui button content" href="{{url_for("anonymous.game", id=game.id)}}">
-					<div class="header">Angucken</div>
+					<div class="header">Anschauen</div>
 				</a>
 			</td>
 			<td class="right aligned">
-				{% if game.ai_assocs[1].score > game.ai_assocs[0].score %}
-				<b>{{ game.ai_assocs[1].score }}</b>
-				{% else %}
-				{{ game.ai_assocs[1].score }}
-				{% endif %}
+				<font color="{% if game.ai_assocs[0].score < game.ai_assocs[1].score %}green{% else %}red{% endif %}">{{ game.ai_assocs[1].score }}</font>
 			</td>
 			<td class="right aligned">
-				<a class="ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[1].ai.id)}}">
+				<a class="{% if game.ai_assocs[0].score < game.ai_assocs[1].score %}green{% else %}red{% endif %} ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[1].ai.id)}}">
 					{{ game.ai_assocs[1].ai.name }}
 					<img class="ui left spaced image" src="/api/ai/{{ game.ai_assocs[1].ai.id }}/icon">
 				</a>
@@ -108,7 +100,7 @@ evtSrc.addEventListener("new_game", function(e) {
 evtSrc.addEventListener("finished_game", function(e) {
 	var d = JSON.parse(e.data);
 	console.log(d);
-	$("#inprogress_"+d.id).find("#progress").text(d.status);
+	$("#inprogress_"+d.id).find("#progress").text("Anschauen");
 	$("#inprogress_"+d.id).find("#link").attr("href", d.url);
 	$("#inprogress_"+d.id).transition("pulse");
 });
