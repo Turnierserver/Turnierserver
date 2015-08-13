@@ -17,7 +17,7 @@
 <div class="ui segment" id="code-seg">
 	<div class="ui basic segment">
 		<center>
-			<button id="button" class="ui basic huge green {% if frozen %}disabled {% endif %}button">Kompilierung anfragen</button>
+			<button id="button" class="ui basic huge green {% if ai.latest_version().frozen %}disabled {% endif %}button">Kompilierung anfragen</button>
 			<a id="qualify" href="{{url_for('authenticated.qualify_ai', id=ai.id)}}" class="ui basic huge green button" style="display: none;">Qualifizieren</a>
 		</center>
 		<div id="button-dimmer" class="ui dimmer">
