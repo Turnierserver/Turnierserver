@@ -995,7 +995,7 @@ def game_list_sse():
 				yield (json.dumps({
 					"url": url_for("anonymous.game", id=d["finished_game_obj"].id),
 					"id": d["requestid"],
-					"status": repr(d["finished_game_obj"])
+					"scores": [assoc.score for assoc in d["finished_game_obj"].ai_assocs]
 				}), "finished_game")
 		except Empty:
 			# falls es keine Verbindung mehr gibt wird der Generator hier beendet.
