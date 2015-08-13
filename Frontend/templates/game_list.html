@@ -27,10 +27,10 @@
 {% endmacro %}
 {% block head %}
 <style>
-p .green {
+p.green {
 	color: #21BA45 !important;
 }
-p .red {
+p.red {
 	color: #DB2828 !important;
 }
 </style>
@@ -65,7 +65,7 @@ p .red {
 				</a>
 			</td>
 			<td class="left aligned">
-				<p style="color:{% if game.ai_assocs[0].score > game.ai_assocs[1].score %}green{% else %}red{% endif %}">{{ game.ai_assocs[0].score }}</p>
+				<p class="{% if game.ai_assocs[0].score > game.ai_assocs[1].score %}green{% else %}red{% endif %}">{{ game.ai_assocs[0].score }}</p>
 			</td>
 			<td class="center aligned">
 				<a class="ui button content" href="{{url_for("anonymous.game", id=game.id)}}">
@@ -73,7 +73,7 @@ p .red {
 				</a>
 			</td>
 			<td class="right aligned">
-				<p style="color:{% if game.ai_assocs[0].score < game.ai_assocs[1].score %}green{% else %}red{% endif %}">{{ game.ai_assocs[1].score }}</p>
+				<p class="{% if game.ai_assocs[0].score < game.ai_assocs[1].score %}green{% else %}red{% endif %}">{{ game.ai_assocs[1].score }}</p>
 			</td>
 			<td class="right aligned">
 				<a class="{% if game.ai_assocs[0].score < game.ai_assocs[1].score %}green{% else %}red{% endif %} ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[1].ai.id)}}">
@@ -94,29 +94,25 @@ evtSrc.onerror = function () {
 	evtSrc.close();
 };
 
-evtSrc.addEventListener("update", function(e) {
-	console.log(e.data);
-	var d = JSON.parse(e.data);
-	console.log(d);
-	$("#inprogress_"+d.id).find("#progress").text(d.status);
 
-	var ai0 = $("#inprogress_"+d.id).find("#ai0");
-	var ai1 = $("#inprogress_"+d.id).find("#ai1");
+function set_scores(scores, id) {
+	var ai0 = $("#inprogress_"+id).find("#ai0");
+	var ai1 = $("#inprogress_"+id).find("#ai1");
 
-	var points0 = $("#inprogress_"+d.id).find("#points0");
-	var points1 = $("#inprogress_"+d.id).find("#points1");
+	var points0 = $("#inprogress_"+id).find("#points0");
+	var points1 = $("#inprogress_"+id).find("#points1");
 
-	if(d.points[0] > d.points[1]) {
+	if(scores[0] > scores[1]) {
 		ai0.attr("class", "ui label green");
 		points0.attr("class", "green");
 		ai1.attr("class", "ui label red");
 		points1.attr("class", "red");
 	}
-	else if(d.points[0] < d.points[1]) {
+	else if(scores[0] < scores[1]) {
 		ai1.attr("class", "ui label green");
 		points1.attr("class", "green");
 		ai0.attr("class", "ui label red");
-		points0.css("class", "red");
+		points0.attr("class", "red");
 	}
 	else {
 		ai0.attr("class", "ui label");
@@ -125,13 +121,25 @@ evtSrc.addEventListener("update", function(e) {
 		points1.attr("class", "")
 	}
 
-	points0.text(d.points[0]);
-	points1.text(d.points[1]);
-});
+	points0.text(scores[0]);
+	points1.text(scores[1]);
+};
 
 evtSrc.addEventListener("new_game", function(e) {
 	$("#games_tbody").prepend(e.data);
 	$("#games_tbody > tr").first().transition("pulse");
+});
+
+
+
+evtSrc.addEventListener("update", function(e) {
+	console.log(e.data);
+	var d = JSON.parse(e.data);
+	console.log(d);
+	$("#inprogress_"+d.id).find("#progress").text(d.status);
+
+	set_scores(d.points, d.id);
+
 });
 
 evtSrc.addEventListener("finished_game", function(e) {
@@ -140,6 +148,7 @@ evtSrc.addEventListener("finished_game", function(e) {
 	$("#inprogress_"+d.id).find("#progress").text("Anschauen");
 	$("#inprogress_"+d.id).find("#link").attr("href", d.url);
 	$("#inprogress_"+d.id).transition("pulse");
+	set_scores(d.scores, d.id);
 });
 
 evtSrc.addEventListener("stream_stopped", function (e) {
