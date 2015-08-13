@@ -989,7 +989,7 @@ def game_list_sse():
 				yield (json.dumps({
 					"id": update["requestid"],
 					"status": update["display"],
-					"points": list(update["calculationPoints"].values())
+					"points": list(update["points"].values())
 				}), "update")
 
 			if "finished_game_obj" in d:
