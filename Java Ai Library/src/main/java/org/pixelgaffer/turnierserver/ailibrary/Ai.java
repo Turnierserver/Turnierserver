@@ -96,8 +96,10 @@ public abstract class Ai<E, R> implements Runnable {
 					System.exit(0);
 				}
 				String line = in.readLine();
-				if (line == null) throw new EOFException();
+				if (line == null) System.exit(0);
 				logger.info("JSON erhalten: " + line);
+				System.out.println("JSON erhalten: " + line);
+				System.out.println("um " + System.currentTimeMillis());
 				R updates = Parsers.getWorker().parse(Parsers.escape(line.getBytes("UTF-8")), token.getType());
 				logger.info("Geparsed zu: " + updates);
 				Object response = update(getState(updates));
@@ -105,6 +107,8 @@ public abstract class Ai<E, R> implements Runnable {
 				if (response != null) {
 					send(response);
 				}
+				System.out.println("Sender response:" + response);
+				System.out.println("um " + System.currentTimeMillis());
 			}
 		} catch (Exception e) {
 			crash(e);
@@ -130,7 +134,6 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	public final void surrender() {
 		out.println("SURRENDER");
-		System.exit(0);
 	}
 	
 	/**
@@ -138,7 +141,6 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	public final void crash(Throwable t) {
 		out.println("CRASH " + t.getMessage());
-		System.exit(1);
 	}
 	
 	/**
