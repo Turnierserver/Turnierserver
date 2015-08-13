@@ -58,7 +58,7 @@ def compile_ai(id):
 		abort(404)
 	if not current_user.can_access(ai):
 		abort(401)
-	return render_template("compile_ai.html", ai=ai)
+	return render_template("compile_ai.html", ai=ai, frozen=ai.latest_frozen_version()==ai.latest_version())
 
 @authenticated_blueprint.route("/ai/<int:id>/files/<path:path>")
 @authenticated_blueprint.route("/ai/<int:id>/files/")
