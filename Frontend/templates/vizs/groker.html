@@ -80,10 +80,6 @@
 		<table class="ui table">
 			<tbody>
 				<tr>
-					<td>repr(game)</td>
-					<td>{{game}}</td>
-				</tr>
-				<tr>
 					<td>Spieltyp</td>
 					<td>{{game.type.name}}</td>
 				</tr>
@@ -98,7 +94,7 @@
 				{% for assoc in game.ai_assocs %}
 				<tr>
 					<td>Ki{{loop.index}} - {{assoc.score}} Punkte</td>
-					<td>{{assoc.ai.name}}</td>
+					<td><a href="{{url_for('anonymous.ai', id=assoc.ai.id)}}">{{assoc.ai.name}}</a></td>
 				</tr>
 				{% endfor %}
 				{% if game.reason %}
