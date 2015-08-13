@@ -135,6 +135,9 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 *            Die AI, von welcher die Nachricht kommt
 	 */
 	public void receiveMessage(byte[] message, Ai ai) {
+		if(gameEnded) {
+			return;
+		}
 		if (getUserObject(ai).lost) {
 			return;
 		}
@@ -162,6 +165,10 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 *            Das Objekt, das gesendet werden soll
 	 */
 	public void sendToFronted(Object object) {
+		if(gameEnded) {
+			System.err.println("WUUUUUT?? (sendToFrontend aufgerufen)");
+			return;
+		}
 		try {
 			game.getFrontend().sendMessage(Parsers.getFrontend().parse(object));
 		} catch (IOException e) {
@@ -180,6 +187,10 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @param data
 	 */
 	public void sendRenderData(Object data) {
+		if(gameEnded) {
+			System.err.println("WUUUUUT?? (sendRenderData aufgerufen)");
+			return;
+		}
 		RenderData renderData = new RenderData();
 		renderData.update = update;
 		update++;
@@ -208,6 +219,10 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @throws IOException
 	 */
 	public void sendToAi(Object object, Ai ai) throws IOException {
+		if(gameEnded) {
+			System.err.println("WUUUUUT?? (sendToAi aufgerufen)");
+			return;
+		}
 		ai.sendMessage(Parsers.getWorker().parse(object));
 	}
 	
@@ -215,6 +230,10 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * Beendet das Spiel (Die scores müssen davor gesetzt werden!)
 	 */
 	public void endGame(String reason) {
+		if(gameEnded) {
+			System.err.println("WUUUUUT?? (endGame aufgerufen)");
+			return;
+		}
 		gameFinished();
 		
 		GameFinished message = new GameFinished();

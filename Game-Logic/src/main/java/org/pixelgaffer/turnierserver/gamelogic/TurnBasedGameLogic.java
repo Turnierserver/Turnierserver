@@ -62,7 +62,7 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameStat
 	}
 	
 	/**
-	 * super.lost(Ai ai) MUSS AUFGERUFEN WERDEN!!
+	 * super.lost(Ai ai) MUSS AUFGERUFEN WERDEN (auser das Spiel wird beendet)!!
 	 */
 	@Override
 	public void lost(Ai ai) {
