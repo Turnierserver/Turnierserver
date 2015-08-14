@@ -264,6 +264,8 @@ class Backend(threading.Thread):
 			try:
 				update = q.get(timeout=120)
 				d = self.request(id)
+				if "progress" in update:
+				    update["data"]["progress"] = update["progress"]
 				if "data" in update:
 					yield update["data"], "state"
 				elif "success" in update:
