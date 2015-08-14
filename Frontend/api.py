@@ -690,9 +690,15 @@ def ai_qualify(id):
 		if event == "state":
 			yield json.dumps(data), event
 		elif event == "success":
-			yield "", "qualified"
-			ai.latest_version().compiled = True
-			ai.latest_version().qualified = True
+			d = backend.request(reqid)
+			if d["position"][str(-ai.type.id) + "v1"] <= d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)]:
+				logger.info("AI " + str(ai.id) + " '" + str(ai.name) + "' failed its qualification")
+				yield "", "failed"
+				ai.latest_version().qualified = False
+			else:
+				yield "", "qualified"
+				ai.latest_version().compiled = True
+				ai.latest_version().qualified = True
 			db.session.commit()
 
 @api.route("/ai/<int:id>/freeze", methods=["POST"])
@@ -794,6 +800,9 @@ def ai_upload(id):
 			f.write(data)
 
 		ftp.ftp_host.upload("tmpfile", path + filename)
+		ai.latest_version().compiled = False
+		ai.latest_version().qualified = False
+		db.session.commit()
 		return ({"error": False}, 200)
 
 	try:

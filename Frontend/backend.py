@@ -208,6 +208,7 @@ class Backend(threading.Thread):
 	def request(self, reqid):
 		if reqid in self.requests:
 			return self.requests[reqid]
+		logger.warning("request for id " + str(reqid) + " failed!")
 
 	def lock_for_req(self, reqid, timeout=30):
 		try:

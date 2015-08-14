@@ -233,6 +233,12 @@ $(document).ready(function () {
 		NProgress.done();
 	});
 
+	// ## in ne generelle lib verschieben
+	evtSrc.addEventListener("failed", function(e) {
+		$("#failed_message").show();
+		NProgress.done();
+	});
+
 	evtSrc.addEventListener("finished_transmitting", function(e) {
 		console.log("finished_transmitting");
 		NProgress.done();
