@@ -12,6 +12,7 @@ Eine KI kann in deinem Profil erstellt werden. Dieses erreichst du, in dem du di
 Hier hast du nun die Möglichkeit, deine schon existierenden KIs zu bearbeiten, sowie deren öffentliches Profil zu besuchen und eine neue KI zu erstellen.
 
 Nach dem du auf den Knopf `KI erstellen` geklickt hast, solltest du zuerst einmal die Standarteinstellungen ändern:
+
 * Im Feld `Namen` kannst du den Namen der KI eintragen. Dieser muss nicht eindeutig sein, da deine KI an ihrer ID erkannt wird. Bitte erstelle keine KI mit Namen, welche deine Mitstreiter als negativ auffassen könnten, oder die ein Teil der Lösung der Aufgabe verraten, da wir uns sonst gezwungen sehen, diese KI, und bei mehrmaligem Wiederholen, deinen Account zu löschen.
 * Im Feld `Sprache` kannst du aus einem Dropdown Menü die Sprache deiner KI auswählen. Momentan werden nur Java und Python unterstützt, wir arbeiten jedoch hart daran, euch weitere zur Verfügung zu stellen.
 * Im Feld `Beschreibung` könnt ihr eurer KI eine öffentlich sichtbare Beschreibung geben. Hierfür gelten die selben Regeln wie für den Namen.
@@ -21,6 +22,7 @@ Nach dem du auf den Knopf `KI erstellen` geklickt hast, solltest du zuerst einma
 Klicke auf den Knopf `Speichern` wenn du fertig mit deinen Änderungen bist.
 
 Wir bieten euch mehrere Arten, wie ihr den Code eurer KI bearbeiten könnt. Zum einen gibt es den Knopf `SimplePlayer kopieren`. Dieser kopiert die Qualifikations-KI in eure KI hinein, hiermit habt ihr schon einmal eine funktionierende KI, auf welcher ihr eure aufbauen könnt. Des weiteren gibt es die folgenden 2 Möglichkeiten:
+
 * Mit dem Knopf `Code bearbeiten` kommt ihr in die Ordnerstruktur eurer KI. Hier könnt ihr den Code eurer KI anschauen und mit unserem Editor bearbeiten. Ihr könnt auch Ordner und Dateien erstellen.
 * Mit den Knopf `ZIP hochladen` in der Versionstabelle könnt ihr eure KI in einem ZIP-Archiv hochladen.
 
