@@ -22,8 +22,8 @@
 	<meta charset="utf-8">
 	<title>{% block title %}Turnierserver{% endblock %}</title>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.0.6/semantic.min.css">
-	<script src="//oss.maxcdn.com/semantic-ui/2.0.6/semantic.min.js"></script>
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.0.8/semantic.min.css">
+	<script src="//oss.maxcdn.com/semantic-ui/2.0.8/semantic.min.js"></script>
 	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 	{% block head %}
 	{% endblock %}
@@ -35,14 +35,7 @@
 			{% for url, id, name in nav_menu %}
 			<a href="{{ url | e }}" class="{{'active' if active_page == id}} item">{{ name | e }}</a>
 			{% endfor %}
-			{% if current_user and current_user.is_authenticated() %}
-			<div class="item"><button id="logout" class="ui green button">Ausloggen</button></div>
-			<script>
-				$("#logout").on("click", function() {
-					$.post("/api/logout").done(function() { window.location.href = "/"; });
-				});
-			</script>
-			{% else %}
+			{% if not (current_user and current_user.is_authenticated()) %}
 			<div class="item">
 				<div class="ui input">
 					<input id="login_email" name="email" type="text" placeholder="Email">

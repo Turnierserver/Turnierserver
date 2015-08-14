@@ -24,22 +24,25 @@
 
 {% macro render_settings(gametypes, current_gametype) %}
 <script src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.0.0-beta.1/js.cookie.min.js"></script>
-<div class="ui dropdown item" id="gametype">
-	<i class="settings icon"></i>
-	<div class="menu">
-		<div class="item">
-			<i class="dropdown icon"></i>
-			<span class="text">Spieltyp</span>
-			<div class="menu">
-				{% for gametype in gametypes %}
-					<div data-value="{{gametype.name}}" class="gt_select {% if gametype == current_gametype %}active {% endif %}item">{{gametype.name}}</div>
-				{% endfor %}
+<div class="ui right inverted menu">
+	<div class="ui dropdown item" id="gametype">
+		<i class="settings icon"></i>
+		<div class="menu transition hidden">
+			<div class="item">
+				<i class="left dropdown icon"></i>
+				<span class="text">Spieltyp</span>
+				<div class="ui left vertical menu">
+					{% for gametype in gametypes %}
+						<div data-value="{{gametype.name}}" class="gt_select {% if gametype == current_gametype %}active {% endif %} item">{{gametype.name}}</div>
+					{% endfor %}
+				</div>
 			</div>
+			{% if logged_in %}
+			<a class="item" href="/profile">Profileinstellungen</a>
+			<div id="logout" class="item">Ausloggen</div>
+			{% endif %}
+			<div class="item" id="delete_all">Einstellungen zurücksetzen</div>
 		</div>
-		{% if logged_in %}
-		<a class="item" href="/profile">Profileinstellungen</a>
-		{% endif %}
-		<div class="item" id="delete_all">Einstellungen zurücksetzen</div>
 	</div>
 </div>
 <script>
@@ -57,6 +60,10 @@ $("#gametype").dropdown({
 $("#delete_all").on("click", function() {
 	Cookies.remove("gametype");
 	location.reload()
+});
+
+$("#logout").on("click", function() {
+	$.post("/api/logout").done(function() { window.location.href = "/"; });
 });
 </script>
 {% endmacro %}

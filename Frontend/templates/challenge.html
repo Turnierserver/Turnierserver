@@ -2,6 +2,8 @@
 {% set active_page = "challenge" %}
 {% macro ainv(ai) %}{{ai.name}} v{{ai.latest_frozen_version().version_id}}{% endmacro %}
 {% block body %}
+
+
 Deine:
 <div id="own_dropdown" class="ui fluid selection dropdown">
 	<input type="hidden" id="ai1" value="{{ ownfirst.id }}">
