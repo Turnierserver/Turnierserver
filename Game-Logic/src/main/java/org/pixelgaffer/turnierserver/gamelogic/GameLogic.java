@@ -1,10 +1,11 @@
 package org.pixelgaffer.turnierserver.gamelogic;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
+import org.pixelgaffer.turnierserver.GsonGzipParser;
 import org.pixelgaffer.turnierserver.Logger;
+import org.pixelgaffer.turnierserver.Parser;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
@@ -141,7 +142,20 @@ public abstract class GameLogic<E extends AiObject, R> {
 		if (getUserObject(ai).lost) {
 			return;
 		}
-		String string = new String(message, StandardCharsets.UTF_8);
+		String string = null;
+		try {
+			Parser parser = Parsers.getWorker();
+			if(parser instanceof GsonGzipParser) {
+				string = new String(((GsonGzipParser)parser).uncompress(message), "UTF-8");
+			}
+			else {
+				string = new String(message, "UTF-8");
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			getUserObject(ai).loose("Die Nachricht der KI konnte nicht gelesen werden");
+			return;
+		}
 		if (string.equals("SURRENDER")) {
 			getUserObject(ai).loose("Die KI hat Aufgegeben");
 			return;
@@ -154,7 +168,6 @@ public abstract class GameLogic<E extends AiObject, R> {
 			receive(Parsers.getWorker().parse(message, token.getType()), ai);
 		} catch (IOException e) {
 			e.printStackTrace();
-			getUserObject(ai).loose("Die Nachricht der KI konnte nicht gelesen werden");
 		}
 	}
 	

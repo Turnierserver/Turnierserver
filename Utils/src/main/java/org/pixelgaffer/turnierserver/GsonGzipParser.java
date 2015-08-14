@@ -31,7 +31,7 @@ public class GsonGzipParser extends GsonParser {
 		return compress(super.parse(obj));
 	}
 	
-	private byte[] compress(byte[] uncompressed) throws IOException {
+	public byte[] compress(byte[] uncompressed) throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream(uncompressed.length);
 		GZIPOutputStream gzip = new GZIPOutputStream(out);
 		gzip.write(uncompressed);
@@ -39,7 +39,7 @@ public class GsonGzipParser extends GsonParser {
 		return out.toByteArray();
 	}
 	
-	private byte[] uncompress(byte[] compressed) throws IOException {
+	public byte[] uncompress(byte[] compressed) throws IOException {
 		ByteArrayInputStream in = new ByteArrayInputStream(compressed);
 		GZIPInputStream gzip = new GZIPInputStream(in);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();

@@ -123,19 +123,10 @@ public class AiObject {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println();
 		logic.sendToFronted(new LostMessage(reason, ai.getId(), logic.getGame().getFrontend().getRequestId()));
 		lost = true;
 		logic.lost(ai);
-		boolean finishGame = true;
-		for (Ai ai : logic.getGame().getAis()) {
-			if (!ai.getObject().lost) {
-				finishGame = false;
-				break;
-			}
-		}
-		if (finishGame) {
-			logic.endGame("Alle KIs haben verloren");
-		}
 	}
 	
 }
