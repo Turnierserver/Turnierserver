@@ -36,7 +36,9 @@
 				{% endfor %}
 			</div>
 		</div>
-		<div class="item">#Yoloswag</div>
+		{% if logged_in %}
+		<a class="item" href="/profile">Profileinstellungen</a>
+		{% endif %}
 		<div class="item" id="delete_all">Einstellungen zurücksetzen</div>
 	</div>
 </div>
