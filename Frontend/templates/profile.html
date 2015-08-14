@@ -3,30 +3,10 @@
 {% set active_page = "profile" %}
 {% block body %}
 <div class="ui hidden divider"></div>
-<div class="ui three column divided grid">
-	<div class="row">
-		<div class="column">
-			<h2 class="ui header">Alles über KIs</h2>
-			<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
-			<a class="ui tiny button m-top-10" href="{{ url_for("authenticated.create_ai" )}}">Erstell ne KI &raquo;</a>
-		</div>
-		<div class="column">
-			<h2 class="ui header">Spiele sind toll</h2>
-			<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
-			<button class="ui tiny button m-top-10">Alle Spiele &raquo;</button>
-		</div>
-		<div class="column">
-			<h2 class="ui header">Neuigkeiten</h2>
-			<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
-			<button class="ui tiny button m-top-10">Alle Neuigkeiten &raquo;</button>
-		</div>
-	</div>
-</div>
-{% if columns %}
-<div class="ui divider"></div>
 <div class="column">
 	<h2 class="ui header">Deine KIs</h2>
 	<div class="ui three column divided grid">
+		{% if columns %}
 		{% for column in columns %}
 		<div class="row">
 			{% for ai in column %}
@@ -36,10 +16,22 @@
 			{% endfor %}
 		</div>
 		{% endfor %}
+		{% else %}
+		<div class="row">
+			<div class="column">
+				<p>Du hast momentan keine KIs</p>
+			</div>
+		</div>
+		{% endif %}
+		<div class="row">
+			<div class="column">
+				<a class="ui tiny button m-top-10" href="{{ url_for("authenticated.create_ai" )}}">KI erstellen</a>
+			</div>
+		</div>
 	</div>
 </div>
-{% endif %}
-
+<div class="ui divider"></div>
+<h2 class="ui header">Einstellungen</h2>
 <form id="profile_form" class="ui form segment">
 	<div class="two fields">
 		<div class="field">

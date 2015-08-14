@@ -35,39 +35,36 @@
 		{% if objs %}
 		{% for obj in objs %}
 		<tr>
-			<td class="collapsing">
+			<td class="collapsing ten wide">
 				<i class="{% if obj.isfile %}file outline{% else %}folder{% endif %} icon"></i>
 				<a href="{{obj.url}}">{{ obj.name }}</a>
 			</td>
-			<td>Objekte haben Beschreibungen? Hier schon!</td>
-			<td class="right aligned collapsing" data-livestamp="{{ obj.timestamp }}"></td>
-			<td class="right aligned collapsing">
-				<a class="delete_button ui basic red button" name="{{obj.name}}">Loeschen</a>
+			<td class="right aligned collapsing four wide" data-livestamp="{{ obj.timestamp }}"></td>
+			<td class="right aligned collapsing two wide">
+				<a class="delete_button ui basic red button" name="{{obj.name}}">Löschen</a>
 			</td>
 		</tr>
 		{% endfor %}
 		{% else %}
 		<tr>
-			<td calss="collapsing">
+			<td class="collapsing">
 				Dieser Ordner enthält noch keine Objekte.
 			</td>
 		</tr>
 		{% endif %}
-		<tr>
-			<td class="ui input">
+		<tr class="relaxed">
+			<td class="ui input ten wide">
 				<input type="text" id="newfile_name" placeholder="foo.txt">
 			</td>
-			<td>Diese Datei gibt es nicht, oder etwa doch?</td>
-			<td></td>
-			<td><button class="ui basic teal button" id="newfile">Erzeugen</button></td>
+			<td class="right aligned four wide">Erstelle eine neue Datei</td>
+			<td class="four wide"><button class="ui basic teal button" id="newfile">Erzeugen</button></td>
 		</tr>
-		<tr>
-			<td class="ui input">
+		<tr class="relaxed">
+			<td class="ui input ten wide">
 				<input type="text" id="newdir_name" placeholder="foobar">
 			</td>
-			<td>Diesen Ordner gibt es nicht, oder etwa doch?</td>
-			<td></td>
-			<td><button class="ui basic teal button" id="newdir">Erzeugen</button></td>
+			<td class="right aligned four wide">Erstelle einen neuen Ordner</td>
+			<td class="four wide"><button class="ui basic teal button" id="newdir">Erzeugen</button></td>
 		</tr>
 	</tbody>
 	<div class="ui dimmer">
