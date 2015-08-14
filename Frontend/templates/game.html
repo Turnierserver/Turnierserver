@@ -6,9 +6,13 @@
 	Dieses Spiel ist jetzt fertig.
 	Du kannst es <a href="#">hier</a> permanent und detailreicher sehen.
 </div>
-<div id="qualified_message" class="ui message" style="display: none;">
+<div id="qualified_message" class="ui positive message" style="display: none;">
 	Deine KI hat sich Qualifiziert!
-	<a href="{{url_for('authenticated.edit_ai', id=ai0.id)}}">Hier</a> gehts zu deine KI.
+	<a href="{{url_for('authenticated.edit_ai', id=ai0.id)}}">Hier</a> gehts zu deiner KI.
+</div>
+<div id="failed_message" class="ui negative message" style="display: none;">
+	Deine KI ist bei der Qualifikation gescheitert.
+	<a href="{{url_for('authenticated.edit_ai', id=ai0.id)}}">Hier</a> gehts zu deiner KI.
 </div>
 {% endif %}
 

@@ -22,6 +22,8 @@ fh = logging.FileHandler('debug.log')
 fh.setLevel(logging.DEBUG)
 fh_err = logging.FileHandler('error.log')
 fh_err.setLevel(logging.ERROR)
+fh_wrn = logging.FileHandler('warning.log')
+fh_wrn.setLevel(logging.WARNING)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 
@@ -38,10 +40,12 @@ formatter = ColorfulFormatter()
 formatter.datefmt = "%d.%m %H:%M:%S"
 fh.setFormatter(formatter)
 fh_err.setFormatter(formatter)
+fh_wrn.setFormatter(formatter)
 ch.setFormatter(formatter)
 
 logger.addHandler(fh)
 logger.addHandler(fh_err)
+logger.addHandler(fh_wrn)
 logger.addHandler(ch)
 
 
