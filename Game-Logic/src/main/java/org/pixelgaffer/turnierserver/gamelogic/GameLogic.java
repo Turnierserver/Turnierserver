@@ -316,7 +316,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		public int compare(Ai ai1, Ai ai2) {
 			AiObject o1 = ai1.getObject();
 			AiObject o2 = ai2.getObject();
-			return Integer.compare(o1.score, o2.score);
+			return Integer.compare(o2.score, o1.score);
 		}
 	}
 	
