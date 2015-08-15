@@ -182,7 +182,7 @@ class Backend(threading.Thread):
 			if "queues" in self.requests[reqid]:
 				for q in self.requests[reqid]["queues"]:
 					q.put(d)
-			self.requests["crashes"].append(d)
+			self.requests[reqid]["crashes"].append(d)
 			return
 
 		self.requests[reqid].update(d)
