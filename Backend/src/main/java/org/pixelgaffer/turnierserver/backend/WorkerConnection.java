@@ -1,27 +1,25 @@
 package org.pixelgaffer.turnierserver.backend;
 
-import it.sauronsoftware.ftp4j.FTPAbortedException;
-import it.sauronsoftware.ftp4j.FTPDataTransferException;
-import it.sauronsoftware.ftp4j.FTPException;
-import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import org.pixelgaffer.turnierserver.backend.server.BackendWorkerConnectionHandler;
+import org.pixelgaffer.turnierserver.backend.workerclient.WorkerClient;
+import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo.SandboxInfo;
+
+import it.sauronsoftware.ftp4j.FTPAbortedException;
+import it.sauronsoftware.ftp4j.FTPDataTransferException;
+import it.sauronsoftware.ftp4j.FTPException;
+import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
-
-import org.pixelgaffer.turnierserver.backend.server.BackendWorkerConnectionHandler;
-import org.pixelgaffer.turnierserver.backend.workerclient.WorkerClient;
-import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
-import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
-import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
-import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
-import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo.SandboxInfo;
 
 /**
  * Diese Klasse speichert Informationen über einen verbundenen Worker.
@@ -115,8 +113,6 @@ public class WorkerConnection
 		if (isCompiling())
 			BackendMain.getLogger().warning("Gebe Kompilierungsauftrag an beschägtigten Worker weiter");
 		setCompiling(true);
-		if (lang == null)
-			lang = DatastoreFtpClient.retrieveAiLanguage(aiId);
 		WorkerCommand cmd = new WorkerCommand(WorkerCommand.COMPILE, aiId, version, lang, game, UUID.randomUUID());
 		connection.sendCommand(cmd);
 		return cmd;

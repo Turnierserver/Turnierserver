@@ -37,4 +37,12 @@ public class BackendFrontendCommand
 	/** Falls der Befehl Spiel starten ist, sind dies die beteiligten KIs. */
 	@Getter
 	private String ais[];
+	
+	/** Die Sprache der Ki, beim ausführen */
+	@Getter
+	private String languages[];
+	
+	/** Die Sprache der Ki, beim kompilieren*/
+	@Getter
+	private String language;
 }

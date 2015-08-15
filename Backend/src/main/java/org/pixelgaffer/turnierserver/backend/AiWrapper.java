@@ -67,30 +67,9 @@ public class AiWrapper implements Ai
 	private boolean connected;
 	
 	/** Die Programmiersprache dieser KI. */
-	private String lang = null;
-	
-	/**
-	 * Gibt die Programmiersprache dieser KI zurück. Wenn ein Fehler beim
-	 * Abrufen enstanden ist wird null zurückgegeben.
-	 */
-	public String getLang ()
-	{
-		if (lang == null)
-		{
-			try
-			{
-				lang = DatastoreFtpClient.retrieveAiLanguage(getAiId());
-			}
-			catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
-					| FTPAbortedException e)
-			{
-				BackendMain.getLogger().critical("Fehler beim Abrufen der Sprache für die KI " + getAiId() + ": " + e);
-				e.printStackTrace();
-				lang = null;
-			}
-		}
-		return lang;
-	}
+	@Getter
+	@NonNull
+	private String lang;
 	
 	/**
 	 * Wird aufgerufen wenn die KI mit dem Worker verbunden wurde. Wenn alle KIs
