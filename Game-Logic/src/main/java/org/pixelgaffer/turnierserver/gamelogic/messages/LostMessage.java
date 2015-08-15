@@ -15,4 +15,5 @@ public class LostMessage {
 	 */
 	@NonNull
 	public int requestid;
+	public boolean isCrash = true;
 }
