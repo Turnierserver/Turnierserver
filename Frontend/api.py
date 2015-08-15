@@ -563,13 +563,14 @@ def api_ai_update(id):
 	if 'lang' in request.form:
 		l = Lang.query.get(request.form.get('lang'))
 		if l and l is not ai.lang:
-			## TODO: remove versions, prompt user?
 			logger.warning("Sprache von AI geändert")
 			ai.lang = l
 			ai.ftp_sync()
 			ai.copy_example_code()
-	# 		#for version in ai.version_list:
-	# 		#	version.delete()
+			for version in ai.version_list:
+				if not any([version.frozen, version.qualified, version.compiled]):
+					version.lang = ai.lang
+			ai.latest_version().lang = ai.lang
 	if 'extra[]' in request.form:
 		extras = request.form.getlist("extra[]")
 		ai.latest_version().extras(extras)
@@ -1148,6 +1149,5 @@ def upload_simple_player(game_id, lang):
 			_compile_quali_ai(gt)
 			return {"error": False, "compiled": True}, 200
 		return {"error": False}, 200
- 
-	return CommonErrors.FTP_ERROR
 
+	return CommonErrors.FTP_ERROR

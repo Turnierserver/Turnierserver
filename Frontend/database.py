@@ -375,7 +375,7 @@ class AI(db.Model):
 			pass
 		if any([not v.frozen for v in self.version_list]):
 			return False
-		self.version_list.append(AI_Version(version_id=len(self.version_list) + 1))
+		self.version_list.append(AI_Version(version_id=len(self.version_list) + 1, lang=self.lang))
 		if len(self.version_list) > 1 and copy_prev:
 			## copy AI code from prev version...
 			new_path = "AIs/{}/v{}".format(self.id, self.version_list[-1].version_id)
@@ -481,6 +481,8 @@ class AI_Version(db.Model):
 	qualified = db.Column(db.Boolean, default=False)
 	frozen = db.Column(db.Boolean, default=False)
 	ai = db.relationship("AI", backref=db.backref('t_ai_versions', order_by=id))
+	lang_id = db.Column(db.Integer, db.ForeignKey('t_langs.id'))
+	lang = db.relationship("Lang")
 	extras_str = db.Column(db.Text, default="[]")
 	## dafuer komm ich in die DB-Hoelle
 
