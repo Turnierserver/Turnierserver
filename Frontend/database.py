@@ -563,6 +563,7 @@ class Game(db.Model):
 	type = db.relationship("GameType", backref=db.backref('t_games', order_by=id))
 	reason = db.Column(db.Text)
 	_log = db.Column(db.Text)
+	_crashes = db.Column(db.Text)
 
 	def __init__(self, *args, **kwargs):
 		super(Game, self).__init__(*args, **kwargs)
@@ -577,13 +578,25 @@ class Game(db.Model):
 	def log(self):
 		return json.loads(self._log)
 
+	@log.setter
+	def log(self, log):
+		self._log = json.dumps(log)
+
+	@property
+	def crashes(self):
+		if not self._crashes:
+			return []
+		return json.loads(self._crashes)
+
+	@log.setter
+	def crashes(self, crashes):
+		self._crashes = json.dumps(crashes)
+
 	@property
 	def moves(self):
 		return len(self.log)
 
-	@log.setter
-	def log(self, log):
-		self._log = json.dumps(log)
+
 
 	def time(self, locale):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
@@ -605,6 +618,7 @@ class Game(db.Model):
 		ais = [d["ai0"], d["ai1"]]
 		g = Game(type=ais[0].type)
 		g.log = d["states"]
+		g.crashes = d["crashes"]
 		if "reason" in d:
 			g.reason = d["reason"]
 		db.session.add(g)
