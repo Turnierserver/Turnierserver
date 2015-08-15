@@ -135,7 +135,18 @@ function update() {
 	var d = pane.data[pane.step];
 	$.map(d.output, function(value, key) {
 		var id = key.slice(0, key.indexOf("v"));
-		$("#ai_" + id + "_output").val(value);
+		if(aiCrash[id].crashed && aiCrash[id].step == pane.step) {
+			if(!$("#ai_" + id + "_output").hasClass("crash")) {
+				$("#ai_" + id + "_output").addClass("crash");
+			}
+			$("#ai_" + id + "_output").val(aiCrash[id].message);
+		}
+		else {
+			if($("#ai_" + id + "_output").hasClass("crash")) {
+				$("#ai_" + id + "_output").removeClass("crash");
+			}
+			$("#ai_" + id + "_output").val(value);
+		}
 	});
 
 	if (pane.is_playing) {
@@ -213,6 +224,19 @@ $(document).ready(function () {
 		draw();
 	});
 
+	evtSrc.addEventListener("crash", function (e) {
+		d = JSON.parse(e.data);
+		aiCrash[d.ai].crashed = true;
+		aiCrash[d.ai].crashStep = d.step;
+		aiCrash[d.ai].crashMessage = d.message;
+		if(pane.step == d.step) {
+			var output = $("ai_" + d.ai + "_output");
+			if(!ouput.hasClass("crash")) {
+				output.addClass("crash");
+			}
+			output.val(d.message);
+		}
+	});
 
 	evtSrc.addEventListener("stream_stopped", function (e) {
 		console.log("stream_stopped");

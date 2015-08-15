@@ -44,6 +44,11 @@
 .hover-line {
 	stroke: #6E7B8B;
 }
+
+.crash {
+	border: 1px solid red; 
+	background: #FF9999;
+}
 </style>
 
 {% macro render_output(ai, side, desc) -%}
@@ -140,7 +145,11 @@
 		"{{ai0.id}}": {{ai0.name | escapejs | safe}},
 		"{{ai1.id}}": {{ai1.name | escapejs | safe}}
 	};
+	var aiCrash = {
+		"{{ai0.id}}": { crashed: false, step: 0, message: "" },
+		"{{ai1.id}}": { crashed: false, step: 0, message: "" }
+	}
 </script>
 <script id="game_script" type="text/javascript" src="{{url_for('static', filename='groker.js')}}" stream="{{stream}}"></script>
 
-{% endblock %}
+{% endblock %} 	
