@@ -228,7 +228,7 @@ $(document).ready(function () {
 		d = JSON.parse(e.data);
 		aiCrash[d.ai].crashed = true;
 		aiCrash[d.ai].crashStep = d.step;
-		aiCrash[d.ai].crashMessage = d.message;
+		aiCrash[d.ai].crashMessage = d.reason;
 		if(pane.step == d.step) {
 			var output = $("ai_" + d.ai + "_output");
 			if(!ouput.hasClass("crash")) {

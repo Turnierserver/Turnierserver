@@ -130,6 +130,7 @@ class Backend(threading.Thread):
 		self.requests[reqid]["ai1"] = ais[1]
 		self.requests[reqid]["ai_objs"] = ais
 		self.requests[reqid]["states"] = []
+		self.requests[reqid]["crashes"] = []
 		self.requests[reqid]["status_text"] = "In Wartschlange"
 		logger.info("Backend[{}]: Spiel mit {} gestartet".format(reqid, [ai.name for ai in ais]))
 		return reqid
@@ -179,6 +180,7 @@ class Backend(threading.Thread):
 		pprint(d)
 
 		if "isCrash" in d and d["isCrash"]:
+			d["step"] = len(self.requests[reqid]["states"])
 			if "queues" in self.requests[reqid]:
 				for q in self.requests[reqid]["queues"]:
 					q.put(d)
@@ -205,6 +207,7 @@ class Backend(threading.Thread):
 
 			if "status" in d and d["status"] == "restarted":
 				self.requests[reqid]["states"] = []
+				self.requests[reqid]["crashes"] = []
 
 			for q in self.game_update_queues:
 				q.put(d)
