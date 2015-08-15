@@ -163,7 +163,7 @@ public class Jobs
 				{
 					try
 					{
-						Games.startGame(cmd.getGametype(), cmd.getRequestid(), cmd.getAis());
+						Games.startGame(cmd.getGametype(), cmd.getRequestid(), cmd.getLanguages(), cmd.getAis());
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(
 								Parsers.getFrontend().parse(
 										new BackendFrontendCommandProcessed(cmd.getRequestid())));
@@ -187,7 +187,7 @@ public class Jobs
 				{
 					try
 					{
-						Games.startQualifyGame(cmd.getGametype(), cmd.getRequestid(), cmd.getId());
+						Games.startQualifyGame(cmd.getGametype(), cmd.getRequestid(), cmd.getLanguage(), cmd.getId());
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(
 								Parsers.getFrontend().parse(
 										new BackendFrontendCommandProcessed(cmd.getRequestid())));
