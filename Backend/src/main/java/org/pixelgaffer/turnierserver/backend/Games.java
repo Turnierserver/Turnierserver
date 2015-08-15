@@ -204,16 +204,17 @@ public class Games
 		@Getter
 		private GameState state = GameState.WAITING;
 		
-		private GameImpl (int gameId, @NonNull UUID uuid, int requestId, String ... ais) throws IOException
+		private GameImpl (int gameId, @NonNull UUID uuid, int requestId, String[] languages, String ... ais) throws IOException
 		{
 			this.gameId = gameId;
 			this.uuid = uuid;
 			this.requestId = requestId;
 			// die KIs erstellen
-			for (String ai : ais)
+			for (int i = 0; i < ais.length; i++)
 			{
+				String ai = ais[i];
 				// AiWrapper erstellen
-				AiWrapper aiw = new AiWrapper(this, randomUuid());
+				AiWrapper aiw = new AiWrapper(this, randomUuid(), languages[i]);
 				aiw.setIndex(this.ais.size());
 				// den String ai parsen (<ai-id>v<version>)
 				String s[] = ai.split("v");
