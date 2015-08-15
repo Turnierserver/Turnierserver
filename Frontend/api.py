@@ -160,12 +160,9 @@ def api_game(id):
 def game_log(id):
 	game = Game.query.get(id)
 	if game:
-		for data in enumerate(game.crashes):
-			ai = AI.query.get(data["id"])
-			if not ai:
-				logger.error("crash on nonexistant ai")
-				return
-			if current_user and current_user.is_authenticated() and current_user.can_access(ai):
+		for i, data in enumerate(game.crashes):
+			can_access, data = Game.filter_crash(data)
+			if can_access:
 				yield data, "crash"
 
 		for i, chunk in enumerate(game.log):
@@ -194,12 +191,9 @@ def game_inprogress_log(id):
 		elif data_type == "finished_game_obj":
 			yield url_for("anonymous.game", id=data.id), "game_finished"
 		elif data_type == "crash":
-			ai = AI.query.get(data["id"])
-			if not ai:
-				logger.error("crash on nonexistant ai")
-				return
-			if current_user and current_user.is_authenticated() and current_user.can_access(ai):
-				yield data, data_type
+			can_access, data = Game.filter_crash(data)
+			if can_access:
+				yield data, "crash"
 		else:
 			logger.error("invalid log_sse type: " + str(data_type) + " " + str(data))
 

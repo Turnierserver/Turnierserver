@@ -588,7 +588,7 @@ class Game(db.Model):
 			return []
 		return json.loads(self._crashes)
 
-	@log.setter
+	@crashes.setter
 	def crashes(self, crashes):
 		self._crashes = json.dumps(crashes)
 
@@ -641,6 +641,26 @@ class Game(db.Model):
 			ai_id = ai.split("v")[0]
 			if not (current_user and current_user.is_authenticated() and current_user.can_access(AI.query.get(ai_id))):
 				chunk["output"][ai] = ""
+
+	@classmethod
+	def filter_crash(cls, data):
+		logger.warning(str(data))
+		ai = AI.query.get(int(data["id"].split("v")[0]))
+		if not ai:
+			logger.error("crash on nonexistant ai")
+			return False, None
+		data.pop("isCrash")
+		data.pop("requestid")
+		if current_user and current_user.is_authenticated() and current_user.can_access(ai):
+			return True, data
+
+	@classmethod
+	def delete_all(cls):
+		logger.warning("Deleting all Games.")
+		for game in cls.query:
+			game.delete()
+		db.session.commit()
+		logger.warning("Games deleted.")
 
 	def __repr__(self):
 		return "<Game(id={}, type={})>".format(self.id, self.type.name)
