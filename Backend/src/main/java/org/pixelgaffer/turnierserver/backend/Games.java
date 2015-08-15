@@ -368,13 +368,13 @@ public class Games
 	/**
 	 * Startet ein Spiel des angegebenen Typs mit den angegebenen KIs.
 	 */
-	public static Game startGame (int gameId, int requestId, String ... ais)
+	public static Game startGame (int gameId, int requestId, String[] languages, String ... ais)
 			throws ReflectiveOperationException, IOException, FTPIllegalReplyException, FTPException,
 			FTPDataTransferException, FTPAbortedException, FTPListParseException
 	{
 		GameLogic<?, ?> logic = loadGameLogic(gameId);
 		UUID uuid = randomUuid();
-		GameImpl game = new GameImpl(gameId, uuid, requestId, ais);
+		GameImpl game = new GameImpl(gameId, uuid, requestId, languages, ais);
 		game.logic = logic;
 		synchronized (lock)
 		{
@@ -387,7 +387,7 @@ public class Games
 	 * Startet ein Qualifikations-Spiel des angegebenen Typs mit der
 	 * angegegebenen KI.
 	 */
-	public static Game startQualifyGame (int gameId, int requestId, String ai)
+	public static Game startQualifyGame (int gameId, int requestId, String language, String ai)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
 			ReflectiveOperationException, FTPListParseException
 	{
@@ -401,9 +401,9 @@ public class Games
 		ais[0] = ai;
 		for (int i = 1; i < numAis; i++)
 			ais[1] = "-" + gameId + "v1";
-		
+		String[] languages = {language, "Java"};
 		// Spiel starten
-		GameImpl game = new GameImpl(gameId, uuid, requestId, ais);
+		GameImpl game = new GameImpl(gameId, uuid, requestId, languages, ais);
 		game.logic = logic;
 		synchronized (lock)
 		{
