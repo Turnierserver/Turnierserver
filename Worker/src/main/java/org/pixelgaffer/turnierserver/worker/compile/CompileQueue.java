@@ -75,8 +75,7 @@ public class CompileQueue implements Runnable
 				WorkerMain.getLogger().info("Starte Kompiliervorgang: " + job);
 				try
 				{
-					String lang = DatastoreFtpClient.retrieveAiLanguage(job.getAiId());
-					Compiler c = Compiler.getCompiler(job.getAiId(), job.getVersion(), job.getGame(), lang);
+					Compiler c = Compiler.getCompiler(job.getAiId(), job.getVersion(), job.getGame(), job.getLang());
 					c.setUuid(job.getUuid());
 					CompileResult result = c.compileAndUpload(WorkerMain.getBackendClient());
 					DatastoreFtpClient.storeAiCompileOutput(job.getAiId(), job.getVersion(), result.getOutput());
