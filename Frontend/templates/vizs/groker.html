@@ -46,7 +46,7 @@
 }
 
 .crash {
-	border: 1px solid red; 
+	border: 1px solid red;
 	background: #FF9999;
 }
 </style>
@@ -57,6 +57,7 @@
 	<div class="column">
 		<div class="ui basic segment">
 			Debugausgaben von "{{ai.name}}":
+			<textarea readonly id="ai_{{ai.id}}_output_error" class="crash" style="display: none; width: 100%; height: auto; min-height: 20em;"></textarea>
 			<textarea readonly id="ai_{{ai.id}}_output" style="width: 100%; height: auto; min-height: 20em;"></textarea>
 		</div>
 	</div>
@@ -145,11 +146,7 @@
 		"{{ai0.id}}": {{ai0.name | escapejs | safe}},
 		"{{ai1.id}}": {{ai1.name | escapejs | safe}}
 	};
-	var aiCrash = {
-		"{{ai0.id}}": { crashed: false, step: 0, message: "" },
-		"{{ai1.id}}": { crashed: false, step: 0, message: "" }
-	}
 </script>
 <script id="game_script" type="text/javascript" src="{{url_for('static', filename='groker.js')}}" stream="{{stream}}"></script>
 
-{% endblock %} 	
+{% endblock %}

@@ -163,7 +163,7 @@ def game_log(id):
 		for i, data in enumerate(game.crashes):
 			can_access, data = Game.filter_crash(data)
 			if can_access:
-				yield data, "crash"
+				yield json.dumps(data), "crash"
 
 		for i, chunk in enumerate(game.log):
 			chunk["progress"] = i/len(game.log)
@@ -193,7 +193,7 @@ def game_inprogress_log(id):
 		elif data_type == "crash":
 			can_access, data = Game.filter_crash(data)
 			if can_access:
-				yield data, "crash"
+				yield json.dumps(data), "crash"
 		else:
 			logger.error("invalid log_sse type: " + str(data_type) + " " + str(data))
 

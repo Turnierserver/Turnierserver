@@ -30,6 +30,7 @@ var pane = {
 };
 
 var data = [];
+var ai_crashes = [];
 
 var diff_chart = new LineChart("#diff_chart",
 	[{
@@ -135,18 +136,20 @@ function update() {
 	var d = pane.data[pane.step];
 	$.map(d.output, function(value, key) {
 		var id = key.slice(0, key.indexOf("v"));
-		if(aiCrash[id].crashed && aiCrash[id].step == pane.step) {
-			if(!$("#ai_" + id + "_output").hasClass("crash")) {
-				$("#ai_" + id + "_output").addClass("crash");
+		for (var i = 0; i < ai_crashes.length; i++) {
+			if (ai_crashes[i].id == key) {
+				if (ai_crashes[i].step > (pane.data.length - 1)) {
+					$("#ai_" + id + "_output_error").val("Fehler bei Schritt " + ai_crashes[i].step + " wird jetzt gezeigt, weil es diesen Schritt nicht gibt.\n" + ai_crashes[i].reason);
+					$("#ai_" + id + "_output_error").show();
+				} else if (ai_crashes[i].step == pane.step) {
+					$("#ai_" + id + "_output_error").val(ai_crashes[i].reason);
+					$("#ai_" + id + "_output_error").show();
+				} else {
+					$("#ai_" + id + "_output_error").hide();
+				}
 			}
-			$("#ai_" + id + "_output").val(aiCrash[id].message);
 		}
-		else {
-			if($("#ai_" + id + "_output").hasClass("crash")) {
-				$("#ai_" + id + "_output").removeClass("crash");
-			}
-			$("#ai_" + id + "_output").val(value);
-		}
+		$("#ai_" + id + "_output").val(value);
 	});
 
 	if (pane.is_playing) {
@@ -225,17 +228,10 @@ $(document).ready(function () {
 	});
 
 	evtSrc.addEventListener("crash", function (e) {
+		console.log(e.data)
 		d = JSON.parse(e.data);
-		aiCrash[d.ai].crashed = true;
-		aiCrash[d.ai].crashStep = d.step;
-		aiCrash[d.ai].crashMessage = d.reason;
-		if(pane.step == d.step) {
-			var output = $("ai_" + d.ai + "_output");
-			if(!ouput.hasClass("crash")) {
-				output.addClass("crash");
-			}
-			output.val(d.message);
-		}
+		ai_crashes.push(d)
+		draw();
 	});
 
 	evtSrc.addEventListener("stream_stopped", function (e) {
