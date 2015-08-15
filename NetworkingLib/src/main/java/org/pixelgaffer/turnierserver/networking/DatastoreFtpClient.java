@@ -192,26 +192,6 @@ public class DatastoreFtpClient
 	}
 	
 	/**
-	 * Gibt die Sprache der KI zurück.
-	 */
-	public static String retrieveAiLanguage (int id)
-			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException
-	{
-		File tmp = Files.createTempFile("lang", ".txt").toFile();
-		retrieveFile(aiPath(id) + "/language.txt", tmp, null);
-		
-		StringBuilder lang = new StringBuilder();
-		Reader in = new InputStreamReader(new FileInputStream(tmp));
-		char buf[] = new char[8192];
-		int read;
-		while ((read = in.read(buf)) > 0)
-			lang.append(new String(buf, 0, read));
-		in.close();
-		
-		return lang.toString().trim();
-	}
-	
-	/**
 	 * Speichert das jar-Archiv der Gamelogic im OutputStream local.
 	 */
 	public static void retrieveGameLogic (int game, File local)
