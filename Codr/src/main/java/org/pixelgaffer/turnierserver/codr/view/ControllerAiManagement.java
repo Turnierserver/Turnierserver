@@ -448,7 +448,7 @@ public class ControllerAiManagement {
 		boolean result = Dialog.okAbort("KI wirklich löschen?", "Löschen");
 		if (result) {
 			try {
-				FileUtils.deleteDirectory(new File(Paths.ai(ai)));//////////////////////////////////////Thread
+				FileUtils.deleteDirectory(new File(Paths.ai(ai)));
 				MainApp.aiManager.loadAis();
 				lvAis.getSelectionModel().selectFirst();
 			} catch (IOException e) {
