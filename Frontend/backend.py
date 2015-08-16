@@ -182,8 +182,8 @@ class Backend(threading.Thread):
 		if "isCrash" in d and d["isCrash"]:
 			d["step"] = len(self.requests[reqid]["states"])
 			if "queues" in self.requests[reqid]:
-				for q in self.requests[reqid]["queues"]:
-					q.put(d)
+				for queue in self.requests[reqid]["queues"]:
+					queue.put(d)
 			self.requests[reqid]["crashes"].append(d)
 			return
 
@@ -270,11 +270,14 @@ class Backend(threading.Thread):
 		for d in self.requests[id]["states"]:
 			yield d, "state"
 
-		q = Queue()
-		self.requests[id]["queues"].add(q)
+		for d in self.requests[id]["crashes"]:
+			yield d, "crash"
+
+		queue = Queue()
+		self.requests[id]["queues"].add(queue)
 		while True:
 			try:
-				update = q.get(timeout=120)
+				update = queue.get(timeout=120)
 				d = self.request(id)
 				if "progress" in update:
 				    update["data"]["progress"] = update["progress"]
@@ -282,8 +285,8 @@ class Backend(threading.Thread):
 					yield update["data"], "state"
 				elif "success" in update:
 					yield update, "success"
-				elif "isCrash" in d and d["isCrash"]:
-					yield d, "crash"
+				elif "isCrash" in update and update["isCrash"]:
+					yield update, "crash"
 				else:
 					logger.debug("no data in frame. " + str(update))
 				if "finished_game_obj" in d:
