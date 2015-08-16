@@ -20,7 +20,11 @@ import org.pixelgaffer.turnierserver.codr.AiFake;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 
 
-
+/**
+ * Diese Klasse stellt einige Dialog-Fenster bereit, die unkompliziert genutzt werden können
+ * 
+ * @author Philip
+ */
 public class Dialog {
 	
 	/**
@@ -120,7 +124,8 @@ public class Dialog {
 	public static String textInput(String text) {
 		return textInput(text, "Bitte Text eingeben", "");
 	}
-
+	
+	
 	public static String textInput(String text, String title, String defaultText) {
 		TextInputDialog dialog = new TextInputDialog(defaultText);
 		dialog.setTitle(title);
@@ -133,6 +138,7 @@ public class Dialog {
 		}
 		return null;
 	}
+	
 	
 	public static String textInput(String text, String title) {
 		return textInput(text, title, "");
@@ -194,11 +200,17 @@ public class Dialog {
 	}
 	
 	
+	/**
+	 * Öffnet einen Dialog, in dem der Spieler auswählen kann,
+	 * zu welcher KI die hochzuladende Version hinzugefügt werden soll.
+	 * 
+	 * @return
+	 */
 	public static AiBase selectOwnVersion() {
 		
 		if (MainApp.ownOnlineAis == null)
 			return null;
-		
+			
 		ObservableList<AiBase> list = FXCollections.observableArrayList();
 		list.addAll(MainApp.ownOnlineAis);
 		list.add(new AiFake());

@@ -130,6 +130,7 @@ class Backend(threading.Thread):
 		self.requests[reqid]["ai1"] = ais[1]
 		self.requests[reqid]["ai_objs"] = ais
 		self.requests[reqid]["states"] = []
+		self.requests[reqid]["crashes"] = []
 		self.requests[reqid]["status_text"] = "In Wartschlange"
 		logger.info("Backend[{}]: Spiel mit {} gestartet".format(reqid, [ai.name for ai in ais]))
 		return reqid
@@ -140,7 +141,7 @@ class Backend(threading.Thread):
 		reqid = self.latest_request_id
 		self.latest_request_id += 1
 		d = {'action': 'qualify', 'id': str(ai.id)+'v'+str(ai.latest_version().version_id),
-			'gametype': ai.type.id, "requestid": reqid}
+			'gametype': ai.type.id, "language": ai.latest_version().lang.name, "requestid": reqid}
 		self.requests[reqid] = d
 		self.send_dict(d)
 		self.requests[reqid]["queue"] = Queue()
@@ -149,6 +150,7 @@ class Backend(threading.Thread):
 		self.requests[reqid]["ai1"] = AI.query.get(-ai.type.id)
 		self.requests[reqid]["ai_objs"] = [ai, AI.query.get(-ai.type.id)]
 		self.requests[reqid]["states"] = []
+		self.requests[reqid]["crashes"] = []
 		logger.info("Backend[{}]: Quali-Spiel mit '{}' gestartet".format(reqid, ai.name))
 		return reqid
 
@@ -177,6 +179,14 @@ class Backend(threading.Thread):
 		#logger.info("Backend [{}]: {}".format(reqid, d))
 		pprint(d)
 
+		if "isCrash" in d and d["isCrash"]:
+			d["step"] = len(self.requests[reqid]["states"])
+			if "queues" in self.requests[reqid]:
+				for q in self.requests[reqid]["queues"]:
+					q.put(d)
+			self.requests[reqid]["crashes"].append(d)
+			return
+
 		self.requests[reqid].update(d)
 		self.requests[reqid]["queue"].put(d)
 
@@ -197,6 +207,7 @@ class Backend(threading.Thread):
 
 			if "status" in d and d["status"] == "restarted":
 				self.requests[reqid]["states"] = []
+				self.requests[reqid]["crashes"] = []
 
 			for q in self.game_update_queues:
 				q.put(d)
@@ -271,6 +282,8 @@ class Backend(threading.Thread):
 					yield update["data"], "state"
 				elif "success" in update:
 					yield update, "success"
+				elif "isCrash" in d and d["isCrash"]:
+					yield d, "crash"
 				else:
 					logger.debug("no data in frame. " + str(update))
 				if "finished_game_obj" in d:
