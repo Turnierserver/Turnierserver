@@ -46,6 +46,7 @@ import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
+import org.pixelgaffer.turnierserver.gamelogic.OneBuilderAllSolverLogic;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
 
@@ -622,10 +623,8 @@ public class ControllerAiManagement {
 		
 		Task<Boolean> getOwn = new Task<Boolean>() {
 			public Boolean call() {
-				System.out.println("Angekommenerst1");
 				if (MainApp.webConnector.isLoggedIn())
 					MainApp.ownOnlineAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
-				System.out.println("Angekommenerst");
 				return true;
 			}
 		};
@@ -633,7 +632,6 @@ public class ControllerAiManagement {
 		
 		getOwn.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			
-			System.out.println("Angekommen");
 			if (MainApp.ownOnlineAis == null) {
 				Dialog.error("Bitte erst Anmelden");
 				return;
@@ -652,14 +650,19 @@ public class ControllerAiManagement {
 			
 			Task<String> upload = new Task<String>() {
 				public String call() {
-					
-					int id = ((AiOnline) result).id;
-					id = MainApp.webConnector.createAi(ai, localNameOfNewAi);
+					int id = -1;
+					if(result instanceof AiOnline) {
+						id = ((AiOnline) result).id;
+					}
+					else if(result instanceof AiFake) {
+						id = MainApp.webConnector.createAi(ai, localNameOfNewAi);
+					}
 					if (id == -1) {
 						return "errorConnection";
 					}
 					
 					try {
+						System.out.println("Uploading version");
 						MainApp.webConnector.uploadVersion(version, id);
 					} catch (ZipException | IOException e) {
 						e.printStackTrace();
@@ -667,6 +670,7 @@ public class ControllerAiManagement {
 					}
 					
 					try {
+						System.out.println("Compiling");
 						MainApp.webConnector.compile(id);
 						return "finished";
 					} catch (IOException e) {
@@ -700,7 +704,6 @@ public class ControllerAiManagement {
 			thread.start();
 		});
 		
-		System.out.println("Angekommenerst0");
 		Thread thread = new Thread(getOwn, "getOwn");
 		thread.setDaemon(true);
 		thread.start();
