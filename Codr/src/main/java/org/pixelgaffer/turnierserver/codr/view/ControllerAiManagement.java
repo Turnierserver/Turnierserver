@@ -4,7 +4,26 @@ package org.pixelgaffer.turnierserver.codr.view;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
+import org.pixelgaffer.turnierserver.codr.AiBase;
+import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
+import org.pixelgaffer.turnierserver.codr.AiBase.NewVersionType;
+import org.pixelgaffer.turnierserver.codr.AiExtern;
+import org.pixelgaffer.turnierserver.codr.AiFake;
+import org.pixelgaffer.turnierserver.codr.AiOnline;
+import org.pixelgaffer.turnierserver.codr.AiSaved;
+import org.pixelgaffer.turnierserver.codr.AiSimple;
+import org.pixelgaffer.turnierserver.codr.CodeEditor;
+import org.pixelgaffer.turnierserver.codr.MainApp;
+import org.pixelgaffer.turnierserver.codr.Version;
+import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
+import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
+import org.pixelgaffer.turnierserver.codr.utilities.Paths;
+import org.pixelgaffer.turnierserver.codr.utilities.Resources;
+
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -30,25 +49,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
 import net.lingala.zip4j.exception.ZipException;
-
-import org.apache.commons.io.FileUtils;
-import org.pixelgaffer.turnierserver.codr.AiBase;
-import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
-import org.pixelgaffer.turnierserver.codr.AiBase.NewVersionType;
-import org.pixelgaffer.turnierserver.codr.AiExtern;
-import org.pixelgaffer.turnierserver.codr.AiFake;
-import org.pixelgaffer.turnierserver.codr.AiOnline;
-import org.pixelgaffer.turnierserver.codr.AiSaved;
-import org.pixelgaffer.turnierserver.codr.AiSimple;
-import org.pixelgaffer.turnierserver.codr.CodeEditor;
-import org.pixelgaffer.turnierserver.codr.MainApp;
-import org.pixelgaffer.turnierserver.codr.Version;
-import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
-import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
-import org.pixelgaffer.turnierserver.codr.utilities.Paths;
-import org.pixelgaffer.turnierserver.codr.utilities.Resources;
-
 
 
 public class ControllerAiManagement {
@@ -165,7 +165,7 @@ public class ControllerAiManagement {
 			cbVersion.getSelectionModel().clearSelection();
 			cbVersion.setItems(ai.versions);
 			Bindings.bindBidirectional(image.imageProperty(), ai.getPicture());
-
+			
 			newFileTab.setDisable(false);
 			btChangeImage.setDisable(false);
 			btDeleteImage.setDisable(false);
@@ -176,14 +176,14 @@ public class ControllerAiManagement {
 			btEdit.setDisable(false);
 			btToActual.setDisable(false);
 			
-			if (version == null) {  // versuchen, die Version zu setzen, wenn keine ausgewählt ist
+			if (version == null) { // versuchen, die Version zu setzen, wenn keine ausgewählt ist
 				version = ai.lastVersion();
 			}
 			boolean containing = false;
 			for (int i = 0; i < ai.versions.size(); i++)
 				if (version == ai.versions.get(i))
 					containing = true;
-			if (!containing) {  // oder eine nicht-zugehörige ausgewählt ist
+			if (!containing) { // oder eine nicht-zugehörige ausgewählt ist
 				version = ai.lastVersion();
 			}
 		} else {
@@ -224,14 +224,14 @@ public class ControllerAiManagement {
 			if (!version.qualifyOutput.equals("")) {
 				tbOutput.setText(version.qualifyOutput);
 			}
-			lbCompiled.setVisible(version.compiled);
-			hlShowQualified.setVisible(version.qualified);
-			lbFinished.setVisible(version.finished);
-			lbUploaded.setVisible(version.uploaded);
-			btCompile.setDisable(version.compiled || version.finished);
-			btQualify.setDisable(version.qualified || !version.compiled || version.finished);
-			btFinish.setDisable(version.finished);
-			btUpload.setDisable(false);
+			lbCompiled.visibleProperty().bind(version.compiled);
+			hlShowQualified.visibleProperty().bind(version.qualified);
+			lbFinished.visibleProperty().bind(version.finished);
+			lbUploaded.visibleProperty().bind(version.uploaded);
+			btCompile.disableProperty().bind(version.finished.or(version.compiled));
+			btQualify.disableProperty().bind(version.compiled.not().or(version.finished));
+			btFinish.disableProperty().bind(version.finished);
+			btUpload.disableProperty().bind(new SimpleBooleanProperty(false));
 			rbContinue.setDisable(false);
 			
 			rbContinue.setSelected(true);
@@ -243,14 +243,14 @@ public class ControllerAiManagement {
 			newFileTab.setDisable(true);
 			cbVersion.setValue(null);
 			tbOutput.setText("");
-			lbCompiled.setVisible(false);
-			hlShowQualified.setVisible(false);
-			lbFinished.setVisible(false);
-			lbUploaded.setVisible(false);
-			btCompile.setDisable(true);
-			btQualify.setDisable(true);
-			btFinish.setDisable(true);
-			btUpload.setDisable(true);
+			lbCompiled.visibleProperty().bind(new SimpleBooleanProperty(false));
+			hlShowQualified.visibleProperty().bind(new SimpleBooleanProperty(false));
+			lbFinished.visibleProperty().bind(new SimpleBooleanProperty(false));
+			lbUploaded.visibleProperty().bind(new SimpleBooleanProperty(false));
+			btCompile.disableProperty().bind(new SimpleBooleanProperty(true));
+			btQualify.disableProperty().bind(new SimpleBooleanProperty(true));
+			btFinish.disableProperty().bind(new SimpleBooleanProperty(true));
+			btUpload.disableProperty().bind(new SimpleBooleanProperty(true));
 			rbContinue.setDisable(true);
 			
 			rbContinue.setSelected(false);
@@ -258,6 +258,7 @@ public class ControllerAiManagement {
 			rbSimple.setSelected(true);
 		}
 		
+		//SimplePlayer
 		if (ai != null) {
 			if (ai.mode == AiMode.simplePlayer) {
 				newFileTab.setDisable(true);
@@ -267,14 +268,14 @@ public class ControllerAiManagement {
 				cbVersion.setDisable(true);
 				tpNewVersion.setDisable(true);
 				tpNewVersion.setExpanded(false);
-				btCompile.setDisable(true);
-				btQualify.setDisable(true);
-				btFinish.setDisable(true);
-				btUpload.setDisable(true);
-				lbCompiled.setVisible(false);
-				hlShowQualified.setVisible(false);
-				lbFinished.setVisible(false);
-				lbUploaded.setVisible(false);
+				lbCompiled.visibleProperty().bind(new SimpleBooleanProperty(false));
+				hlShowQualified.visibleProperty().bind(new SimpleBooleanProperty(false));
+				lbFinished.visibleProperty().bind(new SimpleBooleanProperty(false));
+				lbUploaded.visibleProperty().bind(new SimpleBooleanProperty(false));
+				btCompile.disableProperty().bind(new SimpleBooleanProperty(true));
+				btQualify.disableProperty().bind(new SimpleBooleanProperty(true));
+				btFinish.disableProperty().bind(new SimpleBooleanProperty(true));
+				btUpload.disableProperty().bind(new SimpleBooleanProperty(true));
 				
 				btChangeImage.setDisable(true);
 				btDeleteImage.setDisable(true);
@@ -289,12 +290,63 @@ public class ControllerAiManagement {
 		
 	}
 	
+	//	public void updateAiLabels(){
+	//
+	//		// Ai-spezifisches
+	//		if (ai != null) {
+	//			lbName.setText(ai.title);
+	//			lbLanguage.setText("Sprache: " + ai.language.toString());
+	//			tbDescription.setText(ai.description);
+	//		}
+	//		
+	//		
+	//		// Version-spezifisches
+	//		if (version != null && ai != null) {
+	//			lbCompiled.setVisible(version.compiled);
+	//			hlShowQualified.setVisible(version.qualified);
+	//			lbFinished.setVisible(version.finished);
+	//			lbUploaded.setVisible(version.uploaded);
+	//			btCompile.setDisable(version.compiled || version.finished);
+	//			btQualify.setDisable(version.qualified || !version.compiled || version.finished);
+	//			btFinish.setDisable(version.finished);
+	//			}
+	//		
+	//		if (ai != null) {
+	//			if (ai.mode == AiMode.simplePlayer) {
+	//				newFileTab.setDisable(true);
+	//				btDelete.setDisable(true);
+	//				btEdit.setDisable(true);
+	//				btToActual.setDisable(true);
+	//				cbVersion.setDisable(true);
+	//				tpNewVersion.setDisable(true);
+	//				tpNewVersion.setExpanded(false);
+	//				btCompile.setDisable(true);
+	//				btQualify.setDisable(true);
+	//				btFinish.setDisable(true);
+	//				btUpload.setDisable(true);
+	//				lbCompiled.setVisible(false);
+	//				hlShowQualified.setVisible(false);
+	//				lbFinished.setVisible(false);
+	//				lbUploaded.setVisible(false);
+	//				
+	//				btChangeImage.setDisable(true);
+	//				btDeleteImage.setDisable(true);
+	//				
+	//			} else if (ai.mode == AiMode.extern) {
+	//				btToActual.setDisable(true);
+	//				cbVersion.setDisable(true);
+	//				tpNewVersion.setDisable(true);
+	//				tpNewVersion.setExpanded(false);
+	//			}
+	//		}
+	//	}
+	
 	
 	/**
 	 * Lädt mithilfe der CodeEditoren der anzuzeigenden Version alle Dateien der Version in die Tab-Leiste
 	 */
 	private void setVersionTabs() {
-		if (version == null){
+		if (version == null) {
 			tpCode.getTabs().clear();
 			tpCode.getTabs().add(infoTab);
 			tpCode.getTabs().add(newFileTab);
@@ -305,18 +357,22 @@ public class ControllerAiManagement {
 		
 		tvFiles.setRoot(version.rootFile);
 		
-		if (version.finished || (version.ai.mode != AiMode.saved && version.ai.mode != AiMode.extern))
+		if (version.finished.get() || (version.ai.mode != AiMode.saved && version.ai.mode != AiMode.extern))
 			tvFiles.setEditable(false);
 		else
 			tvFiles.setEditable(true);
-		
+			
 		tvFiles.setCellFactory(new Callback<TreeView<File>, TreeCell<File>>() {
-			@Override public TreeCell<File> call(TreeView<File> p) {
+			
+			@Override
+			public TreeCell<File> call(TreeView<File> p) {
 				return new TreeFileCell();
 			}
 		});
 		tvFiles.setOnEditCommit(new EventHandler<EditEvent<File>>() {
-			@Override public void handle(EditEvent<File> event) {
+			
+			@Override
+			public void handle(EditEvent<File> event) {
 				setVersionTabs();
 			}
 		});
@@ -326,7 +382,7 @@ public class ControllerAiManagement {
 		tpCode.getTabs().add(infoTab);
 		for (CodeEditor file : version.files) {
 			Tab tab = file.getView();
-			if (version.finished) {
+			if (version.finished.get()) {
 				if (tab.getContent() != null)
 					tab.getContent().setDisable(true);
 				else
@@ -337,7 +393,7 @@ public class ControllerAiManagement {
 				tpCode.getSelectionModel().select(tab);
 			}
 		}
-		if (!version.finished)
+		if (!version.finished.get())
 			tpCode.getTabs().add(newFileTab);
 	}
 	
@@ -360,8 +416,9 @@ public class ControllerAiManagement {
 		}
 		
 		// Speichern
-		if (version != null && !version.finished)
+		if (version != null && !version.finished.get()) {
 			version.saveCode();
+		}
 		
 		// NewFile +
 		if (newTab == newFileTab && newTab != oldTab) {
@@ -386,7 +443,8 @@ public class ControllerAiManagement {
 	/**
 	 * Button: KI löschen
 	 */
-	@FXML void clickDelete() {
+	@FXML
+	void clickDelete() {
 		boolean result = Dialog.okAbort("KI wirklich löschen?", "Löschen");
 		if (result) {
 			try {
@@ -403,7 +461,8 @@ public class ControllerAiManagement {
 	/**
 	 * Button: Neue KI anlegen
 	 */
-	@FXML void clickNewAi() {
+	@FXML
+	void clickNewAi() {
 		String title = tbName.getText().replace(" ", "");
 		
 		if (title.equals("")) {
@@ -411,7 +470,7 @@ public class ControllerAiManagement {
 			return;
 		}
 		
-		for (int i = 0; i < lvAis.getItems().size(); i++) {  // Testen, ob die KI schon existiert
+		for (int i = 0; i < lvAis.getItems().size(); i++) { // Testen, ob die KI schon existiert
 			if (title.equals(lvAis.getItems().get(i).title)) {
 				Dialog.error("Es können keine zwei KIs mit dem gleichen Namen erstellt werden", "Doppelter Name");
 				return;
@@ -427,7 +486,8 @@ public class ControllerAiManagement {
 	/**
 	 * Button: Neue KI anlegen
 	 */
-	@FXML void clickNewExtern() {
+	@FXML
+	void clickNewExtern() {
 		String title = tbName.getText().replace(" ", "");
 		
 		if (title.equals("")) {
@@ -435,7 +495,7 @@ public class ControllerAiManagement {
 			return;
 		}
 		
-		for (int i = 0; i < lvAis.getItems().size(); i++) {  // Testen, ob die KI schon existiert
+		for (int i = 0; i < lvAis.getItems().size(); i++) { // Testen, ob die KI schon existiert
 			if (title.equals(lvAis.getItems().get(i).title)) {
 				Dialog.error("Es können keine zwei KIs mit dem gleichen Namen erstellt werden", "Doppelter Name");
 				return;
@@ -445,7 +505,7 @@ public class ControllerAiManagement {
 		File path = Dialog.folderChooser(MainApp.stage, "Bitte den Pfad auswählen");
 		if (path == null)
 			return;
-		
+			
 		AiExtern newAi = new AiExtern(title, cbLanguage.getValue(), path.getPath());
 		MainApp.aiManager.ais.add(newAi);
 		lvAis.getSelectionModel().selectLast();
@@ -468,7 +528,8 @@ public class ControllerAiManagement {
 	/**
 	 * Listenselektions-Änderung: zeigt andere KI an
 	 */
-	@FXML void clickChangeAi() {
+	@FXML
+	void clickChangeAi() {
 		ai = lvAis.getSelectionModel().getSelectedItem();
 		if (ai != null) {
 			version = ai.lastVersion();
@@ -480,7 +541,8 @@ public class ControllerAiManagement {
 	/**
 	 * Button: Abbruch der Bearbeitung der Beschreibung der KI
 	 */
-	@FXML void clickAbort() {
+	@FXML
+	void clickAbort() {
 		btAbort.setVisible(false);
 		btEdit.setText("Bearbeiten");
 		tbDescription.setEditable(false);
@@ -491,7 +553,8 @@ public class ControllerAiManagement {
 	/**
 	 * Button: Bearbeitung der Beschreibung der KI
 	 */
-	@FXML void clickEdit() {
+	@FXML
+	void clickEdit() {
 		if (!btAbort.isVisible()) {
 			btAbort.setVisible(true);
 			btEdit.setText("Speichern");
@@ -510,7 +573,8 @@ public class ControllerAiManagement {
 	/**
 	 * Button: aktuelle Version der KI wird ausgewählt
 	 */
-	@FXML void clickToActual() {
+	@FXML
+	void clickToActual() {
 		version = ai.lastVersion();
 		showAi();
 	}
@@ -519,7 +583,8 @@ public class ControllerAiManagement {
 	/**
 	 * Listenselektions-Änderung: zeigt andere Version an
 	 */
-	@FXML void clickVersionChange() {
+	@FXML
+	void clickVersionChange() {
 		if (version != cbVersion.getValue() && cbVersion.getValue() != null) {
 			version = cbVersion.getValue();
 			showAi();
@@ -530,7 +595,8 @@ public class ControllerAiManagement {
 	/**
 	 * Radiobutton: "SimplePlayer" wurde ausgewählt
 	 */
-	@FXML void clickRbSimple() {
+	@FXML
+	void clickRbSimple() {
 		rbSimple.setSelected(true);
 		rbContinue.setSelected(false);
 		rbFromFile.setSelected(false);
@@ -540,7 +606,8 @@ public class ControllerAiManagement {
 	/**
 	 * Radiobutton: "Weiterschreiben" wurde ausgewählt
 	 */
-	@FXML void clickRbContinue() {
+	@FXML
+	void clickRbContinue() {
 		rbSimple.setSelected(false);
 		rbContinue.setSelected(true);
 		rbFromFile.setSelected(false);
@@ -550,7 +617,8 @@ public class ControllerAiManagement {
 	/**
 	 * Radiobutton: "Aus Datei" wurde ausgewählt
 	 */
-	@FXML void clickRbFromFile() {
+	@FXML
+	void clickRbFromFile() {
 		rbSimple.setSelected(false);
 		rbContinue.setSelected(false);
 		rbFromFile.setSelected(true);
@@ -560,7 +628,8 @@ public class ControllerAiManagement {
 	/**
 	 * Button: Dateiauswahl wenn "Aus Datei" ausgewählt ist
 	 */
-	@FXML void clickSelectFile() {
+	@FXML
+	void clickSelectFile() {
 		File result = Dialog.folderChooser(MainApp.stage, "Bitte einen Ordner auswählen");
 		if (result != null)
 			tbFile.setText(result.getPath());
@@ -570,8 +639,16 @@ public class ControllerAiManagement {
 	/**
 	 * Button: neue Version erstellen
 	 */
-	@FXML void clickNewVersion() {
+	@FXML
+	void clickNewVersion() {
 		if (ai.getClass() == AiSaved.class) {
+			
+			if (ai.versions.size() > 0 && !ai.lastVersion().finished.get())
+				if (!Dialog.okAbort("Wenn eine neue Version angelegt wird, wird die alte fertiggestellt.\nDas bedeutet, dass sie nicht mehr verändert werden kann.\n\nFortfahren?", "Neue Version"))
+					return;
+			if (ai.versions.size() > 0)
+				ai.lastVersion().finished.set(true);
+			
 			if (rbFromFile.isSelected()) {
 				showAi(ai, ((AiSaved) ai).newVersion(NewVersionType.fromFile, tbFile.getText()));
 			} else if (rbContinue.isSelected()) {
@@ -586,7 +663,8 @@ public class ControllerAiManagement {
 	/**
 	 * Button: Kompilieren
 	 */
-	@FXML void clickCompile() {
+	@FXML
+	void clickCompile() {
 		version.compile();
 		showAi();
 	}
@@ -595,7 +673,8 @@ public class ControllerAiManagement {
 	/**
 	 * Button: Qualifizieren
 	 */
-	@FXML void clickQualify() {
+	@FXML
+	void clickQualify() {
 		version.qualify();
 		showAi();
 	}
@@ -604,7 +683,8 @@ public class ControllerAiManagement {
 	/**
 	 * Button: Fertigstellen
 	 */
-	@FXML void clickFinish() {
+	@FXML
+	void clickFinish() {
 		if (Dialog.okAbort("Wenn eine Version fertiggestellt wird, kann sie nicht mehr bearbeitet werden.\n\nFortfahren?", "Version einfrieren")) {
 			version.finish();
 		}
@@ -618,9 +698,11 @@ public class ControllerAiManagement {
 	/**
 	 * Button: Hochladen
 	 */
-	@FXML void clickUpload() {
+	@FXML
+	void clickUpload() {
 		
 		Task<Boolean> getOwn = new Task<Boolean>() {
+			
 			public Boolean call() {
 				System.out.println("Angekommenerst1");
 				if (MainApp.webConnector.isLoggedIn())
@@ -651,6 +733,7 @@ public class ControllerAiManagement {
 			}
 			
 			Task<String> upload = new Task<String>() {
+				
 				public String call() {
 					
 					int id = ((AiOnline) result).id;
@@ -711,7 +794,8 @@ public class ControllerAiManagement {
 	/**
 	 * Hyperlink: zeigt das Qualifizier-Spiel an
 	 */
-	@FXML void clickShowQualified() {
+	@FXML
+	void clickShowQualified() {
 		tbFile.setText("Info14 geklickt");
 	}
 	
@@ -719,7 +803,8 @@ public class ControllerAiManagement {
 	/**
 	 * Button: Bild ändern
 	 */
-	@FXML void clickChangeImage() {
+	@FXML
+	void clickChangeImage() {
 		File result = Dialog.fileChooser(MainApp.stage, "Bild auswählen");
 		Image img = Resources.imageFromFile(result);
 		if (img != null) {
@@ -732,7 +817,8 @@ public class ControllerAiManagement {
 	/**
 	 * Button: Bild löschen
 	 */
-	@FXML void clickDeleteImage() {
+	@FXML
+	void clickDeleteImage() {
 		ai.setPicture(new File(""));
 		showAi();
 	}
