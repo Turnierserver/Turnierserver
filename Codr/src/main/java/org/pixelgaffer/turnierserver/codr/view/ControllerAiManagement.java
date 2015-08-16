@@ -736,9 +736,13 @@ public class ControllerAiManagement {
 			Task<String> upload = new Task<String>() {
 				
 				public String call() {
-					
-					int id = ((AiOnline) result).id;
-					id = MainApp.webConnector.createAi(ai, localNameOfNewAi);
+					int id = -1;
+					if(result instanceof AiOnline) {
+						id = ((AiOnline) result).id;
+					}
+					else {
+						id = MainApp.webConnector.createAi(ai, localNameOfNewAi);
+					}
 					if (id == -1) {
 						return "errorConnection";
 					}
