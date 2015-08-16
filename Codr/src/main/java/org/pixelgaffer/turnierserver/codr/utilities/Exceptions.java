@@ -4,7 +4,11 @@ package org.pixelgaffer.turnierserver.codr.utilities;
 import javafx.collections.ObservableList;
 
 
-
+/**
+ * Stellt mehrere Exceptions bereit, von denen manche als Rückgabetypen "missbraucht" werden.
+ * 
+ * @author Philip
+ */
 public final class Exceptions {
 	
 	private Exceptions() {
@@ -12,10 +16,13 @@ public final class Exceptions {
 	
 	
 	public static class NothingDoneException extends Exception {
+		
 		private static final long serialVersionUID = 2490608616108332698L;
 	}
 	
+	
 	public static class NewException extends Exception {
+		
 		private static final long serialVersionUID = 8433430348371632406L;
 		public ObservableList<String> newValues;
 		
@@ -25,7 +32,9 @@ public final class Exceptions {
 		}
 	}
 	
+	
 	public static class DeletedException extends NewException {
+		
 		private static final long serialVersionUID = 3986670283756751273L;
 		
 		
@@ -34,11 +43,15 @@ public final class Exceptions {
 		}
 	}
 	
+	
 	public static class UpdateException extends Exception {
+		
 		private static final long serialVersionUID = -764342717934270870L;
 	}
 	
+	
 	public static class CompileException extends Exception {
+		
 		private static final long serialVersionUID = 7293514312919797514L;
 		public String compileOutput;
 		

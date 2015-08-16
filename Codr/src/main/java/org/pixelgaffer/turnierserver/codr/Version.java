@@ -17,8 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javafx.scene.control.TreeItem;
-
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
@@ -26,6 +25,9 @@ import org.pixelgaffer.turnierserver.codr.utilities.Libraries;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.compile.CompileFailureException;
 import org.pixelgaffer.turnierserver.compile.Compiler;
+
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.TreeItem;
 
 
 /**
@@ -39,10 +41,10 @@ public class Version {
 	public final int number;
 	
 	public String executeCommand[] = new String[0];
-	public boolean compiled = false;
-	public boolean qualified = false;
-	public boolean finished = false;
-	public boolean uploaded = false;
+	public SimpleBooleanProperty compiled = new SimpleBooleanProperty(false);
+	public SimpleBooleanProperty qualified = new SimpleBooleanProperty(false);
+	public SimpleBooleanProperty finished = new SimpleBooleanProperty(false);
+	public SimpleBooleanProperty uploaded = new SimpleBooleanProperty(false);
 	public String compileOutput = "";
 	public String qualifyOutput = "";
 	public List<CodeEditor> files = new ArrayList<CodeEditor>();
@@ -53,9 +55,11 @@ public class Version {
 		ai = aai;
 		number = n;
 		
-		compiled = json.getBoolean("compiled");
-		qualified = json.getBoolean("qualified");
-		finished = json.getBoolean("frozen");
+		compiled.set(json.getBoolean("compiled"));
+		qualified.set(json.getBoolean("qualified"));
+		finished.set(json.getBoolean("frozen"));
+		
+		setCompiledListener();
 	}
 	
 	
@@ -74,12 +78,12 @@ public class Version {
 				ai.gametype = MainApp.actualGameType.get();
 				copyFromFile(Paths.simplePlayer("" + ai.gametype, ai.language));
 				storeProps();
-				findCode();
 			} else {
 				loadProps();
-				findCode();
 			}
+			findCode();
 		}
+		setCompiledListener();
 	}
 	
 	
@@ -93,6 +97,31 @@ public class Version {
 			copyFromFile(path);
 		storeProps();
 		findCode();
+		setCompiledListener();
+	}
+	
+	
+	/**
+	 * setzt einen Listener auf die compiled-Property, der den compileOutput und ähnliches löscht/aufräumt
+	 */
+	private void setCompiledListener() {
+		
+		compiled.addListener((observableValue, oldValue, newValue) -> {
+			if (newValue == false && oldValue == true) {
+				compileOutput = "";
+				qualified.set(false);
+				qualifyOutput = "";
+				if (ai.mode != AiMode.saved && ai.mode != AiMode.extern) {
+					ErrorLog.write("dies ist kein speicherbares Objekt (compiledListener)");
+					return;
+				}
+				File bin = new File(Paths.versionBin(this));
+				try {
+					FileUtils.deleteDirectory(bin);
+				} catch (Exception e) {
+				}
+			}
+		});
 	}
 	
 	
@@ -187,15 +216,15 @@ public class Version {
 				ErrorLog.write("dies ist kein speicherbares Objekt (saveCode)");
 			return;
 		}
-		if (finished == true) {
+		if (finished.get() == true) {
 			ErrorLog.write("Man kann den Code einer fertiggestellten Version nicht speichern");
 			return;
 		}
 		
 		for (int i = 0; i < files.size(); i++) {
 			if (files.get(i).save()) {
-				compiled = false;
-				qualified = false;
+				compiled.set(false);
+				qualified.set(false);
 				storeProps();
 			}
 		}
@@ -218,10 +247,10 @@ public class Version {
 			executeCommand = new String[Integer.parseInt(prop.getProperty("executeCommand.size", "0"))];
 			for (int i = 0; i < executeCommand.length; i++)
 				executeCommand[i] = prop.getProperty("executeCommand." + i);
-			compiled = Boolean.parseBoolean(prop.getProperty("compiled"));
-			qualified = Boolean.parseBoolean(prop.getProperty("qualified"));
-			finished = Boolean.parseBoolean(prop.getProperty("finished"));
-			uploaded = Boolean.parseBoolean(prop.getProperty("uploaded"));
+			compiled.set(Boolean.parseBoolean(prop.getProperty("compiled")));
+			qualified.set(Boolean.parseBoolean(prop.getProperty("qualified")));
+			finished.set(Boolean.parseBoolean(prop.getProperty("finished")));
+			uploaded.set(Boolean.parseBoolean(prop.getProperty("uploaded")));
 			compileOutput = prop.getProperty("compileOutput");
 			qualifyOutput = prop.getProperty("qualifyOutput");
 		} catch (IOException e) {
@@ -273,25 +302,25 @@ public class Version {
 		
 		try {
 			Compiler c = Compiler.getCompiler(ai.language);
-			compileOutput = c.compile(new File(Paths.versionSrc(this)), new File(Paths.versionBin(this)), new File(Paths.versionSrcStartClass(this)), new Libraries());
+			compileOutput = c.compile(new File(Paths.versionSrc(this)), new File(Paths.versionBin(this)), new File(Paths.versionSettingsProp(this)), new Libraries());
 			executeCommand = c.getCommand();
 			compileOutput += "\nKompilierung erfolgreich\n";
-			compiled = true;
+			compiled.set(true);
 		} catch (ReflectiveOperationException roe) {
 			ErrorLog.write("Fehler beim Laden des Compilers: " + roe);
-			compiled = false;
+			compiled.set(false);
 		} catch (InterruptedException | IOException e) {
 			ErrorLog.write("Fehler beim Kompilieren: " + e);
 			e.printStackTrace();
-			compiled = false;
+			compiled.set(false);
 		} catch (CompileFailureException cfe) {
 			compileOutput = cfe.getMessage();
 			compileOutput += "\nKompilierung fehlgeschlagen\n";
-			compiled = false;
+			compiled.set(false);
 		}
 		
 		storeProps();
-		return compiled;
+		return compiled.get();
 	}
 	
 	
@@ -305,11 +334,11 @@ public class Version {
 			ErrorLog.write("dies ist kein speicherbares Objekt (qualify)");
 			return false;
 		}
-		if (!compiled)
+		if (!compiled.get())
 			if (!compile())
 				return false;
 				
-		qualified = true;
+		qualified.set(true);
 		qualifyOutput = "Qualifikation fertig!";
 		storeProps();
 		return true;
@@ -325,7 +354,7 @@ public class Version {
 			ErrorLog.write("dies ist kein speicherbares Objekt (finish)");
 			return;
 		}
-		finished = true;
+		finished.set(true);
 		storeProps();
 	}
 	

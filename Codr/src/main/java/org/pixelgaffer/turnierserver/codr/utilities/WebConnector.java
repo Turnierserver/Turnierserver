@@ -20,13 +20,6 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.image.Image;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.ZipParameters;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -36,6 +29,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -54,7 +48,18 @@ import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NothingDoneException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
 
+/**
+ * koordiniert die Verbindung zum Server und führt Up-/Downloads aus
+ *
+ * @author Nico TODO: Nico, kommentier das mal alles!!!
+ */
 public class WebConnector {
 
 	public String userName = null;
@@ -359,13 +364,13 @@ public class WebConnector {
 
 
 	public void uploadVersion(Version version, int id) throws ZipException, IOException {
-		HttpPost post = new HttpPost("ai/" + id + "/new_version_from_zip");
+		HttpPost post = new HttpPost(url + "/api/ai/" + id + "/new_version_from_zip");
 		File file = new File(System.getProperty("java.io.tmpdir"), version.ai.title + "v" + version.number + System.currentTimeMillis() + ".zip");
 		ZipFile zip = new ZipFile(file);
 		ZipParameters params = new ZipParameters();
 		params.setIncludeRootFolder(false);
 		zip.createZipFileFromFolder(new File(Paths.version(version)), params, false, -1);
-		ByteArrayEntity entity = new ByteArrayEntity(FileUtils.readFileToByteArray(zip.getFile()));
+		FileEntity entity = new FileEntity(zip.getFile());
 		entity.setContentType("application/zip");
 		post.setEntity(entity);
 		file.deleteOnExit();
@@ -452,7 +457,7 @@ public class WebConnector {
 	public boolean ping() {
 		try {
 			String result = toString(sendGet("ping"));
-			return result != null && result.equals("PONG!");
+			return result != null;
 		} catch (IOException e) {
 			return false;
 		}
