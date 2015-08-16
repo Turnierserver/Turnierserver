@@ -2,12 +2,15 @@ package org.pixelgaffer.turnierserver.codr;
 
 
 import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
+import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
-import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 
 
 /**
@@ -48,12 +51,33 @@ public class AiManager {
 		externDir.mkdirs();
 		File[] externDirs = externDir.listFiles();
 		if (externDirs == null) {
-			ErrorLog.write("keine Spieler vorhanden");
+			ErrorLog.write("keine externen Spieler vorhanden");
 			return;
 		}
 		for (int i = 0; i < externDirs.length; i++) {
-			if (externDirs[i].isDirectory())
-				ais.add(new AiExtern(externDirs[i].getName()));
+			if (externDirs[i].isDirectory()) {
+				AiExtern newAi = new AiExtern(externDirs[i].getName());
+				if (!new File(newAi.path).exists()) {
+					if (Dialog.okAbort("Der Pfad der KI " + externDirs[i].getName() + " existiert nicht.\nWollen Sie die KI behalten?\nWenn Sie auf 'Abbrechen' klicken, wird die KI verworfen.")) {
+						File result = Dialog.folderChooser(MainApp.stage, "Wählen Sie einen neuen Ordner aus.");
+						if (result != null) {
+							newAi.path = result.getPath();
+							ais.add(newAi);
+						} else {
+							try {
+								FileUtils.deleteDirectory(new File(Paths.ai(newAi)));
+							} catch (IOException e) {
+							}
+						}
+					} else {
+						try {
+							FileUtils.deleteDirectory(new File(Paths.ai(newAi)));
+						} catch (IOException e) {
+						}
+					}
+				}
+				
+			}
 		}
 		
 		// simplePlayer, die aus dem Download-Ordner geladen werden
