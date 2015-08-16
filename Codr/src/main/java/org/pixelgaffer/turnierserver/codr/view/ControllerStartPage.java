@@ -33,7 +33,6 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 
-
 public class ControllerStartPage {
 	
 	MainApp mainApp;
@@ -67,7 +66,6 @@ public class ControllerStartPage {
 	WebEngine webEngine;
 	
 	
-	
 	/**
 	 * Initialisiert den Controller
 	 * 
@@ -89,14 +87,8 @@ public class ControllerStartPage {
 			clickTheme(newValue);
 		});
 		
-		MainApp.actualGameType.bindBidirectional(cbGameTypes.valueProperty());
-		cbGameTypes.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-			MainApp.aiManager.loadAis();
-			mainApp.loadOnlineRanking();
-		});
 		
 		cbGameTypes.setItems(MainApp.gametypes);
-		cbGameTypes.getSelectionModel().selectLast();
 		
 		cbCplusplusCompilerType.getItems().add("gcc");
 		cbCplusplusCompilerType.getItems().add("clang");
@@ -104,7 +96,9 @@ public class ControllerStartPage {
 		cbCplusplusCompilerType.getSelectionModel().select(0);
 		
 		tbPassword.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
-			@Override public void handle(KeyEvent event) {
+			
+			@Override
+			public void handle(KeyEvent event) {
 				if (event.getCode() == KeyCode.ENTER) {
 					clickLogin();
 				}
@@ -115,19 +109,32 @@ public class ControllerStartPage {
 	}
 	
 	
-	
-	@FXML void clickInfo() {
-		
+	public void loadAis() {
+		MainApp.actualGameType.bindBidirectional(cbGameTypes.valueProperty());
+		cbGameTypes.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			MainApp.aiManager.loadAis();
+			mainApp.loadOnlineRanking();
+		});
+		cbGameTypes.getSelectionModel().selectLast();
 	}
 	
 	
-	@FXML void clickRegister() {
+	@FXML
+	void clickInfo() {
+		Dialog.error("Diese Funktion wird noch nicht unterstützt.", "Unsupported");
+	}
+	
+	
+	@FXML
+	void clickRegister() {
 		openWebPage("http://" + Settings.webUrl + "/");
 	}
 	
 	
-	@FXML void clickLogout() {
+	@FXML
+	void clickLogout() {
 		Task<Boolean> updateL = new Task<Boolean>() {
+			
 			public Boolean call() {
 				try {
 					MainApp.webConnector.logout();
@@ -157,8 +164,10 @@ public class ControllerStartPage {
 	}
 	
 	
-	@FXML void clickLogin() {
+	@FXML
+	void clickLogin() {
 		Task<String> updateL = new Task<String>() {
+			
 			public String call() {
 				try {
 					if (!MainApp.webConnector.login(tbEmail.getText(), tbPassword.getText())) {
@@ -197,32 +206,37 @@ public class ControllerStartPage {
 	}
 	
 	
-	@FXML void clickForgotPassword() {
+	@FXML
+	void clickForgotPassword() {
 		openWebPage("http://" + Settings.webUrl + "/");
 	}
 	
 	
-	@FXML void clickTryOnline() {
+	@FXML
+	void clickTryOnline() {
 		MainApp.updateConnected();
 		mainApp.loadOnlineResources();
 	}
 	
 	
-	@FXML void clickPythonInterpreter() {
+	@FXML
+	void clickPythonInterpreter() {
 		File result = Dialog.folderChooser(MainApp.stage, "Bitte einen Ordner auswählen");
 		if (result != null)
 			tbPythonInterpreter.setText(result.getPath());
 	}
 	
 	
-	@FXML void clickCplusplusCompiler() {
+	@FXML
+	void clickCplusplusCompiler() {
 		File result = Dialog.folderChooser(MainApp.stage, "Bitte einen Ordner auswählen");
 		if (result != null)
 			tbCplusplusCompiler.setText(result.getPath());
 	}
 	
 	
-	@FXML void clickJDK() {
+	@FXML
+	void clickJDK() {
 		File result = Dialog.folderChooser(MainApp.stage, "Bitte einen Ordner auswählen");
 		if (result != null)
 			tbJDK.setText(result.getPath());
@@ -237,7 +251,6 @@ public class ControllerStartPage {
 		}
 		MainApp.cAi.showAi();
 	}
-	
 	
 	
 	private void openWebPage(String url) {
