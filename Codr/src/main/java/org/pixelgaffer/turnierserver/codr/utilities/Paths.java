@@ -266,7 +266,10 @@ public class Paths {
 	 * der Pfad zu dem Source-Ordner einer Version
 	 */
 	public static String versionSrc(Version version) {
-		return version(version) + "/src";
+		if (version.ai.mode == AiMode.extern)
+			return version(version);
+		else
+			return version(version) + "/src";
 	}
 	
 	
