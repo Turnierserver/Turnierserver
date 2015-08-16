@@ -291,9 +291,9 @@ class AI_Game_Assoc(db.Model):
 	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'))
 	ai = db.relationship("AI")
 	score = db.Column(db.Integer)
-	#role_id = db.Column(db.Integer, db.ForeignKey('t_gametyperoles.id'), primary_key=True)
-	#role = db.relationship("GameTypeRole", backref="assocs")
-	## TODO: rechenpunkte speichern
+	position = db.Column(db.Integer)
+	calculationPoints = db.Column(db.Integer)
+	## TODO: rechenpunkte wirklich speichern
 
 	def __repr__(self):
 		return "<AI_Game_Assoc(game={}, ai={})".format(self.game.id, self.ai.name)
@@ -563,6 +563,7 @@ class Game(db.Model):
 	type = db.relationship("GameType", backref=db.backref('t_games', order_by=id))
 	reason = db.Column(db.Text)
 	_log = db.Column(db.Text)
+	_crashes = db.Column(db.Text)
 
 	def __init__(self, *args, **kwargs):
 		super(Game, self).__init__(*args, **kwargs)
@@ -577,13 +578,25 @@ class Game(db.Model):
 	def log(self):
 		return json.loads(self._log)
 
+	@log.setter
+	def log(self, log):
+		self._log = json.dumps(log)
+
+	@property
+	def crashes(self):
+		if not self._crashes:
+			return []
+		return json.loads(self._crashes)
+
+	@crashes.setter
+	def crashes(self, crashes):
+		self._crashes = json.dumps(crashes)
+
 	@property
 	def moves(self):
 		return len(self.log)
 
-	@log.setter
-	def log(self, log):
-		self._log = json.dumps(log)
+
 
 	def time(self, locale):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
@@ -597,6 +610,19 @@ class Game(db.Model):
 		db.session.delete(self)
 		db.session.commit()
 
+	def update_ai_elo(self):
+		## TODO: funkioniert nur bei Spielen mit 2 Spielern
+		## TODO: echtes ELO-System
+		ai0 = self.ai_assocs[0]
+		ai1 = self.ai_assocs[1]
+		if ai0.position > ai1.position:
+			ai1.ai.elo += 1337
+		elif ai0.position < ai1.position:
+			ai0.ai.elo += 1337
+		else:
+			pass
+		logger.info("ai elo updated")
+
 	@classmethod
 	def from_inprogress(cls, d):
 		if "exception" in d:
@@ -605,6 +631,7 @@ class Game(db.Model):
 		ais = [d["ai0"], d["ai1"]]
 		g = Game(type=ais[0].type)
 		g.log = d["states"]
+		g.crashes = d["crashes"]
 		if "reason" in d:
 			g.reason = d["reason"]
 		db.session.add(g)
@@ -615,6 +642,10 @@ class Game(db.Model):
 		for ai, score in d["scores"].items():
 			ai = AI.query.get(int(ai.split("v")[0]))
 			AI_Game_Assoc.query.filter(AI_Game_Assoc.game == g).filter(AI_Game_Assoc.ai == ai).one().score = score
+		for ai, position in d["position"].items():
+			ai = AI.query.get(int(ai.split("v")[0]))
+			AI_Game_Assoc.query.filter(AI_Game_Assoc.game == g).filter(AI_Game_Assoc.ai == ai).one().position = position
+		g.update_ai_elo()
 		db.session.add(g)
 		db.session.commit()
 		logger.info("neues Spiel " + str(g))
@@ -627,6 +658,26 @@ class Game(db.Model):
 			ai_id = ai.split("v")[0]
 			if not (current_user and current_user.is_authenticated() and current_user.can_access(AI.query.get(ai_id))):
 				chunk["output"][ai] = ""
+
+	@classmethod
+	def filter_crash(cls, data):
+		logger.warning(str(data))
+		ai = AI.query.get(int(data["id"].split("v")[0]))
+		if not ai:
+			logger.error("crash on nonexistant ai")
+			return False, None
+		data.pop("isCrash")
+		data.pop("requestid")
+		if current_user and current_user.is_authenticated() and current_user.can_access(ai):
+			return True, data
+
+	@classmethod
+	def delete_all(cls):
+		logger.warning("Deleting all Games.")
+		for game in cls.query:
+			game.delete()
+		db.session.commit()
+		logger.warning("Games deleted.")
 
 	def __repr__(self):
 		return "<Game(id={}, type={})>".format(self.id, self.type.name)
@@ -658,7 +709,6 @@ class GameType(db.Model):
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	name = db.Column(db.Text, nullable=False)
 	games = db.relationship("Game", order_by="Game.id", backref="GameType", cascade="all, delete, delete-orphan")
-	roles = db.relationship("GameTypeRole", backref="GameType", cascade="all, delete, delete-orphan")
 	last_modified = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
 	def __init__(self, *args, **kwargs):
@@ -703,13 +753,6 @@ class GameType(db.Model):
 	def __repr__(self):
 		return "<GameType(id={}, name={})>".format(self.id, self.name)
 
-class GameTypeRole(db.Model):
-	__tablename__ = 't_gametyperoles'
-	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-	name = db.Column(db.Text, nullable=False)
-	gametype_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
-
-
 def populate():
 	db.create_all()
 
@@ -723,9 +766,7 @@ def populate():
 	langs = [py, java, cpp]
 	db_save(langs)
 
-	minesweeper = GameType(name="Minesweeper", viz="vizs/minesweeper.html", roles=[
-		GameTypeRole(name="builder"), GameTypeRole(id=2, name="solver")
-	])
+	minesweeper = GameType(name="Minesweeper", viz="vizs/minesweeper.html")
 	gametypes = [minesweeper]
 	db_save(gametypes)
 

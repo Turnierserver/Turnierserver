@@ -30,6 +30,7 @@ var pane = {
 };
 
 var data = [];
+var ai_crashes = [];
 
 var diff_chart = new LineChart("#diff_chart",
 	[{
@@ -135,6 +136,19 @@ function update() {
 	var d = pane.data[pane.step];
 	$.map(d.output, function(value, key) {
 		var id = key.slice(0, key.indexOf("v"));
+		for (var i = 0; i < ai_crashes.length; i++) {
+			if (ai_crashes[i].id == key) {
+				if (ai_crashes[i].step > (pane.data.length - 1)) {
+					$("#ai_" + id + "_output_error").val("Fehler bei Schritt " + ai_crashes[i].step + " wird jetzt gezeigt, weil es diesen Schritt nicht gibt.\n" + ai_crashes[i].reason);
+					$("#ai_" + id + "_output_error").show();
+				} else if (ai_crashes[i].step == pane.step) {
+					$("#ai_" + id + "_output_error").val(ai_crashes[i].reason);
+					$("#ai_" + id + "_output_error").show();
+				} else {
+					$("#ai_" + id + "_output_error").hide();
+				}
+			}
+		}
 		$("#ai_" + id + "_output").val(value);
 	});
 
@@ -213,6 +227,12 @@ $(document).ready(function () {
 		draw();
 	});
 
+	evtSrc.addEventListener("crash", function (e) {
+		console.log(e.data)
+		d = JSON.parse(e.data);
+		ai_crashes.push(d)
+		draw();
+	});
 
 	evtSrc.addEventListener("stream_stopped", function (e) {
 		console.log("stream_stopped");

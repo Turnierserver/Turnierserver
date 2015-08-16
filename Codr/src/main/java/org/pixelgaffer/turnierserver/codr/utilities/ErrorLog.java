@@ -7,7 +7,11 @@ import java.io.IOException;
 import java.util.Date;
 
 
-
+/**
+ * Stellt eine Methode bereit, die einen ErrorLog in eine Datei speichert. (und in der Konsole ausgibt)
+ * 
+ * @author Philip
+ */
 public class ErrorLog {
 	
 	private static final File file = new File("errorLog.txt");

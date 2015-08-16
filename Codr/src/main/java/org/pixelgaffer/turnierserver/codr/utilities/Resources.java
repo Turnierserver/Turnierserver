@@ -15,7 +15,11 @@ import javafx.scene.image.Image;
 import org.apache.commons.io.IOUtils;
 
 
-
+/**
+ * übernimmt die Verwaltung von Resourcen, wie z.B. das Codr-Bild
+ *
+ * @author Philip
+ */
 public class Resources {
 	
 	/**
@@ -52,6 +56,10 @@ public class Resources {
 	}
 	
 	
+	/**
+	 * berechnet den Hash von zwei Dateien und vergleicht, ob sie identisch sind.
+	 * @return true, wenn sie identisch sind
+	 */
 	public static boolean compareFiles(File f1, File f2) throws FileNotFoundException, IOException {
 		MessageDigest comp1;
 		MessageDigest comp2;

@@ -27,42 +27,28 @@ import javafx.util.Callback;
 
 
 public class ControllerRanking {
-
-
-	@FXML
-	Label lbName;
-	@FXML
-	Label lbUser;
-	@FXML
-	Label lbElo;
-	@FXML
-	Label lbLanguage;
-	@FXML
-	public Button btChallenge;
-	@FXML
-	Button btEdit;
-	@FXML
-	Button btAbort;
-	@FXML
-	HBox hbEdit;
-	@FXML
-	VBox vbContent;
-	@FXML
-	TextArea tbDescription;
-	@FXML
-	TableView<AiOnline> tvAis;
-	@FXML
-	TableView<Version> tvVersions;
-	@FXML
-	TableView<GameOnline> tvGames;
-	@FXML
-	ImageView imageView;
-
-
+	
+	
+	@FXML Label lbName;
+	@FXML Label lbUser;
+	@FXML Label lbElo;
+	@FXML Label lbLanguage;
+	@FXML public Button btChallenge;
+	@FXML Button btEdit;
+	@FXML Button btAbort;
+	@FXML HBox hbEdit;
+	@FXML VBox vbContent;
+	@FXML TextArea tbDescription;
+	@FXML TableView<AiOnline> tvAis;
+	@FXML TableView<Version> tvVersions;
+	@FXML TableView<GameOnline> tvGames;
+	@FXML ImageView imageView;
+	
+	
 	MainApp mainApp;
 	public AiOnline ai;
-
-
+	
+	
 	/**
 	 * Initialisiert den Controller
 	 * 
@@ -75,9 +61,9 @@ public class ControllerRanking {
 		tvAis.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
 			clickChangeAi(newValue);
 		});
-
+		
 		tvAis.setItems(MainApp.onlineAis);
-
+		
 		TableColumn<AiOnline, Image> col0 = new TableColumn<AiOnline, Image>("Bild");
 		col0.setMaxWidth(60);
 		col0.setMinWidth(60);
@@ -86,24 +72,24 @@ public class ControllerRanking {
 		TableColumn<AiOnline, String> col3 = new TableColumn<AiOnline, String>("ELO");
 		col3.setMaxWidth(60);
 		col3.setMinWidth(60);
-
+		
 		col0.setCellValueFactory(new Callback<CellDataFeatures<AiOnline, Image>, ObservableValue<Image>>() {
-
+			
 			@Override
 			public ObservableValue<Image> call(CellDataFeatures<AiOnline, Image> arg0) {
 				return arg0.getValue().getPicture();
 			}
 		});
 		col0.setCellFactory(new Callback<TableColumn<AiOnline, Image>, TableCell<AiOnline, Image>>() {
-
+			
 			@Override
 			public TableCell<AiOnline, Image> call(TableColumn<AiOnline, Image> param) {
 				final ImageView imageview = new ImageView();
 				imageview.setFitHeight(50);
 				imageview.setFitWidth(50);
-
+				
 				TableCell<AiOnline, Image> cell = new TableCell<AiOnline, Image>() {
-
+					
 					public void updateItem(Image item, boolean empty) {
 						if (item != null)
 							imageview.imageProperty().set(item);
@@ -112,137 +98,137 @@ public class ControllerRanking {
 				cell.setGraphic(imageview);
 				return cell;
 			}
-
+			
 		});
 		col1.setCellValueFactory(new Callback<CellDataFeatures<AiOnline, String>, ObservableValue<String>>() {
-
+			
 			public ObservableValue<String> call(CellDataFeatures<AiOnline, String> p) {
 				return new SimpleStringProperty(p.getValue().title);
 			}
 		});
 		col2.setCellValueFactory(new Callback<CellDataFeatures<AiOnline, String>, ObservableValue<String>>() {
-
+			
 			public ObservableValue<String> call(CellDataFeatures<AiOnline, String> p) {
 				return new SimpleStringProperty(p.getValue().userName);
 			}
 		});
 		col3.setCellValueFactory(new Callback<CellDataFeatures<AiOnline, String>, ObservableValue<String>>() {
-
+			
 			public ObservableValue<String> call(CellDataFeatures<AiOnline, String> p) {
 				return new SimpleStringProperty(p.getValue().elo);
 			}
 		});
-
+		
 		col0.setStyle("-fx-alignment: CENTER-LEFT;");
 		col1.setStyle("-fx-alignment: CENTER-LEFT;");
 		col2.setStyle("-fx-alignment: CENTER-LEFT;");
 		col3.setStyle("-fx-alignment: CENTER-LEFT;");
-
+		
 		tvAis.getColumns().add(col0);
 		tvAis.getColumns().add(col1);
 		tvAis.getColumns().add(col2);
 		tvAis.getColumns().add(col3);
-
-
+		
+		
 		TableColumn<Version, String> colV0 = new TableColumn<>("Version");
 		TableColumn<Version, String> colV1 = new TableColumn<>("Kompiliert");
 		TableColumn<Version, String> colV2 = new TableColumn<>("Qualifiziert");
 		TableColumn<Version, String> colV3 = new TableColumn<>("Freigegeben");
-
+		
 		colV0.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
-
+			
 			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
 				return new SimpleStringProperty(p.getValue().number + "");
 			}
 		});
 		colV1.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
-
+			
 			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
-				if (p.getValue().compiled)
+				if (p.getValue().compiled.get())
 					return new SimpleStringProperty("Ja");
 				else
 					return new SimpleStringProperty("Nein");
 			}
 		});
 		colV2.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
-
+			
 			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
-				if (p.getValue().qualified)
+				if (p.getValue().qualified.get())
 					return new SimpleStringProperty("Ja");
 				else
 					return new SimpleStringProperty("Nein");
 			}
 		});
 		colV3.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
-
+			
 			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
-				if (p.getValue().finished)
+				if (p.getValue().finished.get())
 					return new SimpleStringProperty("Ja");
 				else
 					return new SimpleStringProperty("Nein");
 			}
 		});
-
+		
 		colV0.setStyle("-fx-alignment: CENTER;");
 		colV1.setStyle("-fx-alignment: CENTER;");
 		colV2.setStyle("-fx-alignment: CENTER;");
 		colV3.setStyle("-fx-alignment: CENTER;");
-
+		
 		tvVersions.getColumns().add(colV0);
 		tvVersions.getColumns().add(colV1);
 		tvVersions.getColumns().add(colV2);
 		tvVersions.getColumns().add(colV3);
 		tvVersions.setFixedCellSize(25);
-
-
+		
+		
 		TableColumn<GameOnline, String> colG0 = new TableColumn<>("Gegner");
 		TableColumn<GameOnline, String> colG1 = new TableColumn<>("zum Spiel");
 		TableColumn<GameOnline, String> colG2 = new TableColumn<>("Datum");
 		TableColumn<GameOnline, String> colG3 = new TableColumn<>("gespielte Zeit");
 		TableColumn<GameOnline, String> colG4 = new TableColumn<>("Gewonnen?");
-
+		
 		colG0.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
-
+			
 			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
 				String enemies = "";
-				for (ParticipantResult part : p.getValue().participants){
-					if (part.aiID.get() != ai.id){
+				for (ParticipantResult part : p.getValue().participants) {
+					if (part.aiID.get() != ai.id) {
 						enemies = enemies + part.aiName.get() + ", ";
 					}
 				}
-				if (enemies.length() >= 2){
+				if (enemies.length() >= 2) {
 					enemies = enemies.substring(0, enemies.length() - 2);
 				}
 				return new SimpleStringProperty(enemies);
 			}
 		});
 		colG1.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
-
+			
 			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
 				return new SimpleStringProperty("Spiel " + p.getValue().ID);
 			}
 		});
 		colG2.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
-
+			
 			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
 				return new SimpleStringProperty(p.getValue().date);
 			}
 		});
 		colG3.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
-
+			
 			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
 				return new SimpleStringProperty(p.getValue().duration + "ms");
 			}
 		});
 		colG4.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
-
+			
 			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
 				if (ai == null)
 					return new SimpleStringProperty("Unbekannt");
-
-				for (ParticipantResult part : p.getValue().participants){
-					if (part.playerID.get() == ai.id){
-						if (part.won.get()) 
+					
+				for (ParticipantResult part : p.getValue().participants) {
+					if (part.playerID.get() == ai.id) {
+						if (part.won.get())
 							return new SimpleStringProperty("Ja");
 						else
 							return new SimpleStringProperty("Nein");
@@ -251,7 +237,7 @@ public class ControllerRanking {
 				return new SimpleStringProperty("Unbekannt");
 			}
 		});
-
+		
 		colG0.setStyle("-fx-alignment: CENTER;");
 		colG1.setStyle("-fx-alignment: CENTER;");
 		colG2.setStyle("-fx-alignment: CENTER;");
@@ -264,16 +250,16 @@ public class ControllerRanking {
 		tvGames.getColumns().add(colG3);
 		tvGames.getColumns().add(colG4);
 		tvGames.setFixedCellSize(25);
-
+		
 	}
-
-
+	
+	
 	public void showAi(AiOnline aai) {
 		ai = aai;
 		showAi();
 	}
-
-
+	
+	
 	public void showAi() {
 		if (ai != null) {
 			lbName.setText(ai.title);
@@ -284,7 +270,7 @@ public class ControllerRanking {
 			btChallenge.setDisable(false);
 			imageView.imageProperty().unbind();
 			imageView.imageProperty().bind(ai.getPicture());
-
+			
 			tvVersions.setItems(ai.versions);
 			if (ai.versions.size() != 0) {
 				tvVersions.prefHeightProperty().bind(tvVersions.fixedCellSizeProperty().multiply(Bindings.size(tvVersions.getItems()).add(1.01)));
@@ -311,7 +297,7 @@ public class ControllerRanking {
 				tvGames.minHeightProperty().set(60);
 				tvGames.maxHeightProperty().set(60);
 			}
-
+			
 			if (ai.userName.equals(MainApp.webConnector.userName)) {
 				vbContent.getChildren().remove(hbEdit);
 				vbContent.getChildren().add(1, hbEdit);
@@ -323,7 +309,7 @@ public class ControllerRanking {
 				vbContent.getChildren().remove(hbEdit);
 				btChallenge.setText("Herausfordern");
 			}
-
+			
 		} else {
 			lbName.setText("Null");
 			tbDescription.setText("Aktuell wird keine KI angezeigt");
@@ -341,23 +327,23 @@ public class ControllerRanking {
 			tvGames.prefHeightProperty().set(60);
 			tvGames.minHeightProperty().set(60);
 			tvGames.maxHeightProperty().set(60);
-
+			
 			vbContent.getChildren().remove(hbEdit);
 			btChallenge.setText("Herausfordern");
 		}
 	}
-
-
+	
+	
 	@FXML
 	public void clickChallenge() {
 		if (btChallenge.getText().equals("Löschen")) {
 			MainApp.webConnector.deleteKI(ai.id);
 		} else {
-
+		
 		}
 	}
-
-
+	
+	
 	@FXML
 	public void clickAbort() {
 		btAbort.setVisible(false);
@@ -365,8 +351,8 @@ public class ControllerRanking {
 		tbDescription.setEditable(false);
 		tbDescription.setText(ai.description);
 	}
-
-
+	
+	
 	@FXML
 	public void clickEdit() {
 		if (!btAbort.isVisible()) {
@@ -381,11 +367,11 @@ public class ControllerRanking {
 			MainApp.webConnector.changeDescription(ai.description, ai.id);
 		}
 	}
-
-
+	
+	
 	public void clickChangeAi(AiOnline selected) {
 		showAi(selected);
 	}
-
-
+	
+	
 }

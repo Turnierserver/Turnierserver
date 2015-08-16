@@ -160,6 +160,11 @@ def api_game(id):
 def game_log(id):
 	game = Game.query.get(id)
 	if game:
+		for i, data in enumerate(game.crashes):
+			can_access, data = Game.filter_crash(data)
+			if can_access:
+				yield json.dumps(data), "crash"
+
 		for i, chunk in enumerate(game.log):
 			chunk["progress"] = i/len(game.log)
 			Game.filter_output(chunk)
@@ -185,6 +190,10 @@ def game_inprogress_log(id):
 			yield json.dumps(data), data_type
 		elif data_type == "finished_game_obj":
 			yield url_for("anonymous.game", id=data.id), "game_finished"
+		elif data_type == "crash":
+			can_access, data = Game.filter_crash(data)
+			if can_access:
+				yield json.dumps(data), "crash"
 		else:
 			logger.error("invalid log_sse type: " + str(data_type) + " " + str(data))
 
@@ -692,14 +701,17 @@ def ai_qualify(id):
 			yield json.dumps(data), event
 		elif event == "success":
 			d = backend.request(reqid)
-			if d["position"][str(-ai.type.id) + "v1"] <= d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)]:
-				logger.info("AI " + str(ai.id) + " '" + str(ai.name) + "' failed its qualification")
-				yield "", "failed"
-				ai.latest_version().qualified = False
+			if "position" in d:
+				if d["position"][str(-ai.type.id) + "v1"] <= d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)]:
+					logger.info("AI " + str(ai.id) + " '" + str(ai.name) + "' failed its qualification")
+					yield "", "failed"
+					ai.latest_version().qualified = False
+				else:
+					yield "", "qualified"
+					ai.latest_version().compiled = True
+					ai.latest_version().qualified = True
 			else:
-				yield "", "qualified"
-				ai.latest_version().compiled = True
-				ai.latest_version().qualified = True
+				logger.warning("no position in finished ai_qualify")
 			db.session.commit()
 
 @api.route("/ai/<int:id>/freeze", methods=["POST"])
