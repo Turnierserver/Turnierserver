@@ -273,7 +273,7 @@ public class Version {
 		
 		try {
 			Compiler c = Compiler.getCompiler(ai.language);
-			compileOutput = c.compile(new File(Paths.versionSrc(this)), new File(Paths.versionBin(this)), new File(Paths.versionSrcStartClass(this)), new Libraries());
+			compileOutput = c.compile(new File(Paths.versionSrc(this)), new File(Paths.versionBin(this)), new File(Paths.versionSettingsProp(this)), new Libraries());
 			executeCommand = c.getCommand();
 			compileOutput += "\nKompilierung erfolgreich\n";
 			compiled = true;

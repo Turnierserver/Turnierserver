@@ -54,7 +54,11 @@ import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NothingDoneException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
 
-
+/**
+ * koordiniert die Verbindung zum Server und führt Up-/Downloads aus
+ *
+ * @author Nico TODO: Nico, kommentier das mal alles!!!
+ */
 public class WebConnector {
 
 	public String userName = null;
