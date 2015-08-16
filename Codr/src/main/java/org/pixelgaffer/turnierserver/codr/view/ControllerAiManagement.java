@@ -512,13 +512,14 @@ public class ControllerAiManagement {
 		
 		boolean result = false;
 		if (!new File(Paths.versionSrc(newAi.lastVersion())).exists()) {
-			result = Dialog.okAbort("Die Version wurde angelegt.\nEs konnte kein src-Ordner gefunden werden.\n\nSoll der Ordner angelegt werden und der SimplePlayer hinein kopiert werden?");
+			ErrorLog.write("Der ausgewählte Ordner existert nicht.");
 		} else if (new File(Paths.versionSrc(newAi.lastVersion())).list().length == 0) {
-			result = Dialog.okAbort("Die Version wurde angelegt.\nDer src-Ordner ist leer.\n\nSoll der SimplePlayer hinein kopiert werden?");
+			result = Dialog.okAbort("Die Version wurde angelegt.\nDer Ordner ist leer.\n\nSoll der SimplePlayer hinein kopiert werden?");
 		}
 		
 		if (result) {
-			newAi.lastVersion().copyFromFile(Paths.simplePlayer(MainApp.actualGameType.get(), newAi.language));
+			ErrorLog.write(Paths.simplePlayer(MainApp.actualGameType.get(), newAi.language));
+			newAi.lastVersion().copyFromFile(Paths.simplePlayer(MainApp.actualGameType.get(), newAi.language) + "/src");
 			new File(newAi.path + "/versionProperties.txt").delete();
 		}
 		setVersionTabs();
@@ -648,7 +649,7 @@ public class ControllerAiManagement {
 					return;
 			if (ai.versions.size() > 0)
 				ai.lastVersion().finished.set(true);
-			
+				
 			if (rbFromFile.isSelected()) {
 				showAi(ai, ((AiSaved) ai).newVersion(NewVersionType.fromFile, tbFile.getText()));
 			} else if (rbContinue.isSelected()) {
@@ -735,9 +736,13 @@ public class ControllerAiManagement {
 			Task<String> upload = new Task<String>() {
 				
 				public String call() {
-					
-					int id = ((AiOnline) result).id;
-					id = MainApp.webConnector.createAi(ai, localNameOfNewAi);
+					int id = -1;
+					if(result instanceof AiOnline) {
+						id = ((AiOnline) result).id;
+					}
+					else {
+						id = MainApp.webConnector.createAi(ai, localNameOfNewAi);
+					}
 					if (id == -1) {
 						return "errorConnection";
 					}

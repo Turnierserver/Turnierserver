@@ -101,6 +101,9 @@ public class Version {
 	}
 	
 	
+	/**
+	 * setzt einen Listener auf die compiled-Property, der den compileOutput und ähnliches löscht/aufräumt
+	 */
 	private void setCompiledListener() {
 		
 		compiled.addListener((observableValue, oldValue, newValue) -> {
@@ -108,6 +111,10 @@ public class Version {
 				compileOutput = "";
 				qualified.set(false);
 				qualifyOutput = "";
+				if (ai.mode != AiMode.saved && ai.mode != AiMode.extern) {
+					ErrorLog.write("dies ist kein speicherbares Objekt (compiledListener)");
+					return;
+				}
 				File bin = new File(Paths.versionBin(this));
 				try {
 					FileUtils.deleteDirectory(bin);

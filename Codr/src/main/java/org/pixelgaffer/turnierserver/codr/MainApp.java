@@ -616,6 +616,7 @@ public class MainApp extends Application {
 			ErrorLog.write("RootLayout konnte nicht geladen werden (FXML-Fehler): " + e);
 			e.printStackTrace();
 		}
+		cStart.loadAis();
 		
 		settings.load(cStart);
 		
