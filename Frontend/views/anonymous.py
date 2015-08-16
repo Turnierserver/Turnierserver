@@ -7,12 +7,13 @@ from backend import backend
 from logger import logger
 import json
 import markdown
+import codecs
 
 anonymous_blueprint = Blueprint("anonymous", __name__)
 
 @anonymous_blueprint.route("/")
 def index():
-	with open("../aktuelles.md", "r") as f:
+	with codecs.open("../aktuelles.md", "r", encoding='utf-8') as f:
 		aktuelles = f.read()
 	aktuelles = Markup(markdown.markdown(aktuelles))
 	return render_template("index.html", aktuelles=aktuelles)
