@@ -36,7 +36,6 @@ public class AiManager {
 		Task<AiExtern> load = new Task<AiExtern>() {
 			
 			public AiExtern call() {
-				System.out.println("hi");
 				// in Codr gespeicherte KIs
 				ais.clear();
 				File dir = new File(Paths.aiFolder());
