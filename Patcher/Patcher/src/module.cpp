@@ -114,7 +114,7 @@ int Module::build(const QString &currentHash)
 				perror("Konnte nicht ins Verzeichnis des Moduls wechseln");
 				RETURN_ERROR
 			}
-			RETURN_BUILD(system("qmake-qt5 -makefile && make -j2"))
+            RETURN_BUILD(system("qmake -makefile && make -j2"))
 		}
 		ELSE_UNKNOWN
 	}

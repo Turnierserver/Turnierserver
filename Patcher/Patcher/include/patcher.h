@@ -68,7 +68,9 @@ private:
 	QDir repoPath, configPath;
 	
 	QSet<QString> _modules;
-	pid_t frontend = 0, backend = 0, worker = 0;
+    QMap<QString, int> uids;
+
+    bool containsDependency(QSet<QString> list, QStringList dependencies);
 	
 };
 
