@@ -1,5 +1,6 @@
-function LineChart(divID, line_functions, data) {
+function LineChart(divID, line_functions, data, ylabel) {
 	var self = this;
+	var current_index;
 	var vis = d3.select(divID);
 	var margin = {
 			top: 20,
@@ -56,28 +57,25 @@ function LineChart(divID, line_functions, data) {
 
 	// legend
 
-	var label_group = vis.append("svg:g")
+	var label_group = svg.append("svg:g")
 		.attr("class", "legend-group")
 		.selectAll("g")
-		.data("topkek")
+		.data(line_functions)
 		.enter().append("g")
 		.attr("class", "legend-labels");
 
 	label_group.append("svg:text")
-		.attr("class", "legend legend1")
-		.text(function(d, i) {
-			return "kektop";
-		})
-		.attr("y", function(d, i) {
-			return height+28;
+		.attr("class", function (d, i) {
+			return "legend legend" + (i+1)
 		})
 
 
-	label_group.append("svg:text")
-		.attr("class", "legend value")
-		.attr("y", function(d, i) {
-			return height+28;
-		})
+	svg.append("svg:text")
+				.attr("class", "y-label")
+				.attr("text-anchor", "end") // set at end so we can position at far right edge and add text from right to left
+				.attr("font-size", "10")
+				.attr("y", -4)
+				.attr("x", width)
 
 	// hover-line
 
@@ -95,6 +93,8 @@ function LineChart(divID, line_functions, data) {
 	this.set_hover = function(index) {
 		var posX = x(index + line_functions[0].x(data[0]));
 		hoverLine.attr("x1", posX).attr("x2", posX);
+		self.setLegendText(index);
+		current_index = index;
 	};
 
 	$(container).mousemove(function(event) {
@@ -131,6 +131,17 @@ function LineChart(divID, line_functions, data) {
 			.attr("transform", "translate(0," + height + ")");
 		svg.selectAll("g .y.axis").call(yAxis);
 		self.update_chart();
+
+
+		// legend
+		svg.selectAll("text.y-label").attr("x", width)
+		svg.selectAll("text.legend")
+			.attr("y", function(d, i) {
+				return height + 40;
+			})
+		if (current_index) {
+			self.set_hover(current_index)
+		}
 	};
 
 	this.set_axis_domain = function() {
@@ -176,6 +187,34 @@ function LineChart(divID, line_functions, data) {
 		return index;
 	};
 
+	this.setLegendText = function(index) {
+		var labelValueWidths = [];
+		svg.selectAll("text.legend")
+			.text(function(d, i) {
+				return d.label(data[index]);
+			})
+
+		var cumulativeWidth = 0;
+		svg.selectAll("text.legend")
+				.attr("x", function(d, i) {
+					// return it at the width of previous labels (where the last one ends)
+					var returnX = cumulativeWidth;
+					// increment cumulative to include this one + the value label at this index
+					cumulativeWidth += this.getComputedTextLength() + 16;
+					// store where this ends
+					return returnX;
+				})
+
+		// remove last bit of padding from cumulativeWidth
+		cumulativeWidth = cumulativeWidth - 8;
+
+		svg.select('text.y-label').text(ylabel(data[index]))
+
+		svg.selectAll("g.legend-group g")
+			.attr("transform", "translate(" + (width - cumulativeWidth) +", 0)")
+	}
+
+	// TODO: remove .get()
 	this.get = function() {
 		return {
 			x: x,
