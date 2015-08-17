@@ -713,6 +713,10 @@ def ai_qualify(id):
 			else:
 				logger.warning("no position in finished ai_qualify")
 			db.session.commit()
+		elif event == "crash":
+			can_access, data = Game.filter_crash(data)
+			if can_access:
+				yield json.dumps(data), "crash"
 
 @api.route("/ai/<int:id>/freeze", methods=["POST"])
 @json_out
