@@ -227,7 +227,7 @@ public class Games
 				{
 					aiWrappers.put(aiw.getUuid(), aiw);
 				}
-				
+				 
 				// einen Worker mit der KI beauftragen
 				WorkerConnection w = Workers.getStartableWorker(aiw.getLang());
 				w.addJob(aiw, gameId);
