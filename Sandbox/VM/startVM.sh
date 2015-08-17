@@ -68,13 +68,15 @@ else
   VBoxManage storagectl "$1" --name SATA --add sata --portcount 1 --bootable on
   echo "- Adding the hard disk ..."
   VBoxManage storageattach "$1" --storagectl SATA --port 1 --medium "$vdi" --type hdd
-  echo "- Adding the shared folders ..."
-  VBoxManage sharedfolder add "$1" --name "Sandbox" --hostpath "$binDir" --readonly
-  VBoxManage sharedfolder add "$1" --name "logs" --hostpath "$logDir"
   echo "- Creating a snapshot ..."
   VBoxManage snapshot "$1" take 'new' --description 'snapshot just after the startVM.sh script created the vm'
   
 fi
+
+# add the shared folders
+echo "- Adding the shared folders ..."
+VBoxManage sharedfolder add "$1" --name "Sandbox" --hostpath "$binDir" --readonly
+VBoxManage sharedfolder add "$1" --name "logs" --hostpath "$logDir"
 
 # finally, start the vm
 echo "- Starting the VM ..."
