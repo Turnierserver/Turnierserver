@@ -134,23 +134,32 @@ $("#step_slider").slider({
 
 function update() {
 	var d = pane.data[pane.step];
-	$.map(d.output, function(value, key) {
-		var id = key.slice(0, key.indexOf("v"));
+
+	$.map(ais, function (ai_name, ai_id) {
 		for (var i = 0; i < ai_crashes.length; i++) {
-			if (ai_crashes[i].id == key) {
+			var id = ai_crashes[i].id.slice(0, ai_crashes[i].id.indexOf("v"));
+			if (id == ai_id) {
 				if (ai_crashes[i].step > (pane.data.length - 1)) {
-					$("#ai_" + id + "_output_error").val("Fehler bei Schritt " + ai_crashes[i].step + " wird jetzt gezeigt, weil es diesen Schritt nicht gibt.\n" + ai_crashes[i].reason);
-					$("#ai_" + id + "_output_error").show();
-				} else if (ai_crashes[i].step == pane.step) {
-					$("#ai_" + id + "_output_error").val(ai_crashes[i].reason);
-					$("#ai_" + id + "_output_error").show();
+					$("#ai_" + ai_id + "_output_error").val("Fehler bei Schritt " + ai_crashes[i].step + " wird jetzt gezeigt, weil es diesen Schritt nicht gibt.\n" + ai_crashes[i].reason);
+					$("#ai_" + ai_id + "_output_error").show();
+			} else if (ai_crashes[i].step == pane.step) {
+					$("#ai_" + ai_id + "_output_error").val(ai_crashes[i].reason);
+					$("#ai_" + ai_id + "_output_error").show();
 				} else {
-					$("#ai_" + id + "_output_error").hide();
+					$("#ai_" + ai_id + "_output_error").hide();
 				}
 			}
 		}
-		$("#ai_" + id + "_output").val(value);
-	});
+	})
+
+	if (d !== undefined) {
+		$.map(d.output, function(value, key) {
+			var id = key.slice(0, key.indexOf("v"));
+			$("#ai_" + id + "_output").val(value);
+		});
+	}
+
+
 
 	if (pane.is_playing) {
 		$("#play_button").addClass("active");
