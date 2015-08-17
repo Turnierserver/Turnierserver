@@ -623,12 +623,14 @@ class Game(db.Model):
 		# > R'_A = R_A + 32 * (S_A - 1 / (1 + 10 ^ ((R_B - R_A) / 400)))
 
 
-		ai0 = self.ai_assocs[0]
-		ai1 = self.ai_assocs[1]
+		ai0_assoc = self.ai_assocs[0]
+		ai1_assoc = self.ai_assocs[1]
+		ai0 = ai0_assoc.ai
+		ai1 = ai1_assoc.ai
 
-		if ai0.position < ai1.position:
+		if ai0_assoc.position < ai1_assoc.position:
 			ai0gewonnen = 1
-		elif ai0.position > ai1.position:
+		elif ai0_assoc.position > ai1_assoc.position:
 			ai0gewonnen = 0
 		else:
 			ai0gewonnen = 0.5
