@@ -36,8 +36,8 @@ var diff_chart = new LineChart("#diff_chart",
 	[{
 		x: function (d) { return d.step; },
 		y: function (d) { return d.diff; },
-		label: function(d) { return "Schritt: " + d.step + " Diff: " + d.diff; }
-	}], data
+		label: function(d) { return "Diff: " + d.diff; }
+	}], data, function(d) { return "Schritt: " + d.step; }
 );
 
 $("#spielspezifisch").on("click", diff_chart.on_resize);
@@ -48,14 +48,13 @@ var gain_chart = new LineChart("#gain_chart",
 	[{
 		x: function (d) { return d.step; },
 		y: function (d) { return d.ai1_gain; },
-		ylabel: function(d) { return d.ai1_name; },
-		xlabel: function(d) { return d.step; }
+		label: function(d) { return d.ai1_name + ": " + d.ai1_gain; }
 	},
 	{
 		x: function (d) { return d.step; },
 		y: function (d) { return d.ai2_gain; },
-		ylabel: function(d) { return d.ai2_name; }
-	}], data
+		label: function(d) { return d.ai2_name + ": " + d.ai2_gain; }
+	}], data, function(d) { return "Schritt: " + d.step; }
 );
 
 $("#spielspezifisch").on("click", gain_chart.on_resize);
@@ -66,13 +65,13 @@ var td_chart = new LineChart("#td_chart",
 	[{
 		x: function (d) { return d.step; },
 		y: function (d) { return d.ai1_td; },
-		label: function() { return "Ai1"; }
+		label: function(d) { return d.ai1_name + ": " + d.ai1_td + "ms"; }
 	},
 	{
 		x: function (d) { return d.step; },
 		y: function (d) { return d.ai2_td; },
-		label: function() { return "Ai2"; }
-	}], data
+		label: function(d) { return d.ai2_name + ": " + d.ai2_td + "ms"; }
+	}], data, function(d) { return "Schritt: " + d.step; }
 );
 
 $("#rechenpunkte").on("click", td_chart.on_resize);
@@ -83,13 +82,13 @@ var tabs_chart = new LineChart("#tabs_chart",
 	[{
 		x: function (d) { return d.step; },
 		y: function (d) { return d.ai1_tabs; },
-		label: function() { return "Ai1"; }
+		label: function(d) { return d.ai1_name + ": " + d.ai1_tabs; }
 	},
 	{
 		x: function (d) { return d.step; },
 		y: function (d) { return d.ai2_tabs; },
-		label: function() { return "Ai2"; }
-	}], data
+		label: function(d) { return d.ai2_name + ": " + d.ai2_tabs; }
+	}], data, function(d) { return "Schritt: " + d.step; }
 );
 
 $("#rechenpunkte").on("click", tabs_chart.on_resize);

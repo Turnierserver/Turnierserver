@@ -13,13 +13,19 @@
 	width: 100%;
 	display: block;
 	position: relative;
+	font: 11px sans-serif;
+	margin-bottom: 5em;
 	{% if logged_in and (current_user.can_access(ai0) or current_user.can_access(ai1)) %}
 	height: 27vh;
 	{% else %}
 	height: 37vh;
 	{% endif %}
-	font: 11px sans-serif;
 }
+
+.chart > svg {
+	overflow: visible;
+}
+
 .axis path,
 .axis line {
 	fill: none;
@@ -33,13 +39,14 @@
 	stroke-width: 2px;
 }
 
-.line1 {
-	stroke: steelblue;
+.legend {
+	font-size: 1.3em;
 }
 
-.line2 {
-	stroke: rgb(180, 130, 70);
-}
+.line1 { stroke: steelblue; }
+.legend1 { fill: steelblue; }
+.line2 { stroke: rgb(180, 130, 70); }
+.legend2 { fill: rgb(180, 130, 70); }
 
 .hover-line {
 	stroke: #6E7B8B;
@@ -77,7 +84,7 @@
 		<center>
 			<div class="divider">Punktedifferenz</div>
 			<div class="chart" id="diff_chart"></div>
-			<div class="divider">Züge</div>
+			<div class="divider">Gebote</div>
 			<div class="chart" id="gain_chart"></div>
 		</center>
 	</div>
