@@ -68,9 +68,6 @@ function LineChart(divID, line_functions, data, ylabel) {
 		.attr("class", function (d, i) {
 			return "legend legend" + (i+1)
 		})
-		.attr("y", function(d, i) {
-			return height+28;
-		})
 
 
 	svg.append("svg:text")
@@ -140,7 +137,7 @@ function LineChart(divID, line_functions, data, ylabel) {
 		svg.selectAll("text.y-label").attr("x", width)
 		svg.selectAll("text.legend")
 			.attr("y", function(d, i) {
-				return height + 28;
+				return height + 40;
 			})
 		if (current_index) {
 			self.set_hover(current_index)
