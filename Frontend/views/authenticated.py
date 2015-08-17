@@ -14,7 +14,7 @@ def current_profile():
 	user = current_user
 	ais = AI.filtered().filter(AI.user == user).all()
 	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
-	return render_template("profile.html", columns=columns, user=user)
+	return render_template("profile.html", columns=columns, user=user, gametype=GameType.selected())
 
 @authenticated_blueprint.route("/profile/<int:id>")
 @authenticated_web
@@ -27,7 +27,7 @@ def profile_id(id):
 
 	ais = AI.filtered().filter(AI.user == user).all()
 	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
-	return render_template("profile.html", columns=columns, user=user)
+	return render_template("profile.html", columns=columns, user=user, gametype=GameType.selected())
 
 
 
