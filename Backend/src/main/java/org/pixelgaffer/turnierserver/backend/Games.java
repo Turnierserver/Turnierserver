@@ -233,7 +233,7 @@ public class Games
 				w.addJob(aiw, gameId);
 				aiw.setConnection(w);
 			}
-		} 
+		}
 		
 		@Override
 		public Frontend getFrontend ()
