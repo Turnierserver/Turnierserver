@@ -75,7 +75,9 @@ fi
 
 # add the shared folders
 echo "- Adding the shared folders ..."
+VBoxManage sharedfolder remove "$1" --name "Sandbox" | true
 VBoxManage sharedfolder add "$1" --name "Sandbox" --hostpath "$binDir" --readonly
+VBoxManage sharedfolder remove "$1" --name "logs" | true
 VBoxManage sharedfolder add "$1" --name "logs" --hostpath "$logDir"
 
 # finally, start the vm
