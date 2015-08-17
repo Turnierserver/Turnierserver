@@ -136,7 +136,7 @@ void Patcher::startBackend()
 	int ret = module.build(latestRepoCommit);
 	if (ret != 0)
 		exit(ret);
-	backend = start(module);
+    uids["Backend"] = start(module);
 }
 
 void Patcher::startWorker(uint sandboxes)
@@ -146,7 +146,7 @@ void Patcher::startWorker(uint sandboxes)
 	int ret = module.build(latestRepoCommit);
 	if (ret != 0)
 		exit(ret);
-	worker = start(module);
+    uids["Worker"] = start(module);
 	
 	for (uint i = 0; i < sandboxes; i++)
 		startSandbox(i);
@@ -166,7 +166,7 @@ void Patcher::startFrontend()
 	int ret = module.build(latestRepoCommit);
 	if (ret != 0)
 		exit(ret);
-	frontend = start(module);
+    uids["Frontend"] = start(module);
 }
 
 void Patcher::startCodr()
@@ -189,9 +189,21 @@ void Patcher::update()
 	repoBranch.update();
 	configBranch.update();
 	
-	QList<QitHubCommit> commits = repoBranch.commitsSince("06996dbed797cc0778be265df3a749090cc429b4");
+    QFile commit(repoPath.absoluteFilePath("commit.txt"));
+    if(!commit.exists()) {
+        commit.open(QIODevice::WriteOnly);
+        commit.write(repoBranch.latestCommit().sha().toUtf8());
+        commit.close();
+    }
+
+    commit.open(QIODevice::ReadOnly);
+    QByteArray line;
+    while(!(line = commit.readLine()).isEmpty()) {}
+    commit.close();
+
+    QList<QitHubCommit> commits = repoBranch.commitsSince(QString::fromUtf8(line));
 	QSet<QString> modifiedDirs;
-	for (QitHubCommit commit : commits)
+    for (QitHubCommit commit : commits)
 	{
 		for (QitHubFile file : commit.modifiedFiles())
 		{
@@ -209,8 +221,24 @@ void Patcher::update()
 			modifiedDirs << file.filename().mid(0, qMax(0, file.filename().indexOf('/')));
 		}
 	}
+
+    commit.open(QIODevice::WriteOnly);
+    commit.write(repoBranch.latestCommit().sha().toUtf8());
+    commit.close();
 	
-	commits = configBranch.commitsSince("04ff1fd329eb706efe7d4113dd650ec153984bc4");
+    QFile commitConfig(configPath.absoluteFilePath("commit.txt"));
+    if(!commitConfig.exists()) {
+        commitConfig.open(QIODevice::WriteOnly);
+        commitConfig.write(configBranch.latestCommit().sha().toUtf8());
+        commitConfig.close();
+    }
+
+    commitConfig.open(QIODevice::ReadOnly);
+    QByteArray commitLine;
+    while(!(line = commitConfig.readLine()).isEmpty()) {}
+    commitConfig.close();
+
+    commits = configBranch.commitsSince(QString::fromUtf8(commitLine));
 	QSet<QString> modifiedFiles;
 	for (QitHubCommit commit : commits)
 	{
@@ -231,16 +259,45 @@ void Patcher::update()
 		}
 	}
 	
-//	if (modifiedDirs.contains("Patcher") || modifiedFiles.contains("Patcher.ini"))
-//		exit(0);
+    commitConfig.open(QIODevice::WriteOnly);
+    commitConfig.write(configBranch.latestCommit().sha().toUtf8());
+    commitConfig.close();
+
+    if (modifiedDirs.contains("Patcher") || modifiedFiles.contains("Patcher.ini")) {
+        for(QString module : _modules) {
+            if(uids.contains(module)) {
+                stop(uids[module]);
+            }
+        }
+        exit(0);
+    }
 	
-	QSet<QString> modules;
 	for (QString module : _modules)
-	{
-		bool restart = false;
-		if (modifiedDirs.contains(_config->value(module + "/Folder").toString()) || modifiedFiles.contains(_config->value(module + "/Config").toString()))
-			;
+    {
+        if(module == "Frontend")
+            continue;
+        bool restart = modifiedDirs.contains(_config->value(module + "/Folder").toString()) || modifiedFiles.contains(_config->value(module + "/Config").toString()) || containsDependency(modifiedFiles, _config->value(module + "/Dependency").toStringList());
+
+        if (restart) {
+            if(uids.contains(module))
+                stop(uids[module]);
+            if(module == "Backend")
+                startBackend();
+            else if(module == "Worker")
+                startWorker();
+            else if(module == "Codr")
+                startCodr();
+        }
 	}
+}
+
+bool Patcher::containsDependency(QSet<QString> list, QStringList dependencies) {
+    for(QString dependency : dependencies) {
+        if(!list.contains(_config->value(dependency + "/Folder").toString()) && !containsDependency(list, _config->value(dependency + "/Dependency").toStringList())) {
+            return false;
+        }
+    }
+    return true;
 }
 
 pid_t Patcher::start (Module &module)
