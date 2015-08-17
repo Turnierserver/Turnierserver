@@ -305,7 +305,7 @@ class AI(db.Model):
 	name = db.Column(db.Text, nullable=False)
 	desc = db.Column(db.Text)
 	last_modified = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-	elo = db.Column(db.Float, default=0)
+	elo = db.Column(db.Float, default=1200)
 	user_id = db.Column(db.Integer, db.ForeignKey('t_users.id'))
 	user = db.relationship("User", backref=db.backref('t_ais', order_by=id))
 	lang_id = db.Column(db.Integer, db.ForeignKey('t_langs.id'))
@@ -461,6 +461,12 @@ class AI(db.Model):
 
 		return query.filter(cls.type == gametype)
 
+	@classmethod
+	def reset_all_elo(cls, gametype):
+		for ai in cls.query.filter(cls.type == gametype):
+			ai.elo = 1200
+		db.session.commit()
+
 	@property
 	def rank(self):
 		## Schlaues caching
@@ -612,15 +618,30 @@ class Game(db.Model):
 
 	def update_ai_elo(self):
 		## TODO: funkioniert nur bei Spielen mit 2 Spielern
-		## TODO: echtes ELO-System
-		ai0 = self.ai_assocs[0]
-		ai1 = self.ai_assocs[1]
-		if ai0.position > ai1.position:
-			ai1.ai.elo += 1337
-		elif ai0.position < ai1.position:
-			ai0.ai.elo += 1337
+
+		# > dann wäre das neue elo:
+		# > R'_A = R_A + 32 * (S_A - 1 / (1 + 10 ^ ((R_B - R_A) / 400)))
+
+
+		ai0_assoc = self.ai_assocs[0]
+		ai1_assoc = self.ai_assocs[1]
+		ai0 = ai0_assoc.ai
+		ai1 = ai1_assoc.ai
+
+		if ai0_assoc.position < ai1_assoc.position:
+			ai0gewonnen = 1
+		elif ai0_assoc.position > ai1_assoc.position:
+			ai0gewonnen = 0
 		else:
-			pass
+			ai0gewonnen = 0.5
+
+		ai1gewonnen = 1 - ai0gewonnen
+
+		ai0eloneu = ai0.elo + 32 * (ai0gewonnen - 1 / (1 + 10 ** ((ai1.elo - ai0.elo) / 400)))
+		ai1eloneu = ai1.elo + 32 * (ai1gewonnen - 1 / (1 + 10 ** ((ai0.elo - ai1.elo) / 400)))
+		ai0.elo = ai0eloneu
+		ai1.elo = ai1eloneu
+		db.session.commit()
 		logger.info("ai elo updated")
 
 	@classmethod
