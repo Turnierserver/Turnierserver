@@ -79,16 +79,30 @@
 		</div>
 	</div>
 	<br />
-	<div class="field">
-		<label>Sprache</label>
-		<select class="ui search dropdown" id="lang">
-			<option value="{{ ai.lang.id }}">{{ ai.lang.name}}</option>
-			{% for lang in langs %}
-				{% if lang != ai.lang %}
-				<option value="{{ lang.id }}">{{ lang.name }}</option>
-				{% endif %}
-			{% endfor %}
-		</select>
+	<div class="field">-	<div class="two fields">
+		<div class="field">
+			<label>Sprache</label>
+			<select class="ui search dropdown" id="lang">
+				<option value="{{ ai.lang.id }}">{{ ai.lang.name}}</option>
+				{% for lang in langs %}
+					{% if lang != ai.lang %}
+					<option value="{{ lang.id }}">{{ lang.name }}</option>
+					{% endif %}
+				{% endfor %}
+			</select>
+		</div>
+		<div class="field">
+			<label>Extras</label>
+			<select name="extras" multiple="" class="ui fluid dropdown" id="extras">
+				<option value="">Extras:</option>
+				{% for lib in ai.available_extras() %}
+				<option value="{{lib.name}}">{{lib.display_name}}</option>
+				{% endfor %}
+			</select>
+			<script>
+				$("#extras").dropdown("set selected", {{ ai.latest_version().extra_names() | escapejs | safe }} );
+			</script>
+		</div>
 	</div>
 	<div class="field">
 		<label>Beschreibung</label>

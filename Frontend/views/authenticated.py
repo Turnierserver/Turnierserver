@@ -98,10 +98,8 @@ def file_browser(id, path=""):
 			submit_name = path.split("/")[-1]
 			with ftp.ftp_host.open(ftp_url, "r") as remote_obj:
 				code = remote_obj.read()
-				is_libs = submit_name == "libraries.txt"
 				return render_template("ai_file_editor.html", path=path_url,
-										code=code, ai=ai, is_libs=is_libs,
-										libs=code.split("\n") if is_libs else None,
+										code=code, ai=ai, is_libs=submit_name == "libraries.txt",
 										submit_name=submit_name, submit_path=submit_path)
 
 		objs = []
