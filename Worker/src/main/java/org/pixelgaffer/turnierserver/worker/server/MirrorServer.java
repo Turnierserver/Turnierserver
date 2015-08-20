@@ -6,9 +6,10 @@ import static org.pixelgaffer.turnierserver.PropertyUtils.WORKER_MIRROR_PASSWORD
 import static org.pixelgaffer.turnierserver.PropertyUtils.WORKER_MIRROR_SALT_LENGTH;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getIntRequired;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
-
 import java.io.BufferedReader;
 import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -20,8 +21,8 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Random;
-
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
+import org.pixelgaffer.turnierserver.worker.LibraryCache;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
 
 /**
@@ -56,15 +57,36 @@ public class MirrorServer extends Thread
 					{
 						BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 						
+						boolean ai = true;
+						int id = 0, version = 0; // ai
+						String name = "nonexistent-library", language = "nonexistent-language"; // lib
+						
 						String line = in.readLine();
 						if (line == null)
 							throw new EOFException();
-						int id = Integer.valueOf(line);
+						try
+						{
+							id = Integer.valueOf(line);
+						}
+						catch (NumberFormatException nfe)
+						{
+							ai = false;
+							name = line;
+						}
 						
-						line = in.readLine();
-						if (line == null)
-							throw new EOFException();
-						int version = Integer.valueOf(line);
+						if (ai)
+						{
+							line = in.readLine();
+							if (line == null)
+								throw new EOFException();
+							version = Integer.valueOf(line);
+						}
+						else
+						{
+							language = in.readLine();
+							if (language == null)
+								throw new EOFException();
+						}
 						
 						OutputStream out = client.getOutputStream();
 						
@@ -76,12 +98,26 @@ public class MirrorServer extends Thread
 							throw new EOFException();
 						if (!Arrays.equals(Base64.getDecoder().decode(line), hash))
 						{
-							WorkerMain.getLogger().critical("Der Mirror-Klient " + client + " hat das falsche Passwort gesendet!");
+							WorkerMain.getLogger()
+									.critical("Der Mirror-Klient " + client + " hat das falsche Passwort gesendet!");
 							return;
 						}
 						
-						out.write((Long.toString(DatastoreFtpClient.aiSize(id, version)) + "\n").getBytes(UTF_8));
-						DatastoreFtpClient.retrieveAi(id, version, out);
+						if (ai)
+						{
+							out.write((Long.toString(DatastoreFtpClient.aiSize(id, version)) + "\n").getBytes(UTF_8));
+							DatastoreFtpClient.retrieveAi(id, version, out);
+						}
+						else
+						{
+							File tar = LibraryCache.getCache().getLibTarBz2(language, name);
+							out.write((Long.toString(tar.length()) + "\n").getBytes(UTF_8));
+							FileInputStream fin = new FileInputStream(tar);
+							byte buf[] = new byte[8192]; int read;
+							while ((read = fin.read(buf)) > 0)
+								out.write(buf, 0, read);
+							fin.close();
+						}
 					}
 					catch (EOFException eofe)
 					{

@@ -8,20 +8,16 @@ import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.K
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.STARTED_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.TERMINATED_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.SANDBOX;
-
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
-
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
-
 import org.pixelgaffer.turnierserver.networking.messages.SandboxCommand;
 import org.pixelgaffer.turnierserver.networking.messages.SandboxMessage;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo.SandboxInfo;
 import org.pixelgaffer.turnierserver.worker.server.WorkerConnectionHandler;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.ToString;
 
 /**
  * Repräsentiert eine Sandbox.
