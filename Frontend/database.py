@@ -478,7 +478,7 @@ class AI_Version(db.Model):
 
 	def info(self):
 		return {
-			"id": self.version_id, "extras": self.extra_names,
+			"id": self.version_id, "extras": self.extra_names(),
 			"compiled": self.compiled, "qualified": self.qualified,
 			"frozen": self.frozen
 		}

@@ -582,6 +582,7 @@ def api_ai_update(id):
 			ai.latest_version().lang = ai.lang
 	if 'extra[]' in request.form:
 		extras = request.form.getlist("extra[]")
+		print(extras)
 		lib_objs = [ai.available_extras().filter(Library.name == extra).first() for extra in extras]
 		lib_objs = [o for o in lib_objs if o is not None]
 		ai.latest_version().extras = lib_objs
