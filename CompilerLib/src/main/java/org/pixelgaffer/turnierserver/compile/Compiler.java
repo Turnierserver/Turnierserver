@@ -144,7 +144,7 @@ public abstract class Compiler
 	@Getter(AccessLevel.PROTECTED)
 	private final Set<RequiredLibrary> libs = new HashSet<>();
 	
-	public CompileResult compileAndUpload (@NonNull Backend backend)
+	public CompileResult compileAndUpload (@NonNull Backend backend, LibraryDownloader libs)
 			throws IOException, InterruptedException, FTPIllegalReplyException, FTPException, FTPDataTransferException,
 			FTPAbortedException, FTPListParseException
 	{
@@ -177,7 +177,7 @@ public abstract class Compiler
 		}
 		
 		// compilieren
-		boolean success = compile(srcdir, bindir, p, pw, null);
+		boolean success = compile(srcdir, bindir, p, pw, libs);
 		
 		// aufräumen
 		srcdir.delete();

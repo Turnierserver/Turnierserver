@@ -8,12 +8,8 @@ import java.io.PrintWriter;
 import java.util.Properties;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
+import org.pixelgaffer.turnierserver.compile.LibraryDownloader.LibraryDownloaderMode;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
-import it.sauronsoftware.ftp4j.FTPAbortedException;
-import it.sauronsoftware.ftp4j.FTPDataTransferException;
-import it.sauronsoftware.ftp4j.FTPException;
-import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
-import it.sauronsoftware.ftp4j.FTPListParseException;
 
 public class JavaCompiler extends Compiler
 {
@@ -40,7 +36,7 @@ public class JavaCompiler extends Compiler
 		libdir.mkdir();
 		try
 		{
-			if (libs == null)
+			if (libs == null || libs.getMode() == LibraryDownloaderMode.LIBS_ONLY)
 				DatastoreFtpClient.retrieveAiLibrary(getGame(), "Java", libdir);
 			else
 			{
@@ -51,11 +47,10 @@ public class JavaCompiler extends Compiler
 				classpath += File.pathSeparator + "AiLibrary" + File.separator + jar;
 			output.println("done");
 		}
-		catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
-				| FTPAbortedException | FTPListParseException ioe)
+		catch (Exception e)
 		{
 			libdir.delete();
-			output.println(ioe);
+			output.println(e);
 			return false;
 		}
 		
@@ -87,11 +82,10 @@ public class JavaCompiler extends Compiler
 					classpath += ":" + libdirname + File.separator + jar;
 				output.println("done");
 			}
-			catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
-					| FTPAbortedException | FTPListParseException ioe)
+			catch (Exception e)
 			{
 				libdir.delete();
-				output.println(ioe.getMessage());
+				output.println(e.getMessage());
 			}
 		}
 		libraries.close();
