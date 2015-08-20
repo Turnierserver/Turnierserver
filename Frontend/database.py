@@ -408,22 +408,6 @@ class AI(db.Model):
 		for version in self.version_list:
 			if not ftp.ftp_host.path.isdir(bd+"/v"+str(version.version_id)):
 				ftp.ftp_host.mkdir(bd+"/v"+str(version.version_id))
-
-			# with ftp.ftp_host.open(bd+"/v"+str(version.version_id)+"/settings.prop", "w") as f:
-			# 	def write_prop(f, d):
-			# 		for key in d:
-			# 			f.write(key + "=" + str(d[key]) + "\n")
-			# 	f.write("#Vom Frontend durch FTP-Sync generiert\n")
-			# 	write_prop(f, dict(
-			# 		language = self.lang.name,
-			# 		language_id = self.lang.id,
-			# 		name = self.name,
-			# 		id = self.id,
-			# 		author = self.user.name,
-			# 		type = self.type.name,
-			# 		type_id = self.type.id
-			# 	))
-
 			with ftp.ftp_host.open(bd+"/v"+str(version.version_id)+"/libraries.txt", "w") as f:
 				for lib in self.latest_version().extras():
 					f.write(lib + "\n")
@@ -473,6 +457,9 @@ class AI(db.Model):
 		sub = db.session.query(AI.id, db.func.row_number().over(order_by=db.desc(AI.elo)).label('pos')).filter(AI.type == self.type).subquery()
 		return db.session.query(sub.c.pos).filter(sub.c.id==self.id).scalar()
 
+	def available_extras(self):
+		return Library.query.filter(Library.lang == self.latest_version().lang).all()
+
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(
 			self.id, self.name, self.user_id, self.lang.name, self.type.name, self.last_modified
@@ -489,30 +476,21 @@ class AI_Version(db.Model):
 	ai = db.relationship("AI", backref=db.backref('t_ai_versions', order_by=id))
 	lang_id = db.Column(db.Integer, db.ForeignKey('t_langs.id'))
 	lang = db.relationship("Lang")
-	extras_str = db.Column(db.Text, default="[]")
-	## dafuer komm ich in die DB-Hoelle
+	extras = db.relationship("Library", secondary="t_ai_versions_libraries_assoc")
 
 	def __init__(self, *args, **kwargs):
 		super(AI_Version, self).__init__(*args, **kwargs)
-		if not self.extras_str:
-			# eigentlich wird der standart Wert schon oben gesetzt
-			self.extras_str = "[]"
 		db_obj_init_msg(self)
 
 	def info(self):
 		return {
-			"id": self.version_id, "extras": self.extras(),
+			"id": self.version_id, "extras": self.extras,
 			"compiled": self.compiled, "qualified": self.qualified,
 			"frozen": self.frozen
 		}
 
-	def extras(self, e=False):
-		if isinstance(e, list):
-			self.extras_str = json.dumps(e)
-		return json.loads(self.extras_str)
 
 	def delete(self):
-		## remove code, delete from DB
 		path = "AIs/{}/v{}/".format(self.ai_id, self.version_id)
 
 		@ftp.safe
@@ -522,7 +500,7 @@ class AI_Version(db.Model):
 		try:
 			f()
 		except ftp.err:
-			logger.warning("couldn't delete version data!")
+			logger.error("couldn't delete version data!")
 
 		db.session.delete(self)
 		db.session.commit()
@@ -548,6 +526,7 @@ class Lang(db.Model):
 	url = db.Column(db.Text)
 	ace_name = db.Column(db.Text)
 	ai_list = db.relationship("AI", order_by="AI.id", backref="Lang")
+	libs = db.relationship("Library", backref="lang")
 
 	def __init__(self, *args, **kwargs):
 		super(Lang, self).__init__(*args, **kwargs)
@@ -773,6 +752,62 @@ class GameType(db.Model):
 
 	def __repr__(self):
 		return "<GameType(id={}, name={})>".format(self.id, self.name)
+
+AI_Lib_Assoc = db.Table('t_ai_versions_libraries_assoc', db.Model.metadata,
+	db.Column('ai_version_id', db.Integer, db.ForeignKey('t_ai_versions.id')),
+	db.Column('library_id', db.Integer, db.ForeignKey('t_libraries.id'))
+)
+
+class Library(db.Model):
+	__tablename__ = 't_libraries'
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	name = db.Column(db.Text, nullable=False)
+	display_name = db.Column(db.Text, nullable=False)
+	lang_id = db.Column(db.Integer, db.ForeignKey("t_langs.id"))
+
+	def __init__(self, *args, **kwargs):
+		super(GameType, self).__init__(*args, **kwargs)
+		db_obj_init_msg(self)
+		if not self.last_modified:
+			self.last_modified = timestamp()
+
+	@property
+	def viz(self):
+		return "vizs/" + self.name.lower().replace(" ", "") + ".html"
+
+
+	@classmethod
+	def latest(cls):
+		return cls.query.order_by(cls.id.desc()).first()
+
+	@classmethod
+	def selected(cls, gametype=None, latest_on_none=True):
+		if not gametype:
+			if "gametype" in request.cookies:
+				gt = urllib.parse.unquote(request.cookies["gametype"])
+				gametype = GameType.query.filter(GameType.name.ilike(gt)).first()
+		if not gametype and latest_on_none:
+			gametype = cls.latest()
+		return gametype
+
+	def updated(self):
+		self.last_modified = timestamp()
+		db.session.commit()
+
+	def info(self):
+		return {"id": self.id, "name": self.name, "last_modified": self.last_modified}
+
+	def delete(self):
+		logger.info("Deleting " + self)
+		for ai in AI.query.filter(AI.type == self):
+			ai.delete()
+		db.session.delete(self)
+		db.session.commit()
+
+	def __repr__(self):
+		return "<GameType(id={}, name={})>".format(self.id, self.name)
+
+
 
 def populate():
 	db.create_all()
