@@ -97,9 +97,10 @@ def file_browser(id, path=""):
 			submit_path = "/".join(path.split("/")[:-1])
 			submit_name = path.split("/")[-1]
 			with ftp.ftp_host.open(ftp_url, "r") as remote_obj:
+				code=remote_obj.read()
 				return render_template("ai_file_editor.html", path=path_url,
-										code=remote_obj.read(), ai=ai,
-										submit_name=submit_name, submit_path=submit_path)
+										code=code, ai=ai,
+										submit_name=submit_name, submit_path=submit_path, split=code.split("\n"))
 
 		objs = []
 		files = ftp.ftp_host.listdir(ftp_url)
