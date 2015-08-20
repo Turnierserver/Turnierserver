@@ -16,6 +16,8 @@
 
 
 {% block rawbody %}
+{% for nam, ur in path %}
+{% if loop.last %}
 <div class="ui segment" id="code-seg">
 	<div class="ui big breadcrumb segment">
 		{% for name, url in path %}
@@ -30,7 +32,10 @@
 		<div class="divider"></div>
 		<button id="save" class="ui basic small {% if readonly %}disabled{% endif %} button" data-content="Du kannst auch speichern, indem du Ctrl + S drückst.">speichern</button>
 		<a id="compile" class="ui basic small {% if readonly %}disabled{% endif %} button" href="{{url_for("authenticated.compile_ai", id=ai.id)}}">Kompilieren</a>
-		<div class="ui compact selection dropdown" style="font-size: 0.69em;">
+
+	{% if nam != "libraries.txt" %}
+
+	<div class="ui compact selection dropdown" style="font-size: 0.69em;">
 			<input type="hidden" name="editor_theme">
 			<div class="default text">Farbstil</div>
 			<i class="dropdown icon"></i>
@@ -127,6 +132,52 @@
 	});
 
 	</script>
-</div>
 
+	{% else %}
+	<p></p>
+	<div class="field">
+		<select name="extras" multiple="" class="ui fluid dropdown" id="extras">
+			<option value="">Bibliotheken:</option>
+			<option value="flo">Implementieren!</option>
+			<option value="test">So!</option>
+			<option value="test2">Schnell!</option>
+			<option value="test3">Wie!</option>
+			<option value="test4">Möglich!</option>
+		</select>
+		<script>
+			
+			function upload(code) {
+				console.log("Saveing and Uploading...")
+				$("#extras").addClass("loading")
+
+				d = {
+					path: "{{submit_path}}",
+					filename: "{{submit_name}}",
+					data: code
+				}
+
+				$.post("/api/ai/{{ai.id}}/upload", d).done(function(data) {
+					console.log("File uploaded.", data)
+					location.reload();
+					$("#extras").removeClass("loading");
+				}).fail(function(xhr, textStatus, errorThrown) {
+					console.log(xhr.responseText.error)
+					alert(JSON.parse(xhr.responseText).error)
+					$("#extras").removeClass("loading");
+				})
+			}
+
+
+			// ## Das ist verdammt haesslig und sollte nicht verdammt haesslig sein.
+			{% for lib in split %}
+			$("#extras").dropdown("set selected", [
+					"{{lib}}",
+			]);
+			{% endfor %}
+		</script>
+	</div>
+	{% endif %}
+</div>
+{% endif %}
+{% endfor %}
 {% endblock %}
