@@ -5,6 +5,22 @@ import java.io.File;
 public interface LibraryDownloader
 {
 	/**
+	 * Der Modus des LibraryDownloaders.
+	 */
+	public enum LibraryDownloaderMode
+	{
+		/** Nur Bibliotheken, keine AiBibliotheken. */
+		LIBS_ONLY,
+		/** Bibliotheken und AiBibliotheken. */
+		EVERYTHING;
+	}
+	
+	/**
+	 * Gibt den Modus des LibraryDownloaders zurück.
+	 */
+	public LibraryDownloaderMode getMode();
+	
+	/**
 	 * Gibt alle Dateien zurück, die zur AiBibliothek gehören.
 	 */
 	public File[] getAiLibs(String language);
@@ -25,7 +41,7 @@ public interface LibraryDownloader
 	 * Gibt alle Dateien zurück, die zu der Bibliothek mit dem angegebenen Namen gehören.
 	 */
 	public File[] getLib (String language, String name);
-
+	
 	/**
 	 * Gibt die Datei mit dem angegebenen Namen der Datei zurück.
 	 */

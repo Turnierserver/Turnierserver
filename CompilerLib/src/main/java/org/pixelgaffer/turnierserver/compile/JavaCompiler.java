@@ -1,21 +1,14 @@
 package org.pixelgaffer.turnierserver.compile;
 
-import it.sauronsoftware.ftp4j.FTPAbortedException;
-import it.sauronsoftware.ftp4j.FTPDataTransferException;
-import it.sauronsoftware.ftp4j.FTPException;
-import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
-import it.sauronsoftware.ftp4j.FTPListParseException;
-
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Properties;
 import java.util.regex.Pattern;
-
 import org.apache.commons.io.FileUtils;
+import org.pixelgaffer.turnierserver.compile.LibraryDownloader.LibraryDownloaderMode;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 
 public class JavaCompiler extends Compiler
@@ -23,6 +16,11 @@ public class JavaCompiler extends Compiler
 	public JavaCompiler (int ai, int version, int game)
 	{
 		super(ai, version, game);
+	}
+	
+	public String getLanguage ()
+	{
+		return "Java";
 	}
 	
 	@Override
@@ -38,7 +36,7 @@ public class JavaCompiler extends Compiler
 		libdir.mkdir();
 		try
 		{
-			if (libs == null)
+			if (libs == null || libs.getMode() == LibraryDownloaderMode.LIBS_ONLY)
 				DatastoreFtpClient.retrieveAiLibrary(getGame(), "Java", libdir);
 			else
 			{
@@ -49,11 +47,10 @@ public class JavaCompiler extends Compiler
 				classpath += File.pathSeparator + "AiLibrary" + File.separator + jar;
 			output.println("done");
 		}
-		catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
-				| FTPAbortedException | FTPListParseException ioe)
+		catch (Exception e)
 		{
 			libdir.delete();
-			output.println(ioe);
+			output.println(e);
 			return false;
 		}
 		
@@ -65,11 +62,13 @@ public class JavaCompiler extends Compiler
 			line = line.trim();
 			if ((line.length() == 0) || line.startsWith("#"))
 				continue;
-			
+			String libdirname = line.replace('/', '_');
+				
 			output.print("> Lade Bibliothek " + line + " herunter ... ");
 			output.flush();
-			libdir = new File(bindir, line);
+			libdir = new File(bindir, libdirname);
 			libdir.mkdir();
+			getLibs().add(new RequiredLibrary(line, libdirname));
 			try
 			{
 				if (libs == null)
@@ -80,14 +79,13 @@ public class JavaCompiler extends Compiler
 						FileUtils.copyFile(f, new File(libdir, f.getName()));
 				}
 				for (String jar : libdir.list( (dir, name) -> name.endsWith(".jar")))
-					classpath += ":" + line + File.separator + jar;
+					classpath += ":" + libdirname + File.separator + jar;
 				output.println("done");
 			}
-			catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
-					| FTPAbortedException | FTPListParseException ioe)
+			catch (Exception e)
 			{
 				libdir.delete();
-				output.println(ioe.getMessage());
+				output.println(e.getMessage());
 			}
 		}
 		libraries.close();
@@ -95,25 +93,12 @@ public class JavaCompiler extends Compiler
 		// die Klassen kompilieren
 		if (!compileRecursive(srcdir, classpath, srcdir, bindir, output))
 			return false;
-		
-		// das script zum starten erzeugen
-		output.print("> Erstelle ein Skript zum Starten der KI ... ");
-		File scriptFile = new File(bindir, "start.sh");
-		scriptFile.createNewFile();
-		scriptFile.setExecutable(true);
-		if (!scriptFile.canExecute())
-		{
-			output.println("Konnte das Skript nicht als ausführbar markieren!");
-			return false;
-		}
-		PrintWriter script = new PrintWriter(new FileOutputStream(scriptFile));
-		script.println("#!/bin/bash");
+			
+		// die argumente für den java befehl speichern
 		String mainclass = p.getProperty("mainclass");
 		if (!Pattern.matches("[a-zA-Z0-9_\\.]+", mainclass))
 		{
 			output.println(mainclass + " ist keine valide Klasse");
-			script.println("echo keine valide mainclass angegeben");
-			script.close();
 			return false;
 		}
 		if (mainclass == null)
@@ -123,22 +108,11 @@ public class JavaCompiler extends Compiler
 			output.println("        Bitte die Zeile");
 			output.println("            mainclass=com.example.Ai");
 			output.println("        der settings.prop hinzufügen!");
-			script.println("echo missing mainclass property");
-			script.close();
 			return false;
 		}
-		String command[] = { "java", "-classpath", classpath, "-Xmx500M", mainclass };
-		setCommand(command);
-		String commandStr = "";
-		for (int i = 1; i < command.length; i++)
-			commandStr += "'" + command[i] + "' ";
-		commandStr = commandStr.trim();
-		script.println("javaExecutable=java");
-		script.println("if [ -x \"$2\" ]; then\n\tjavaExecutable=\"$2\"\nfi");
-		script.println("echo \"\\\"$javaExecutable\\\" " + commandStr + " \\\"$1\\\"\"");
-		script.println("\"$javaExecutable\" " + commandStr + " \"$1\"");
-		script.close();
-		output.println("done");
+		setCommand("java");
+		String args[] = { "-classpath", classpath, "-Xmx500M", mainclass };
+		setArguments(args);
 		
 		return true;
 	}
