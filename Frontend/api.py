@@ -13,7 +13,7 @@ import os
 from pprint import pprint
 from collections import defaultdict
 
-from database import AI, User, Game, Lang, GameType, db, populate, ftp, Game_inprogress, timestamp
+from database import *
 from cli import zipdir, _make_data_container, _add_gametype, _compile_quali_ai
 from backend import backend
 from commons import authenticated, cache, CommonErrors
@@ -582,10 +582,14 @@ def api_ai_update(id):
 			ai.latest_version().lang = ai.lang
 	if 'extra[]' in request.form:
 		extras = request.form.getlist("extra[]")
-		ai.latest_version().extras = extras
+		lib_objs = [ai.available_extras().filter(Library.name == extra).first() for extra in extras]
+		lib_objs = [o for o in lib_objs if o is not None]
+		ai.latest_version().extras = lib_objs
+		ai.latest_version().sync_extras()
 	elif 'extra' in request.form:
 		# das Web-Interface schickt bei nem leeren Feld statt 'extra[]' 'extra'
-		ai.latest_version().extras = extras
+		ai.latest_version().extras = []
+		ai.latest_version().sync_extras()
 
 	# es muss zur Datenbank geschrieben werden, um die aktuellen Infos zu bekommen
 	db.session.commit()

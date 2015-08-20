@@ -142,39 +142,20 @@
 		</select>
 		<script>
 			$("#extras").dropdown()
-			function upload() {
-				console.log("Saving and Uploading...")
-				$("#extras").addClass("loading")
-
-				libs = $("#extras").val()
-				code = ""
-				if (libs) {
-					for (var i = 0; i < libs.length; i++) {
-						code += libs[i]
-						if (i < libs.length)
-							code += "\n"
-					}
-				}
-
-				d = {
-					path: "{{submit_path}}",
-					filename: "{{submit_name}}",
-					data: code
-				}
-
-				$.post("/api/ai/{{ai.id}}/upload", d).done(function(data) {
-					location.reload();
-					$("#extras").removeClass("loading");
-				}).fail(function(xhr, textStatus, errorThrown) {
-					console.log(xhr.responseText.error)
-					alert(JSON.parse(xhr.responseText).error)
-					$("#extras").removeClass("loading");
-				})
-			}
 			$("#save").on("click", function() {
-				upload()
+				$("#extras").addClass("loading")
+				var extras = $("#extras").val();
+				console.log(extras)
+				$.post("/api/ai/{{ai.id}}/update", {extra: extras}).done(function(data) {
+					console.log("AI changed.");
+					location.reload();
+				}).fail(function(xhr, textStatus, errorThrown) {
+					console.log(xhr.responseText.error);
+					alert(JSON.parse(xhr.responseText).error);
+					$("#extras").removeClass("loading");
+				});
 			});
-			$("#extras").dropdown("set selected", {{ libs | escapejs | safe }});
+			$("#extras").dropdown("set selected", {{ ai.latest_version().extra_names() | escapejs | safe }});
 		</script>
 	</div>
 	{% endif %}

@@ -406,13 +406,7 @@ class AI(db.Model):
 			ftp.ftp_host.mkdir(bd+"/bin")
 
 		for version in self.version_list:
-			if not ftp.ftp_host.path.isdir(bd+"/v"+str(version.version_id)):
-				ftp.ftp_host.mkdir(bd+"/v"+str(version.version_id))
-			with ftp.ftp_host.open(bd+"/v"+str(version.version_id)+"/libraries.txt", "w") as f:
-				for lib in self.latest_version().extras():
-					f.write(lib + "\n")
-				if not self.latest_version().extras():
-					f.write("\n")
+			version.sync_extras()
 
 		with ftp.ftp_host.open(bd+"/language.txt", "w") as f:
 			f.write(self.lang.name)
@@ -458,7 +452,7 @@ class AI(db.Model):
 		return db.session.query(sub.c.pos).filter(sub.c.id==self.id).scalar()
 
 	def available_extras(self):
-		return Library.query.filter(Library.lang == self.latest_version().lang).all()
+		return Library.query.filter(Library.lang == self.latest_version().lang)
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(
@@ -484,7 +478,7 @@ class AI_Version(db.Model):
 
 	def info(self):
 		return {
-			"id": self.version_id, "extras": self.extras,
+			"id": self.version_id, "extras": self.extra_names,
 			"compiled": self.compiled, "qualified": self.qualified,
 			"frozen": self.frozen
 		}
@@ -515,6 +509,20 @@ class AI_Version(db.Model):
 
 	def freeze(self):
 		self.frozen = True
+
+	@ftp.safe
+	def sync_extras(self):
+		bd = "AIs/" + str(self.ai.id)
+		if not ftp.ftp_host.path.isdir(bd+"/v"+str(self.version_id)):
+			ftp.ftp_host.mkdir(bd + "/v" + str(self.version_id))
+		with ftp.ftp_host.open(bd + "/v" + str(self.version_id) + "/libraries.txt", "w") as f:
+			for lib in self.extras:
+				f.write(lib.name + "\n")
+			if len(self.extras) == 0:
+				f.write("\n")
+
+	def extra_names(self):
+		return [extra.name for extra in self.extras]
 
 	def __repr__(self):
 		return "<AI_Version(id={}, version_id={}, ai_id={}>".format(self.id, self.version_id, self.ai_id)
@@ -765,47 +773,16 @@ class Library(db.Model):
 	display_name = db.Column(db.Text, nullable=False)
 	lang_id = db.Column(db.Integer, db.ForeignKey("t_langs.id"))
 
-	def __init__(self, *args, **kwargs):
-		super(GameType, self).__init__(*args, **kwargs)
-		db_obj_init_msg(self)
-		if not self.last_modified:
-			self.last_modified = timestamp()
-
-	@property
-	def viz(self):
-		return "vizs/" + self.name.lower().replace(" ", "") + ".html"
-
-
-	@classmethod
-	def latest(cls):
-		return cls.query.order_by(cls.id.desc()).first()
-
-	@classmethod
-	def selected(cls, gametype=None, latest_on_none=True):
-		if not gametype:
-			if "gametype" in request.cookies:
-				gt = urllib.parse.unquote(request.cookies["gametype"])
-				gametype = GameType.query.filter(GameType.name.ilike(gt)).first()
-		if not gametype and latest_on_none:
-			gametype = cls.latest()
-		return gametype
-
-	def updated(self):
-		self.last_modified = timestamp()
-		db.session.commit()
-
 	def info(self):
-		return {"id": self.id, "name": self.name, "last_modified": self.last_modified}
+		return {"id": self.id, "name": self.name, "display_name": self.display_name}
 
 	def delete(self):
-		logger.info("Deleting " + self)
-		for ai in AI.query.filter(AI.type == self):
-			ai.delete()
+		logger.info("Deleting " + str(self))
 		db.session.delete(self)
 		db.session.commit()
 
 	def __repr__(self):
-		return "<GameType(id={}, name={})>".format(self.id, self.name)
+		return "<Library(id={}, name={})>".format(self.id, self.name)
 
 
 
