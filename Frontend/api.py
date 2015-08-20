@@ -582,10 +582,10 @@ def api_ai_update(id):
 			ai.latest_version().lang = ai.lang
 	if 'extra[]' in request.form:
 		extras = request.form.getlist("extra[]")
-		ai.latest_version().extras(extras)
+		ai.latest_version().extras = extras
 	elif 'extra' in request.form:
 		# das Web-Interface schickt bei nem leeren Feld statt 'extra[]' 'extra'
-		ai.latest_version().extras([])
+		ai.latest_version().extras = extras
 
 	# es muss zur Datenbank geschrieben werden, um die aktuellen Infos zu bekommen
 	db.session.commit()

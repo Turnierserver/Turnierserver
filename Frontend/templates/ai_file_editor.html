@@ -16,8 +16,6 @@
 
 
 {% block rawbody %}
-{% for nam, ur in path %}
-{% if loop.last %}
 <div class="ui segment" id="code-seg">
 	<div class="ui big breadcrumb segment">
 		{% for name, url in path %}
@@ -33,7 +31,7 @@
 		<button id="save" class="ui basic small {% if readonly %}disabled{% endif %} button" data-content="Du kannst auch speichern, indem du Ctrl + S drückst.">speichern</button>
 		<a id="compile" class="ui basic small {% if readonly %}disabled{% endif %} button" href="{{url_for("authenticated.compile_ai", id=ai.id)}}">Kompilieren</a>
 
-	{% if nam != "libraries.txt" %}
+	{% if not is_libs %}
 
 	<div class="ui compact selection dropdown" style="font-size: 0.69em;">
 			<input type="hidden" name="editor_theme">
@@ -61,7 +59,7 @@
 	$('#save').popup();
 
 	function upload(editor) {
-		console.log("Saveing and Uploading...")
+		console.log("Saving and Uploading...")
 		$("#code-seg").addClass("loading")
 
 		d = {
@@ -138,17 +136,25 @@
 	<div class="field">
 		<select name="extras" multiple="" class="ui fluid dropdown" id="extras">
 			<option value="">Bibliotheken:</option>
-			<option value="flo">Implementieren!</option>
-			<option value="test">So!</option>
-			<option value="test2">Schnell!</option>
-			<option value="test3">Wie!</option>
-			<option value="test4">Möglich!</option>
+			{% for lib in ai.available_extras() %}
+			<option value="{{lib.name}}">{{lib.display_name}}</option>
+			{% endfor %}
 		</select>
 		<script>
-			
-			function upload(code) {
-				console.log("Saveing and Uploading...")
+			$("#extras").dropdown()
+			function upload() {
+				console.log("Saving and Uploading...")
 				$("#extras").addClass("loading")
+
+				libs = $("#extras").val()
+				code = ""
+				if (libs) {
+					for (var i = 0; i < libs.length; i++) {
+						code += libs[i]
+						if (i < libs.length)
+							code += "\n"
+					}
+				}
 
 				d = {
 					path: "{{submit_path}}",
@@ -157,7 +163,6 @@
 				}
 
 				$.post("/api/ai/{{ai.id}}/upload", d).done(function(data) {
-					console.log("File uploaded.", data)
 					location.reload();
 					$("#extras").removeClass("loading");
 				}).fail(function(xhr, textStatus, errorThrown) {
@@ -166,18 +171,12 @@
 					$("#extras").removeClass("loading");
 				})
 			}
-
-
-			// ## Das ist verdammt haesslig und sollte nicht verdammt haesslig sein.
-			{% for lib in split %}
-			$("#extras").dropdown("set selected", [
-					"{{lib}}",
-			]);
-			{% endfor %}
+			$("#save").on("click", function() {
+				upload()
+			});
+			$("#extras").dropdown("set selected", {{ libs | escapejs | safe }});
 		</script>
 	</div>
 	{% endif %}
 </div>
-{% endif %}
-{% endfor %}
 {% endblock %}
