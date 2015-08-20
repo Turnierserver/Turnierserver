@@ -1,11 +1,5 @@
 package org.pixelgaffer.turnierserver.compile;
 
-import it.sauronsoftware.ftp4j.FTPAbortedException;
-import it.sauronsoftware.ftp4j.FTPDataTransferException;
-import it.sauronsoftware.ftp4j.FTPException;
-import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
-import it.sauronsoftware.ftp4j.FTPListParseException;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,18 +12,28 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
-
+import java.util.stream.Collectors;
+import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
+import org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
+import it.sauronsoftware.ftp4j.FTPAbortedException;
+import it.sauronsoftware.ftp4j.FTPDataTransferException;
+import it.sauronsoftware.ftp4j.FTPException;
+import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
+import it.sauronsoftware.ftp4j.FTPListParseException;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
-import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
-import org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer;
-import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
+import lombok.ToString;
 
 /**
  * Diese Klasse ist eine abstrakte Implementation eines Compilers, der die
@@ -68,9 +72,9 @@ public abstract class Compiler
 	private class CompilerDebugWriter extends Writer
 	{
 		@NonNull
-		private Writer ftpFile;
+		private Writer	ftpFile;
 		@NonNull
-		private Backend backend;
+		private Backend	backend;
 		
 		private String buf = "";
 		
@@ -108,11 +112,11 @@ public abstract class Compiler
 	}
 	
 	@Getter
-	private int ai;
+	private int	ai;
 	@Getter
-	private int version;
+	private int	version;
 	@Getter
-	private int game;
+	private int	game;
 	
 	@Getter
 	@Setter
@@ -120,9 +124,27 @@ public abstract class Compiler
 	
 	@Getter
 	@Setter(AccessLevel.PROTECTED)
-	private String command[];
+	private String command;
 	
-	public CompileResult compileAndUpload (@NonNull Backend backend)
+	@Getter
+	@Setter(AccessLevel.PROTECTED)
+	private String arguments[];
+	
+	public abstract String getLanguage();
+	
+	@AllArgsConstructor
+	@EqualsAndHashCode
+	@ToString
+	protected class RequiredLibrary
+	{
+		public String	name;
+		public String	path;
+	}
+	
+	@Getter(AccessLevel.PROTECTED)
+	private final Set<RequiredLibrary> libs = new HashSet<>();
+	
+	public CompileResult compileAndUpload (@NonNull Backend backend, LibraryDownloader libs)
 			throws IOException, InterruptedException, FTPIllegalReplyException, FTPException, FTPDataTransferException,
 			FTPAbortedException, FTPListParseException
 	{
@@ -155,17 +177,21 @@ public abstract class Compiler
 		}
 		
 		// compilieren
-		boolean success = compile(srcdir, bindir, p, pw, null);
+		boolean success = compile(srcdir, bindir, p, pw, libs);
 		
 		// aufräumen
 		srcdir.delete();
 		
 		if (success)
 		{
+			// die ini-datei für die sandboxen schreiben
+			writeStartIni(bindir);
+			
 			// packen
 			File archive = Files.createTempFile("aibin", ".tar.bz2").toFile();
-			String files[] = bindir
-					.list( (dir, name) -> !name.equals("libraries.txt") && !name.equals("settings.prop"));
+			List<String> ignored = getLibs().stream().map( (lib) -> lib.path).collect(Collectors.toList());
+			String files[] = bindir.list(
+					(dir, name) -> !name.equals("libraries.txt") && !name.equals("settings.prop") && !ignored.contains(name));
 			String cmd[] = new String[files.length + 3];
 			cmd[0] = "tar";
 			cmd[1] = "cfj";
@@ -200,16 +226,22 @@ public abstract class Compiler
 	{
 		if (!bindir.exists() && !bindir.mkdirs())
 			throw new CompileFailureException("Konnte das Verzeichnis " + bindir + " nicht anlegen!");
-		
+			
 		// den output in einen String ausgeben
 		StringWriter sw = new StringWriter();
 		PrintWriter output = new PrintWriter(sw);
 		
+		// die properties laden
 		Properties p = new Properties();
 		p.load(new FileReader(properties));
 		
+		// kompilieren
 		boolean success = compile(srcdir, bindir, p, output, libs);
 		
+		// die ini-datei für die sandbox schreiben
+		writeStartIni(bindir);
+		
+		output.flush();
 		if (success)
 			return sw.toString();
 		else
@@ -218,6 +250,33 @@ public abstract class Compiler
 	
 	public abstract boolean compile (File srcdir, File bindir, Properties p, PrintWriter output, LibraryDownloader libs)
 			throws IOException, InterruptedException;
+	
+	private void writeStartIni (File bindir) throws IOException
+	{
+		PrintWriter start = new PrintWriter(new FileWriter(new File(bindir, "start.ini")));
+		start.println("# GENERATED FILE - DO NOT EDIT");
+		start.println("[KI]");
+		start.println("Language=" + getLanguage());
+		start.println("Command=" + getCommand());
+		start.print("Arguments=");
+		for (int i = 0; i < getArguments().length; i++)
+		{
+			if (i > 0)
+				start.print(",");
+			start.print(getArguments()[i].replace("\\", "\\\\").replace(",", "\\,"));
+		}
+		start.println();
+		start.println("Libraries=" + getLibs().size());
+		int count = 0;
+		for (RequiredLibrary lib : getLibs())
+		{
+			start.println("[Lib" + count + "]");
+			start.println("Name=" + lib.name);
+			start.println("Path=" + lib.path);
+			count++;
+		}
+		start.close();
+	}
 	
 	protected String relativePath (File absolute, File base)
 	{
@@ -229,7 +288,6 @@ public abstract class Compiler
 	
 	protected void copy (File in, File out) throws IOException
 	{
-		System.out.println("copy: " + in + " → " + out);
 		out.mkdirs();
 		out.delete();
 		FileInputStream fis = new FileInputStream(in);
@@ -244,7 +302,6 @@ public abstract class Compiler
 	
 	protected int execute (File wd, PrintWriter output, String ... command) throws IOException, InterruptedException
 	{
-		// output.print(wd.getAbsolutePath());
 		output.print("$");
 		for (String cmd : command)
 		{

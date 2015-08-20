@@ -14,6 +14,7 @@ import org.pixelgaffer.turnierserver.compile.Compiler;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
+import org.pixelgaffer.turnierserver.worker.LibraryCache;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
 
 /**
@@ -77,7 +78,7 @@ public class CompileQueue implements Runnable
 				{
 					Compiler c = Compiler.getCompiler(job.getAiId(), job.getVersion(), job.getGame(), job.getLang());
 					c.setUuid(job.getUuid());
-					CompileResult result = c.compileAndUpload(WorkerMain.getBackendClient());
+					CompileResult result = c.compileAndUpload(WorkerMain.getBackendClient(), LibraryCache.getCache());
 					DatastoreFtpClient.storeAiCompileOutput(job.getAiId(), job.getVersion(), result.getOutput());
 					WorkerMain.getBackendClient().sendAnswer(
 							new WorkerCommandAnswer(job.getAction(),

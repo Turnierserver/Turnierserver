@@ -114,6 +114,7 @@ public class ControllerStartPage {
 		cbGameTypes.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			MainApp.aiManager.loadAis();
 			mainApp.loadOnlineRanking();
+			MainApp.cAi.lvAis.getSelectionModel().selectFirst();
 		});
 		cbGameTypes.getSelectionModel().selectLast();
 	}
