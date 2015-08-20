@@ -39,7 +39,7 @@ migrate = Migrate(app, db)
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
-app.jinja_env.filters["escapejs"] = lambda val: json.dumps(str(val))
+app.jinja_env.filters["escapejs"] = lambda val: json.dumps(val)
 app.jinja_env.add_extension("jinja2.ext.do")
 
 app.register_blueprint(api)
