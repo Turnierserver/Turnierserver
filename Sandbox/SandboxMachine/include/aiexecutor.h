@@ -24,14 +24,18 @@
 
 #include <QDir>
 #include <QObject>
+#include <QProcess>
+#include <QSettings>
 #include <QUuid>
 
 class AiExecutor : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
+    Q_DISABLE_COPY(AiExecutor)
 	
 public:
 	explicit AiExecutor (int id, int version, const QString &lang, const QUuid &uuid);
+    ~AiExecutor();
 	
 	int id () const { return _id; }
 	int version () const { return _version; }
@@ -63,14 +67,19 @@ protected slots:
 	void generateProps();
 	/// führt die KI aus
 	void executeAi();
+    /// wird aufgerufen wenn die KI fertig ist
+    void cleanup(int retCode);
 	
 protected:
-	int uid, gid, pid;
+    int uid, gid;
+    int pid;
+    //QProcess proc;
 	
 	QDir dir, binDir;
 	QString binArchive;
 	QString aiProp;
-	
+    QSettings *start = 0;
+
 private:
 	int _id, _version;
 	QString _lang;

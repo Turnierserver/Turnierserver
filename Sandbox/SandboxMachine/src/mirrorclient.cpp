@@ -52,10 +52,16 @@ QByteArray sha256 (const QByteArray &salt)
 
 bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 {
+    // this is just the same as retrieving a library - the mirror will automatically know what to return
+    return retrieveLib(QString::number(version), QString::number(id), filename);
+}
+
+bool MirrorClient::retrieveLib (const QString &language, const QString &lib, const QString &filename)
+{
 	if (!isConnected())
 		return false;
 	
-	socket.write(QByteArray::number(id) + "\n" + QByteArray::number(version) + "\n");
+    socket.write((lib + "\n" + language + "\n").toUtf8());
 	if (!socket.waitForBytesWritten(timeout()))
 	{
 		LOG_CRITICAL << "failed to write bytes to mirror";
@@ -64,7 +70,7 @@ bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 	
 	if (!socket.waitForReadyRead(timeout()))
 	{
-		LOG_CRITICAL << "MirrorClient::retrieveAi(): Failed to wait for data";
+        LOG_CRITICAL << "Failed to wait for data";
 		return false;
 	}
 	QByteArray salt = socket.read(config->value("Worker/MirrorSaltLength").toInt());
@@ -76,7 +82,7 @@ bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 	{
 		if (!socket.waitForReadyRead(timeout()))
 		{
-			LOG_CRITICAL << "MirrorClient::retrieveAi(): Failed to wait for file length";
+            LOG_CRITICAL << "Failed to wait for file length";
 			return false;
 		}
 		buf.append(socket.read(30)); // ich erwarte einen long (max 22 zeichen)
@@ -88,7 +94,7 @@ bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 	QFile out(filename);
 	if (!out.open(QIODevice::WriteOnly))
 	{
-		LOG_CRITICAL << "MirrorClient::retrieveAi(): Failed to open output file " + filename + ": " + out.errorString();
+        LOG_CRITICAL << "Failed to open output file " + filename + ": " + out.errorString();
 		return false;
 	}
 	qint64 written = buf.size();
@@ -97,7 +103,7 @@ bool MirrorClient::retrieveAi (int id, int version, const QString &filename)
 	{
 		if (!socket.waitForReadyRead(timeout()))
 		{
-			LOG_CRITICAL << "MirrorClient::retrieveAi(): Failed to wait for data";
+            LOG_CRITICAL << "Failed to wait for data";
 			return false;
 		}
 		qint64 toRead = size - written;

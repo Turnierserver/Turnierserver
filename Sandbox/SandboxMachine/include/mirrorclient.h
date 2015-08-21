@@ -50,6 +50,8 @@ public:
 	
 	/// Lädt die KI über den Mirror des Workers herunter und speichert diese in der angegebenen Datei
 	bool retrieveAi (int id, int version, const QString &filename);
+    /// Lädt die Bibliothek über den Mirror des Workers herunter und speichert das Archiv in der angegebenen Datei
+    bool retrieveLib (const QString &language, const QString &lib, const QString &filename);
 	
 private slots:
 	void connected ();

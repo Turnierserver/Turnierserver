@@ -255,7 +255,6 @@ public abstract class Compiler
 	{
 		PrintWriter start = new PrintWriter(new FileWriter(new File(bindir, "start.ini")));
 		start.println("# GENERATED FILE - DO NOT EDIT");
-		start.println("[KI]");
 		start.println("Language=" + getLanguage());
 		start.println("Command=" + getCommand());
 		start.print("Arguments=");
