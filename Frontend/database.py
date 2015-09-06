@@ -372,7 +372,7 @@ class AI(db.Model):
 		try:
 			self.ftp_sync()
 		except ftp.err:
-			pass
+			logger.warning("ftp sync failed in AI.new_version")
 		if any([not v.frozen for v in self.version_list]):
 			return False
 		self.version_list.append(AI_Version(version_id=len(self.version_list) + 1, lang=self.lang))
@@ -380,6 +380,11 @@ class AI(db.Model):
 			## copy AI code from prev version...
 			new_path = "AIs/{}/v{}".format(self.id, self.version_list[-1].version_id)
 			self.version_list[-2].copy_code(new_path)
+		db.session.commit() # store in db; sync ids and stuff
+		try:
+			self.ftp_sync()
+		except ftp.err:
+			logger.warning("ftp sync failed in AI.new_version")
 		return self.version_list[-1]
 
 	def delete(self):
@@ -512,6 +517,9 @@ class AI_Version(db.Model):
 
 	@ftp.safe
 	def sync_extras(self):
+		if not self.ai:
+			logger.error("ai_version.ai is None; " + str(self.id))
+			return
 		bd = "AIs/" + str(self.ai.id)
 		if not ftp.ftp_host.path.isdir(bd+"/v"+str(self.version_id)):
 			ftp.ftp_host.mkdir(bd + "/v" + str(self.version_id))
