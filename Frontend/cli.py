@@ -122,6 +122,7 @@ def _compile_quali_ai(gt):
 	ai.name = "QualiKi-"+gt.name
 	v = ai.latest_version()
 	v.version_id = 1
+	v.lang = ai.lang
 	v.qualified, v.compiled, v.frozen = False, False, False
 	v.extras.return_value = []
 	ai.version_list = [v]
