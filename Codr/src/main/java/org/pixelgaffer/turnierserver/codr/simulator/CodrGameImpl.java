@@ -26,13 +26,14 @@ import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 
 import lombok.Getter;
+import lombok.NonNull;
 
 public class CodrGameImpl implements Game, Frontend
 {
 	/**
 	 * Lädt die GameLogic und gibt eine Instanz davon zurück.
 	 */
-	public static GameLogic<?, ?> loadGameLogic (String game) // siehe
+	public static GameLogic<?, ?> loadGameLogic (@NonNull String game) // siehe
 																// Games.loadGameLogic
 																// im Backend
 			throws IOException, ReflectiveOperationException

@@ -229,7 +229,7 @@ public class ControllerAiManagement {
 			lbFinished.visibleProperty().bind(version.finished);
 			lbUploaded.visibleProperty().bind(version.uploaded);
 			btCompile.disableProperty().bind(version.finished.or(version.compiled));
-			btQualify.disableProperty().bind(version.compiled.not().or(version.finished));
+			btQualify.disableProperty().bind(version.compiled.not().or(version.finished).or(version.qualified));
 			btFinish.disableProperty().bind(version.finished);
 			btUpload.disableProperty().bind(new SimpleBooleanProperty(false));
 			rbContinue.setDisable(false);
@@ -705,10 +705,12 @@ public class ControllerAiManagement {
 		Task<Boolean> getOwn = new Task<Boolean>() {
 			
 			public Boolean call() {
-				System.out.println("Angekommenerst1");
-				if (MainApp.webConnector.isLoggedIn())
+				System.out.println("Angekommenerst 1");
+				if (MainApp.webConnector.isLoggedIn()){
+					System.out.println("Angekommenerst 1,5");
 					MainApp.ownOnlineAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
-				System.out.println("Angekommenerst");
+				}
+				System.out.println("Angekommenerst 2");
 				return true;
 			}
 		};

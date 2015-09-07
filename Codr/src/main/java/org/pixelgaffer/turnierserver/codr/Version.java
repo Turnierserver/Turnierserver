@@ -40,7 +40,8 @@ public class Version {
 	public final AiBase ai;
 	public final int number;
 	
-	public String executeCommand[] = new String[0];
+	public String executeCommand = "";
+	public String executeArgs[] = new String[0];
 	public SimpleBooleanProperty compiled = new SimpleBooleanProperty(false);
 	public SimpleBooleanProperty qualified = new SimpleBooleanProperty(false);
 	public SimpleBooleanProperty finished = new SimpleBooleanProperty(false);
@@ -244,9 +245,10 @@ public class Version {
 			Properties prop = new Properties();
 			prop.load(reader);
 			reader.close();
-			executeCommand = new String[Integer.parseInt(prop.getProperty("executeCommand.size", "0"))];
-			for (int i = 0; i < executeCommand.length; i++)
-				executeCommand[i] = prop.getProperty("executeCommand." + i);
+			executeCommand = prop.getProperty("executeCommand");
+			executeArgs = new String[Integer.parseInt(prop.getProperty("executeArgs.size", "0"))];
+			for (int i = 0; i < executeArgs.length; i++)
+				executeArgs[i] = prop.getProperty("executeArgs." + i);
 			compiled.set(Boolean.parseBoolean(prop.getProperty("compiled")));
 			qualified.set(Boolean.parseBoolean(prop.getProperty("qualified")));
 			finished.set(Boolean.parseBoolean(prop.getProperty("finished")));
@@ -268,13 +270,14 @@ public class Version {
 			return;
 		}
 		Properties prop = new Properties();
-		prop.setProperty("executeCommand.size", Integer.toString(executeCommand.length));
-		for (int i = 0; i < executeCommand.length; i++)
-			prop.setProperty("executeCommand." + i, executeCommand[i]);
-		prop.setProperty("compiled", "" + compiled);
-		prop.setProperty("qualified", "" + qualified);
-		prop.setProperty("finished", "" + finished);
-		prop.setProperty("uploaded", "" + uploaded);
+		prop.setProperty("executeCommand", executeCommand);
+		prop.setProperty("executeArgs.size", Integer.toString(executeArgs.length));
+		for (int i = 0; i < executeArgs.length; i++)
+			prop.setProperty("executeArgs." + i, executeArgs[i]);
+		prop.setProperty("compiled", "" + compiled.get());
+		prop.setProperty("qualified", "" + qualified.get());
+		prop.setProperty("finished", "" + finished.get());
+		prop.setProperty("uploaded", "" + uploaded.get());
 		prop.setProperty("compileOutput", compileOutput);
 		prop.setProperty("qualifyOutput", qualifyOutput);
 		
@@ -304,6 +307,7 @@ public class Version {
 			Compiler c = Compiler.getCompiler(ai.language);
 			compileOutput = c.compile(new File(Paths.versionSrc(this)), new File(Paths.versionBin(this)), new File(Paths.versionSettingsProp(this)), new Libraries());
 			executeCommand = c.getCommand();
+			executeArgs = c.getArguments();
 			compileOutput += "\nKompilierung erfolgreich\n";
 			compiled.set(true);
 		} catch (ReflectiveOperationException roe) {

@@ -9,195 +9,181 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.*?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1100.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.pixelgaffer.turnierserver.codr.view.ControllerStartPage">
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pixelgaffer.turnierserver.codr.view.ControllerStartPage">
   <children>
     <SplitPane dividerPositions="0.5646630236794171" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <items>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-          <children>
-            <BorderPane prefHeight="560.0" prefWidth="490.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <center>
-                <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0" BorderPane.alignment="CENTER">
+    <VBox spacing="5.0">
+      <children>
+        <Label text="Willkommen in Codr. Mit diesem Tool kannst du einfach deinen Code in Versionen organisieren und auf den Turnierserver hochladen. Alternativ kannst du auch den &quot;Extern&quot;-Modus ausprobieren, in dem du nur den Pfad zu deinem Workspace angibst. Auch solche KIs kannst du auf den Turnierserver hochladen." wrapText="true">
+          <VBox.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+          </VBox.margin>
+        </Label>
+        <TitledPane fx:id="tpLogic" animated="false" text="Spiellogik">
+          <VBox.margin>
+            <Insets />
+          </VBox.margin>
+                     <content>
+                        <BorderPane prefWidth="600.0">
+                           <bottom>
+                <VBox prefWidth="600.0" spacing="5.0" BorderPane.alignment="CENTER">
                   <children>
-                    <Label prefWidth="1000.0" text="Willkommen in Codr. Mit diesem Tool kannst du einfach deinen Code in Versionen organisieren und auf den Turnierserver hochladen. Alternativ kannst du auch den &quot;Extern&quot;-Modus ausprobieren, in dem du nur den Pfad zu deinem Workspace angibst. Auch solche KIs kannst du auf den Turnierserver hochladen." wrapText="true">
-                      <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                      </VBox.margin>
-                    </Label>
-                    <TitledPane fx:id="tpLogic" animated="false" text="Spiellogik">
-                      <content>
-                        <AnchorPane>
-                          <children>
-                            <VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                              <children>
-                                <Label prefWidth="588.0" text="Codr funktioniert sowohl im Online- als auch im Offline-Modus. Ohne Internetverbindung sind allerdings einige Funktionen, wie die Anzeige der Rangliste, nicht verfügbar. \n\n Wenn du dich mit deinen Logindaten vom Turnierserver anmeldest steht dir auch die Möglichkeit, KIs hochzuladen zur Verfügung." wrapText="true">
-                                  <VBox.margin>
-                                    <Insets />
-                                  </VBox.margin>
-                                </Label>
-                                <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="10.0">
-                                  <children>
-                                    <Label fx:id="lbIsOnline" minWidth="-Infinity" text="Momentan besteht keine Internetverbindung">
-                                      <HBox.margin>
-                                        <Insets />
-                                      </HBox.margin>
-                                    </Label>
-                                    <Button fx:id="btTryOnline" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickTryOnline" text="Erneut versuchen" />
-                                    <ProgressIndicator fx:id="prOnlineResources" prefHeight="26.0" prefWidth="26.0" visible="false" />
-                                  </children>
-                                </HBox>
-                                <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="10.0">
-                                  <children>
-                                    <Label minWidth="-Infinity" text="Aktuelle Spiellogik:">
-                                      <HBox.margin>
-                                        <Insets />
-                                      </HBox.margin>
-                                    </Label>
-                                    <ChoiceBox fx:id="cbGameTypes" prefWidth="4000.0" />
-                                    <Button fx:id="btInfo" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickInfo" text="Info" />
-                                  </children>
-                                  <VBox.margin>
-                                    <Insets />
-                                  </VBox.margin>
-                                </HBox>
-                              </children>
-                            </VBox>
-                          </children>
-                        </AnchorPane>
-                      </content>
+                    <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="10.0">
+                      <children>
+                        <Label fx:id="lbIsOnline" minWidth="-Infinity" text="Momentan besteht keine Internetverbindung">
+                          <HBox.margin>
+                            <Insets />
+                          </HBox.margin>
+                        </Label>
+                        <Button fx:id="btTryOnline" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickTryOnline" text="Erneut versuchen" />
+                        <ProgressIndicator fx:id="prOnlineResources" prefHeight="26.0" prefWidth="26.0" visible="false" />
+                      </children>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="10.0">
+                      <children>
+                        <Label minWidth="-Infinity" text="Aktuelle Spiellogik:">
+                          <HBox.margin>
+                            <Insets />
+                          </HBox.margin>
+                        </Label>
+                        <ChoiceBox fx:id="cbGameTypes" />
+                        <Button fx:id="btInfo" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickInfo" text="Info" />
+                      </children>
                       <VBox.margin>
                         <Insets />
                       </VBox.margin>
-                    </TitledPane>
-                    <TitledPane fx:id="tpRegister" animated="false" text="Anmeldung">
-                      <content>
-                        <AnchorPane>
-                          <children>
-                            <VBox fx:id="vbLogin" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                              <children>
-                                <GridPane fx:id="gpLogin" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="103.0" prefWidth="402.0" vgap="5.0">
-                                  <children>
-                                    <Label minWidth="-Infinity" text="E-Mail-Adresse: ">
-                                      <GridPane.margin>
-                                        <Insets left="5.0" />
-                                      </GridPane.margin>
-                                    </Label>
-                                    <Label minWidth="-Infinity" text="Passwort: " GridPane.rowIndex="1">
-                                      <GridPane.margin>
-                                        <Insets left="5.0" />
-                                      </GridPane.margin>
-                                    </Label>
-                                    <TextField fx:id="tbEmail" GridPane.columnIndex="1" />
-                                    <PasswordField fx:id="tbPassword" prefWidth="127.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Hyperlink onAction="#clickForgotPassword" text="Passwort vergessen" GridPane.rowIndex="2" />
-                                    <HBox alignment="CENTER_RIGHT" fillHeight="false" prefWidth="1.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                      <children>
-                                        <Button fx:id="btRegister" mnemonicParsing="false" onAction="#clickRegister" text="neu Registrieren" />
-                                        <Button fx:id="btLogin" mnemonicParsing="false" onAction="#clickLogin" text="Anmelden" />
-                                      </children>
-                                    </HBox>
-                                    <ProgressIndicator fx:id="prLogin" prefHeight="26.0" prefWidth="26.0" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                                  </children>
-                                  <columnConstraints>
-                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="274.0" minWidth="10.0" prefWidth="167.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="533.0" minWidth="10.0" prefWidth="245.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="533.0" minWidth="10.0" prefWidth="62.0" />
-                                  </columnConstraints>
-                                  <rowConstraints>
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
-                                    <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
-                                  </rowConstraints>
-                                </GridPane>
-                                <HBox fx:id="hbLogout" alignment="CENTER_LEFT" spacing="10.0">
-                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#clickLogout" text="Abmelden" />
-                                    <ProgressIndicator fx:id="prLogin1" prefHeight="26.0" prefWidth="26.0" visible="false" />
-                                  </children>
-                                </HBox>
-                                <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
-                                  <VBox.margin>
-                                    <Insets />
-                                  </VBox.margin>
-                                </HBox>
-                              </children>
-                            </VBox>
-                          </children>
-                        </AnchorPane>
-                      </content>
-                      <VBox.margin>
-                        <Insets />
-                      </VBox.margin>
-                    </TitledPane>
-                    <TitledPane animated="false" text="Einstellungen">
-                      <content>
-                        <AnchorPane prefHeight="215.0">
-                          <children>
-                            <GridPane prefHeight="90.0" prefWidth="309.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-                              <children>
-                                <Label text="Editor Theme:" />
-                                <Label text="Schriftgröße:" GridPane.rowIndex="1" />
-                                <Label text="Python - Interpreter:" GridPane.rowIndex="3" />
-                                <Label text="C++ - Compiler:" GridPane.rowIndex="4" />
-                                <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                                  <children>
-                                    <TextField fx:id="tbCplusplusCompiler" />
-                                    <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#clickCplusplusCompiler" prefWidth="30.0" text="..." />
-                                  </children>
-                                </HBox>
-                                <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                                  <children>
-                                    <TextField fx:id="tbPythonInterpreter" />
-                                    <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#clickPythonInterpreter" prefWidth="30.0" text="..." />
-                                  </children>
-                                </HBox>
-                                <Slider fx:id="slFontSize" blockIncrement="1.0" max="40.0" min="5.0" snapToTicks="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                <ToggleButton fx:id="btTheme" mnemonicParsing="false" text="Light" GridPane.columnIndex="1" />
-                                <Label text="C++ - Compilertyp:" GridPane.rowIndex="5" />
-                                <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                  <children>
-                                    <TextField fx:id="tbJDK" />
-                                    <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#clickJDK" prefWidth="30.0" text="..." />
-                                  </children>
-                                </HBox>
-                                <Label text="JDK-Home:" GridPane.rowIndex="2" />
-                                <ChoiceBox fx:id="cbCplusplusCompilerType" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                              </children>
-                              <columnConstraints>
-                                <ColumnConstraints hgrow="SOMETIMES" prefWidth="162.0" />
-                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="164.0" minWidth="82.0" prefWidth="147.0" />
-                              </columnConstraints>
-                              <rowConstraints>
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              </rowConstraints>
-                            </GridPane>
-                          </children>
-                        </AnchorPane>
-                      </content>
-                    </TitledPane>
+                    </HBox>
                   </children>
-                  <padding>
-                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                  </padding>
                 </VBox>
-              </center>
-            </BorderPane>
-          </children>
-        </AnchorPane>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-          <children>
-            <BorderPane prefHeight="560.0" prefWidth="367.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <center>
-                <WebView fx:id="wfNews" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-              </center>
-            </BorderPane>
-          </children>
-        </AnchorPane>
+                           </bottom>
+                           <center>
+              <Label text="Codr funktioniert sowohl im Online- als auch im Offline-Modus. Ohne Internetverbindung sind allerdings einige Funktionen, wie die Anzeige der Rangliste, nicht verfügbar.&#10;Wenn du dich mit deinen Logindaten vom Turnierserver anmeldest steht dir auch die Möglichkeit, KIs hochzuladen zur Verfügung." wrapText="true" BorderPane.alignment="CENTER">
+                                 <BorderPane.margin>
+                                    <Insets bottom="10.0" />
+                                 </BorderPane.margin>
+              </Label>
+                           </center>
+                        </BorderPane>
+                     </content>
+        </TitledPane>
+        <TitledPane fx:id="tpRegister" animated="false" text="Anmeldung">
+          <content>
+            <AnchorPane>
+              <children>
+                <VBox fx:id="vbLogin" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <children>
+                    <GridPane fx:id="gpLogin" hgap="5.0" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="103.0" prefWidth="402.0" vgap="5.0">
+                      <children>
+                        <Label minWidth="-Infinity" text="E-Mail-Adresse: ">
+                          <GridPane.margin>
+                            <Insets left="5.0" />
+                          </GridPane.margin>
+                        </Label>
+                        <Label minWidth="-Infinity" text="Passwort: " GridPane.rowIndex="1">
+                          <GridPane.margin>
+                            <Insets left="5.0" />
+                          </GridPane.margin>
+                        </Label>
+                        <TextField fx:id="tbEmail" GridPane.columnIndex="1" />
+                        <PasswordField fx:id="tbPassword" prefWidth="127.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Hyperlink onAction="#clickForgotPassword" text="Passwort vergessen" GridPane.rowIndex="2" />
+                        <HBox alignment="CENTER_RIGHT" fillHeight="false" prefWidth="1.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                          <children>
+                            <Button fx:id="btRegister" mnemonicParsing="false" onAction="#clickRegister" text="neu Registrieren" />
+                            <Button fx:id="btLogin" mnemonicParsing="false" onAction="#clickLogin" text="Anmelden" />
+                          </children>
+                        </HBox>
+                        <ProgressIndicator fx:id="prLogin" prefHeight="26.0" prefWidth="26.0" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                      </children>
+                      <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="274.0" minWidth="10.0" prefWidth="167.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="533.0" minWidth="10.0" prefWidth="245.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="533.0" minWidth="10.0" prefWidth="62.0" />
+                      </columnConstraints>
+                      <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="40.0" minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
+                      </rowConstraints>
+                    </GridPane>
+                    <HBox fx:id="hbLogout" alignment="CENTER_LEFT" spacing="10.0">
+                      <children>
+                        <Button mnemonicParsing="false" onAction="#clickLogout" text="Abmelden" />
+                        <ProgressIndicator fx:id="prLogin1" prefHeight="26.0" prefWidth="26.0" visible="false" />
+                      </children>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
+                      <VBox.margin>
+                        <Insets />
+                      </VBox.margin>
+                    </HBox>
+                  </children>
+                </VBox>
+              </children>
+            </AnchorPane>
+          </content>
+          <VBox.margin>
+            <Insets />
+          </VBox.margin>
+        </TitledPane>
+        <TitledPane animated="false" text="Einstellungen">
+          <content>
+            <AnchorPane prefHeight="215.0">
+              <children>
+                <GridPane hgap="5.0" prefHeight="90.0" prefWidth="309.0" vgap="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <children>
+                    <Label text="Editor Theme:" />
+                    <Label text="Schriftgröße:" GridPane.rowIndex="1" />
+                    <Label text="Python - Interpreter:" GridPane.rowIndex="3" />
+                    <Label text="C++ - Compiler:" GridPane.rowIndex="4" />
+                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                      <children>
+                        <TextField fx:id="tbCplusplusCompiler" />
+                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#clickCplusplusCompiler" prefWidth="30.0" text="..." />
+                      </children>
+                    </HBox>
+                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                      <children>
+                        <TextField fx:id="tbPythonInterpreter" />
+                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#clickPythonInterpreter" prefWidth="30.0" text="..." />
+                      </children>
+                    </HBox>
+                    <Slider fx:id="slFontSize" blockIncrement="1.0" max="40.0" min="5.0" snapToTicks="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    <ToggleButton fx:id="btTheme" mnemonicParsing="false" text="Light" GridPane.columnIndex="1" />
+                    <Label text="C++ - Compilertyp:" GridPane.rowIndex="5" />
+                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                      <children>
+                        <TextField fx:id="tbJDK" />
+                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#clickJDK" prefWidth="30.0" text="..." />
+                      </children>
+                    </HBox>
+                    <Label text="JDK-Home:" GridPane.rowIndex="2" />
+                              <ChoiceBox fx:id="cbCplusplusCompilerType" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  </children>
+                  <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" prefWidth="162.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="164.0" minWidth="82.0" prefWidth="147.0" />
+                  </columnConstraints>
+                  <rowConstraints>
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  </rowConstraints>
+                </GridPane>
+              </children>
+            </AnchorPane>
+          </content>
+        </TitledPane>
+      </children>
+      <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      </padding>
+    </VBox>
+    <WebView fx:id="wfNews" prefHeight="200.0" prefWidth="200.0" />
       </items>
     </SplitPane>
   </children>

@@ -364,21 +364,21 @@ public class WebConnector {
 
 
 	public void uploadVersion(Version version, int id) throws ZipException, IOException {
-		HttpPost post = new HttpPost(url + "/api/ai/" + id + "/new_version_from_zip");
+		HttpPost post = new HttpPost(url + "ai/" + id + "/new_version_from_zip");
 		File file = new File(System.getProperty("java.io.tmpdir"), version.ai.title + "v" + version.number + System.currentTimeMillis() + ".zip");
 		ZipFile zip = new ZipFile(file);
 		ZipParameters params = new ZipParameters();
 		params.setIncludeRootFolder(false);
-		zip.createZipFileFromFolder(new File(Paths.version(version)), params, false, -1);
-		FileEntity entity = new FileEntity(zip.getFile());
-		entity.setContentType("application/zip");
+		zip.createZipFileFromFolder(new File(Paths.versionSrc(version)), params, false, -1);
+		FileEntity entity = new FileEntity(file);
 		post.setEntity(entity);
-		file.deleteOnExit();
 		HttpResponse response = http.execute(post);
 		if (getOutput(response.getEntity().getContent()) == null) {
 			throw new IOException("Konnte nicht zum Server verbinden");
 		}
-		changeImage(((AiSimple) version.ai).getPictureFile(), id);
+		File image = ((AiSimple) version.ai).getPictureFile();
+		changeImage(image, id);
+
 	}
 
 
