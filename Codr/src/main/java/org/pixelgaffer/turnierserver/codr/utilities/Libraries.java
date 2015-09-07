@@ -32,4 +32,11 @@ public class Libraries implements LibraryDownloader {
 		}
 		return dir.listFiles();
 	}
+
+
+	@Override
+	public LibraryDownloaderMode getMode ()
+	{
+		return LibraryDownloaderMode.EVERYTHING;
+	}
 }
