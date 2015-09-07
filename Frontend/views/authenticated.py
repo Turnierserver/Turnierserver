@@ -148,7 +148,7 @@ def qualify_ai(id):
 
 @authenticated_blueprint.route("/ais/challenge")
 @authenticated_web
-def ais_challenge():
+def challenge(other=None):
 	own_ais = AI.filtered().filter(AI.user == current_user).order_by(AI.last_modified.desc()).all()
 
 	if len(own_ais) < 1:
