@@ -147,10 +147,14 @@ public class GameSaved extends GameBase {
 	
 	
 	public void play(List<Version> opponents) {
+		System.out.println("play(" + opponents + ")");
 		try {
 			game = new CodrGameImpl(this, opponents);
+			System.out.println(game);
 			CodrAiServer server = new CodrAiServer(game);
+			System.out.println(server);
 			server.start();
+			System.out.println("server gestartet");
 			
 			Properties p = new Properties();
 			p.put("turnierserver.worker.host", "localhost");

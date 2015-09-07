@@ -36,7 +36,7 @@ Minimale KI Struktur
 
 In jede KI gehören minimal 3 Dateien. Diese werden wir dir hier erklären.
 
-Die erste Datei heißt `libraries.txt` und enthält alle Bibliotheken, welche zur Kompilierung und Ausführung deiner KI benötigt werden. Dazu musst du nur den Namen einer Bibliothek in eine Zeile schreiben. Momentan gibt es folgende Bibliotheken für folgende Sprachen:
+Die erste Datei heißt `libraries.txt` und enthält alle Bibliotheken, welche zur Kompilierung und Ausführung deiner KI benötigt werden. Dazu musst du nur den Namen einer Bibliothek und die gewünschte Version mit einem '/' in eine Zeile schreiben. Im Falle von der neuesten Lombok-Version wäre dies "lombok/1.16.4". Momentan gibt es folgende Bibliotheken für folgende Sprachen:
 
 **Java:**
 

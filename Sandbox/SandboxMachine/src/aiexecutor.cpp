@@ -91,6 +91,7 @@ AiExecutor::AiExecutor (int id, int version, const QString &lang, const QUuid &u
 
 AiExecutor::~AiExecutor()
 {
+	disconnect(&proc, SIGNAL(finished(int)), this, SLOT(cleanup(int)));
     if (start)
         delete start;
 }
