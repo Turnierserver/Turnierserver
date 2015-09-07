@@ -97,6 +97,12 @@ tabs_chart.update_chart = throttle(tabs_chart.update_chart, 750);
 
 var charts = [diff_chart, gain_chart, td_chart, tabs_chart];
 
+setTimeout(function() {
+	$.each(charts, function () {
+		this.on_resize();
+	});
+}, 250) // ...
+
 function on_hover_change(index) {
 	pane.step = index;
 	$("#step_slider").slider("option", "value", index);

@@ -29,7 +29,9 @@
 </head>
 <body>
 	<nav class="ui menu inverted navbar page grid">
-		<a href="{{ url_for("anonymous.index") }}" class="brand {{'active' if active_page == 'index'}} item">Turnierserver</a>
+		<a href="{{ url_for("anonymous.index") }}" class="brand {{'active' if active_page == 'index'}} item">
+			<img src="/static/BwInf-Kopf.svg">
+		</a>
 		<div class="right menu">
 			{% for url, id, name in nav_menu %}
 			<a href="{{ url | e }}" class="{{'active' if active_page == id}} item">{{ name | e }}</a>
@@ -37,12 +39,12 @@
 			{% if not (current_user and current_user.is_authenticated()) %}
 			<div class="item">
 				<div class="ui input">
-					<input id="login_email" name="email" type="text" placeholder="Email">
+					<input id="login_email" name="email" type="text" placeholder="Email" style="max-width: 11em">
 				</div>
 			</div>
 			<div class="item">
 				<div class="ui input">
-					<input id="login_password" name="password" type="password" placeholder="Passwort">
+					<input id="login_password" name="password" type="password" placeholder="Passwort" style="max-width: 11em">
 				</div>
 			</div>
 			<div class="item">
