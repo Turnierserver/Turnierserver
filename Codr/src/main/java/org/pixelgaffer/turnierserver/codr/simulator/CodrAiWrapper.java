@@ -63,8 +63,9 @@ public class CodrAiWrapper implements Ai
 	
 	public void executeAi (String propertiesFile) throws IOException
 	{
-		String executeCommand[] = new String[getVersion().executeCommand.length + 1];
-		System.arraycopy(getVersion().executeCommand, 0, executeCommand, 0, getVersion().executeCommand.length);
+		String executeCommand[] = new String[getVersion().executeArgs.length + 2];
+		executeCommand[0] = getVersion().executeCommand;
+		System.arraycopy(getVersion().executeArgs, 0, executeCommand, 1, getVersion().executeArgs.length);
 		executeCommand[executeCommand.length - 1] = propertiesFile;
 		ProcessBuilder pb = new ProcessBuilder(executeCommand);
 		pb.directory(new File(Paths.versionBin(getVersion())));

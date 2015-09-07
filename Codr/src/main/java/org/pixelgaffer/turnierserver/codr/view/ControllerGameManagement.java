@@ -161,6 +161,7 @@ public class ControllerGameManagement {
 			if (lvPlayer1.getSelectionModel().getSelectedItem() != null && lvPlayer2.getSelectionModel().getSelectedItem() != null) {
 				Task<Boolean> play = new Task<Boolean>() {
 					public Boolean call() {
+						System.out.println("starte game :)");
 						runningGame = new GameSaved(MainApp.actualGameType.get());
 						List<Version> players = new ArrayList<>();
 						players.add(lvPlayer1.getSelectionModel().getSelectedItem().lastVersion());
