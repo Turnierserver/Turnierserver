@@ -7,7 +7,6 @@
 ]%}
 
 {% if current_user and current_user.is_authenticated() %}
-	{% do nav_menu.append((url_for("authenticated.challenge"), "challenge", "Herausfordern")) %}
 	{% if current_user.admin %}
 		{% do nav_menu.append((url_for("authenticated.admin"), "admin", "Admin-Interface")) %}
 	{% endif %}
