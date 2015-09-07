@@ -20,7 +20,7 @@ def upgrade():
     op.create_foreign_key(None, 't_ai_versions', 't_langs', ['lang_id'], ['id'])
     for ai in AI.query:
         for version in ai.version_list:
-            ai.version.lang = ai.lang
+            version.lang = ai.lang
 
 
 def downgrade():
