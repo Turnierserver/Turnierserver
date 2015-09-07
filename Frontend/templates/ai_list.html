@@ -21,11 +21,14 @@
 		<th class="left aligned six wide data-name">Name</th>
 		<th class="right aligned six wide data-user">Benutzer</th>
 		<th class="right aligned three wide data-lang">Sprache</th>
+		{% if logged_in %}
+		<th class="right aligned three wide">Herrausfordern</th>
+		{% endif %}
 		</tr>
 	</thead>
 	<tbody class="list">
 		{% for ai in ais %}
-		<tr>
+		<tr data-id="{{ai.id}}">
 			<td>
 				<img class="ui avatar image" src="{{ url_for('api.ai_icon', id=ai.id) }}">
 			</td>
@@ -50,15 +53,79 @@
 					<div class="header">{{ ai.lang.name }}</div>
 				</a>
 			</td>
+			{% if own %}
+			<td class="right aligned">
+				<a class="ui challenge button content">Herrausfordern</a>
+			</td>
+			{% endif %}
 		</tr>
 		{% endfor %}
 	</tbody>
 </table>
 
+{% if own %}
+<div class="ui wide custom popup" style="max-width: 300px; width: 300px;">
+	<div class="ui attached label">Deine KI</div>
+	<div class="ui divider"></div>
+	<div id="own_dropdown" class="ui fluid selection dropdown">
+		<input type="hidden" id="own_ai" value="{{own[0].id}}">
+		<i class="dropdown icon"></i>
+		<div class="text" data-value="{{own[0].id}}">
+			<img class="ui mini avatar image" src="/api/ai/{{own[0].id}}/icon">
+			{{own[0].name}} v{{own[0].latest_qualified_version().version_id}}
+		</div>
+		<div class="menu transition hidden">
+		{% for ai in own %}
+			<div class="item" data-value="{{ai.id}}">
+				<img class="ui mini avatar image" src="/api/ai/{{ai.id}}/icon">
+				{{ai.name}} v{{ai.latest_qualified_version().version_id}}
+			</div>
+		{% endfor %}
+		</div>
+	</div>
+	<center style="padding-top: 1em;">
+		<a id="start_challenge" class="ui teal fluid button">Herrausforderung starten</a>
+	</center>
+</div>
+{% endif %}
 
 <script>
 var list = sortable_list("ais");
 list.toggle("data-rank");
 </script>
+{% if own %}
+<script>
+$(".ui.dropdown").dropdown()
 
+var enemy_id;
+
+$(".challenge.button").on("click", function() {
+	enemy_id = $(this).parent().parent().attr("data-id");
+	// FIXME: disable enemy_id in ais
+	$("#own_dropdown .menu .item").each(function () {
+		if ($(this).attr("data-value") == enemy_id) {
+			$(this).addClass("disabled");
+		} else {
+			$(this).removeClass("disabled");
+		}
+	});
+	$(this).popup({
+		popup: $('.custom.popup'),
+		on: "click",
+		position: "left center"
+	}).popup("toggle")
+});
+
+$("#start_challenge").on("click", function() {
+	console.log(enemy_id, "vs", $("#own_ai").val())
+	$.post("/api/games/start", {"ai": [$("#own_ai").val(), enemy_id]}).done(function(data) {
+		console.log("Challenge started.");
+		setTimeout(function(){ location.href = "/game_list"; }, 500);
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error);
+		alert(JSON.parse(xhr.responseText).error);
+	});
+});
+</script>
+{% endif %}
 {% endblock %}

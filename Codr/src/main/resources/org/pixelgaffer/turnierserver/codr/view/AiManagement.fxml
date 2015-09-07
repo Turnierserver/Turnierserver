@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1100.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.pixelgaffer.turnierserver.codr.view.ControllerAiManagement">
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pixelgaffer.turnierserver.codr.view.ControllerAiManagement">
   <children>
     <SplitPane dividerPositions="0.28415300546448086" prefHeight="700.0" prefWidth="1100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <items>
@@ -20,92 +20,187 @@
               <center>
                 <ListView fx:id="lvAis" onKeyTyped="#clickChangeAi" onMouseClicked="#clickChangeAi" prefWidth="200.0" BorderPane.alignment="CENTER" />
               </center>
-              <top>
-                <AnchorPane prefWidth="200.0" BorderPane.alignment="CENTER">
-                  <children>
-                    <TextField fx:id="tbName" prefHeight="31.0" prefWidth="150.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="187.0" AnchorPane.topAnchor="0.0" />
-                    <ChoiceBox fx:id="cbLanguage" prefHeight="31.0" prefWidth="80.0" AnchorPane.rightAnchor="104.0" AnchorPane.topAnchor="0.0" />
-                    <Button mnemonicParsing="false" onAction="#clickNewAi" prefHeight="31.0" text="Neu" AnchorPane.rightAnchor="57.0" AnchorPane.topAnchor="0.0" />
-                    <Button mnemonicParsing="false" onAction="#clickNewExtern" prefHeight="31.0" text="Extern" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  </children>
-                  <padding>
-                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                  </padding>
-                </AnchorPane>
-              </top>
+                     <top>
+                        <BorderPane BorderPane.alignment="CENTER">
+                           <right>
+                              <HBox spacing="5.0" BorderPane.alignment="CENTER">
+                                 <children>
+                          <ChoiceBox fx:id="cbLanguage" prefHeight="31.0" prefWidth="80.0" />
+                          <Button mnemonicParsing="false" onAction="#clickNewExtern" prefHeight="31.0" text="Extern" />
+                          <Button mnemonicParsing="false" onAction="#clickNewAi" prefHeight="31.0" text="Neu" />
+                                 </children>
+                                 <BorderPane.margin>
+                                    <Insets left="5.0" />
+                                 </BorderPane.margin>
+                              </HBox>
+                           </right>
+                           <center>
+                    <TextField fx:id="tbName" prefHeight="31.0" prefWidth="150.0" BorderPane.alignment="CENTER" />
+                           </center>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <BorderPane.margin>
+                              <Insets />
+                           </BorderPane.margin>
+                        </BorderPane>
+                     </top>
             </BorderPane>
           </children>
         </StackPane>
         <TabPane fx:id="tpCode" tabClosingPolicy="UNAVAILABLE">
           <tabs>
             <Tab text="Info">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                  <children>
-                    <ImageView fx:id="image" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
-                    <Button fx:id="btDeleteImage" mnemonicParsing="false" onAction="#clickDeleteImage" prefHeight="31.0" text="Bild löschen" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="269.0" />
-                    <Button fx:id="btChangeImage" mnemonicParsing="false" onAction="#clickChangeImage" prefHeight="31.0" text="Bild ändern" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="269.0" />
-                    <TextArea fx:id="tbOutput" prefHeight="0.0" prefWidth="0.0" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="324.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="370.0" />
-                    <Label text="Ausgabe:" AnchorPane.leftAnchor="324.0" AnchorPane.topAnchor="344.0" />
-                    <AnchorPane prefHeight="652.0" prefWidth="317.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-                      <children>
-                        <Label fx:id="lbName" text="Name" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
-                          <font>
-                            <Font size="30.0" />
-                          </font>
-                        </Label>
-                        <Label fx:id="lbLanguage" text="Sprache: Java" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="64.0" />
-                        <Label text="Beschreibung:" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="90.0" />
-                        <TextArea fx:id="tbDescription" prefHeight="97.0" prefWidth="299.0" text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet." wrapText="true" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="116.0" />
-                        <Label text="Version:" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="269.0" />
-                        <HBox alignment="CENTER_RIGHT" spacing="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="218.0">
-                          <children>
-                            <Button fx:id="btAbort" mnemonicParsing="false" onAction="#clickAbort" prefHeight="31.0" text="Abbrechen" />
-                            <Button fx:id="btEdit" mnemonicParsing="false" onAction="#clickEdit" prefHeight="31.0" text="Bearbeiten" />
-                          </children>
-                        </HBox>
-                        <Button fx:id="btToActual" mnemonicParsing="false" onAction="#clickToActual" prefHeight="31.0" text="zu aktueller Version" AnchorPane.leftAnchor="122.0" AnchorPane.topAnchor="264.0" />
-                        <ChoiceBox fx:id="cbVersion" onKeyTyped="#clickVersionChange" onMouseClicked="#clickVersionChange" onScrollFinished="#clickVersionChange" prefHeight="31.0" prefWidth="53.0" AnchorPane.leftAnchor="64.0" AnchorPane.topAnchor="264.0" />
-                        <VBox prefWidth="299.0" spacing="15.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="300.0">
-                          <children>
-                            <TitledPane fx:id="tpNewVersion" animated="false" text="Neue Version">
-                              <content>
-                                <AnchorPane prefHeight="142.0" prefWidth="297.0" style="-fx-background-color: white;">
-                                  <children>
-                                    <Button fx:id="btNewVersion" mnemonicParsing="false" onAction="#clickNewVersion" prefHeight="31.0" text="Neue Version" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                                    <RadioButton fx:id="rbSimple" mnemonicParsing="false" onAction="#clickRbSimple" text="Simple Player" AnchorPane.leftAnchor="4.0" AnchorPane.topAnchor="2.0" />
-                                    <RadioButton fx:id="rbContinue" mnemonicParsing="false" onAction="#clickRbContinue" text="weiterschreiben" AnchorPane.leftAnchor="128.0" AnchorPane.topAnchor="2.0" />
-                                    <RadioButton fx:id="rbFromFile" mnemonicParsing="false" onAction="#clickRbFromFile" text="Code aus Datei laden" AnchorPane.leftAnchor="4.0" AnchorPane.topAnchor="30.0" />
-                                    <TextField fx:id="tbFile" prefHeight="31.0" prefWidth="288.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="60.0" />
-                                    <Button mnemonicParsing="false" onAction="#clickSelectFile" prefHeight="31.0" prefWidth="31.0" text="..." AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0" />
-                                  </children>
-                                  <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                  </padding>
-                                </AnchorPane>
-                              </content>
-                            </TitledPane>
-                            <AnchorPane prefHeight="140.0" prefWidth="293.0">
-                              <children>
-                                <Button fx:id="btCompile" mnemonicParsing="false" onAction="#clickCompile" prefHeight="31.0" prefWidth="105.0" text="Kompilieren" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                <Label fx:id="lbCompiled" text="bereits kompiliert" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="5.0" />
-                                <Button fx:id="btQualify" mnemonicParsing="false" onAction="#clickQualify" prefHeight="31.0" prefWidth="105.0" text="Qualifizieren" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="36.0" />
-                                <Button fx:id="btFinish" mnemonicParsing="false" onAction="#clickFinish" prefHeight="31.0" prefWidth="105.0" text="Fertigstellen" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="72.0" />
-                                <Button fx:id="btUpload" mnemonicParsing="false" onAction="#clickUpload" prefHeight="31.0" prefWidth="105.0" text="Hochladen" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="108.0" />
-                                <Label fx:id="lbUploaded" text="bereits hochgeladen" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="113.0" />
-                                <Label fx:id="lbFinished" text="bereits fertiggestellt" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="77.0" />
-                                <Hyperlink fx:id="hlShowQualified" layoutX="105.0" layoutY="37.0" onAction="#clickShowQualified" text="Spiel anzeigen" />
-                                <ProgressIndicator fx:id="prUpload" layoutX="111.0" layoutY="111.0" prefHeight="26.0" prefWidth="26.0" visible="false" />
-                              </children>
-                            </AnchorPane>
-                          </children>
-                        </VBox>
-                        <Button fx:id="btDelete" mnemonicParsing="false" onAction="#clickDelete" prefHeight="31.0" text="KI löschen" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="80.0" />
-                      </children>
-                    </AnchorPane>
-                  </children>
-                </AnchorPane>
-              </content>
+                     <content>
+                        <BorderPane prefHeight="200.0" prefWidth="200.0">
+                           <left>
+                  <VBox prefWidth="300.0" spacing="15.0" BorderPane.alignment="CENTER">
+                    <children>
+                                    <VBox prefHeight="200.0" prefWidth="100.0">
+                                       <children>
+                              <Label fx:id="lbName" text="Name">
+                                <font>
+                                  <Font size="30.0" />
+                                </font>
+                              </Label>
+                              <Label fx:id="lbLanguage" text="Sprache: Java" />
+                                          <BorderPane>
+                                             <bottom>
+                                    <HBox alignment="CENTER_RIGHT" spacing="5.0" BorderPane.alignment="CENTER">
+                                      <children>
+                                        <Button fx:id="btAbort" mnemonicParsing="false" onAction="#clickAbort" prefHeight="31.0" text="Abbrechen" />
+                                        <Button fx:id="btEdit" mnemonicParsing="false" onAction="#clickEdit" prefHeight="31.0" text="Bearbeiten" />
+                                      </children>
+                                    </HBox>
+                                             </bottom>
+                                             <top>
+                                                <BorderPane BorderPane.alignment="CENTER">
+                                                   <right>
+                                          <Button fx:id="btDelete" mnemonicParsing="false" onAction="#clickDelete" prefHeight="31.0" text="KI löschen" BorderPane.alignment="CENTER" />
+                                                   </right>
+                                                   <left>
+                                          <Label text="Beschreibung:" BorderPane.alignment="CENTER" />
+                                                   </left>
+                                                </BorderPane>
+                                             </top>
+                                             <center>
+                                    <TextArea fx:id="tbDescription" text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet." wrapText="true" BorderPane.alignment="CENTER">
+                                                   <BorderPane.margin>
+                                                      <Insets bottom="5.0" top="5.0" />
+                                                   </BorderPane.margin>
+                                                </TextArea>
+                                             </center>
+                                          </BorderPane>
+                                       </children>
+                                    </VBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                       <children>
+                              <Label text="Version:" />
+                              <ChoiceBox fx:id="cbVersion" onKeyTyped="#clickVersionChange" onMouseClicked="#clickVersionChange" onScrollFinished="#clickVersionChange" prefHeight="31.0" prefWidth="53.0" />
+                              <Button fx:id="btToActual" mnemonicParsing="false" onAction="#clickToActual" prefHeight="31.0" text="zu aktueller Version" />
+                                       </children>
+                                    </HBox>
+                      <TitledPane fx:id="tpNewVersion" animated="false" text="Neue Version">
+                                       <content>
+                                          <VBox prefWidth="300.0" spacing="5.0">
+                                             <children>
+                                                <FlowPane hgap="10.0" vgap="5.0">
+                                                   <children>
+                                    <RadioButton fx:id="rbSimple" mnemonicParsing="false" onAction="#clickRbSimple" text="Simple Player" />
+                                    <RadioButton fx:id="rbContinue" mnemonicParsing="false" onAction="#clickRbContinue" text="weiterschreiben" />
+                                    <RadioButton fx:id="rbFromFile" mnemonicParsing="false" onAction="#clickRbFromFile" text="Code aus Datei laden" />
+                                                   </children>
+                                                </FlowPane>
+                                                <BorderPane>
+                                                   <right>
+                                    <Button mnemonicParsing="false" onAction="#clickSelectFile" prefHeight="31.0" prefWidth="31.0" text="..." BorderPane.alignment="CENTER">
+                                                         <BorderPane.margin>
+                                                            <Insets left="5.0" />
+                                                         </BorderPane.margin>
+                                                      </Button>
+                                                   </right>
+                                                   <center>
+                                    <TextField fx:id="tbFile" prefHeight="31.0" prefWidth="156.0" BorderPane.alignment="CENTER" />
+                                                   </center>
+                                                </BorderPane>
+                              <Button fx:id="btNewVersion" mnemonicParsing="false" onAction="#clickNewVersion" prefHeight="31.0" text="Neue Version" />
+                                             </children>
+                                          </VBox>
+                                       </content>
+                      </TitledPane>
+                                    <GridPane hgap="5.0" vgap="5.0">
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" />
+                                        <ColumnConstraints hgrow="SOMETIMES" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <children>
+                          <Button fx:id="btCompile" mnemonicParsing="false" onAction="#clickCompile" prefHeight="31.0" prefWidth="105.0" text="Kompilieren" />
+                          <Button fx:id="btQualify" mnemonicParsing="false" onAction="#clickQualify" prefHeight="31.0" prefWidth="105.0" text="Qualifizieren" GridPane.rowIndex="1" />
+                          <Button fx:id="btFinish" mnemonicParsing="false" onAction="#clickFinish" prefHeight="31.0" prefWidth="105.0" text="Fertigstellen" GridPane.rowIndex="2" />
+                          <Button fx:id="btUpload" mnemonicParsing="false" onAction="#clickUpload" prefHeight="31.0" prefWidth="105.0" text="Hochladen" GridPane.rowIndex="3" />
+                          <Label fx:id="lbCompiled" text="bereits kompiliert" GridPane.columnIndex="1" />
+                          <Hyperlink fx:id="hlShowQualified" onAction="#clickShowQualified" text="Spiel anzeigen" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                             <GridPane.margin>
+                                                <Insets left="-4.0" />
+                                             </GridPane.margin>
+                                          </Hyperlink>
+                          <Label fx:id="lbFinished" text="bereits fertiggestellt" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                          <Label fx:id="lbUploaded" text="bereits hochgeladen" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                          <ProgressIndicator fx:id="prUpload" maxWidth="-Infinity" prefHeight="26.0" prefWidth="26.0" visible="false" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets />
+                                       </VBox.margin>
+                                    </GridPane>
+                    </children>
+                                 <BorderPane.margin>
+                                    <Insets right="10.0" />
+                                 </BorderPane.margin>
+                  </VBox>
+                           </left>
+                           <center>
+                              <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                 <top>
+                                    <BorderPane BorderPane.alignment="CENTER">
+                                       <bottom>
+                                          <HBox nodeOrientation="RIGHT_TO_LEFT" spacing="5.0" BorderPane.alignment="CENTER">
+                                             <children>
+                                      <Button fx:id="btDeleteImage" mnemonicParsing="false" onAction="#clickDeleteImage" prefHeight="31.0" text="Bild löschen" />
+                                      <Button fx:id="btChangeImage" mnemonicParsing="false" onAction="#clickChangeImage" prefHeight="31.0" text="Bild ändern" />
+                                             </children>
+                                             <BorderPane.margin>
+                                                <Insets top="5.0" />
+                                             </BorderPane.margin>
+                                          </HBox>
+                                       </bottom>
+                                       <right>
+                                <ImageView fx:id="image" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
+                                       </right>
+                                    </BorderPane>
+                                 </top>
+                                 <center>
+                                    <BorderPane BorderPane.alignment="CENTER">
+                                       <top>
+                                <Label text="Ausgabe:" BorderPane.alignment="TOP_LEFT" />
+                                       </top>
+                                       <center>
+                                <TextArea fx:id="tbOutput" prefHeight="0.0" prefWidth="0.0" BorderPane.alignment="CENTER" />
+                                       </center>
+                                    </BorderPane>
+                                 </center>
+                              </BorderPane>
+                           </center>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </BorderPane>
+                     </content>
             </Tab>
             <Tab text=" + ">
               <content>
