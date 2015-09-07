@@ -22,7 +22,7 @@
 		<th class="right aligned six wide data-user">Benutzer</th>
 		<th class="right aligned three wide data-lang">Sprache</th>
 		{% if logged_in %}
-		<th class="right aligned three wide">Herrausfordern</th>
+		<th class="right aligned three wide">Herausfordern</th>
 		{% endif %}
 		</tr>
 	</thead>
@@ -55,7 +55,9 @@
 			</td>
 			{% if own %}
 			<td class="right aligned">
-				<a class="ui challenge button content">Herrausfordern</a>
+				{% if ai.latest_qualified_version() %}
+				<a class="ui challenge button content">Herausfordern</a>
+				{% endif %}
 			</td>
 			{% endif %}
 		</tr>
@@ -84,7 +86,7 @@
 		</div>
 	</div>
 	<center style="padding-top: 1em;">
-		<a id="start_challenge" class="ui teal fluid button">Herrausforderung starten</a>
+		<a id="start_challenge" class="ui teal fluid button">Herausforderung starten</a>
 	</center>
 </div>
 {% endif %}

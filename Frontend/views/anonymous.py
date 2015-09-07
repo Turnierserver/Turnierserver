@@ -21,6 +21,7 @@ def index():
 @anonymous_blueprint.route("/ai_list")
 def ai_list():
 	ais = AI.filtered().all()
+	ais = [ai for ai in ais if ai.latest_qualified_version()]
 	if len(ais) == 0:
 		flash("Es gibt keine KIs des aktuellen Spieltypen!")
 		abort(403)
