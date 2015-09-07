@@ -634,7 +634,7 @@ def api_ai_delete(id):
 
 	logger.info("AI " + ai.name + " von " + current_user.name + " geloescht!")
 	ai.delete()
-	return {"error": False}
+	return ({"error": False}, 200)
 
 
 @api.route("/ai/<int:id>/compile", methods=["GET"])

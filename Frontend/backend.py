@@ -307,7 +307,9 @@ class Backend(threading.Thread):
 			if self.connected:
 				r = self.sock.recv(1024*1024).decode("utf-8")
 				if r == '':
-					time.sleep(10)
+					self.connected = False
+					print("connection gestorben")
+					time.sleep(1)
 					continue
 				logger.debug('recvd ' + r)
 				## zerstückelte blöcke?
