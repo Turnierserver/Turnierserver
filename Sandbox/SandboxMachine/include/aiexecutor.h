@@ -72,8 +72,8 @@ protected slots:
 	
 protected:
     int uid, gid;
-    int pid;
-    //QProcess proc;
+    //int pid;
+    QProcess proc;
 	
 	QDir dir, binDir;
 	QString binArchive;
