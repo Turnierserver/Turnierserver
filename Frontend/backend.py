@@ -308,7 +308,7 @@ class Backend(threading.Thread):
 				r = self.sock.recv(1024*1024).decode("utf-8")
 				if r == '':
 					self.connected = False
-					print("connection gestorben")
+					logger.warning("connection zum backend gestorben")
 					time.sleep(1)
 					continue
 				logger.debug('recvd ' + r)
