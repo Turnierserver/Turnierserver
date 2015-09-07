@@ -326,46 +326,56 @@ void AiExecutor::executeAi ()
         return;
     }
 
-    pid = fork();
-    if (pid < 0)
-    {
-        perror("Fehler: Kann den aktuellen Prozess nicht spalten");
-        worker->sendMessage(uuid(), 'T'); // T weil interner Fehler
-        emit finished(uuid());
-        return;
-    }
-    else if (pid == 0)
-    {
-        QString rcmd = commands.value(lang());
-        for (QString arg : start->value("Arguments").toStringList())
-            rcmd += " '" + arg + "'";
-        QString cmd = "sandboxd_helper -u " + QString::number(uid) + " -g " + QString::number(gid) + " -d \"" + binDir.absolutePath()
-                + "\" -c \"" + rcmd + " " + aiProp + "\"";
-        //				+ "\" -c id";
-        printf("$ %s\n", qPrintable(cmd));
-        int retval = system(qPrintable(cmd));
-        LOG_INFO << "Die KI hat sich mit dem Statuscode " + QString::number(retval) + " beendet";
-        worker->sendMessage(uuid(), 'F');
-        emit finished(uuid());
-        exit(retval);
-    }
-    else
-    {
-        LOG_DEBUG << "Die KI wurde mit der PID " + QString::number(pid) + " gestartet";
-    }
+//    pid = fork();
+//    if (pid < 0)
+//    {
+//        perror("Fehler: Kann den aktuellen Prozess nicht spalten");
+//        worker->sendMessage(uuid(), 'T'); // T weil interner Fehler
+//        emit finished(uuid());
+//        return;
+//    }
+//    else if (pid == 0)
+//    {
+//        QString rcmd = commands.value(lang());
+//        for (QString arg : start->value("Arguments").toStringList())
+//            rcmd += " '" + arg + "'";
+//        QString cmd = "sandboxd_helper -u " + QString::number(uid) + " -g " + QString::number(gid) + " -d \"" + binDir.absolutePath()
+//                + "\" -c \"" + rcmd + " " + aiProp + "\"";
+//        //				+ "\" -c id";
+//        printf("$ %s\n", qPrintable(cmd));
+//        int retval = system(qPrintable(cmd));
+//        LOG_INFO << "Die KI hat sich mit dem Statuscode " + QString::number(retval) + " beendet";
+//        worker->sendMessage(uuid(), 'F');
+//        emit finished(uuid());
+//        exit(retval);
+//    }
+//    else
+//    {
+//        LOG_DEBUG << "Die KI wurde mit der PID " + QString::number(pid) + " gestartet";
+//    }
 
-    //proc->setProgram("sandboxd_helper");
-    //QString cmd = commands.value(lang());
-    //for (QString arg : (start->value("Arguments").toStringList() << aiProp))
-    //    cmd += " '" + arg + "'";
+    proc.setProgram("sandboxd_helper");
+	LOG_DEBUG << "Habe das Programm auf sandboxd_helper gesetzt";
+    QString cmd = commands.value(lang());
+	if (cmd.isEmpty())
+		cmd = start->value("Command").toString();
+	LOG_DEBUG << "Der cmd ist " + cmd;
+	QStringList args = start->value("Arguments").toStringList();
+	args << aiProp;
+	LOG_DEBUG << args;
+    for (QString arg : args)
+        cmd += " '" + arg + "'";
+	LOG_DEBUG << "Der Befehl ist " + cmd;
     //QStringList args;
-    //proc->setArguments(QStringList() << "-u" << QString::number(uid) << "-g" << QString::number(gid) << "-d" << binDir.absolutePath() << "-c" << cmd);
-    //qDebug() << "$" << proc->program() << proc->arguments();
-    //printf("$ %s %s", qPrintable(proc->program()), qPrintable(QVariant(proc->arguments()).toString()));
-    //proc.setProcessChannelMode(QProcess::ForwardedChannels);
+    proc.setArguments(QStringList() << "-u" << QString::number(uid) << "-g" << QString::number(gid) << "-d" << binDir.absolutePath() << "-c" << cmd);
+	LOG_DEBUG << "Habe die Argumente gesetzt";
+    qDebug() << "$" << proc.program() << proc.arguments();
+    printf("$ %s %s", qPrintable(proc.program()), qPrintable(QVariant(proc.arguments()).toString()));
+    proc.setProcessChannelMode(QProcess::ForwardedChannels);
     //QThread::sleep(1);
     //proc.start("id", args);
-    /*if (!proc.waitForStarted(timeout()))
+	proc.start();
+    if (!proc.waitForStarted(timeout()))
     {
         LOG_CRITICAL << "Die KI ist nicht gestartet";
         abort = true;
@@ -373,7 +383,7 @@ void AiExecutor::executeAi ()
         emit finished(uuid());
         return;
     }
-    connect(&proc, SIGNAL(finished(int)), this, SLOT(cleanup(int)));*/
+    connect(&proc, SIGNAL(finished(int)), this, SLOT(cleanup(int)));
 
     worker->sendMessage(uuid(), 'S');
 }
@@ -388,25 +398,23 @@ void AiExecutor::cleanup (int retCode)
 void AiExecutor::terminateAi ()
 {
     LOG_INFO << "AiExecutor::terminateAi() called";
-    //proc.kill();
-    //proc.waitForFinished();
-    if (kill(pid, SIGKILL) != 0)
+    proc.kill();
+    if (!proc.waitForFinished())
     {
         perror("Fehler beim Töten der KI");
     }
     worker->sendMessage(uuid(), 'T');
-    emit finished(uuid());
+    //emit finished(uuid()); // sollte in cleanup passieren
 }
 
 void AiExecutor::killAi ()
 {
     LOG_INFO << "AiExecutor::killAi() called";
-    //proc.kill();
-    //proc.waitForFinished();
-    if (kill(pid, SIGKILL) != 0)
+    proc.kill();
+	if (!proc.waitForFinished())
     {
         perror("Fehler beim Töten der KI");
     }
     worker->sendMessage(uuid(), 'K');
-    emit finished(uuid());
+    //emit finished(uuid()); // sollte in cleanup passieren
 }
