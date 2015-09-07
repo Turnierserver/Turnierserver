@@ -229,7 +229,7 @@ public class ControllerAiManagement {
 			lbFinished.visibleProperty().bind(version.finished);
 			lbUploaded.visibleProperty().bind(version.uploaded);
 			btCompile.disableProperty().bind(version.finished.or(version.compiled));
-			btQualify.disableProperty().bind(version.compiled.not().or(version.finished));
+			btQualify.disableProperty().bind(version.compiled.not().or(version.finished).or(version.qualified));
 			btFinish.disableProperty().bind(version.finished);
 			btUpload.disableProperty().bind(new SimpleBooleanProperty(false));
 			rbContinue.setDisable(false);
