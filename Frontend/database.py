@@ -344,7 +344,8 @@ class AI(db.Model):
 			"author": self.user.name,
 			"author_id": self.user.id,
 			"description": self.desc, "lang": self.lang.info(),
-			"gametype": self.type.info(), "versions": [v.info() for v in self.version_list]}
+			"gametype": self.type.info(), "versions": [v.info() for v in self.version_list],
+			"elo": self.elo}
 
 	@ftp.failsafe_locked
 	def icon(self):
