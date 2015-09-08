@@ -116,12 +116,12 @@ class Backend(threading.Thread):
 			raise RuntimeError("AIs haben verschiedene Typen: " + str(ais))
 		d = {'action': 'start', 'ais': [], 'languages': [], 'gametype': ais[0].type.id, 'requestid': reqid}
 		for ai in ais:
-			if not ai.latest_qualified_version():
+			if not ai.active_version():
 				logger.debug(ais)
 				logger.debug(ai)
-				raise RuntimeError("Nich qualifizierte KI in request_game()")
-			d['ais'].append(str(ai.id) + 'v' + str(ai.latest_qualified_version().version_id))
-			d['languages'].append(ai.latest_qualified_version().lang.name)
+				raise RuntimeError("Nich fertige KI in request_game()")
+			d['ais'].append(str(ai.id) + 'v' + str(ai.active_version().version_id))
+			d['languages'].append(ai.active_version().lang.name)
 		self.requests[reqid] = d
 		self.send_dict(d)
 		self.requests[reqid]["queue"] = Queue()

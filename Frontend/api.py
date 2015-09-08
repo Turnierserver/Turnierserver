@@ -765,9 +765,8 @@ def ai_new_version_from_zip(id):
 	if not current_user.can_access(ai):
 		return CommonErrors.NO_ACCESS
 
-	if any([not v.frozen for v in ai.version_list]):
+	if any([not v.frozen for v in ai.version_list]): # FIXME
 		return {"error": "You need to freeze all prior versions to create a new one."}, 400
-	ai.new_version()
 
 	tmpdir = tempfile.mkdtemp()
 	_, tmpzip = tempfile.mkstemp()
@@ -779,6 +778,8 @@ def ai_new_version_from_zip(id):
 			z.extractall(tmpdir)
 	except zipfile.BadZipFile:
 		return {"error": "Bad zip file."}, 400
+
+	ai.new_version()
 
 	if not ftp.upload_tree(tmpdir, "AIs/{}/v{}".format(ai.id, ai.latest_version().version_id)):
 		return CommonErrors.FTP_ERROR
@@ -917,7 +918,25 @@ def ai_upload_zip(id):
 		return CommonErrors.INVALID_ID
 	if not current_user.can_access(ai):
 		return CommonErrors.NO_ACCESS
-	return CommonErrors.NOT_IMPLEMENTED
+
+	if any([not v.frozen for v in ai.version_list]):
+		ai.new_version(copy_prev=False)
+
+	tmpdir = tempfile.mkdtemp()
+	_, tmpzip = tempfile.mkstemp()
+	with open(tmpzip, "wb") as f:
+		f.write(request.data)
+
+	try:
+		with zipfile.ZipFile(tmpzip) as z:
+			z.extractall(tmpdir)
+	except zipfile.BadZipFile:
+		return {"error": "Bad zip file."}, 400
+
+	if not ftp.upload_tree(tmpdir, "AIs/{}/v{}".format(ai.id, ai.latest_version().version_id)):
+		return CommonErrors.FTP_ERROR
+
+	return {"error": False}, 200
 
 @api.route("/ai/<int:id>/<int:version_id>/download_zip")
 @authenticated
