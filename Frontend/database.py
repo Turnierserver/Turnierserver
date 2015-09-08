@@ -364,6 +364,11 @@ class AI(db.Model):
 			if v.qualified:
 				return v
 
+	def active_version(self):
+		for v in self.version_list[::-1]:
+			if v.frozen: # FIXME
+				return v
+
 	def latest_frozen_version(self):
 		for v in self.version_list[::-1]:
 			if v.frozen:
@@ -687,6 +692,7 @@ class Game(db.Model):
 		data.pop("requestid")
 		if current_user and current_user.is_authenticated() and current_user.can_access(ai):
 			return True, data
+		return False, None
 
 	@classmethod
 	def delete_all(cls):
