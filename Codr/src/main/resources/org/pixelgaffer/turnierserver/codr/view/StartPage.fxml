@@ -133,7 +133,7 @@
               <children>
                 <GridPane hgap="5.0" prefHeight="90.0" prefWidth="309.0" vgap="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <children>
-                    <Label text="Editor Theme:" />
+                    <Label text="Editor Design:" />
                     <Label text="Schriftgröße:" GridPane.rowIndex="1" />
                     <Label text="Python - Interpreter:" GridPane.rowIndex="3" />
                     <Label text="C++ - Compiler:" GridPane.rowIndex="4" />
@@ -150,7 +150,7 @@
                       </children>
                     </HBox>
                     <Slider fx:id="slFontSize" blockIncrement="1.0" max="40.0" min="5.0" snapToTicks="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                    <ToggleButton fx:id="btTheme" mnemonicParsing="false" text="Light" GridPane.columnIndex="1" />
+                    <ToggleButton fx:id="btTheme" mnemonicParsing="false" text="Hell" GridPane.columnIndex="1" />
                     <Label text="C++ - Compilertyp:" GridPane.rowIndex="5" />
                     <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                       <children>
