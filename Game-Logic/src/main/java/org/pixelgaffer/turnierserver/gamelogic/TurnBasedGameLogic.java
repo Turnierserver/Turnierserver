@@ -36,6 +36,7 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameStat
 	
 	@Override
 	protected final void receive(R response, Ai ai) {
+		logger.debug("Habe tolle Sachen von KI " + ai.getId() + " emfangen!");
 		if (received.contains(ai)) {
 			getUserObject(ai).loose("Es wurde von der KI etwas empfangen obwohl dies nicht erwartet wurde");
 			return;

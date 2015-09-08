@@ -35,7 +35,9 @@ public abstract class GameStateLogic<E extends AiObject, R> extends GameLogic<E,
 		for (Ai ai : game.getAis()) {
 			getUserObject(ai).updateCalculationTimer();
 			if (!getUserObject(ai).lost) {
+				logger.debug("Sende tollen Gamestate an KI " + ai.getId());
 				sendGameState(ai);
+				logger.debug("Habe tollen Gamestate gesendet!");
 			}
 		}
 	}
