@@ -4,13 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Properties;
+
 import org.apache.commons.io.FileUtils;
+import org.pixelgaffer.turnierserver.compile.LibraryDownloader.LibraryDownloaderMode;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
-import it.sauronsoftware.ftp4j.FTPAbortedException;
-import it.sauronsoftware.ftp4j.FTPDataTransferException;
-import it.sauronsoftware.ftp4j.FTPException;
-import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
-import it.sauronsoftware.ftp4j.FTPListParseException;
 
 public class PythonCompiler extends Compiler
 {
@@ -25,33 +22,34 @@ public class PythonCompiler extends Compiler
 	}
 	
 	@Override
-	public boolean compile (File srcdir, File bindir, Properties p, PrintWriter output, LibraryDownloader libraryDownloader)
+	public boolean compile (File srcdir, File bindir, Properties p, PrintWriter output,
+							LibraryDownloader libraryDownloader)
 			throws IOException
 	{
 		// den wrapper laden
-		if (libraryDownloader == null)
+		try
 		{
-			try
-			{
-				output.print("> Lade game_wrapper.py herunter ... ");
+			output.print("> Lade game_wrapper.py herunter ... ");
+			if (libraryDownloader == null || libraryDownloader.getMode() == LibraryDownloaderMode.LIBS_ONLY)
 				DatastoreFtpClient.retrieveAiLibrary(getGame(), "Python", bindir);
-				output.println("fertig");
-				output.print("> Lade wrapper.py herunter ... ");
+			else
+				libraryDownloader.getAiLibFile("Python", "game_wrapper.py");
+			output.println("fertig");
+			
+			output.print("> Lade wrapper.py herunter ... ");
+			if (libraryDownloader == null)
 				DatastoreFtpClient.retrieveLibrary("wrapper", "Python", bindir);
-				output.println("fertig");
-			}
-			catch (IOException | FTPIllegalReplyException | FTPException | FTPDataTransferException
-					| FTPAbortedException | FTPListParseException ioe)
-			{
-				output.println(ioe.getMessage());
-				return false;
-			}
+			else
+				libraryDownloader.getFile("Python", "wrapper", "wrapper.py");
+			output.println("fertig");
+			output.println("> Füge die Bibliothek für den wrapper hinzu ... ");
+			getLibs().add(new RequiredLibrary("wrapper", "."));
+			output.println("fertig");
 		}
-		else
+		catch (Exception e)
 		{
-			output.println("> Keine Verbindung zum FTP-Server");
-			libraryDownloader.getAiLibFile("Python", "game_wrapper.py");
-			libraryDownloader.getFile("Python", "wrapper", "wrapper.py");
+			output.println(e);
+			return false;
 		}
 		
 		output.print("> Kopiere Quelltext ... ");
