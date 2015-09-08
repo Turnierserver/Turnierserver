@@ -62,7 +62,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 		if (type.getType() != AI)
 			WorkerMain.getLogger().warning("Schicke Nachricht an " + type.getType() + " (sollte " + AI + " sein)");
 		getClient().write(mf.getMessage());
-		getClient().write("\n".getBytes(UTF_8));
+		//getClient().write("\n".getBytes(UTF_8));
 	}
 	
 	@Override
