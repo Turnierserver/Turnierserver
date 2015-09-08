@@ -115,7 +115,7 @@ public class ControllerRanking {
 		col3.setCellValueFactory(new Callback<CellDataFeatures<AiOnline, String>, ObservableValue<String>>() {
 			
 			public ObservableValue<String> call(CellDataFeatures<AiOnline, String> p) {
-				return new SimpleStringProperty(p.getValue().elo);
+				return new SimpleStringProperty(String.valueOf(p.getValue().elo));
 			}
 		});
 		
@@ -265,7 +265,7 @@ public class ControllerRanking {
 			lbName.setText(ai.title);
 			tbDescription.setText(ai.description);
 			lbUser.setText(ai.userName);
-			lbElo.setText(ai.elo);
+			lbElo.setText(String.valueOf(ai.elo));
 			lbLanguage.setText(ai.language.toString());
 			btChallenge.setDisable(false);
 			imageView.imageProperty().unbind();

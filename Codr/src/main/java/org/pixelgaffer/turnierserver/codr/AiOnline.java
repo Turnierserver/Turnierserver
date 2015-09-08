@@ -27,7 +27,7 @@ public class AiOnline extends AiBase {
 	
 	public String userName = "";
 	public int id;
-	public String elo = "leere Elo";
+	public int elo = -1;
 	private ObjectProperty<Image> picture = new SimpleObjectProperty<Image>();
 	public ObservableList<GameOnline> onlineGames = FXCollections.observableArrayList();
 	public ObservableList<Integer> onlineGameIDs = FXCollections.observableArrayList();
@@ -49,6 +49,7 @@ public class AiOnline extends AiBase {
 		gametype = json.getJSONObject("gametype").getString("name");
 		language = json.getJSONObject("lang").getString("name");
 		id = json.getInt("id");
+		elo = (int) Math.round(json.getDouble("elo"));
 		JSONArray versions = json.getJSONArray("versions");
 		for (int i = 0; i < versions.length(); i++) {
 			newVersion(versions.getJSONObject(i));
