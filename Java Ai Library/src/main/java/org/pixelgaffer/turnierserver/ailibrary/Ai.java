@@ -59,8 +59,7 @@ public abstract class Ai<E, R> implements Runnable {
 			con = new Socket(PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST), PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
 			out = new BufferedOutputStream(con.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			out.write((PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR) + PropertyUtils.getStringRequired(PropertyUtils.AI_UUID)).getBytes(UTF_8));
-			out.write('\n');
+			out.write((PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR) + PropertyUtils.getStringRequired(PropertyUtils.AI_UUID) + "\n").getBytes(UTF_8));
 			out.flush();
 			System.setOut(new PrintStream(new OutputStream() {
 				
@@ -135,8 +134,7 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	public final void surrender() {
 		try {
-			out.write(("SURRENDER").getBytes(UTF_8));
-			out.write('\n');
+			out.write(("SURRENDER\n").getBytes(UTF_8));
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -149,8 +147,7 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	public final void crash(Throwable t) {
 		try {
-			out.write(("CRASH " + t.getMessage()).getBytes(UTF_8));
-			out.write('\n');
+			out.write(("CRASH " + t.getMessage() + "\n").getBytes(UTF_8));
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
