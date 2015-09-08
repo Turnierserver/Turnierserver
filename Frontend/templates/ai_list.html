@@ -20,9 +20,9 @@
 		<th class="center aligned two wide data-elo">ELO</th>
 		<th class="left aligned six wide data-name">Name</th>
 		<th class="right aligned six wide data-user">Benutzer</th>
-		<th class="right aligned three wide data-lang">Sprache</th>
+		<th class="center aligned three wide data-lang">Sprache</th>
 		{% if logged_in %}
-		<th class="right aligned three wide">Herausfordern</th>
+		<th class="center aligned three wide">Herausfordern</th>
 		{% endif %}
 		</tr>
 	</thead>
@@ -55,7 +55,7 @@
 			</td>
 			{% if own %}
 			<td class="right aligned">
-				{% if ai.latest_qualified_version() %}
+				{% if ai.active_version() %}
 				<a class="ui challenge button content">Herausfordern</a>
 				{% endif %}
 			</td>
@@ -74,13 +74,13 @@
 		<i class="dropdown icon"></i>
 		<div class="text" data-value="{{own[0].id}}">
 			<img class="ui mini avatar image" src="/api/ai/{{own[0].id}}/icon">
-			{{own[0].name}} v{{own[0].latest_qualified_version().version_id}}
+			{{own[0].name}} v{{own[0].active_version().version_id}}
 		</div>
 		<div class="menu transition hidden">
 		{% for ai in own %}
 			<div class="item" data-value="{{ai.id}}">
 				<img class="ui mini avatar image" src="/api/ai/{{ai.id}}/icon">
-				{{ai.name}} v{{ai.latest_qualified_version().version_id}}
+				{{ai.name}} v{{ai.active_version().version_id}}
 			</div>
 		{% endfor %}
 		</div>

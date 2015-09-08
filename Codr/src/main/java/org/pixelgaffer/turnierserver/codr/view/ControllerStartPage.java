@@ -246,9 +246,9 @@ public class ControllerStartPage {
 	
 	void clickTheme(Boolean isSelected) {
 		if (isSelected) {
-			btTheme.setText("Dark");
+			btTheme.setText("Dunkel");
 		} else {
-			btTheme.setText("Light");
+			btTheme.setText("Hell");
 		}
 		MainApp.cAi.showAi();
 	}
