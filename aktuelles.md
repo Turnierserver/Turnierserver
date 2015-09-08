@@ -1,6 +1,6 @@
 Aktuelle Infos
 =======
-Dies ist eine Beta-Version eines neuen Turnierservers. Wir arbeiten ständig daran diesen für euch zu verbessern. Meldet euch bei Anregungen bitte an [Email hier einfügen](mailto:email@hier.einfuegen).
+Dies ist eine Beta-Version eines neuen Turnierservers. Wir arbeiten ständig daran diesen für euch zu verbessern. Meldet euch bei Anregungen bitte an [turnier@bwinf.de](mailto:turnier@bwinf.de).
 
 
 Anleitung
@@ -49,7 +49,7 @@ Die erste Datei heißt `libraries.txt` und enthält alle Bibliotheken, welche zu
 Momentan stellen wir noch keine Python Bibliotheken zur Verfügung. Schau weiter unten nach, wie du uns Bibliotheken vorschlagen kannst.
 
 Sende einfach eine Email mit dem Namen, der Sprache und der Version der Bibliothek und wieso diese nützlich für die Benutzer dieser Plattform ist an
-[Email hier einfügen](mailto:email@hier.einfuegen), um uns diese Vorzuschlagen.
+[turnier@bwinf.de](mailto:turnier@bwinf.de), um uns diese Vorzuschlagen.
 
 ----------------------------------------------------------
 

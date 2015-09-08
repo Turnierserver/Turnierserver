@@ -839,7 +839,7 @@ paths:
     get:
       tags:
       - Admin
-      summary: Lädt Library hoch.
+      summary: Lädt Library runter.
       parameters:
       - name: lang
         in: path
