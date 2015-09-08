@@ -611,7 +611,7 @@ class Game(db.Model):
 	def info(self):
 		return {"id": self.id, "ais": [assoc.ai.info() for assoc in self.ai_assocs],
 				"type": self.type.info(), "scores": {assoc.ai.id: assoc.score for assoc in self.ai_assocs},
-				"moves": self.moves, "reason": self.reason}
+				"moves": self.moves, "reason": self.reason, "timestamp": self.timestamp}
 
 	def delete(self):
 		db.session.delete(self)
@@ -688,8 +688,8 @@ class Game(db.Model):
 		if not ai:
 			logger.error("crash on nonexistant ai")
 			return False, None
-		data.pop("isCrash")
-		data.pop("requestid")
+		data.pop("isCrash", None)
+		data.pop("requestid", None)
 		if current_user and current_user.is_authenticated() and current_user.can_access(ai):
 			return True, data
 		return False, None
