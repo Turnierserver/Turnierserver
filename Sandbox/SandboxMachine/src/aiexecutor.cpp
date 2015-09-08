@@ -399,23 +399,25 @@ void AiExecutor::cleanup (int retCode)
 void AiExecutor::terminateAi ()
 {
     LOG_INFO << "AiExecutor::terminateAi() called";
+    disconnect(&proc, SIGNAL(finished(int)), this, SLOT(cleanup(int)));
     proc.kill();
     if (!proc.waitForFinished())
     {
         perror("Fehler beim Töten der KI");
     }
     worker->sendMessage(uuid(), 'T');
-    //emit finished(uuid()); // sollte in cleanup passieren
+    emit finished(uuid());
 }
 
 void AiExecutor::killAi ()
 {
     LOG_INFO << "AiExecutor::killAi() called";
+    disconnect(&proc, SIGNAL(finished(int)), this, SLOT(cleanup(int)));
     proc.kill();
-	if (!proc.waitForFinished())
+    if (!proc.waitForFinished())
     {
         perror("Fehler beim Töten der KI");
     }
     worker->sendMessage(uuid(), 'K');
-    //emit finished(uuid()); // sollte in cleanup passieren
+    emit finished(uuid());
 }
