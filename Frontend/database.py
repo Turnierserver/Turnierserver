@@ -767,7 +767,7 @@ class GameType(db.Model):
 		return {"id": self.id, "name": self.name, "last_modified": self.last_modified}
 
 	def delete(self):
-		logger.info("Deleting " + self)
+		logger.info("Deleting " + str(self))
 		for ai in AI.query.filter(AI.type == self):
 			ai.delete()
 		db.session.delete(self)
