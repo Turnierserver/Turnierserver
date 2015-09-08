@@ -183,7 +183,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 			return;
 		}
 		try {
-			game.getFrontend().sendMessage(Parsers.getFrontend().parse(object));
+			game.getFrontend().sendMessage(Parsers.getFrontend().parse(object, false));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -236,7 +236,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 			System.err.println("WUUUUUT?? (sendToAi aufgerufen)");
 			return;
 		}
-		ai.sendMessage(Parsers.getWorker().parse(object));
+		ai.sendMessage(Parsers.getWorker().parse(object, false));
 	}
 	
 	/**

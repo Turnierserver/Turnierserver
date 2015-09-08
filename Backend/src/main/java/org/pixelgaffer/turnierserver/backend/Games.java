@@ -251,7 +251,7 @@ public class Games
 			{
 				BackendMain.getLogger().info("alle kis disconnected, sende success an frontend");
 				BackendFrontendConnectionHandler.getFrontend().sendMessage(
-						Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), true)));
+						Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), true), false));
 				synchronized (lock)
 				{
 					games.remove(getUuid());
@@ -279,7 +279,7 @@ public class Games
 			try
 			{
 				BackendFrontendConnectionHandler.getFrontend().sendMessage(
-						Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(getRequestId(), "started")));
+						Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(getRequestId(), "started"), false));
 			}
 			catch (IOException e)
 			{
@@ -303,7 +303,7 @@ public class Games
 			state = GameState.WAITING;
 			logic = logic.getClass().newInstance();
 			BackendFrontendConnectionHandler.getFrontend().sendMessage(
-					Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(getRequestId(), "restarted")));
+					Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(getRequestId(), "restarted"), false));
 			
 			for (int i = 0; i < ais.size(); i++)
 			{

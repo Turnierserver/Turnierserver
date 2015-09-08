@@ -55,16 +55,14 @@ public class Jobs
 		{
 			for (Job job : jobs)
 			{
-				out.write(Parsers.getParser(false).parse(job.getFrontendCommand()));
-				out.println();
+				out.println(Parsers.getParser(false).parse(job.getFrontendCommand(), false));
 			}
 		}
 		synchronized (pending)
 		{
 			for (BackendFrontendCommand cmd : pending)
 			{
-				out.write(Parsers.getParser(false).parse(cmd));
-				out.println();
+				out.println(Parsers.getParser(false).parse(cmd, false));
 			}
 		}
 		out.close();
@@ -142,7 +140,7 @@ public class Jobs
 					addJob(job);
 					BackendFrontendConnectionHandler.getFrontend().sendMessage(
 							Parsers.getFrontend()
-									.parse(new BackendFrontendCommandProcessed(cmd.getRequestid())));
+									.parse(new BackendFrontendCommandProcessed(cmd.getRequestid()), false));
 				}
 				catch (Exception e)
 				{
@@ -151,7 +149,7 @@ public class Jobs
 					try
 					{
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(
-								Parsers.getFrontend().parse(result));
+								Parsers.getFrontend().parse(result, false));
 					}
 					catch (IOException e1)
 					{
@@ -166,7 +164,7 @@ public class Jobs
 						Games.startGame(cmd.getGametype(), cmd.getRequestid(), cmd.getLanguages(), cmd.getAis());
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(
 								Parsers.getFrontend().parse(
-										new BackendFrontendCommandProcessed(cmd.getRequestid())));
+										new BackendFrontendCommandProcessed(cmd.getRequestid()), false));
 					}
 					catch (Exception e)
 					{
@@ -175,7 +173,7 @@ public class Jobs
 						try
 						{
 							BackendFrontendConnectionHandler.getFrontend().sendMessage(
-									Parsers.getFrontend().parse(result));
+									Parsers.getFrontend().parse(result, false));
 						}
 						catch (IOException e1)
 						{
@@ -190,7 +188,7 @@ public class Jobs
 						Games.startQualifyGame(cmd.getGametype(), cmd.getRequestid(), cmd.getLanguage(), cmd.getId());
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(
 								Parsers.getFrontend().parse(
-										new BackendFrontendCommandProcessed(cmd.getRequestid())));
+										new BackendFrontendCommandProcessed(cmd.getRequestid()), false));
 					}
 					catch (Exception e)
 					{
@@ -199,7 +197,7 @@ public class Jobs
 						try
 						{
 							BackendFrontendConnectionHandler.getFrontend().sendMessage(
-									Parsers.getFrontend().parse(result));
+									Parsers.getFrontend().parse(result, false));
 						}
 						catch (IOException e1)
 						{
@@ -238,7 +236,7 @@ public class Jobs
 		int requestId = job.getRequestId();
 		BackendFrontendResult result = new BackendFrontendResult(requestId,
 				answer.getWhat() == SUCCESS);
-		BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result));
+		BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result, false));
 		synchronized (jobs)
 		{
 			jobs.remove(job);

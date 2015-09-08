@@ -31,6 +31,6 @@ public interface Parser {
 	 * @return Das geparste Objekt
 	 * @throws IOException
 	 */
-	public byte[] parse(Object obj) throws IOException;
+	public byte[] parse(Object obj, boolean newline) throws IOException;
 	
 }

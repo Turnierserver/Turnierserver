@@ -1,6 +1,5 @@
 package org.pixelgaffer.turnierserver.backend.server;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.AICONNECTED;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.ANSWER;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.INFO;
@@ -49,8 +48,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 	
 	public synchronized void sendCommand (@NonNull WorkerCommand cmd) throws IOException
 	{
-		getClient().write(Parsers.getWorker().parse(cmd));
-		getClient().write("\n".getBytes(UTF_8));
+		getClient().write(Parsers.getWorker().parse(cmd, true));
 	}
 	
 	public void sendMessage (MessageForward mf) throws IOException
@@ -102,7 +100,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 							BackendFrontendCompileMessage msg = new BackendFrontendCompileMessage(answer.getMessage(),
 									Jobs.findRequestId(answer.getUuid()));
 							BackendFrontendConnectionHandler.getFrontend()
-									.sendMessage(Parsers.getFrontend().parse(msg));
+									.sendMessage(Parsers.getFrontend().parse(msg, false));
 						}
 						else if ((answer.getWhat() == WorkerCommandAnswer.CRASH)
 								|| (answer.getWhat() == WorkerCommandAnswer.SUCCESS))

@@ -1,6 +1,5 @@
 package org.pixelgaffer.turnierserver.worker.backendclient;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.pixelgaffer.turnierserver.PropertyUtils.RECON_IVAL;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.AICONNECTED;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.ANSWER;
@@ -65,26 +64,22 @@ public class BackendClient implements SocketObserver, Backend
 	
 	public void sendAnswer (WorkerCommandAnswer answer) throws IOException
 	{
-		client.write(new ProtocolLine(ANSWER, answer).serialize());
-		client.write("\n".getBytes(UTF_8));
+		client.write(new ProtocolLine(ANSWER, answer).serialize(true));
 	}
 	
 	public void sendInfo (WorkerInfo info) throws IOException
 	{
-		client.write(new ProtocolLine(INFO, info).serialize());
-		client.write("\n".getBytes(UTF_8));
+		client.write(new ProtocolLine(INFO, info).serialize(true));
 	}
 	
 	public void sendAiConnected (AiConnected aiConnected) throws IOException
 	{
-		client.write(new ProtocolLine(AICONNECTED, aiConnected).serialize());
-		client.write("\n".getBytes(UTF_8));
+		client.write(new ProtocolLine(AICONNECTED, aiConnected).serialize(true));
 	}
 	
 	public void sendSandboxMessage (SandboxMessage msg) throws IOException
 	{
-		client.write(new ProtocolLine(SANDBOX_MESSAGE, msg).serialize());
-		client.write("\n".getBytes(UTF_8));
+		client.write(new ProtocolLine(SANDBOX_MESSAGE, msg).serialize(true));
 	}
 	
 	@Override
@@ -94,8 +89,7 @@ public class BackendClient implements SocketObserver, Backend
 		connected = true;
 		try
 		{
-			socket.write(Parsers.getWorker().parse(WorkerMain.workerInfo));
-			socket.write("\n".getBytes(UTF_8));
+			socket.write(Parsers.getWorker().parse(WorkerMain.workerInfo, true));
 		}
 		catch (IOException e)
 		{
@@ -148,6 +142,7 @@ public class BackendClient implements SocketObserver, Backend
 	@Override
 	public void packetReceived (NIOSocket socket, byte[] packet)
 	{
+		WorkerMain.getLogger().debug("anfang");
 		buf.add(packet);
 		byte line[];
 		while ((line = buf.readLine()) != null)
@@ -206,6 +201,7 @@ public class BackendClient implements SocketObserver, Backend
 				WorkerMain.getLogger().critical("Failed to parse Command: " + e);
 			}
 		}
+		WorkerMain.getLogger().debug("ende");
 	}
 	
 	@Override
