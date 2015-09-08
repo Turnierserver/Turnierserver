@@ -273,7 +273,7 @@ public class ControllerRanking {
 			
 			tvVersions.setItems(ai.versions);
 			if (ai.versions.size() != 0) {
-				tvVersions.prefHeightProperty().bind(tvVersions.fixedCellSizeProperty().multiply(Bindings.size(tvVersions.getItems()).add(1.01)));
+				tvVersions.prefHeightProperty().bind(tvVersions.fixedCellSizeProperty().multiply(Bindings.size(tvVersions.getItems()).add(1.3)));
 				tvVersions.minHeightProperty().bind(tvVersions.prefHeightProperty());
 				tvVersions.maxHeightProperty().bind(tvVersions.prefHeightProperty());
 			} else {
@@ -286,7 +286,7 @@ public class ControllerRanking {
 			}
 			tvGames.setItems(ai.onlineGames);
 			if (ai.onlineGames.size() != 0) {
-				tvGames.prefHeightProperty().bind(tvGames.fixedCellSizeProperty().multiply(Bindings.size(tvGames.getItems()).add(1.01)));
+				tvGames.prefHeightProperty().bind(tvGames.fixedCellSizeProperty().multiply(Bindings.size(tvGames.getItems()).add(1.3)));
 				tvGames.minHeightProperty().bind(tvGames.prefHeightProperty());
 				tvGames.maxHeightProperty().bind(tvGames.prefHeightProperty());
 			} else {
