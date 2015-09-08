@@ -28,10 +28,11 @@ public class GameSaved extends GameBase {
 	/**
 	 * wird verwendet, wenn ein neues Spiel gestartet wird
 	 * 
-	 * @param llogic
+	 * @param ggameType
 	 */
-	public GameSaved(String llogic) {
+	public GameSaved(String ggameType) {
 		super(GameMode.playing);
+		gameType = ggameType;
 		getNewID();
 	}
 	
