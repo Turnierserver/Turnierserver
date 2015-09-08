@@ -1,5 +1,6 @@
 package org.pixelgaffer.turnierserver.ailibrary;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,6 +15,8 @@ import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.PropertyUtils;
 
 import com.google.gson.reflect.TypeToken;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * @param <E>
@@ -32,7 +35,7 @@ public abstract class Ai<E, R> implements Runnable {
 	/**
 	 * Der Printwriter der Connection
 	 */
-	private PrintWriter out;
+	private BufferedOutputStream out;
 	/**
 	 * Der BufferedReader der Connection
 	 */
@@ -55,9 +58,11 @@ public abstract class Ai<E, R> implements Runnable {
 			PropertyUtils.loadProperties(args.length > 0 ? args[0] : "ai.prop");
 			logger.info("Connecting to " + PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST) + ":" + PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
 			con = new Socket(PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST), PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
-			out = new PrintWriter(con.getOutputStream(), true);
+			out = new BufferedOutputStream(con.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			out.println(PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR) + PropertyUtils.getStringRequired(PropertyUtils.AI_UUID));
+			out.write((PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR) + PropertyUtils.getStringRequired(PropertyUtils.AI_UUID)).getBytes(UTF_8));
+			out.write('\n');
+			out.flush();
 			System.setOut(new PrintStream(new OutputStream() {
 				
 				public void write(int b) throws IOException {
@@ -95,19 +100,17 @@ public abstract class Ai<E, R> implements Runnable {
 					System.exit(0);
 				}
 				String line = in.readLine();
+				logger.info("erhalten");
 				if (line == null) System.exit(0);
 				logger.info("JSON erhalten: " + line);
-				System.out.println("JSON erhalten: " + line);
-				System.out.println("um " + System.currentTimeMillis());
 				R updates = Parsers.getWorker().parse(line.getBytes("UTF-8"), token.getType());
 				logger.info("Geparsed zu: " + updates);
 				Object response = update(getState(updates));
-				logger.info("Sender response:" + response);
+				logger.info("Sende response:" + response);
 				if (response != null) {
 					send(response);
 				}
-				System.out.println("Sender response:" + response);
-				System.out.println("um " + System.currentTimeMillis());
+				logger.info("gesendet");
 			}
 		} catch (Exception e) {
 			crash(e);
@@ -121,8 +124,9 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	protected final void send(Object o) {
 		try {
-			con.getOutputStream().write(Parsers.getWorker().parse(o));
-			con.getOutputStream().write(0xa);
+			out.write(Parsers.getWorker().parse(o));
+			out.write(0xa);
+			out.flush();
 		} catch (Exception e) {
 			crash(e);
 		}
@@ -132,14 +136,28 @@ public abstract class Ai<E, R> implements Runnable {
 	 * ACHTUNG: Mit dieser Methode gibt die KI automatisch auf
 	 */
 	public final void surrender() {
-		out.println("SURRENDER");
+		try {
+			out.write(("SURRENDER").getBytes(UTF_8));
+			out.write('\n');
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 	
 	/**
 	 * ACHTUNG: Mit dieser Methode signalisiert man einen Crash -> Die KI verliert
 	 */
 	public final void crash(Throwable t) {
-		out.println("CRASH " + t.getMessage());
+		try {
+			out.write(("CRASH " + t.getMessage()).getBytes(UTF_8));
+			out.write('\n');
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 	
 	/**
