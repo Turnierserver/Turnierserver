@@ -1,5 +1,7 @@
 package org.pixelgaffer.turnierserver.codr.utilities;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -9,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -19,6 +20,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.stream.Collectors;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
@@ -47,13 +55,6 @@ import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.DeletedException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NothingDoneException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.image.Image;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.ZipParameters;
 
 /**
  * koordiniert die Verbindung zum Server und führt Up-/Downloads aus
@@ -373,8 +374,20 @@ public class WebConnector {
 		FileEntity entity = new FileEntity(file);
 		post.setEntity(entity);
 		HttpResponse response = http.execute(post);
-		if (getOutput(response.getEntity().getContent()) == null) {
+		byte[] output = getOutput(response.getEntity().getContent());
+		if (output == null) {
 			throw new IOException("Konnte nicht zum Server verbinden");
+		}
+		if (response.getStatusLine().getStatusCode() != 200)
+		{
+			if (response.getFirstHeader("Content-Type").getValue().contains("json"))
+			{
+				JSONObject json = new JSONObject(new String(output, UTF_8));
+				String error = json.getString("error");
+				throw new IllegalStateException(error);
+			}
+			else
+				throw new IllegalStateException("Irgendetwas ist beim Hochladen schief gelaufen.");
 		}
 		File image = ((AiSimple) version.ai).getPictureFile();
 		changeImage(image, id);
@@ -387,12 +400,11 @@ public class WebConnector {
 			byte response[] = sendGet("ai/create", "name", name, "desc", ai.description, "lang", getLangID(ai.language) + "", "type", getGametypeID(ai.gametype) + "");
 			if (response == null)
 				throw new IOException();
-			JSONObject json = new JSONObject(new String(response, StandardCharsets.UTF_8));
+			JSONObject json = new JSONObject(new String(response, UTF_8));
 			json = json.getJSONObject("ai");
 			return json.getInt("id");
 		} catch (IOException e) {
 			ErrorLog.write("Konnte AI nicht erstellen: " + e);
-			;
 			return -1;
 		}
 	}
