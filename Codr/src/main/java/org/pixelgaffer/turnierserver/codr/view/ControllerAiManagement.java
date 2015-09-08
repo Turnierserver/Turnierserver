@@ -754,6 +754,8 @@ public class ControllerAiManagement {
 					} catch (ZipException | IOException e) {
 						e.printStackTrace();
 						return "errorConnection";
+					} catch (IllegalStateException e) {
+						return "Fehler beim Hochladen: " + e.getMessage();
 					}
 					
 					try {
