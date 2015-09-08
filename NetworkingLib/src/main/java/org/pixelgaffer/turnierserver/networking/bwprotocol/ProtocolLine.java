@@ -35,7 +35,7 @@ public class ProtocolLine
 	@SuppressWarnings("unchecked")
 	public <T> T getObject (Class<T> clazz)
 	{
-		return (T) getObject();
+		return (T)getObject();
 	}
 	
 	/**
@@ -67,9 +67,9 @@ public class ProtocolLine
 	/**
 	 * Serialisiert dieses Objekt.
 	 */
-	public byte[] serialize () throws IOException
+	public byte[] serialize (boolean newline) throws IOException
 	{
-		byte obj[] = Parsers.getWorker().parse(getObject());
+		byte obj[] = Parsers.getWorker().parse(getObject(), newline);
 		byte data[] = new byte[obj.length + 1];
 		data[0] = getMode();
 		System.arraycopy(obj, 0, data, 1, obj.length);

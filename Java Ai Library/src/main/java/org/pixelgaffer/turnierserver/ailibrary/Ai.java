@@ -1,12 +1,13 @@
 package org.pixelgaffer.turnierserver.ailibrary;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Map;
 
@@ -15,8 +16,6 @@ import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.PropertyUtils;
 
 import com.google.gson.reflect.TypeToken;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * @param <E>
@@ -124,8 +123,7 @@ public abstract class Ai<E, R> implements Runnable {
 	 */
 	protected final void send(Object o) {
 		try {
-			out.write(Parsers.getWorker().parse(o));
-			out.write(0xa);
+			out.write(Parsers.getWorker().parse(o, true));
 			out.flush();
 		} catch (Exception e) {
 			crash(e);

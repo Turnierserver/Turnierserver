@@ -51,8 +51,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	{
 		if (type.getType() != SANDBOX)
 			WorkerMain.getLogger().warning("Schicke Job an " + type.getType() + " (sollte " + SANDBOX + " sein)");
-		getClient().write(Parsers.getSandbox().parse(job));
-		getClient().write("\n".getBytes(UTF_8));
+		getClient().write(Parsers.getSandbox().parse(job, true));
 	}
 	
 	/**
@@ -93,101 +92,114 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	@Override
 	public void packetReceived (NIOSocket socket, byte[] packet)
 	{
+		WorkerMain.getLogger().debug("anfang");
 		buffer.add(packet);
 		byte line[];
 		while ((line = buffer.readLine()) != null)
 		{
-			// wenn type noch null ist, diesen lesen
-			if (type == null)
-			{
-				String linestr = new String(line, UTF_8);
-				type = WorkerConnectionType.parse(linestr);
-				if (type == null)
-				{
-					WorkerMain.getLogger().critical("Kann WorkerConnectionType nicht aus " + linestr + " lesen");
-					socket.close();
-					return;
-				}
-				switch (type.getType())
-				{
-					case AI:
-						WorkerMain.getLogger().info("Die KI " + type.getUuid() + " hat sich verbunden");
-						WorkerServer.aiConnections.put(type.getUuid(), this);
-						try
-						{
-							WorkerMain.getBackendClient().sendAiConnected(new AiConnected(type.getUuid()));
-						}
-						catch (IOException e)
-						{
-							e.printStackTrace();
-						}
-						break;
-					case BACKEND:
-						WorkerServer.backendConnection = this;
-						WorkerMain.getLogger().info("Das Backend hat sich verbunden");
-						break;
-					case SANDBOX:
-						sandbox = new Sandbox(this);
-						sandbox.setLangs(type.getLangs());
-						WorkerMain.getLogger().info("Eine neue Sandbox hat sich verbunden: " + sandbox);
-						Sandboxes.addSandbox(sandbox);
-						break;
-				}
-				continue;
-			}
-			
-			switch (type.getType())
-			{
-				case AI:
-					// von einer AI kommende Pakete zum Backend weiterleiten
-					if ((WorkerServer.backendConnection != null) && WorkerServer.backendConnection.isConnected())
-					{
-						try
-						{
-							MessageForward mf = new MessageForward(type.getUuid(), line);
-							DataBuffer buf = new DataBuffer();
-							buf.add(Parsers.getWorker().parse(mf));
-							buf.add("\n".getBytes(UTF_8));
-							WorkerServer.backendConnection.getClient().write(buf.readAll());
-						}
-						catch (Exception e)
-						{
-							WorkerMain.getLogger().critical("Fehler beim Weiterleiten: " + e);
-						}
-					}
-					else
-						WorkerMain.getLogger().critical("Habe keine Verbindung zum Backend gefunden");
-					break;
+			byte _line[] = line;
+//			new Thread( () -> {
+				WorkerMain.getLogger().debug("\t" + new String(_line, UTF_8));
 				
-				case BACKEND:
-					// vom Backend kommende Packete an die entsprechende KI
-					// weiterleiten
-					try
+				// wenn type noch null ist, diesen lesen
+					if (type == null)
 					{
-						MessageForward mf = Parsers.getWorker().parse(line, MessageForward.class);
-						WorkerConnectionHandler con = WorkerServer.aiConnections.get(mf.getAi());
-						if (con == null)
-							throw new IllegalArgumentException("Unbekannte KI mit der UUID " + mf.getAi());
-						con.sendMessage(mf);
+						String linestr = new String(_line, UTF_8);
+						type = WorkerConnectionType.parse(linestr);
+						if (type == null)
+						{
+							WorkerMain.getLogger()
+									.critical("Kann WorkerConnectionType nicht aus " + linestr + " lesen");
+							socket.close();
+							return;
+						}
+						switch (type.getType())
+						{
+							case AI:
+								WorkerMain.getLogger().info("Die KI " + type.getUuid() + " hat sich verbunden");
+								WorkerServer.aiConnections.put(type.getUuid(), this);
+								try
+								{
+									WorkerMain.getBackendClient().sendAiConnected(new AiConnected(type.getUuid()));
+								}
+								catch (IOException e)
+								{
+									e.printStackTrace();
+								}
+								break;
+							case BACKEND:
+								WorkerServer.backendConnection = this;
+								WorkerMain.getLogger().info("Das Backend hat sich verbunden");
+								break;
+							case SANDBOX:
+								sandbox = new Sandbox(this);
+								sandbox.setLangs(type.getLangs());
+								WorkerMain.getLogger().info("Eine neue Sandbox hat sich verbunden: " + sandbox);
+								Sandboxes.addSandbox(sandbox);
+								break;
+						}
+						return;
 					}
-					catch (Exception e)
+					
+					switch (type.getType())
 					{
-						WorkerMain.getLogger().critical("Fehler beim Weiterleiten: " + e);
+						case AI:
+							// von einer AI kommende Pakete zum Backend
+							// weiterleiten
+							if ((WorkerServer.backendConnection != null)
+									&& WorkerServer.backendConnection.isConnected())
+							{
+								try
+								{
+									MessageForward mf = new MessageForward(type.getUuid(), _line);
+									DataBuffer buf = new DataBuffer();
+									buf.add(Parsers.getWorker().parse(mf, true));
+									WorkerServer.backendConnection.getClient().write(buf.readAll());
+								}
+								catch (Exception e)
+								{
+									WorkerMain.getLogger().critical("Fehler beim Weiterleiten: " + e);
+								}
+							}
+							else
+								WorkerMain.getLogger().critical("Habe keine Verbindung zum Backend gefunden");
+							break;
+						
+						case BACKEND:
+							// vom Backend kommende Packete an die entsprechende
+							// KI
+							// weiterleiten
+							try
+							{
+								MessageForward mf = Parsers.getWorker().parse(_line, MessageForward.class);
+								WorkerMain.getLogger().debug("Empfangen: " + mf);
+								WorkerConnectionHandler con = WorkerServer.aiConnections.get(mf.getAi());
+								if (con == null)
+									throw new IllegalArgumentException("Unbekannte KI mit der UUID " + mf.getAi());
+								WorkerMain.getLogger().debug("Sende:    " + mf);
+								con.sendMessage(mf);
+								WorkerMain.getLogger().debug("Gesendet: " + mf);
+							}
+							catch (Exception e)
+							{
+								WorkerMain.getLogger().critical("Fehler beim Weiterleiten: " + e);
+							}
+							break;
+						
+						case SANDBOX:
+							try
+							{
+								SandboxMessage msg = Parsers.getSandbox().parse(_line, SandboxMessage.class);
+								sandbox.sandboxAnswer(msg);
+							}
+							catch (Exception e)
+							{
+								WorkerMain.getLogger().critical("Fehler beim Lesen der Nachricht der Sandbox: " + e);
+							}
+							break;
 					}
-					break;
-				
-				case SANDBOX:
-					try
-					{
-						SandboxMessage msg = Parsers.getSandbox().parse(line, SandboxMessage.class);
-						sandbox.sandboxAnswer(msg);
-					}
-					catch (Exception e)
-					{
-						WorkerMain.getLogger().critical("Fehler beim Lesen der Nachricht der Sandbox: " + e);
-					}
-					break;
-			}
+//				}).start();
 		}
+		WorkerMain.getLogger().debug("ende");
 	}
 }

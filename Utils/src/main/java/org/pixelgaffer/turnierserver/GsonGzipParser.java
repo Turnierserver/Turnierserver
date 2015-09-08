@@ -27,8 +27,8 @@ public class GsonGzipParser extends GsonParser {
 	}
 
 	@Override
-	public byte[] parse(Object obj) throws IOException {
-		return compress(super.parse(obj));
+	public byte[] parse(Object obj, boolean newline) throws IOException {
+		return compress(super.parse(obj, newline));
 	}
 	
 	public byte[] compress(byte[] uncompressed) throws IOException {

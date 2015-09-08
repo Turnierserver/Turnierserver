@@ -43,8 +43,8 @@ public class WorkerClient implements SocketObserver
 	 */
 	public void sendMessage (MessageForward mf) throws IOException
 	{
-		client.write(Parsers.getWorker().parse(mf));
-		client.write("\n".getBytes(UTF_8));
+		BackendMain.getLogger().debug("Sende " + mf);
+		client.write(Parsers.getWorker().parse(mf, true));
 	}
 	
 	/**
@@ -79,15 +79,18 @@ public class WorkerClient implements SocketObserver
 		byte line[];
 		while ((line = buffer.readLine()) != null)
 		{
-			try
-			{
-				MessageForward mf = Parsers.getWorker().parse(line, MessageForward.class);
-				Games.receiveMessage(mf);
-			}
-			catch (IOException e)
-			{
-				BackendMain.getLogger().critical("Failed to parse line: " + e);
-			}
+			byte _line[] = line;
+			new Thread( () -> {
+				try
+				{
+					MessageForward mf = Parsers.getWorker().parse(_line, MessageForward.class);
+					Games.receiveMessage(mf);
+				}
+				catch (IOException e)
+				{
+					BackendMain.getLogger().critical("Failed to parse line: " + e);
+				}
+			}).start();
 		}
 	}
 	
