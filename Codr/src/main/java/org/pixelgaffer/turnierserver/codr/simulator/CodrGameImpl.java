@@ -92,11 +92,14 @@ public class CodrGameImpl implements Game, Frontend
 	
 	public CodrGameImpl (GameBase game, Collection<Version> opponents) throws IOException, ReflectiveOperationException
 	{
+		System.out.println("CodrGameImpl(" + game + ", " + opponents + ")");
+		System.out.println(game.gameType);
 		renderData = new FileOutputStream(Paths.gameRenderData(game));
 		logic = loadGameLogic(game.gameType);
 		
 		for (Version v : opponents)
 		{
+			System.out.println(v);
 			CodrAiWrapper aiw = new CodrAiWrapper(this, randomUUID());
 			aiw.setIndex(ais.size());
 			aiw.setId(v.ai.title + "v" + v.number);
