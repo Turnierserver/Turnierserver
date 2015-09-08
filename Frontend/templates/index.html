@@ -4,178 +4,201 @@
 {% if logged_in %}
 {{ aktuelles }}
 {% else %}
-<h2>Einloggen oder Account erstellen um Features zu benutzen</h2>
 
-<form id="caform" class="ui form segment" method="POST" action="/api/user/create">
-	<div class="required field">
-		<label>Nutzername</label>
-		<input id="username" placeholder="max_mustermann" type="text" name="username">
-	</div>
-	<div class="two fields">
-		<div class="field">
-			<label>Vorname</label>
-			<input id="firstname" placeholder="Max" type="text">
+<div class="ui three buttons">
+	<button id="register_form_button" class="ui basic green button">Registrieren</button>
+	<button id="reset_form_button" class="ui basic green button">Passwort zurücksetzen</button>
+	<a href="http://google.de?q=lel" id="codr_button" class="ui basic green button">Codr runterladen</a>
+</div>
+
+<div id="register_form" style="display: none; margin-top: 2em;">
+	<form id="caform" class="ui form segment" method="POST" action="/api/user/create">
+		<div class="required field">
+			<label>Nutzername</label>
+			<input id="username" placeholder="max_mustermann" type="text" name="username">
 		</div>
-		<div class="field">
-			<label>Nachname</label>
-			<input id="lastname" placeholder="Mustermann" type="text">
+		<div class="two fields">
+			<div class="field">
+				<label>Vorname</label>
+				<input id="firstname" placeholder="Max" type="text">
+			</div>
+			<div class="field">
+				<label>Nachname</label>
+				<input id="lastname" placeholder="Mustermann" type="text">
+			</div>
 		</div>
-	</div>
-	<div class="required field">
-		<label>Email-Adresse</label>
-		<input id="email" placeholder="max@mustermann.de" type="email" name="email">
-	</div>
-	<div class="required field">
-		<label>Password</label>
-		<input id="password" name="password" type="password">
-	</div>
-	<div id="confirm_pw" class="transition hidden field">
-		<label>Password bestätigen</label>
-		<input id="confirm_pw_input" name="password" type="password">
-	</div>
-	<div class="inline required field">
-		<div class="ui checkbox">
-			<input id="accept" name="terms" type="checkbox" tabindex="0">
-			{% if env.DEBUG %}
-			<label>Ich verstehe, dass das hier ein Test-Server ist.</label>
-			{% else %}
-			<label>Ich akzeptiere die (nicht existierenden) TOS.</label>
-			{% endif %}
+		<div class="required field">
+			<label>Email-Adresse</label>
+			<input id="email" placeholder="max@mustermann.de" type="email" name="email">
 		</div>
-	</div>
-	<div id="create-account" class="ui button">Account erstellen</div>
-	<div class="ui error message"></div>
-</form>
+		<div class="required field">
+			<label>Password</label>
+			<input id="password" name="password" type="password">
+		</div>
+		<div id="confirm_pw" class="transition hidden field">
+			<label>Password bestätigen</label>
+			<input id="confirm_pw_input" name="password" type="password">
+		</div>
+		<div class="inline required field">
+			<div class="ui checkbox">
+				<input id="accept" name="terms" type="checkbox" tabindex="0">
+				{% if env.DEBUG %}
+				<label>Ich verstehe, dass das hier ein Test-Server ist.</label>
+				{% else %}
+				<label>Ich akzeptiere die (nicht existierenden) TOS.</label>
+				{% endif %}
+			</div>
+		</div>
+		<div id="create-account" class="ui button">Account erstellen</div>
+		<div class="ui error message"></div>
+	</form>
 
-<script>
+	<script>
 
-$(".ui.checkbox").checkbox();
-function send () {
-	console.log("Creating User...");
-	$('#caform').addClass('loading');
+	$(".ui.checkbox").checkbox();
+	function send () {
+		console.log("Creating User...");
+		$('#caform').addClass('loading');
 
-	var d = {
-		username:  $("#caform #username").val(),
-		firstname: $("#caform #firstname").val(),
-		lastname:  $("#caform #lastname").val(),
-		password:  $("#caform #password").val(),
-		email:     $("#caform #email").val()
-	};
+		var d = {
+			username:  $("#caform #username").val(),
+			firstname: $("#caform #firstname").val(),
+			lastname:  $("#caform #lastname").val(),
+			password:  $("#caform #password").val(),
+			email:     $("#caform #email").val()
+		};
 
-	$("#create-account-form").addClass("loading");
-	$.post("/api/user/create", d).done(function(data) {
-		console.log("User created");
-		location.reload();
-	}).fail(function(xhr, textStatus, errorThrown) {
-		console.log(xhr.responseText.error);
-		alert(JSON.parse(xhr.responseText).error);
-		$("#create-account-form").removeClass("loading");
-	});
-}
+		$("#create-account-form").addClass("loading");
+		$.post("/api/user/create", d).done(function(data) {
+			console.log("User created");
+			location.reload();
+		}).fail(function(xhr, textStatus, errorThrown) {
+			console.log(xhr.responseText.error);
+			alert(JSON.parse(xhr.responseText).error);
+			$("#create-account-form").removeClass("loading");
+		});
+	}
 
-$('#caform').form({
-	onSuccess: send,
-	fields: {
-		username: {
-			identifier : 'username',
-			rules: [
-				{
-					type   : 'empty',
-					prompt : 'Du brauchts einen Nutzernamen'
-				},
-				{
-					type   : 'maxLength[24]',
-					prompt : 'Dein Nutzername sollte nicht länger als 24 Zeichen sein.'
-				}
-			]
-		},
-		email: {
-			identifier : 'email',
-			rules: [
-				{
-					type   : 'empty',
-					prompt : 'Du brauchst eine E-Mail Adresse!'
-				}
-			]
-		},
-		password: {
-			identifier : 'password',
-			rules: [
-				{
-					type   : 'empty',
-					prompt : 'Du brauchst ein Passwort'
-				},
-				{
-					type   : 'minLength[3]',
-					prompt : 'Dein Passwort sollte länger als 3 Zeichen sein'
-				}
-			]
-		},
-		confirm_pw: {
-			identifier : 'confirm_pw_input',
-			rules: [
-				{
-					type  : 'match[password]',
-					prompt: 'Die Passwörter müssen übereinstimmen.'
-				},
-			]
-		},
-		terms: {
-			identifier : 'terms',
-			rules: [
-				{
-					type   : 'checked',
-					prompt : 'Du musst die TOS akzeptieren'
-				}
-			]
+	$('#caform').form({
+		onSuccess: send,
+		fields: {
+			username: {
+				identifier : 'username',
+				rules: [
+					{
+						type   : 'empty',
+						prompt : 'Du brauchts einen Nutzernamen'
+					},
+					{
+						type   : 'maxLength[24]',
+						prompt : 'Dein Nutzername sollte nicht länger als 24 Zeichen sein.'
+					}
+				]
+			},
+			email: {
+				identifier : 'email',
+				rules: [
+					{
+						type   : 'empty',
+						prompt : 'Du brauchst eine E-Mail Adresse!'
+					}
+				]
+			},
+			password: {
+				identifier : 'password',
+				rules: [
+					{
+						type   : 'empty',
+						prompt : 'Du brauchst ein Passwort'
+					},
+					{
+						type   : 'minLength[3]',
+						prompt : 'Dein Passwort sollte länger als 3 Zeichen sein'
+					}
+				]
+			},
+			confirm_pw: {
+				identifier : 'confirm_pw_input',
+				rules: [
+					{
+						type  : 'match[password]',
+						prompt: 'Die Passwörter müssen übereinstimmen.'
+					},
+				]
+			},
+			terms: {
+				identifier : 'terms',
+				rules: [
+					{
+						type   : 'checked',
+						prompt : 'Du musst die TOS akzeptieren'
+					}
+				]
+			}
 		}
-	}
-});
+	});
 
-$("#password").on("input", function() {
-	var hidden = $("#confirm_pw").hasClass("hidden");
-	if ($("#password").val() !== "") {
-		if (hidden)
-			$("#confirm_pw").transition("scale");
-	} else {
-		if (!hidden)
-			$("#confirm_pw").transition("scale");
-		$("#confirm_pw_input").val("");
-	}
-});
+	$("#password").on("input", function() {
+		var hidden = $("#confirm_pw").hasClass("hidden");
+		if ($("#password").val() !== "") {
+			if (hidden)
+				$("#confirm_pw").transition("scale");
+		} else {
+			if (!hidden)
+				$("#confirm_pw").transition("scale");
+			$("#confirm_pw_input").val("");
+		}
+	});
 
-$("#create-account").on("click", function () {
-	$("#caform").form("validate form");
-});
-</script>
+	$("#create-account").on("click", function () {
+		$("#caform").form("validate form");
+	});
+	</script>
+</div>
 
-<h2>Passwort zurücksetzen:</h2>
-<form id="pw_reset_form" class="ui form segment" method="POST" action="/api/user/password_reset">
-	<div class="required field">
-		<label>Nutzername</label>
-		<input id="username" placeholder="max_mustermann" type="text" name="username">
-	</div>
-	<div class="required field">
-		<label>Email-Adresse</label>
-		<input id="email" placeholder="max@mustermann.de" type="email" name="email">
-	</div>
-	<div id="reset-pw" class="ui button">Passwort zurücksetzen</div>
-</form>
-<script>
-$("#reset-pw").on("click", function() {
-	$("#pw_reset_form").addClass("loading")
-	$.post("/api/user/password_reset", {
-		username: $("#pw_reset_form #username").val(),
-		email: $("#pw_reset_form #email").val()
-	}).done(function(data) {
-		location.reload();
-	}).fail(function(xhr, textStatus, errorThrown) {
-		console.log(xhr.responseText.error)
-		alert(JSON.parse(xhr.responseText).error)
-		$("#pw_reset_form").removeClass("loading")
+<div id="reset_form" style="display: none; margin-top: 2em;">
+	<form id="pw_reset_form" class="ui form segment" method="POST" action="/api/user/password_reset">
+		<div class="required field">
+			<label>Nutzername</label>
+			<input id="username" placeholder="max_mustermann" type="text" name="username">
+		</div>
+		<div class="required field">
+			<label>Email-Adresse</label>
+			<input id="email" placeholder="max@mustermann.de" type="email" name="email">
+		</div>
+		<div id="reset-pw" class="ui button">Passwort zurücksetzen</div>
+	</form>
+	<script>
+	$("#reset-pw").on("click", function() {
+		$("#pw_reset_form").addClass("loading")
+		$.post("/api/user/password_reset", {
+			username: $("#pw_reset_form #username").val(),
+			email: $("#pw_reset_form #email").val()
+		}).done(function(data) {
+			location.reload();
+		}).fail(function(xhr, textStatus, errorThrown) {
+			console.log(xhr.responseText.error)
+			alert(JSON.parse(xhr.responseText).error)
+			$("#pw_reset_form").removeClass("loading")
+		})
 	})
-})
+	</script>
+</div>
+
+<script>
+$("#register_form_button").on("click", function() {
+	if ($("#reset_form").hasClass("visible"))
+		$("#reset_form").transition("scale");
+	$("#register_form").transition("scale");
+});
+$("#reset_form_button").on("click", function() {
+	if ($("#register_form").hasClass("visible"))
+		$("#register_form").transition("scale");
+	$("#reset_form").transition("scale");
+});
 </script>
+
+{{aktuelles}}
 
 {% endif %}
 

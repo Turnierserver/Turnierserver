@@ -963,7 +963,7 @@ def start_game():
 		for i2, ai2 in enumerate(ais):
 			if i1 != i2 and ai1 == ai2:
 				logger.warning("Nen Gegen die selben KIs")
-				logger.warning(ais)
+				logger.warning(str(ais))
 				return {"error": "No duplicate AIs allowed."}, 400
 
 	ais = [AI.query.get(ai) for ai in ais]
