@@ -424,15 +424,12 @@ public class MainApp extends Application {
 		};
 		Task<ObservableList<AiOnline>> loadOnline = new Task<ObservableList<AiOnline>>() {
 			public ObservableList<AiOnline> call() {
-				System.out.println("start");
 				ObservableList<AiOnline> newOnline = null;
 				try {
 					newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				System.out.println("ende");
 				return newOnline;
 			}
 		};
