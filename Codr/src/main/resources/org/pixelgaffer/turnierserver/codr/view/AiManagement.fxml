@@ -108,21 +108,9 @@
                                                    <children>
                                     <RadioButton fx:id="rbSimple" mnemonicParsing="false" onAction="#clickRbSimple" text="Simple Player" />
                                     <RadioButton fx:id="rbContinue" mnemonicParsing="false" onAction="#clickRbContinue" text="weiterschreiben" />
-                                    <RadioButton fx:id="rbFromFile" mnemonicParsing="false" onAction="#clickRbFromFile" text="Code aus Datei laden" />
+                                    <RadioButton fx:id="rbFromFile" mnemonicParsing="false" onAction="#clickRbFromFile" text="Code aus Ordner laden" />
                                                    </children>
                                                 </FlowPane>
-                                                <BorderPane>
-                                                   <right>
-                                    <Button mnemonicParsing="false" onAction="#clickSelectFile" prefHeight="31.0" prefWidth="31.0" text="..." BorderPane.alignment="CENTER">
-                                                         <BorderPane.margin>
-                                                            <Insets left="5.0" />
-                                                         </BorderPane.margin>
-                                                      </Button>
-                                                   </right>
-                                                   <center>
-                                    <TextField fx:id="tbFile" prefHeight="31.0" prefWidth="156.0" BorderPane.alignment="CENTER" />
-                                                   </center>
-                                                </BorderPane>
                               <Button fx:id="btNewVersion" mnemonicParsing="false" onAction="#clickNewVersion" prefHeight="31.0" text="Neue Version" />
                                              </children>
                                           </VBox>
