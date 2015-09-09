@@ -245,9 +245,10 @@ public class WebConnector {
 
 	public ObservableList<AiOnline> getAis(String game) {
 		ObservableList<AiOnline> result = FXCollections.observableArrayList();
+		int id = getGametypeID(game);
 		String json;
 		try {
-			json = toString(sendGet("ais/" + getGametypeID(game)));
+			json = toString(sendGet("ais/" + id));
 		} catch (IOException e) {
 			return result;
 		}
@@ -258,7 +259,7 @@ public class WebConnector {
 		
 		json = null;
 		try {
-			json = toString(sendGet("ai/games/" + game));
+			json = toString(sendGet("ai/games/" + id));
 		} catch (IOException e) {
 			return result;
 		}
