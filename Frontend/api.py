@@ -740,6 +740,27 @@ def ai_freeze(id):
 	db.session.commit()
 	return {"error": False}, 200
 
+@api.route("/ai/<int:id>/activate_version/<int:version_id>", methods=["POST"])
+@json_out
+@authenticated
+def ai_activate_version(id, version_id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+
+	version = AI_Version.query.filter(AI_Version.ai == ai).filter(AI_Version.version_id == version_id).first()
+	if not version:
+		return CommonErrors.INVALID_ID
+	if not version.compiled or not version.qualified or not version.frozen:
+		return {"error": "New version isnt frozen"}, 405
+
+	ai._active_version_id = version.id
+	db.session.commit()
+
+	return {"error": False}, 200
+
 @api.route("/ai/<int:id>/new_version", methods=["POST"])
 @json_out
 @authenticated

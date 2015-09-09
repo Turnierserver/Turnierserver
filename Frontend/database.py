@@ -56,7 +56,10 @@ class SyncedFTP:
 			def f():
 				return meth(*args, **kwargs)
 			try:
-				return f()
+				try:
+					return f()
+				except self.err:
+					return f()
 			except self.err:
 				abort(404)
 		return wrapper
@@ -369,9 +372,7 @@ class AI(db.Model):
 	def active_version(self):
 		if self._active_version_id:
 			return AI_Version.query.get(self._active_version_id)
-		for v in self.version_list[::-1]:
-			if v.frozen:
-				return v
+		return self.latest_frozen_version() # als fallback
 
 	def latest_frozen_version(self):
 		for v in self.version_list[::-1]:
@@ -522,6 +523,10 @@ class AI_Version(db.Model):
 	def current(self):
 		return self.ai.latest_version() == self
 
+	@property
+	def is_active(self):
+		return self.ai.active_version() == self
+
 	def freeze(self):
 		self.frozen = True
 
@@ -607,7 +612,7 @@ class Game(db.Model):
 	def moves(self):
 		return len(self.log)
 
-	def time(self, locale):
+	def time(self, locale='de'):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
 
 	def info(self):

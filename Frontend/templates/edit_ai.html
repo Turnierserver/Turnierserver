@@ -128,10 +128,11 @@
 	<table class="ui celled padded table">
 		<thead>
 			<tr><th class="single line">Versionsnummer</th>
-			<th>Kompiliert</th>
-			<th>Qualifiziert</th>
-			<th>Freigegeben</th>
-			<th>Aktion</th>
+			<th class="center aligned">Kompiliert</th>
+			<th class="center aligned">Qualifiziert</th>
+			<th class="center aligned">Fertiggestellt</th>
+			<th class="center aligned">Aktiv</th>
+			<th class="center aligned">Aktion</th>
 		</tr></thead>
 		<tbody>
 			{% for version in ai.version_list %}
@@ -161,9 +162,18 @@
 					{% if version.frozen %}
 					<i class="large green checkmark icon"></i>
 					{% elif version.qualified and version.current %}
-					<button id="freeze_version" class="ui basic teal button">Freigeben</button>
+					<button id="freeze_version" class="ui basic teal button">Fertigstellen</button>
 					{% else %}
 					<i class="large red remove icon"></i>
+					{% endif %}
+				</td>
+				<td class="center aligned">
+					{% if version.is_active %}
+					<i class="large green checkmark icon"></i>
+					{% elif version.frozen and version.qualified and version.compiled %}
+					<button class="ui basic teal button activate_version" data-id="{{version.version_id}}">Aktivieren</button>
+					{% else %}
+					<button class="ui basic teal disabled button">Aktivieren</button>
 					{% endif %}
 				</td>
 				<td class="center aligned">
@@ -176,7 +186,7 @@
 			</tr>
 			{% endfor %}
 			<tr>
-				<td class="three wide center aligned">
+				<td class="three wide center aligned" colspan="6">
 					<button id="new_version" class="ui large basic {% if not ai.version_list[-1].frozen %}disabled{% endif %} teal button">Neue Version</button>
 					<script>
 					$("#new_version").on("click", function() {
@@ -319,6 +329,15 @@ $("#delete").on("click", function() {
 $("#freeze_version").on('click', function() {
 	$(this).addClass("disabled");
 	$.post("/api/ai/{{ai.id}}/freeze").done(function(data) {
+		location.reload();
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error);
+		alert(JSON.parse(xhr.responseText).error);
+	});
+});
+
+$(".activate_version").on('click', function() {
+	$.post("/api/ai/{{ai.id}}/activate_version/" + $(this).attr("data-id")).done(function(data) {
 		location.reload();
 	}).fail(function(xhr, textStatus, errorThrown) {
 		console.log(xhr.responseText.error);
