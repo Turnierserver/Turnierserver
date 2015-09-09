@@ -177,13 +177,13 @@ public class MainApp extends Application {
 				cStart.lbIsOnline.setText("Es besteht eine Internetverbindung");
 				cStart.btTryOnline.setText("nach Aktualisierungen suchen");
 				cStart.vbLogin.setDisable(false);
-				cGame.btLoadOnline.setDisable(false);
+				cGame.tabOnline.setDisable(false);
 				cRoot.tabRanking.setDisable(false);
 			} else {
 				cStart.lbIsOnline.setText("Momentan besteht keine Internetverbindung");
 				cStart.btTryOnline.setText("Erneut versuchen");
 				cStart.vbLogin.setDisable(true);
-				cGame.btLoadOnline.setDisable(true);
+				cGame.tabOnline.setDisable(true);
 				cRoot.tabRanking.setDisable(true);
 			}
 		});
@@ -224,14 +224,16 @@ public class MainApp extends Application {
 			if (newValue) {
 				cStart.vbLogin.getChildren().clear();
 				cStart.vbLogin.getChildren().add(cStart.hbLogout);
-				cGame.btOnline.setDisable(false);
+				cGame.tpNewGameOnline.setDisable(false);
+				cGame.tpNewGameOnline.setExpanded(true);
 				cAi.btUpload.setVisible(true);
 				cRanking.btChallenge.setVisible(true);
 				cRoot.tabSubmission.setDisable(false);
 			} else {
 				cStart.vbLogin.getChildren().clear();
 				cStart.vbLogin.getChildren().add(cStart.gpLogin);
-				cGame.btOnline.setDisable(true);
+				cGame.tpNewGameOnline.setDisable(true);
+				cGame.tpNewGameOnline.setExpanded(false);
 				cAi.btUpload.setVisible(false);
 				cRanking.btChallenge.setVisible(false);
 				cRoot.tabSubmission.setDisable(true);
@@ -421,9 +423,16 @@ public class MainApp extends Application {
 			}
 		};
 		Task<ObservableList<AiOnline>> loadOnline = new Task<ObservableList<AiOnline>>() {
-			
 			public ObservableList<AiOnline> call() {
-				ObservableList<AiOnline> newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
+				System.out.println("start");
+				ObservableList<AiOnline> newOnline = null;
+				try {
+					newOnline = MainApp.webConnector.getAis(MainApp.actualGameType.get());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println("ende");
 				return newOnline;
 			}
 		};
@@ -446,26 +455,17 @@ public class MainApp extends Application {
 				onlineGames.clear();
 				onlineGames.addAll(newValue);
 			}
-			if (!thread3.isAlive() && !thread2.isAlive()) {
-				connectGamesPlayers();
-			}
 		});
 		loadOnline.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue != null) {
 				onlineAis.clear();
 				onlineAis.addAll(newValue);
-				if (!thread1.isAlive() && !thread3.isAlive()) {
-					connectGamesPlayers();
-				}
 			}
 		});
 		loadOwn.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue != null) {
 				ownOnlineAis.clear();
 				ownOnlineAis.addAll(newValue);
-			}
-			if (!thread3.isAlive() && !thread2.isAlive()) {
-				connectGamesPlayers();
 			}
 		});
 		
@@ -480,33 +480,33 @@ public class MainApp extends Application {
 	}
 	
 	
-	/**
-	 * Verbindet die Spiele und die KIs miteinander, nachdem sie Runtergeladen wurden.
-	 */
-	public void connectGamesPlayers() {
-		Map<Integer, GameOnline> games = new HashMap<Integer, GameOnline>();
-		Map<Integer, AiOnline> ais = new HashMap<Integer, AiOnline>();
-		
-		for (GameOnline game : onlineGames) {
-			games.put(game.ID, game);
-		}
-		for (AiOnline ai : onlineAis) {
-			ais.put(ai.id, ai);
-		}
-		
-		
-		for (GameOnline game : onlineGames) {
-			for (ParticipantResult part : game.participants) {
-				part.ai = ais.get(part.aiID);
-			}
-		}
-		for (AiOnline ai : onlineAis) {
-			for (int id : ai.onlineGameIDs) {
-				ai.onlineGames.add(games.get(id));
-			}
-		}
-		return;
-	}
+//	/**
+//	 * Verbindet die Spiele und die KIs miteinander, nachdem sie Runtergeladen wurden.
+//	 */
+//	public void connectGamesPlayers() {
+//		Map<Integer, GameOnline> games = new HashMap<Integer, GameOnline>();
+//		Map<Integer, AiOnline> ais = new HashMap<Integer, AiOnline>();
+//		
+//		for (GameOnline game : onlineGames) {
+//			games.put(game.ID, game);
+//		}
+//		for (AiOnline ai : onlineAis) {
+//			ais.put(ai.id, ai);
+//		}
+//		
+//		
+//		for (GameOnline game : onlineGames) {
+//			for (ParticipantResult part : game.participants) {
+//				part.ai = ais.get(part.aiID);
+//			}
+//		}
+//		for (AiOnline ai : onlineAis) {
+//			for (int id : ai.onlineGameIDs) {
+//				ai.onlineGames.add(games.get(id));
+//			}
+//		}
+//		return;
+//	}
 	
 	
 	/**

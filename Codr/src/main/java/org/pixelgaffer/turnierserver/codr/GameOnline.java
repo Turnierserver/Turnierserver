@@ -18,8 +18,8 @@ import javafx.collections.ObservableList;
 public class GameOnline extends GameBase {
 	
 	
-	private ObservableList<AiOnline> ais = FXCollections.observableArrayList();
-	private int id;
+	public int onlineId;
+	
 	
 	
 	/**
@@ -31,25 +31,14 @@ public class GameOnline extends GameBase {
 	public GameOnline(JSONObject json, WebConnector connector) {
 		super(GameMode.onlineLoaded);
 		
-		id = json.getInt("id");
-		super.ID = id;
+		onlineId = json.getInt("id");
 		JSONObject gametypeObject = json.getJSONObject("type");
 		gameType = gametypeObject.getString("name");
-		JSONArray aiArray = json.getJSONArray("ais");
-		for (int i = 0; i < aiArray.length(); i++) {
-			JSONObject aiObject = aiArray.getJSONObject(i);
-			ParticipantResult part = new ParticipantResult(this);
-			part.playerID.set(aiObject.getInt("author_id"));
-			part.playerName.set(aiObject.getString("author"));
-			part.aiName.set(aiObject.getString("name"));
-			part.aiID.set(aiObject.getInt("id"));
-			participants.add(part);
-		}
 	}
 	
 	public GameOnline(int tempId) {
 		super(GameMode.onlineInprogress);
-		id = tempId;
+		onlineId = tempId;
 	}
 	
 	

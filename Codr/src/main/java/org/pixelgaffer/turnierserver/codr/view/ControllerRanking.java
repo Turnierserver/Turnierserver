@@ -4,6 +4,7 @@ package org.pixelgaffer.turnierserver.codr.view;
 import org.pixelgaffer.turnierserver.codr.AiOnline;
 import org.pixelgaffer.turnierserver.codr.GameOnline;
 import org.pixelgaffer.turnierserver.codr.MainApp;
+import org.pixelgaffer.turnierserver.codr.OnlineGameInfo;
 import org.pixelgaffer.turnierserver.codr.ParticipantResult;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Resources;
@@ -41,7 +42,7 @@ public class ControllerRanking {
 	@FXML TextArea tbDescription;
 	@FXML TableView<AiOnline> tvAis;
 	@FXML TableView<Version> tvVersions;
-	@FXML TableView<GameOnline> tvGames;
+	@FXML TableView<OnlineGameInfo> tvGames;
 	@FXML ImageView imageView;
 	
 	
@@ -52,8 +53,7 @@ public class ControllerRanking {
 	/**
 	 * Initialisiert den Controller
 	 * 
-	 * @param app
-	 *            eine Referenz auf die MainApp
+	 * @param app eine Referenz auf die MainApp
 	 */
 	public void setMainApp(MainApp app) {
 		mainApp = app;
@@ -181,60 +181,29 @@ public class ControllerRanking {
 		tvVersions.setFixedCellSize(25);
 		
 		
-		TableColumn<GameOnline, String> colG0 = new TableColumn<>("Gegner");
-		TableColumn<GameOnline, String> colG1 = new TableColumn<>("zum Spiel");
-		TableColumn<GameOnline, String> colG2 = new TableColumn<>("Datum");
-		TableColumn<GameOnline, String> colG3 = new TableColumn<>("gespielte Zeit");
-		TableColumn<GameOnline, String> colG4 = new TableColumn<>("Gewonnen?");
+		TableColumn<OnlineGameInfo, String> colG0 = new TableColumn<>("Gegner");
+		TableColumn<OnlineGameInfo, String> colG1 = new TableColumn<>("Spiel ID");
+		TableColumn<OnlineGameInfo, String> colG2 = new TableColumn<>("Datum");
+		TableColumn<OnlineGameInfo, String> colG3 = new TableColumn<>("Gewonnen?");
 		
-		colG0.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
-			
-			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
-				String enemies = "";
-				for (ParticipantResult part : p.getValue().participants) {
-					if (part.aiID.get() != ai.id) {
-						enemies = enemies + part.aiName.get() + ", ";
-					}
-				}
-				if (enemies.length() >= 2) {
-					enemies = enemies.substring(0, enemies.length() - 2);
-				}
-				return new SimpleStringProperty(enemies);
+		colG0.setCellValueFactory(new Callback<CellDataFeatures<OnlineGameInfo, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<OnlineGameInfo, String> p) {
+				return new SimpleStringProperty(p.getValue().enemy);
 			}
 		});
-		colG1.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
-			
-			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
-				return new SimpleStringProperty("Spiel " + p.getValue().ID);
+		colG1.setCellValueFactory(new Callback<CellDataFeatures<OnlineGameInfo, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<OnlineGameInfo, String> p) {
+				return new SimpleStringProperty("Spiel " + p.getValue().id);
 			}
 		});
-		colG2.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
-			
-			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
+		colG2.setCellValueFactory(new Callback<CellDataFeatures<OnlineGameInfo, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<OnlineGameInfo, String> p) {
 				return new SimpleStringProperty(p.getValue().date);
 			}
 		});
-		colG3.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
-			
-			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
-				return new SimpleStringProperty(p.getValue().duration + "ms");
-			}
-		});
-		colG4.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
-			
-			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
-				if (ai == null)
-					return new SimpleStringProperty("Unbekannt");
-					
-				for (ParticipantResult part : p.getValue().participants) {
-					if (part.playerID.get() == ai.id) {
-						if (part.won.get())
-							return new SimpleStringProperty("Ja");
-						else
-							return new SimpleStringProperty("Nein");
-					}
-				}
-				return new SimpleStringProperty("Unbekannt");
+		colG3.setCellValueFactory(new Callback<CellDataFeatures<OnlineGameInfo, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<OnlineGameInfo, String> p) {
+				return new SimpleStringProperty(String.valueOf(p.getValue().won));
 			}
 		});
 		
@@ -242,13 +211,11 @@ public class ControllerRanking {
 		colG1.setStyle("-fx-alignment: CENTER;");
 		colG2.setStyle("-fx-alignment: CENTER;");
 		colG3.setStyle("-fx-alignment: CENTER;");
-		colG4.setStyle("-fx-alignment: CENTER;");
 		
 		tvGames.getColumns().add(colG0);
 		tvGames.getColumns().add(colG1);
 		tvGames.getColumns().add(colG2);
 		tvGames.getColumns().add(colG3);
-		tvGames.getColumns().add(colG4);
 		tvGames.setFixedCellSize(25);
 		
 	}
@@ -284,8 +251,8 @@ public class ControllerRanking {
 				tvVersions.minHeightProperty().set(60);
 				tvVersions.maxHeightProperty().set(60);
 			}
-			tvGames.setItems(ai.onlineGames);
-			if (ai.onlineGames.size() != 0) {
+			tvGames.setItems(ai.onlineGamesInfos);
+			if (ai.onlineGamesInfos.size() != 0) {
 				tvGames.prefHeightProperty().bind(tvGames.fixedCellSizeProperty().multiply(Bindings.size(tvGames.getItems()).add(1.3)));
 				tvGames.minHeightProperty().bind(tvGames.prefHeightProperty());
 				tvGames.maxHeightProperty().bind(tvGames.prefHeightProperty());

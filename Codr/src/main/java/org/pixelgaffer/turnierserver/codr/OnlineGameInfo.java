@@ -15,9 +15,9 @@ public class OnlineGameInfo {
 	public OnlineGameInfo(JSONObject json, int aiId) {
 		id = json.getInt("id");
 		date = json.getString("timestr");
-		int aiPos = json.getJSONArray("ai").getJSONObject(0).getInt("id") == aiId ? 0 : 1;
-		enemy = json.getJSONArray("ai").getJSONObject(1 - aiPos).getString("name");
-		won = json.getJSONArray("scores").getInt(aiPos) > json.getJSONArray("scores").getInt(1 - aiPos);
+		int aiPos = json.getJSONArray("ais").getJSONObject(0).getInt("id") == aiId ? 0 : 1;
+		enemy = json.getJSONArray("ais").getJSONObject(1 - aiPos).getString("name");
+		won = json.getJSONObject("scores").getInt(json.getJSONArray("ais").getJSONObject(aiPos).getInt("id") + "") > json.getJSONObject("scores").getInt(json.getJSONArray("ais").getJSONObject(1-aiPos).getInt("id") + "");
 	}
 	
 	public OnlineGameInfo(int iid, String ddate, String eenemy, boolean wwon) {
