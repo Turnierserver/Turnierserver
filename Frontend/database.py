@@ -313,8 +313,9 @@ class AI(db.Model):
 	lang = db.relationship("Lang", backref=db.backref('t_ais', order_by=id))
 	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
 	type = db.relationship("GameType", backref=db.backref('t_ais', order_by=id))
-	version_list = db.relationship("AI_Version", order_by="AI_Version.id", backref="AI", cascade="all, delete, delete-orphan")
+	version_list = db.relationship("AI_Version", primaryjoin="AI.id == AI_Version.ai_id", order_by="AI_Version.id", backref="AI", cascade="all, delete, delete-orphan")
 	game_assocs = db.relationship("AI_Game_Assoc", order_by="AI_Game_Assoc.game_id", cascade="all, delete, delete-orphan")
+	_active_version_id = db.Column(db.Integer, db.ForeignKey("t_ai_versions.id"), nullable=True,)
 
 	def __init__(self, *args, **kwargs):
 		super(AI, self).__init__(*args, **kwargs)
@@ -366,8 +367,10 @@ class AI(db.Model):
 				return v
 
 	def active_version(self):
+		if self._active_version_id:
+			return AI_Version.query.get(self._active_version_id)
 		for v in self.version_list[::-1]:
-			if v.frozen: # FIXME
+			if v.frozen:
 				return v
 
 	def latest_frozen_version(self):
@@ -479,7 +482,7 @@ class AI_Version(db.Model):
 	compiled = db.Column(db.Boolean, default=False)
 	qualified = db.Column(db.Boolean, default=False)
 	frozen = db.Column(db.Boolean, default=False)
-	ai = db.relationship("AI", backref=db.backref('t_ai_versions', order_by=id))
+	ai = db.relationship("AI", foreign_keys="AI_Version.ai_id", backref=db.backref('t_ai_versions', order_by=id))
 	lang_id = db.Column(db.Integer, db.ForeignKey('t_langs.id'))
 	lang = db.relationship("Lang")
 	extras = db.relationship("Library", secondary="t_ai_versions_libraries_assoc")
@@ -604,15 +607,13 @@ class Game(db.Model):
 	def moves(self):
 		return len(self.log)
 
-
-
 	def time(self, locale):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
 
 	def info(self):
 		return {"id": self.id, "ais": [assoc.ai.info() for assoc in self.ai_assocs],
 				"type": self.type.info(), "scores": {assoc.ai.id: assoc.score for assoc in self.ai_assocs},
-				"moves": self.moves, "reason": self.reason, "timestamp": self.timestamp}
+				"moves": self.moves, "reason": self.reason, "timestamp": self.timestamp, "timestr": self.time()}
 
 	def delete(self):
 		db.session.delete(self)

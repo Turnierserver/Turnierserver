@@ -103,7 +103,6 @@ var enemy_id;
 
 $(".challenge.button").on("click", function() {
 	enemy_id = $(this).parent().parent().attr("data-id");
-	// FIXME: disable enemy_id in ais
 	$("#own_dropdown .menu .item").each(function () {
 		if ($(this).attr("data-value") == enemy_id) {
 			$(this).addClass("disabled");
