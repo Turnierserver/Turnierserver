@@ -2,13 +2,19 @@
 {% block body %}
 
 {% if logged_in %}
+
+<div class="ui two buttons">
+	<a href="/api/download_codr" id="codr_button" class="ui basic green button">Codr runterladen</a>
+	<button id="logout_button" class="ui basic red button">Ausloggen</button>
+</div>
+
 {{ aktuelles }}
 {% else %}
 
 <div class="ui three buttons">
 	<button id="register_form_button" class="ui basic green button">Registrieren</button>
 	<button id="reset_form_button" class="ui basic green button">Passwort zurücksetzen</button>
-	<a href="http://google.de?q=lel" id="codr_button" class="ui basic green button">Codr runterladen</a>
+	<a href="/api/download_codr" id="codr_button" class="ui basic green button">Codr runterladen</a>
 </div>
 
 <div id="register_form" style="display: none; margin-top: 2em;">
