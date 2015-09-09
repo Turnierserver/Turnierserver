@@ -25,7 +25,7 @@ echo -e "#!/bin/sh
 cd \`dirname \$0\`
 java -cp '*' org.pixelgaffer.turnierserver.worker.WorkerMain \${@}" > build/worker.sh
 
-projects="Sandbox"
+projects="SandboxMachine"
 for project in $projects
 do
 	cd $project

@@ -13,7 +13,7 @@
  * fitness for a particular purpose. See version 2 and version 3 of the
  * GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the Lesser GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -71,9 +71,7 @@ protected slots:
     void cleanup(int retCode);
 	
 protected:
-    int uid, gid;
-    //int pid;
-    QProcess proc;
+	QProcess proc;
 	
 	QDir dir, binDir;
 	QString binArchive;
