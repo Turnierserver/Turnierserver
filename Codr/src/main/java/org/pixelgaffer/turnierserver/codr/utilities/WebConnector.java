@@ -248,6 +248,7 @@ public class WebConnector {
 		String json;
 		try {
 			json = toString(sendGet("ais/" + getGametypeID(game)));
+			System.out.println("Ais fertig");
 		} catch (IOException e) {
 			return result;
 		}

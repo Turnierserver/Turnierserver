@@ -6,6 +6,7 @@ import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.AiBase.AiMode;
 import org.pixelgaffer.turnierserver.codr.AiExtern;
 import org.pixelgaffer.turnierserver.codr.GameBase;
+import org.pixelgaffer.turnierserver.codr.GameSaved;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.ParticipantResult;
 import org.pixelgaffer.turnierserver.codr.Version;
@@ -151,8 +152,8 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zum Ordner eines bestimmten Spiels zurück
 	 */
-	public static String game(GameBase game) {
-		return gameFolder() + "/" + game.ID;
+	public static String game(GameSaved game) {
+		return gameFolder() + "/" + game.offlineId;
 	}
 	
 	
@@ -167,7 +168,7 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zu den Properties eines bestimmten Spiels zurück
 	 */
-	public static String gameProperties(GameBase game) {
+	public static String gameProperties(GameSaved game) {
 		return game(game) + "/gameProperties.txt";
 	}
 	
@@ -175,16 +176,8 @@ public class Paths {
 	/**
 	 * Gibt den Pfad zu dem Output der GameLogic für das Spiel zurück.
 	 */
-	public static String gameRenderData(GameBase game) {
+	public static String gameRenderData(GameSaved game) {
 		return game(game) + "/renderData.txt";
-	}
-	
-	
-	/**
-	 * der Pfad zu einem ParticipantResult von einem Spiel
-	 */
-	public static String participant(ParticipantResult part) {
-		return gameFolder() + "/" + part.game.ID + "/" + part.number + ".txt";
 	}
 	
 	

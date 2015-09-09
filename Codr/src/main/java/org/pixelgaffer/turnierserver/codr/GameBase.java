@@ -15,13 +15,8 @@ import org.pixelgaffer.turnierserver.codr.simulator.CodrGameImpl;
 public class GameBase {
 	
 	public final GameMode mode;
-	public int ID = -1;
-	public String date;
-	public int duration;
 	public String gameType;
-	public boolean judged;
-	public CodrGameImpl game;
-	public ObservableList<ParticipantResult> participants = FXCollections.observableArrayList();
+	public String date;
 	
 	
 	public static enum GameMode {

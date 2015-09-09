@@ -25,6 +25,11 @@ import org.pixelgaffer.turnierserver.codr.utilities.Paths;
  */
 public class GameSaved extends GameBase {
 	
+	
+	public int offlineId = -1;
+	public CodrGameImpl game;
+	
+	
 	/**
 	 * wird verwendet, wenn ein neues Spiel gestartet wird
 	 * 
@@ -44,7 +49,7 @@ public class GameSaved extends GameBase {
 	 */
 	public GameSaved(int iid) {
 		super(GameMode.saved);
-		ID = iid;
+		offlineId = iid;
 		loadProps();
 	}
 	
@@ -60,23 +65,7 @@ public class GameSaved extends GameBase {
 			prop.load(reader);
 			reader.close();
 			date = prop.getProperty("date");
-			duration = Integer.parseInt(prop.getProperty("duration"));
 			gameType = prop.getProperty("logic");
-			judged = Boolean.parseBoolean(prop.getProperty("judged"));
-			
-			int amount = Integer.parseInt(prop.getProperty("participantAmount"));
-			participants.clear();
-			for (int i = 0; i < amount; i++) {
-				participants.add(new ParticipantResult(this));
-				participants.get(i).playerName.set(prop.getProperty("playerName" + participants.get(i).number));
-				participants.get(i).aiName.set(prop.getProperty("aiName" + participants.get(i).number));
-				participants.get(i).playerID.set(Integer.parseInt(prop.getProperty("playerID" + participants.get(i).number)));
-				participants.get(i).aiID.set(Integer.parseInt(prop.getProperty("aiID" + participants.get(i).number)));
-				participants.get(i).duration.set(Integer.parseInt(prop.getProperty("duration" + participants.get(i).number)));
-				participants.get(i).moveCount.set(Integer.parseInt(prop.getProperty("moveCount" + participants.get(i).number)));
-				participants.get(i).points.set(Integer.parseInt(prop.getProperty("points" + participants.get(i).number)));
-				participants.get(i).won.set(Boolean.parseBoolean(prop.getProperty("won" + participants.get(i).number)));
-			}
 			
 		} catch (IOException e) {
 			ErrorLog.write("Fehler bei Laden aus der properties.txt (Game)");
@@ -90,34 +79,20 @@ public class GameSaved extends GameBase {
 			return;
 		}
 		
-		if (ID == -1) {
+		if (offlineId == -1) {
 			getNewID();
 		}
 		
 		Properties prop = new Properties();
 		prop.setProperty("date", date);
-		prop.setProperty("duration", duration + "");
 		prop.setProperty("logic", gameType);
-		prop.setProperty("judged", judged + "");
-		
-		prop.setProperty("participantAmount", participants.size() + "");
-		for (int i = 0; i < participants.size(); i++) {
-			prop.setProperty("playerName" + participants.get(i).number.get(), participants.get(i).playerName.get());
-			prop.setProperty("aiName" + participants.get(i).number.get(), participants.get(i).aiName.get());
-			prop.setProperty("playerID" + participants.get(i).number.get(), participants.get(i).playerID.get() + "");
-			prop.setProperty("aiID" + participants.get(i).number.get(), participants.get(i).aiID.get() + "");
-			prop.setProperty("duration" + participants.get(i).number.get(), participants.get(i).duration.get() + "");
-			prop.setProperty("moveCount" + participants.get(i).number.get(), participants.get(i).moveCount.get() + "");
-			prop.setProperty("points" + participants.get(i).number.get(), participants.get(i).points.get() + "");
-			prop.setProperty("won" + participants.get(i).number.get(), participants.get(i).won.get() + "");
-		}
 		
 		try {
 			File dir = new File(Paths.game(this));
 			dir.mkdirs();
 			
 			Writer writer = new FileWriter(Paths.gameProperties(this));
-			prop.store(writer, ID + "");
+			prop.store(writer, offlineId + "");
 			writer.close();
 		} catch (IOException e) {
 			ErrorLog.write("Es kann keine Properties-Datei angelegt werden. (Game)");
@@ -139,7 +114,7 @@ public class GameSaved extends GameBase {
 		for (int i = 1; i < 10000; i++) {
 			File dir = new File(Paths.game(i));
 			if (dir.mkdirs()) {
-				ID = i;
+				offlineId = i;
 				return;
 			}
 		}
@@ -168,11 +143,7 @@ public class GameSaved extends GameBase {
 			e.printStackTrace();
 		}
 		
-		for (int i = 0; i < opponents.size(); i++) {
-			participants.add(new ParticipantResult(this, "Lokal", 0, opponents.get(i).ai.title + "v" + opponents.get(i).number, 0, 100, 5, 20, true));
-		}
 		setDateNow();
-		duration = 500;
 	}
 	
 	

@@ -18,6 +18,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.pixelgaffer.turnierserver.codr.GameBase;
+import org.pixelgaffer.turnierserver.codr.GameSaved;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Libraries;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
@@ -90,7 +91,7 @@ public class CodrGameImpl implements Game, Frontend
 	
 	private OutputStream renderData;
 	
-	public CodrGameImpl (GameBase game, Collection<Version> opponents) throws IOException, ReflectiveOperationException
+	public CodrGameImpl (GameSaved game, Collection<Version> opponents) throws IOException, ReflectiveOperationException
 	{
 		System.out.println("CodrGameImpl(" + game + ", " + opponents + ")");
 		System.out.println(game.gameType);

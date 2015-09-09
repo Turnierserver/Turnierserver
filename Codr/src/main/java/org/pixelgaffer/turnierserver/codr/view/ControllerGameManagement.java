@@ -7,19 +7,22 @@ import java.util.List;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import org.pixelgaffer.turnierserver.codr.AiBase;
+import org.pixelgaffer.turnierserver.codr.AiOnline;
+import org.pixelgaffer.turnierserver.codr.AiSimple;
 import org.pixelgaffer.turnierserver.codr.GameBase;
 import org.pixelgaffer.turnierserver.codr.GameBase.GameMode;
+import org.pixelgaffer.turnierserver.codr.GameOnline;
 import org.pixelgaffer.turnierserver.codr.GameSaved;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.ParticipantResult;
@@ -31,28 +34,23 @@ import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 public class ControllerGameManagement {
 	
 	
-	@FXML public Label lbMode;
-	@FXML public Label lbDate;
-	@FXML public Label lbDuration;
-	@FXML public Label lbLogic;
-	@FXML public Label lbChallenger;
-	@FXML public Label lbJudged;
-	@FXML public ToggleButton btOffline;
-	@FXML public ToggleButton btOnline;
-	@FXML public ChoiceBox<String> cbLogic;  //entfernen
-	@FXML public ListView<AiBase> lvPlayer1;
-	@FXML public ListView<AiBase> lvPlayer2;
-	@FXML public ProgressIndicator progress;
-	@FXML public Button btLoadOnline;
-	@FXML public TextArea tbOutput1;
-	@FXML public TextArea tbOutput2;
-	@FXML public TableView<ParticipantResult> tableResult;
+	@FXML public TabPane tabPaneOnOffline;
+	@FXML public ListView<AiSimple> lvPlayerOffline1;
+	@FXML public ListView<AiSimple> lvPlayerOffline2;
+	@FXML public ListView<AiOnline> lvPlayerOnline1;
+	@FXML public ListView<AiOnline> lvPlayerOnline2;
+	@FXML public TableView<GameOnline> lvGamesOnline;
+	@FXML public TableView<GameSaved> lvGamesOffline;
+	@FXML public TitledPane tpNewGameOnline;
+	@FXML public Tab tabOnline;
+	@FXML public Tab tabOffline;
 	
-	@FXML public GameSaved runningGame;
+	
+	public GameSaved runningGame;
 	
 	MainApp mainApp;
 	
-	GameBase game = null;
+	public GameBase game = null;
 	
 	
 	/**
@@ -63,132 +61,62 @@ public class ControllerGameManagement {
 	public void setMainApp(MainApp app) {
 		mainApp = app;
 		MainApp.cGame = this;
-		
-		TableColumn<ParticipantResult, String> col0 = new TableColumn<>("Spieler");
-		TableColumn<ParticipantResult, String> col1 = new TableColumn<>("KI");
-		TableColumn<ParticipantResult, String> col2 = new TableColumn<>("gespielte Zeit");
-		TableColumn<ParticipantResult, String> col3 = new TableColumn<>("Züge");
-		TableColumn<ParticipantResult, String> col4 = new TableColumn<>("Punkte");
-		TableColumn<ParticipantResult, String> col5 = new TableColumn<>("Gewonnen?");
-		
-		col0.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("playerName"));
-		col1.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("kiName"));
-		col2.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("duration"));
-		col3.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("moveCount"));
-		col4.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("points"));
-		col5.setCellValueFactory(new PropertyValueFactory<ParticipantResult, String>("won"));
-		
-		tableResult.getColumns().add(col0);
-		tableResult.getColumns().add(col1);
-		tableResult.getColumns().add(col2);
-		tableResult.getColumns().add(col3);
-		tableResult.getColumns().add(col4);
-		tableResult.getColumns().add(col5);
-		
-		btOffline.setSelected(true);
-		
+				
 		MainApp.gameManager.loadGames();
-		showGame();
+//		showGame();
 		
-		lvPlayer1.getItems().clear();
-		lvPlayer2.getItems().clear();
-		lvPlayer1.getItems().addAll(MainApp.aiManager.ais);
-		lvPlayer2.getItems().addAll(MainApp.aiManager.ais);
+		lvPlayerOffline1.getItems().clear();
+		lvPlayerOffline2.getItems().clear();
+		lvPlayerOffline1.getItems().addAll(MainApp.aiManager.ais);
+		lvPlayerOffline2.getItems().addAll(MainApp.aiManager.ais);
+
+		lvPlayerOnline1.getItems().clear();
+		lvPlayerOnline2.getItems().clear();
+		lvPlayerOnline1.getItems().addAll(MainApp.ownOnlineAis);
+		lvPlayerOnline2.getItems().addAll(MainApp.onlineAis);
 	}
 	
 	
-	public void showGame(GameBase ggame) {
-		game = ggame;
-		showGame();
+//	public void showGame(GameBase ggame) {
+//		game = ggame;
+//		showGame();
+//	}
+//	
+//	
+//	public void showGame() {
+//	}
+	
+
+	@FXML void clickStartGameOnline() {
+		
 	}
 	
 	
-	public void showGame() {
-		if (game != null) {
-			if (game.mode == GameMode.onlineLoaded || game.mode == GameMode.onlineInprogress)
-				lbMode.setText("Online");
-			else
-				lbMode.setText("Offline");
-			lbDate.setText(game.date);
-			lbDuration.setText(game.duration + "");
-			lbLogic.setText(game.gameType);
-			tableResult.setItems(game.participants);
-		} else {
-			lbMode.setText("Offline");
-			lbDate.setText("Jetzt");
-			lbDuration.setText("555ms");
-			lbLogic.setText("Test-Logik");
-			tableResult.setItems(null);
-		}
-	}
-	
-	
-	@FXML void clickOnline() {
-		if (MainApp.webConnector.userName == null){
-			btOffline.selectedProperty().set(true);
-			btOnline.selectedProperty().set(false);
+	@FXML void clickStartGameOffline() {
+		if (lvPlayerOffline1.getSelectionModel().getSelectedItem() == null || lvPlayerOffline2.getSelectionModel().getSelectedItem() == null) {
+			Dialog.error("Bitte erst die KIs auswählen");
 			return;
 		}
-		btOffline.selectedProperty().set(false);
-		btOnline.selectedProperty().set(true);
-		
-		mainApp.loadOnlineRanking();
-		lvPlayer1.getItems().clear();
-		lvPlayer1.getItems().addAll(MainApp.ownOnlineAis);
-		lvPlayer2.getItems().clear();
-		lvPlayer2.getItems().addAll(MainApp.onlineAis);
-		lvPlayer1.getSelectionModel().selectFirst();
-		lvPlayer2.getSelectionModel().select(1);
-	}
-	
-	
-	@FXML void clickOffline() {
-		
-		btOffline.selectedProperty().set(true);
-		btOnline.selectedProperty().set(false);
-		
-		lvPlayer1.getItems().clear();
-		lvPlayer2.getItems().clear();
-		lvPlayer1.getItems().addAll(MainApp.aiManager.ais);
-		lvPlayer2.getItems().addAll(MainApp.aiManager.ais);
-		lvPlayer1.getSelectionModel().selectFirst();
-		lvPlayer2.getSelectionModel().select(1);
-	}
-	
-	
-	@FXML void clickStartGame() {
-		if (btOffline.isSelected()) {
-			if (lvPlayer1.getSelectionModel().getSelectedItem() != null && lvPlayer2.getSelectionModel().getSelectedItem() != null) {
-				Task<Boolean> play = new Task<Boolean>() {
-					public Boolean call() {
-						System.out.println("starte game :)");
-						runningGame = new GameSaved(MainApp.actualGameType.get());
-						List<Version> players = new ArrayList<>();
-						players.add(lvPlayer1.getSelectionModel().getSelectedItem().lastVersion());
-						players.add(lvPlayer2.getSelectionModel().getSelectedItem().lastVersion());
-						runningGame.play(players);
-						return true;
-					}
-				};
-				
-				Thread thread = new Thread(play, "play");
-				thread.setDaemon(true);
-				thread.start();
-			} else {
-				Dialog.error("Bitte erst die KIs auswählen");
-			}
-		} else {
-			Dialog.error("Onlinespiele werden noch nicht unterstützt");
+		if (lvPlayerOffline1.getSelectionModel().getSelectedItem() == lvPlayerOffline2.getSelectionModel().getSelectedItem()){
+			Dialog.error("Bitte nicht die gleiche KI auswählen");
+			return;
 		}
+		
+		Task<Boolean> play = new Task<Boolean>() {
+			public Boolean call() {
+				System.out.println("starte game :)");
+				runningGame = new GameSaved(MainApp.actualGameType.get());
+				List<Version> players = new ArrayList<>();
+				players.add(lvPlayerOffline1.getSelectionModel().getSelectedItem().lastVersion());
+				players.add(lvPlayerOffline2.getSelectionModel().getSelectedItem().lastVersion());
+				runningGame.play(players);
+				return true;
+			}
+		};
+		
+		Thread thread = new Thread(play, "play");
+		thread.setDaemon(true);
+		thread.start();
 	}
 	
-	
-	@FXML void clickLoadSaved() {
-		tbOutput1.setText("Info5 geklickt");
-	}
-	
-	
-	@FXML void clickLoadOnline() {
-		tbOutput1.setText("Info6 geklickt");
-	}
 }
