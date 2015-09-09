@@ -1157,7 +1157,7 @@ def download_codr():
 	@ftp.failsafe_locked
 	def f():
 		if ftp.ftp_host.path.isfile(p):
-			return ftp.send_file(p)
+			return ftp.send_file(p, filename="Codr.jar")
 		else:
 			abort(503)
 	return f()

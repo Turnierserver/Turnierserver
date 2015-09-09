@@ -86,7 +86,7 @@ class SyncedFTP:
 			return self.send_file(path)
 		return f(path)
 
-	def send_file(self, path):
+	def send_file(self, path, filename=None):
 		logger.debug("Downloading from FTP: " + path)
 		if not self.ftp_host.path.exists(path):
 			logger.info("Datei '" + path + "' existiert auf dem FTP nicht.")
@@ -96,7 +96,8 @@ class SyncedFTP:
 			data = remote_obj.read()
 			f = BytesIO(data)
 			f.seek(0)
-			return send_file(f, mimetype=magic.from_buffer(data, mime=True).decode("ascii"))
+			return send_file(f, mimetype=magic.from_buffer(data, mime=True).decode("ascii"),
+			                 as_attachment=filename is not None, attachment_filename=filename)
 
 	def copy_tree(self, from_dir, to_dir, overwrite=True):
 		logger.info("COPY_TREE " + from_dir + " " + to_dir + " " + str(overwrite))
