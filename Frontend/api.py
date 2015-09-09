@@ -765,7 +765,7 @@ def ai_new_version_from_zip(id):
 	if not current_user.can_access(ai):
 		return CommonErrors.NO_ACCESS
 
-	if any([not v.frozen for v in ai.version_list]): # FIXME
+	if any([not v.frozen for v in ai.version_list]):
 		return {"error": "You need to freeze all prior versions to create a new one."}, 400
 
 	tmpdir = tempfile.mkdtemp()
