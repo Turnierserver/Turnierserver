@@ -255,9 +255,20 @@ public class WebConnector {
 			return result;
 		}
 		JSONArray ais = new JSONArray(json);
-
+		
+		json = null;
+		try {
+			json = toString(sendGet("ai/games/" + game));
+		} catch (IOException e) {
+			return result;
+		}
+		if (json == null) {
+			return result;
+		}
+		JSONArray games = new JSONArray(json);
+		
 		for (int i = 0; i < ais.length(); i++) {
-			result.add(new AiOnline(ais.getJSONObject(i), this));
+			result.add(new AiOnline(ais.getJSONObject(i), this, games));
 		}
 
 		return result;
@@ -278,27 +289,6 @@ public class WebConnector {
 		JSONArray games = new JSONArray(json);
 		for (int i = 0; i < games.length(); i++) {
 			result.add(new GameOnline(games.getJSONObject(i), this));
-		}
-
-		return result;
-	}
-
-
-	public ObservableList<OnlineGameInfo> getGameInfos(int ai) {
-		ObservableList<OnlineGameInfo> result = FXCollections.observableArrayList();
-		String json;
-		try {
-			json = toString(sendGet("ai/" + ai + "/games"));
-		} catch (IOException e) {
-			return result;
-		}
-		if (json == null) {
-			return result;
-		}
-		JSONArray ais = new JSONArray(json);
-
-		for (int i = 0; i < ais.length(); i++) {
-			result.add(new OnlineGameInfo(ais.getJSONObject(i), ai));
 		}
 
 		return result;
