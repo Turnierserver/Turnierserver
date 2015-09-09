@@ -32,14 +32,19 @@ public class AiOnline extends AiBase {
 	public ObservableList<OnlineGameInfo> onlineGamesInfos = FXCollections.observableArrayList();
 	
 	
+	public AiOnline(JSONObject json, WebConnector connector) {
+		this(json, connector, null);
+	}
+	
 	/**
+	 * @param games 
 	 * Erstellt eine neue Online-Ai aus einem JSONObject
 	 * 
 	 * @param json das übergebene JSONObject
 	 * @param loadGames true wenn die Spiele geladen werden sollen
 	 * @throws
 	 */
-	public AiOnline(JSONObject json, WebConnector connector) {
+	public AiOnline(JSONObject json, WebConnector connector, JSONArray games) {
 		super(json.getString("name"), AiMode.online);
 		
 		userName = json.getString("author");
@@ -54,6 +59,12 @@ public class AiOnline extends AiBase {
 			newVersion(versions.getJSONObject(i));
 		}
 		
+		for(int i = 0; games != null && i < games.length(); i++) {
+			JSONObject game = games.getJSONObject(i);
+			if(game.getJSONArray("ais").getJSONObject(0).getInt("id") == id || game.getJSONArray("ais").getJSONObject(1).getInt("id") == id) {
+				onlineGamesInfos.add(new OnlineGameInfo(game, id));
+			}
+		}
 		
 		Task<Image> imageLoader = new Task<Image>() {
 			
