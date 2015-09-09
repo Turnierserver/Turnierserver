@@ -122,7 +122,18 @@ $("#start_challenge").on("click", function() {
 	console.log(enemy_id, "vs", $("#own_ai").val())
 	$.post("/api/games/start", {"ai": [$("#own_ai").val(), enemy_id]}).done(function(data) {
 		console.log("Challenge started.");
-		setTimeout(function(){ location.href = "/game_list"; }, 500);
+		console.log(data);
+		inp_url = location.origin + "/game/inprogress/" + data.inprogress_id
+		console.log("Testing inp", inp_url)
+		$.ajax(inp_url, {
+			type: "GET",
+			statusCode: {
+				200: function (response) {
+					location.href = inp_url;
+				}
+			}
+		});
+		//setTimeout(function(){ location.href = "/game_list"; }, 1000); // Fallback if the game 404'd
 	}).fail(function(xhr, textStatus, errorThrown) {
 		console.log(xhr.responseText.error);
 		alert(JSON.parse(xhr.responseText).error);

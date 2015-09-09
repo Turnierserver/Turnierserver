@@ -104,6 +104,10 @@
 					<td>Spielzüge</td>
 					<td>{{game.moves}}</td>
 				</tr>
+				<tr>
+					<td>Wann</td>
+					<td>{{game.time('de')}}</td>
+				</tr>
 				{% for assoc in game.ai_assocs %}
 				<tr>
 					<td>Ki{{loop.index}} - {{assoc.score}} Punkte</td>

@@ -163,10 +163,12 @@ def manage(manager, app):
 		print()
 		if prompt_bool("Sicher, dass du einen neuen Admin hinzufügen willst?"):
 			name = prompt("Name?")
+			email = prompt("Email?")
 			pw = prompt_pass("Passwort?")
-			admin = User(name=name, admin=True)
+			admin = User(name=name, email=email, admin=True)
 			admin.set_pw(pw)
 			db.session.add(admin)
+			db.session.commit()
 			print(admin)
 
 	@manager.command
