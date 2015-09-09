@@ -33,6 +33,9 @@ QSettings *config;
 /// Eine Mutex für die Konfigurationsdatei
 QMutex *configMutex = new QMutex;
 
+/// Der Pfad zu /etc für isolate
+QString etcPath;
+
 /// gibt den Wert für Timeouts der Konfigurationsdatei zurück
 int timeout ()
 {

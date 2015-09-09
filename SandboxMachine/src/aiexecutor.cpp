@@ -35,14 +35,29 @@
 #include <QRegularExpression>
 #include <QTemporaryDir>
 
+#define MAX_BOX_ID 100
+#define MAX_BOX_ID_RETRIES 1000
+
 AiExecutor::AiExecutor (int id, int version, const QString &lang, const QUuid &uuid)
 	: _id(id)
 	, _version(version)
 	, _lang(lang)
 	, _uuid(uuid)
 {
+	// eine freie id für isolate finden
+	for (int i = 0; i < MAX_BOX_ID_RETRIES; i++)
+	{
+		printf("loop nr. %d\n", i);
+		QThread::sleep(1);
+		boxid = rand() % MAX_BOX_ID;
+		if (!QDir("/tmp/box/" + QString::number(boxid)).exists())
+			break;
+	}
+	
 	// isolate initialisieren
-	FILE *isolateInit = popen("isolate -cg --init", "r");
+	QString cmd = "isolate --cg --init -b " + QString::number(boxid);
+	printf("$ %s\n", qPrintable(cmd));
+	FILE *isolateInit = popen(qPrintable(cmd), "r");
 	if (!isolateInit)
 	{
 		fprintf(stderr, "Fehler beim initialisieren von isolate\n");
@@ -50,7 +65,9 @@ AiExecutor::AiExecutor (int id, int version, const QString &lang, const QUuid &u
 		return;
 	}
 	QTextStream isolateInitIn(isolateInit);
-	dir = isolateInitIn.readAll().trimmed();
+	boxdir = isolateInitIn.readAll().trimmed();
+	boxdir.mkdir("box");
+	dir = boxdir.absoluteFilePath("box/");
 }
 
 AiExecutor::~AiExecutor()
@@ -279,7 +296,10 @@ void AiExecutor::executeAi ()
 		cmd = start->value("Command").toString();
 	LOG_DEBUG << "Der cmd ist " + cmd;
 	QStringList args;
-	args << "-cg" << "-p" << "--run";
+	args << "--cg" << "-p";
+	args << "--dir=/etc/=" + etcPath;
+	args << "--dir=/usr/lib/jvm";
+	args << "--run" << "-b" << QString::number(boxid) << "--" << cmd;
 	args << start->value("Arguments").toStringList();
 	args << aiProp;
 	LOG_DEBUG << "Der Befehl ist " + cmd;
@@ -310,7 +330,9 @@ void AiExecutor::cleanup (int retCode)
 	LOG_DEBUG << "die KI hat sich mit dem Statuscode " + QString::number(retCode) + " beendet";
 	worker->sendMessage(uuid(), 'F');
 	emit finished(uuid());
-	system("isolate --cleanup");
+	QString cmd = "isolate --cleanup -b " + QString::number(boxid);
+	printf("$ %s\n", qPrintable(cmd));
+	system(qPrintable(cmd));
 }
 
 void AiExecutor::terminateAi ()
