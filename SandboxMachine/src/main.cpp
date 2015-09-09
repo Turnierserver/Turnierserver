@@ -32,6 +32,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QTcpSocket>
+#include <QTemporaryDir>
 
 void searchExecutable (const QString &execfile, const QString &language, QHash<QString, QString> *commands)
 {
@@ -46,6 +47,24 @@ void searchExecutable (const QString &execfile, const QString &language, QHash<Q
 			LOG_INFO << language + " gefunden: " + file.absoluteFilePath();
 			commands->insert(language, file.absoluteFilePath());
 			return;
+		}
+	}
+}
+
+void copyDir (const QDir &src, const QDir &dest)
+{
+	LOG_DEBUG << "Kopiere Verzeichnis: " + src.absolutePath() +  QString::fromUtf8(" → ") + dest.absolutePath();
+	for (QFileInfo fileInfo : src.entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot))
+	{
+		if (fileInfo.isDir())
+		{
+			dest.mkdir(fileInfo.fileName());
+			copyDir(src.absoluteFilePath(fileInfo.fileName()), dest.absoluteFilePath(fileInfo.fileName()));
+		}
+		else
+		{
+			LOG_DEBUG << "Kopiere Datei: " + src.absoluteFilePath(fileInfo.fileName()) +  QString::fromUtf8(" → ") + dest.absoluteFilePath(fileInfo.fileName());
+			QFile::copy(src.absoluteFilePath(fileInfo.fileName()), dest.absoluteFilePath(fileInfo.fileName()));
 		}
 	}
 }
@@ -85,6 +104,11 @@ int main(int argc, char *argv[])
 		}
 	}
 	config->endGroup();
+	
+	// isolate-zeugs entpacken
+	QTemporaryDir etc(QDir::temp().absoluteFilePath("etc-XXXXXX"));
+	etcPath = etc.path();
+	copyDir(QDir(":/etc"), etcPath);
 	
 	// mit dem Worker verbinden
 	worker = new WorkerClient();

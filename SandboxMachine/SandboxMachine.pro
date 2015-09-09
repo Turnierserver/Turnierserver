@@ -40,3 +40,6 @@ HEADERS += \
     include/aiexecutor.h \
     include/jobcontrol.h \
     include/logger.h
+
+RESOURCES += \
+    isolate-env/etc/etc.qrc

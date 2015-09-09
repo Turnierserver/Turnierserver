@@ -73,7 +73,8 @@ protected slots:
 protected:
 	QProcess proc;
 	
-	QDir dir, binDir;
+	quint8 boxid;
+	QDir boxdir, dir, binDir;
 	QString binArchive;
 	QString aiProp;
     QSettings *start = 0;
