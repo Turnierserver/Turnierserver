@@ -21,13 +21,6 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.image.Image;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.ZipParameters;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -49,12 +42,20 @@ import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.AiOnline;
 import org.pixelgaffer.turnierserver.codr.AiSimple;
 import org.pixelgaffer.turnierserver.codr.GameOnline;
+import org.pixelgaffer.turnierserver.codr.OnlineGameInfo;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.DeletedException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NothingDoneException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
 
 /**
  * koordiniert die Verbindung zum Server und führt Up-/Downloads aus
@@ -283,8 +284,8 @@ public class WebConnector {
 	}
 
 
-	public ObservableList<Integer> getGameIDs(int ai) {
-		ObservableList<Integer> result = FXCollections.observableArrayList();
+	public ObservableList<OnlineGameInfo> getGameInfos(int ai) {
+		ObservableList<OnlineGameInfo> result = FXCollections.observableArrayList();
 		String json;
 		try {
 			json = toString(sendGet("ai/" + ai + "/games"));
@@ -297,7 +298,7 @@ public class WebConnector {
 		JSONArray ais = new JSONArray(json);
 
 		for (int i = 0; i < ais.length(); i++) {
-			result.add(ais.getJSONObject(i).getInt("id"));
+			result.add(new OnlineGameInfo(ais.getJSONObject(i), ai));
 		}
 
 		return result;
