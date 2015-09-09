@@ -105,7 +105,7 @@ public class ControllerGameManagement {
 	
 	public void showGame() {
 		if (game != null) {
-			if (game.mode == GameMode.onlineLoaded)
+			if (game.mode == GameMode.onlineLoaded || game.mode == GameMode.onlineInprogress)
 				lbMode.setText("Online");
 			else
 				lbMode.setText("Offline");
