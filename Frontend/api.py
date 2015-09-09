@@ -977,9 +977,7 @@ def start_game():
 	if not all([ai.latest_frozen_version() for ai in ais]):
 		return {"error": "All AIs have to be frozen"}, 400
 
-	backend.request_game(ais)
-
-	return {"error": False}
+	return {"error": False, "inprogress_id": backend.request_game(ais)}
 
 
 
