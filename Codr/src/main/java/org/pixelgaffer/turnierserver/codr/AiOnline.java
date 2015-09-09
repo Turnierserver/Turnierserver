@@ -29,8 +29,7 @@ public class AiOnline extends AiBase {
 	public int id;
 	public int elo = -1;
 	private ObjectProperty<Image> picture = new SimpleObjectProperty<Image>();
-	public ObservableList<GameOnline> onlineGames = FXCollections.observableArrayList();
-	public ObservableList<Integer> onlineGameIDs = FXCollections.observableArrayList();
+	public ObservableList<OnlineGameInfo> onlineGamesInfos = FXCollections.observableArrayList();
 	
 	
 	/**
