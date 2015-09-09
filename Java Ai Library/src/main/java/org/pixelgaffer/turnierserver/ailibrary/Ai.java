@@ -62,7 +62,11 @@ public abstract class Ai<E, R> implements Runnable {
 			out.write((PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR) + PropertyUtils.getStringRequired(PropertyUtils.AI_UUID) + "\n").getBytes(UTF_8));
 			out.flush();
 			System.setOut(new PrintStream(new OutputStream() {
-				
+				public void write(int b) throws IOException {
+					output.append((char) b);
+				}
+			}));
+			System.setErr(new PrintStream(new OutputStream() {
 				public void write(int b) throws IOException {
 					output.append((char) b);
 				}

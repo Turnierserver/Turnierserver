@@ -47,5 +47,10 @@ public class GameOnline extends GameBase {
 		}
 	}
 	
+	public GameOnline(int tempId) {
+		super(GameMode.onlineInprogress);
+		id = tempId;
+	}
+	
 	
 }

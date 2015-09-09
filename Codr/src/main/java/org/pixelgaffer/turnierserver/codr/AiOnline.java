@@ -81,6 +81,7 @@ public class AiOnline extends AiBase {
 		Thread thread = new Thread(imageLoader, "imageLoader");
 		thread.setDaemon(true);
 		thread.start();
+		
 	}
 	
 	

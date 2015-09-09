@@ -25,7 +25,7 @@ public class GameBase {
 	
 	
 	public static enum GameMode {
-		playing, saved, onlineLoaded
+		playing, saved, onlineLoaded, onlineInprogress
 	}
 	
 	
