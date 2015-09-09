@@ -339,7 +339,7 @@ public class WebConnector {
 	public void changeDescription(String description, int id) {
 		String result;
 		try {
-			result = toString(sendGet("ai/" + id + "/update", "description", description));
+			result = toString(sendPost("ai/" + id + "/update", "description", description));
 			if (result == null) {
 				throw new IOException("A problem occured while trying to update the description!");
 			}
@@ -989,7 +989,7 @@ public class WebConnector {
 				ErrorLog.write("ERROR: Executing get request to " + url + command + " failed! ErrorCode: " + response.getStatusLine().getStatusCode());// +
 				// ", ErrorMessage: "
 				// +
-				// toString(responseArray));
+				System.out.println(toString(responseArray));
 				isConnected = false;
 				return null;
 			}
