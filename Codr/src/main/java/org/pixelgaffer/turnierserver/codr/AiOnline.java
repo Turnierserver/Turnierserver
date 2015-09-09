@@ -71,7 +71,6 @@ public class AiOnline extends AiBase {
 			public Image call() {
 				try {
 					Image img = connector.getImage(json.getInt("id"));
-					System.out.println(id);
 					if (img == null) {
 						img = connector.getImage(json.getInt("id")); // zweiter Versuch (das geht aber auch elleganter :D)
 						if (img == null) {
