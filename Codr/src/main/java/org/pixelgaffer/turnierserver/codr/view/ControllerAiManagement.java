@@ -51,71 +51,38 @@ import net.lingala.zip4j.exception.ZipException;
 
 public class ControllerAiManagement {
 
-	@FXML
-	Button btDelete;
-	@FXML
-	Button btAbort;
-	@FXML
-	Button btEdit;
-	@FXML
-	Button btNewVersion;
-	@FXML
-	Button btCompile;
-	@FXML
-	Button btQualify;
-	@FXML
-	Button btFinish;
-	@FXML
-	public Button btUpload;
-	@FXML
-	Button btToActual;
-	@FXML
-	Button btChangeImage;
-	@FXML
-	Button btDeleteImage;
-	@FXML
-	Label lbName;
-	@FXML
-	Label lbLanguage;
-	@FXML
-	Label lbCompiled;
-	@FXML
-	Label lbFinished;
-	@FXML
-	Label lbUploaded;
-	@FXML
-	RadioButton rbSimple;
-	@FXML
-	RadioButton rbContinue;
-	@FXML
-	RadioButton rbFromFile;
-	@FXML
-	TextField tbName;
-	@FXML
-	TextArea tbOutput;
-	@FXML
-	TextArea tbDescription;
-	@FXML
-	ChoiceBox<Version> cbVersion;
-	@FXML
-	ChoiceBox<String> cbLanguage;
-	@FXML
-	ListView<AiSimple> lvAis;
-	@FXML
-	ImageView image;
-	@FXML
-	TabPane tpCode;
-	@FXML
-	Hyperlink hlShowQualified;
-	@FXML
-	ProgressIndicator prUpload;
-	@FXML
-	TitledPane tpNewVersion;
-
-	@FXML
-	BorderPane bpAis;
-	@FXML
-	TreeView<File> tvFiles;
+	@FXML Button btDelete;
+	@FXML Button btAbort;
+	@FXML Button btEdit;
+	@FXML Button btNewVersion;
+	@FXML Button btCompile;
+	@FXML Button btQualify;
+	@FXML Button btFinish;
+	@FXML public Button btUpload;
+	@FXML Button btToActual;
+	@FXML Button btChangeImage;
+	@FXML Button btDeleteImage;
+	@FXML Label lbName;
+	@FXML Label lbLanguage;
+	@FXML Label lbCompiled;
+	@FXML Label lbFinished;
+	@FXML Label lbUploaded;
+	@FXML RadioButton rbSimple;
+	@FXML RadioButton rbContinue;
+	@FXML RadioButton rbFromFile;
+	@FXML TextField tbName;
+	@FXML TextArea tbOutput;
+	@FXML TextArea tbDescription;
+	@FXML ChoiceBox<Version> cbVersion;
+	@FXML ChoiceBox<String> cbLanguage;
+	@FXML ListView<AiSimple> lvAis;
+	@FXML ImageView image;
+	@FXML TabPane tpCode;
+	@FXML Hyperlink hlShowQualified;
+	@FXML ProgressIndicator prUpload;
+	@FXML TitledPane tpNewVersion;
+	@FXML BorderPane bpAis;
+	@FXML TreeView<File> tvFiles;
 
 	public Tab infoTab;
 	public Tab newFileTab;
@@ -127,39 +94,30 @@ public class ControllerAiManagement {
 	/**
 	 * Initialisiert den Controller
 	 * 
-	 * @param app
-	 *            eine Referenz auf die MainApp
+	 * @param app eine Referenz auf die MainApp
 	 */
 	public void setMainApp(MainApp app) {
 		mainApp = app;
 		MainApp.cAi = this;
-		cbVersion.getSelectionModel().selectedItemProperty()
-				.addListener((observableValue, oldValue, newValue) -> {
-					clickVersionChange();
-				});
-		lvAis.getSelectionModel().selectedItemProperty()
-				.addListener((observableValue, oldValue, newValue) -> {
-					clickChangeAi();
-				});
-		tpCode.getSelectionModel().selectedItemProperty()
-				.addListener((observableValue, oldValue, newValue) -> {
-					clickTabSelection(oldValue, newValue);
-				});
-		tvFiles.getSelectionModel()
-				.selectedItemProperty()
-				.addListener(
-						(observableValue, oldValue, newValue) -> {
-							if (newValue != null
-									&& newValue.getValue().isFile()) {
-								for (Tab tab : tpCode.getTabs()) {
-									if (tab.getText().equals(
-											newValue.getValue().getName())) {
-										tpCode.getSelectionModel().select(tab);
-										break;
-									}
-								}
-							}
-						});
+		cbVersion.getSelectionModel().selectedItemProperty() .addListener((observableValue, oldValue, newValue) -> {
+			clickVersionChange();
+		});
+		lvAis.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+			clickChangeAi();
+		});
+		tpCode.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+			clickTabSelection(oldValue, newValue);
+		});
+		tvFiles.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+			if (newValue != null && newValue.getValue().isFile()) {
+				for (Tab tab : tpCode.getTabs()) {
+					if (tab.getText().equals(newValue.getValue().getName())) {
+						tpCode.getSelectionModel().select(tab);
+						break;
+					}
+				}
+			}
+		});
 
 		tpCode.setStyle("-fx-open-tab-animation: NONE; -fx-close-tab-animation: NONE;");
 
@@ -176,10 +134,8 @@ public class ControllerAiManagement {
 	/**
 	 * Zeigt eine KI und eine ihrer Versionen an
 	 * 
-	 * @param p
-	 *            die KI
-	 * @param v
-	 *            die zugehörige Version
+	 * @param p die KI
+	 * @param v die zugehörige Version
 	 */
 	public void showAi(AiSimple p, Version v) {
 		ai = p;
@@ -267,11 +223,8 @@ public class ControllerAiManagement {
 			hlShowQualified.visibleProperty().bind(version.qualified);
 			lbFinished.visibleProperty().bind(version.finished);
 			lbUploaded.visibleProperty().bind(version.uploaded);
-			btCompile.disableProperty().bind(
-					version.finished.or(version.compiled));
-			btQualify.disableProperty().bind(
-					version.compiled.not().or(version.finished)
-							.or(version.qualified));
+			btCompile.disableProperty().bind(version.finished.or(version.compiled));
+			btQualify.disableProperty().bind(version.compiled.not().or(version.finished).or(version.qualified));
 			btFinish.disableProperty().bind(version.finished);
 			btUpload.disableProperty().bind(new SimpleBooleanProperty(false));
 			rbContinue.setDisable(false);
@@ -286,8 +239,7 @@ public class ControllerAiManagement {
 			cbVersion.setValue(null);
 			tbOutput.setText("");
 			lbCompiled.visibleProperty().bind(new SimpleBooleanProperty(false));
-			hlShowQualified.visibleProperty().bind(
-					new SimpleBooleanProperty(false));
+			hlShowQualified.visibleProperty().bind(new SimpleBooleanProperty(false));
 			lbFinished.visibleProperty().bind(new SimpleBooleanProperty(false));
 			lbUploaded.visibleProperty().bind(new SimpleBooleanProperty(false));
 			btCompile.disableProperty().bind(new SimpleBooleanProperty(true));
@@ -311,22 +263,14 @@ public class ControllerAiManagement {
 				cbVersion.setDisable(true);
 				tpNewVersion.setDisable(true);
 				tpNewVersion.setExpanded(false);
-				lbCompiled.visibleProperty().bind(
-						new SimpleBooleanProperty(false));
-				hlShowQualified.visibleProperty().bind(
-						new SimpleBooleanProperty(false));
-				lbFinished.visibleProperty().bind(
-						new SimpleBooleanProperty(false));
-				lbUploaded.visibleProperty().bind(
-						new SimpleBooleanProperty(false));
-				btCompile.disableProperty().bind(
-						new SimpleBooleanProperty(true));
-				btQualify.disableProperty().bind(
-						new SimpleBooleanProperty(true));
-				btFinish.disableProperty()
-						.bind(new SimpleBooleanProperty(true));
-				btUpload.disableProperty()
-						.bind(new SimpleBooleanProperty(true));
+				lbCompiled.visibleProperty().bind(new SimpleBooleanProperty(false));
+				hlShowQualified.visibleProperty().bind(new SimpleBooleanProperty(false));
+				lbFinished.visibleProperty().bind(new SimpleBooleanProperty(false));
+				lbUploaded.visibleProperty().bind(new SimpleBooleanProperty(false));
+				btCompile.disableProperty().bind(new SimpleBooleanProperty(true));
+				btQualify.disableProperty().bind(new SimpleBooleanProperty(true));
+				btFinish.disableProperty().bind(new SimpleBooleanProperty(true));
+				btUpload.disableProperty().bind(new SimpleBooleanProperty(true));
 
 				btChangeImage.setDisable(true);
 				btDeleteImage.setDisable(true);
@@ -409,29 +353,25 @@ public class ControllerAiManagement {
 
 		tvFiles.setRoot(version.rootFile);
 
-		if (version.finished.get()
-				|| (version.ai.mode != AiMode.saved && version.ai.mode != AiMode.extern))
+		if (version.finished.get() || (version.ai.mode != AiMode.saved && version.ai.mode != AiMode.extern))
 			tvFiles.setEditable(false);
 		else
 			tvFiles.setEditable(true);
 
 		tvFiles.setCellFactory(new Callback<TreeView<File>, TreeCell<File>>() {
-
 			@Override
 			public TreeCell<File> call(TreeView<File> p) {
 				return new TreeFileCell();
 			}
 		});
 		tvFiles.setOnEditCommit(new EventHandler<EditEvent<File>>() {
-
 			@Override
 			public void handle(EditEvent<File> event) {
 				setVersionTabs();
 			}
 		});
 
-		String oldTabName = tpCode.getSelectionModel().getSelectedItem()
-				.getText();
+		String oldTabName = tpCode.getSelectionModel().getSelectedItem().getText();
 		tpCode.getTabs().clear();
 		tpCode.getTabs().add(infoTab);
 		for (CodeEditor file : version.files) {
@@ -454,10 +394,8 @@ public class ControllerAiManagement {
 	/**
 	 * Speichert und überprüft, ob auf das "neue Datei"-Tab geklickt wurde
 	 * 
-	 * @param oldTab
-	 *            der zuvor ausgewählte Tab
-	 * @param newTab
-	 *            der neu ausgewählte Tab
+	 * @param oldTab der zuvor ausgewählte Tab
+	 * @param newTab der neu ausgewählte Tab
 	 */
 	void clickTabSelection(Tab oldTab, Tab newTab) {
 
@@ -479,19 +417,15 @@ public class ControllerAiManagement {
 		if (newTab == newFileTab && newTab != oldTab) {
 			tpCode.getSelectionModel().select(oldTab);
 			if (version == null) {
-				Dialog.error("Bitte legen Sie zuerst eine Version an.",
-						"Keine Version");
+				Dialog.error("Bitte legen Sie zuerst eine Version an.", "Keine Version");
 				return;
 			}
-			File result = Dialog.fileSaver(MainApp.stage,
-					"Bitte einen Ort und Dateinamen auswählen",
-					Paths.version(version));
+			File result = Dialog.fileSaver(MainApp.stage, "Bitte einen Ort und Dateinamen auswählen", Paths.version(version));
 			if (result != null) {
 				CodeEditor editor = new CodeEditor(result);
 				editor.forceSave();
 				version.files.add(editor);
-				tpCode.getTabs().add(tpCode.getTabs().size() - 1,
-						editor.getView());
+				tpCode.getTabs().add(tpCode.getTabs().size() - 1, editor.getView());
 				tpCode.getSelectionModel().select(tpCode.getTabs().size() - 2);
 				setVersionTabs();
 			}
@@ -510,8 +444,7 @@ public class ControllerAiManagement {
 				MainApp.aiManager.loadAis();
 				lvAis.getSelectionModel().selectFirst();
 			} catch (IOException e) {
-				ErrorLog.write("Die KI " + ai.title
-						+ " konnte nicht gelöscht werden.");
+				ErrorLog.write("Die KI " + ai.title + " konnte nicht gelöscht werden.");
 			}
 		}
 	}
@@ -531,9 +464,7 @@ public class ControllerAiManagement {
 		for (int i = 0; i < lvAis.getItems().size(); i++) { // Testen, ob die KI
 															// schon existiert
 			if (title.equals(lvAis.getItems().get(i).title)) {
-				Dialog.error(
-						"Es können keine zwei KIs mit dem gleichen Namen erstellt werden",
-						"Doppelter Name");
+				Dialog.error("Es können keine zwei KIs mit dem gleichen Namen erstellt werden", "Doppelter Name");
 				return;
 			}
 		}
@@ -558,20 +489,16 @@ public class ControllerAiManagement {
 		for (int i = 0; i < lvAis.getItems().size(); i++) { // Testen, ob die KI
 															// schon existiert
 			if (title.equals(lvAis.getItems().get(i).title)) {
-				Dialog.error(
-						"Es können keine zwei KIs mit dem gleichen Namen erstellt werden",
-						"Doppelter Name");
+				Dialog.error("Es können keine zwei KIs mit dem gleichen Namen erstellt werden", "Doppelter Name");
 				return;
 			}
 		}
 
-		File path = Dialog.folderChooser(MainApp.stage,
-				"Bitte den Pfad auswählen");
+		File path = Dialog.folderChooser(MainApp.stage, "Bitte den Pfad auswählen");
 		if (path == null)
 			return;
 
-		AiExtern newAi = new AiExtern(title, cbLanguage.getValue(),
-				path.getPath());
+		AiExtern newAi = new AiExtern(title, cbLanguage.getValue(), path.getPath());
 		MainApp.aiManager.ais.add(newAi);
 		lvAis.getSelectionModel().selectLast();
 
@@ -579,16 +506,12 @@ public class ControllerAiManagement {
 		if (!new File(Paths.versionSrc(newAi.lastVersion())).exists()) {
 			ErrorLog.write("Der ausgewählte Ordner existert nicht.");
 		} else if (new File(Paths.versionSrc(newAi.lastVersion())).list().length == 0) {
-			result = Dialog
-					.okAbort("Die Version wurde angelegt.\nDer Ordner ist leer.\n\nSoll der SimplePlayer hinein kopiert werden?");
+			result = Dialog.okAbort("Die Version wurde angelegt.\nDer Ordner ist leer.\n\nSoll der SimplePlayer hinein kopiert werden?");
 		}
 
 		if (result) {
-			ErrorLog.write(Paths.simplePlayer(MainApp.actualGameType.get(),
-					newAi.language));
-			newAi.lastVersion().copyFromFile(
-					Paths.simplePlayer(MainApp.actualGameType.get(),
-							newAi.language) + "/src");
+			ErrorLog.write(Paths.simplePlayer(MainApp.actualGameType.get(), newAi.language));
+			newAi.lastVersion().copyFromFile(Paths.simplePlayer(MainApp.actualGameType.get(), newAi.language) + "/src");
 			new File(newAi.path + "/versionProperties.txt").delete();
 		}
 		setVersionTabs();
@@ -694,26 +617,19 @@ public class ControllerAiManagement {
 		if (ai.getClass() == AiSaved.class) {
 
 			if (ai.versions.size() > 0 && !ai.lastVersion().finished.get())
-				if (!Dialog
-						.okAbort(
-								"Wenn eine neue Version angelegt wird, wird die alte fertiggestellt.\nDas bedeutet, dass sie nicht mehr verändert werden kann.\n\nFortfahren?",
-								"Neue Version"))
+				if (!Dialog.okAbort("Wenn eine neue Version angelegt wird, wird die alte fertiggestellt.\nDas bedeutet, dass sie nicht mehr verändert werden kann.\n\nFortfahren?", "Neue Version"))
 					return;
 			if (ai.versions.size() > 0)
 				ai.lastVersion().finished.set(true);
 
 			if (rbFromFile.isSelected()) {
-				File result = Dialog.folderChooser(MainApp.stage,
-						"Bitte einen Ordner auswählen");
+				File result = Dialog.folderChooser(MainApp.stage, "Bitte einen Ordner auswählen");
 				if (result != null)
-					showAi(ai, ((AiSaved) ai).newVersion(
-							NewVersionType.fromFile, result.getPath()));
+					showAi(ai, ((AiSaved) ai).newVersion(NewVersionType.fromFile, result.getPath()));
 			} else if (rbContinue.isSelected()) {
-				showAi(ai,
-						((AiSaved) ai).newVersion(NewVersionType.lastVersion));
+				showAi(ai, ((AiSaved) ai).newVersion(NewVersionType.lastVersion));
 			} else {
-				showAi(ai,
-						((AiSaved) ai).newVersion(NewVersionType.simplePlayer));
+				showAi(ai, ((AiSaved) ai).newVersion(NewVersionType.simplePlayer));
 			}
 		}
 	}
@@ -741,10 +657,7 @@ public class ControllerAiManagement {
 	 */
 	@FXML
 	void clickFinish() {
-		if (Dialog
-				.okAbort(
-						"Wenn eine Version fertiggestellt wird, kann sie nicht mehr bearbeitet werden.\n\nFortfahren?",
-						"Version einfrieren")) {
+		if (Dialog.okAbort("Wenn eine Version fertiggestellt wird, kann sie nicht mehr bearbeitet werden.\n\nFortfahren?", "Version einfrieren")) {
 			version.finish();
 		}
 		showAi();
@@ -764,16 +677,14 @@ public class ControllerAiManagement {
 				System.out.println("Angekommenerst 1");
 				if (MainApp.webConnector.isLoggedIn()) {
 					System.out.println("Angekommenerst 1,5");
-					MainApp.ownOnlineAis = MainApp.webConnector
-							.getOwnAis(MainApp.actualGameType.get());
+					MainApp.ownOnlineAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
 				}
 				System.out.println("Angekommenerst 2");
 				return true;
 			}
 		};
 
-		getOwn.valueProperty().addListener(
-				(observableValue, oldValue, newValue) -> {
+		getOwn.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 
 					System.out.println("Angekommen");
 					if (MainApp.ownOnlineAis == null) {
@@ -787,9 +698,7 @@ public class ControllerAiManagement {
 					}
 
 					if (result.getClass() == AiFake.class) {
-						localNameOfNewAi = Dialog.textInput(
-								"Bitte einen Namen eingeben",
-								"Neue KI erstellen");
+						localNameOfNewAi = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
 						if (localNameOfNewAi == null)
 							return;
 					}
@@ -801,8 +710,7 @@ public class ControllerAiManagement {
 							if (result instanceof AiOnline) {
 								id = ((AiOnline) result).id;
 							} else {
-								id = MainApp.webConnector.createAi(ai,
-										localNameOfNewAi);
+								id = MainApp.webConnector.createAi(ai, localNameOfNewAi);
 							}
 							if (id == -1) {
 								return "errorConnection";
@@ -814,8 +722,7 @@ public class ControllerAiManagement {
 								e.printStackTrace();
 								return "errorConnection";
 							} catch (IllegalStateException e) {
-								return "Fehler beim Hochladen: "
-										+ e.getMessage();
+								return "Fehler beim Hochladen: " + e.getMessage();
 							}
 
 							try {
@@ -825,34 +732,31 @@ public class ControllerAiManagement {
 								e.printStackTrace();
 								return "errorConnection";
 							} catch (CompileException e) {
-								return "Fehler beim Kompilieren auf dem Server:\n\n"
-										+ e.compileOutput;
+								return "Fehler beim Kompilieren auf dem Server:\n\n" + e.compileOutput;
 							}
 						}
 					};
 
 					prUpload.setVisible(true);
 
-					upload.valueProperty()
-							.addListener(
-									(observableValue1, oldValue1, newValue1) -> {
-										prUpload.setVisible(false);
-										switch (newValue1) {
-										case "errorConnection":
-											Dialog.error(
-													"Fehler bei der Verbindung mit dem Server.",
-													"Verbindungsfehler");
-											break;
-										case "finished":
-											Dialog.info(
-													"Die KI wurde erfolgreich hochgeladen, kompiliert (und qualifiziert).",
-													"Upload fertig");
-											break;
-										default:
-											Dialog.error(newValue1, "Fehler");
-											break;
-										}
-									});
+					upload.valueProperty().addListener((observableValue1, oldValue1, newValue1) -> {
+						prUpload.setVisible(false);
+						switch (newValue1) {
+						case "errorConnection":
+							Dialog.error(
+									"Fehler bei der Verbindung mit dem Server.",
+									"Verbindungsfehler");
+							break;
+						case "finished":
+							Dialog.info(
+									"Die KI wurde erfolgreich hochgeladen, kompiliert (und qualifiziert).",
+									"Upload fertig");
+							break;
+						default:
+							Dialog.error(newValue1, "Fehler");
+							break;
+						}
+					});
 
 					Thread thread = new Thread(upload, "upload");
 					thread.setDaemon(true);
