@@ -4,14 +4,13 @@ package org.pixelgaffer.turnierserver.codr;
 import java.io.File;
 import java.io.IOException;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import org.apache.commons.io.FileUtils;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 
 
 /**

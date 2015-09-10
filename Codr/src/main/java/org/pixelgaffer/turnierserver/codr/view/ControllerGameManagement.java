@@ -12,18 +12,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.web.WebView;
 import javafx.util.Callback;
 
 import org.pixelgaffer.turnierserver.codr.AiOnline;
 import org.pixelgaffer.turnierserver.codr.AiSimple;
 import org.pixelgaffer.turnierserver.codr.GameBase;
+import org.pixelgaffer.turnierserver.codr.GameBase.GameMode;
 import org.pixelgaffer.turnierserver.codr.GameOnline;
 import org.pixelgaffer.turnierserver.codr.GameSaved;
 import org.pixelgaffer.turnierserver.codr.MainApp;
@@ -45,12 +44,13 @@ public class ControllerGameManagement {
 	@FXML public TitledPane tpNewGameOnline;
 	@FXML public Tab tabOnline;
 	@FXML public Tab tabOffline;
+	@FXML public WebView webView;
 	
 	
 	public GameSaved runningGame;
 	
 	MainApp mainApp;
-	
+
 	public GameBase game = null;
 	
 	
@@ -64,7 +64,6 @@ public class ControllerGameManagement {
 		MainApp.cGame = this;
 				
 		MainApp.gameManager.loadGames();
-//		showGame();
 		
 		lvPlayerOffline1.setItems(MainApp.aiManager.ais);
 		lvPlayerOffline2.setItems(MainApp.aiManager.ais);
@@ -94,52 +93,75 @@ public class ControllerGameManagement {
 		
 		
 		
-		TableColumn<GameSaved, Image> col0 = new TableColumn<GameSaved, Image>("Spieler 1");
-		TableColumn<GameSaved, String> col1 = new TableColumn<GameSaved, String>("Spieler 2");
-		TableColumn<GameSaved, String> col2 = new TableColumn<GameSaved, String>("Wann");
-		
-		col0.setCellValueFactory(new Callback<CellDataFeatures<GameSaved, Image>, ObservableValue<Image>>() {
-			@Override
-			public ObservableValue<Image> call(CellDataFeatures<GameSaved, Image> arg0) {
-				return arg0.getValue().getPicture();
-			}
-		});
-		col0.setCellFactory(new Callback<TableColumn<GameSaved, Image>, TableCell<GameSaved, Image>>() {
-			@Override
-			public TableCell<GameSaved, Image> call(TableColumn<GameSaved, Image> param) {
-				final ImageView imageview = new ImageView();
-				imageview.setFitHeight(50);
-				imageview.setFitWidth(50);
-				
-				TableCell<AiOnline, Image> cell = new TableCell<AiOnline, Image>() {
-					public void updateItem(Image item, boolean empty) {
-						if (item != null)
-							imageview.imageProperty().set(item);
-					}
-				};
-				cell.setGraphic(imageview);
-				return cell;
-			}
-			
-		});
-		col1.setCellValueFactory(new Callback<CellDataFeatures<GameSaved, String>, ObservableValue<String>>() {
+		TableColumn<GameSaved, String> colOff0 = new TableColumn<GameSaved, String>("Spieler 1");
+		TableColumn<GameSaved, String> colOff1 = new TableColumn<GameSaved, String>("Wann");
+		TableColumn<GameSaved, String> colOff2 = new TableColumn<GameSaved, String>("Spieler 2");
+
+		colOff0.setCellValueFactory(new Callback<CellDataFeatures<GameSaved, String>, ObservableValue<String>>() {
 			public ObservableValue<String> call(CellDataFeatures<GameSaved, String> p) {
-				return new SimpleStringProperty(p.getValue().title);
+				if (p.getValue().participants.size() > 0)
+					return new SimpleStringProperty(p.getValue().participants.get(0).name);
+				else
+					return new SimpleStringProperty("ungültig");
 			}
 		});
-		col2.setCellValueFactory(new Callback<CellDataFeatures<GameSaved, String>, ObservableValue<String>>() {
+		colOff1.setCellValueFactory(new Callback<CellDataFeatures<GameSaved, String>, ObservableValue<String>>() {
 			public ObservableValue<String> call(CellDataFeatures<GameSaved, String> p) {
-				return new SimpleStringProperty(p.getValue().userName);
+				return new SimpleStringProperty(p.getValue().date);
+			}
+		});
+		colOff2.setCellValueFactory(new Callback<CellDataFeatures<GameSaved, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<GameSaved, String> p) {
+				if (p.getValue().participants.size() > 1)
+					return new SimpleStringProperty(p.getValue().participants.get(1).name);
+				else
+					return new SimpleStringProperty("ungültig");
 			}
 		});
 		
-		col0.setStyle("-fx-alignment: CENTER-LEFT;");
-		col1.setStyle("-fx-alignment: CENTER-LEFT;");
-		col2.setStyle("-fx-alignment: CENTER-LEFT;");
+		colOff0.setStyle("-fx-alignment: CENTER-LEFT;");
+		colOff1.setStyle("-fx-alignment: CENTER-LEFT;");
+		colOff2.setStyle("-fx-alignment: CENTER-LEFT;");
 		
-		lvGamesOffline.getColumns().add(col0);
-		lvGamesOffline.getColumns().add(col1);
-		lvGamesOffline.getColumns().add(col2);
+		lvGamesOffline.getColumns().add(colOff0);
+		lvGamesOffline.getColumns().add(colOff1);
+		lvGamesOffline.getColumns().add(colOff2);
+		
+
+		
+		TableColumn<GameOnline, String> colOn0 = new TableColumn<GameOnline, String>("Spieler 1");
+		TableColumn<GameOnline, String> colOn1 = new TableColumn<GameOnline, String>("Wann");
+		TableColumn<GameOnline, String> colOn2 = new TableColumn<GameOnline, String>("Spieler 2");
+
+		colOn0.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
+				if (p.getValue().participants.size() > 0)
+					return new SimpleStringProperty(p.getValue().participants.get(0).name);
+				else
+					return new SimpleStringProperty("ungültig");
+			}
+		});
+		colOn1.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
+				return new SimpleStringProperty(p.getValue().date);
+			}
+		});
+		colOn2.setCellValueFactory(new Callback<CellDataFeatures<GameOnline, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<GameOnline, String> p) {
+				if (p.getValue().participants.size() > 1)
+					return new SimpleStringProperty(p.getValue().participants.get(1).name);
+				else
+					return new SimpleStringProperty("ungültig");
+			}
+		});
+		
+		colOn0.setStyle("-fx-alignment: CENTER-LEFT;");
+		colOn1.setStyle("-fx-alignment: CENTER-LEFT;");
+		colOn2.setStyle("-fx-alignment: CENTER-LEFT;");
+		
+		lvGamesOnline.getColumns().add(colOn0);
+		lvGamesOnline.getColumns().add(colOn1);
+		lvGamesOnline.getColumns().add(colOn2);
 		
 	}
 	
@@ -164,14 +186,23 @@ public class ControllerGameManagement {
 		}
 	}
 	
-//	public void showGame(GameBase ggame) {
-//		game = ggame;
-//		showGame();
-//	}
-//	
-//	
-//	public void showGame() {
-//	}
+	public void showGame(GameBase ggame) {
+		game = ggame;
+		if (game instanceof GameSaved)
+			showOfflineGame();
+		else
+			showOnlineGame();
+	}
+	
+
+	public void showOnlineGame() {
+		// GameOnline game benutzen
+		// in javafx.scene.web.WebView webView darstellen
+	}
+	public void showOfflineGame() {
+		// GameSaved game benutzen
+		// in javafx.scene.web.WebView webView darstellen
+	}
 	
 
 	@FXML void clickStartGameOnline() {
