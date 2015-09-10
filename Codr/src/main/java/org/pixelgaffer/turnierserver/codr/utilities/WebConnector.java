@@ -447,8 +447,12 @@ public class WebConnector {
 		}
 	}
 	
-	public void setActive(int id) throws IOException {
-		String response = toString(sendGet("ai/" + id + "/activate_version"));
+	public void setActive(Version version) throws IOException {
+		setActive(((AiOnline)version.ai).id, version.number);
+	}
+	
+	public void setActive(int id, int version) throws IOException {
+		String response = toString(sendGet("ai/" + id + "/activate_version/" + version));
 		if (response == null) {
 			throw new IOException("Fehler bei der Verbindung mit dem Server");
 		}
