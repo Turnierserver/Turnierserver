@@ -38,9 +38,9 @@ public class PythonCompiler extends Compiler
 			
 			output.print("> Lade wrapper.py herunter ... ");
 			if (libraryDownloader == null)
-				DatastoreFtpClient.retrieveLibrary("wrapper", "Python", bindir);
+				DatastoreFtpClient.retrieveLibrary("wrapper/1", "Python", bindir);
 			else
-				libraryDownloader.getFile("Python", "wrapper", "wrapper.py");
+				libraryDownloader.getFile("Python", "wrapper/1", "wrapper.py");
 			output.println("fertig");
 			output.println("> Füge die Bibliothek für den wrapper hinzu ... ");
 			getLibs().add(new RequiredLibrary("wrapper", "."));
