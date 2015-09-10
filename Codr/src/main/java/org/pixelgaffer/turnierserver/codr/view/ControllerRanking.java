@@ -292,10 +292,16 @@ public class ControllerRanking {
 			imageView.imageProperty().unbind();
 			imageView.imageProperty().set(Resources.defaultPicture());
 			tvVersions.setItems(null);
+			tvVersions.prefHeightProperty().unbind();
+			tvVersions.minHeightProperty().unbind();
+			tvVersions.maxHeightProperty().unbind();
 			tvVersions.prefHeightProperty().set(60);
 			tvVersions.minHeightProperty().set(60);
 			tvVersions.maxHeightProperty().set(60);
 			tvGames.setItems(null);
+			tvGames.prefHeightProperty().unbind();
+			tvGames.minHeightProperty().unbind();
+			tvGames.maxHeightProperty().unbind();
 			tvGames.prefHeightProperty().set(60);
 			tvGames.minHeightProperty().set(60);
 			tvGames.maxHeightProperty().set(60);

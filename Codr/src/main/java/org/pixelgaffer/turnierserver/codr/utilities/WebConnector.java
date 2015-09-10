@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -776,6 +777,9 @@ public class WebConnector {
 			File zip;
 			zipFile.extractAll((zip = Files.createTempDirectory("datacontainerUnzipped" + System.currentTimeMillis()).toFile()).getAbsolutePath());
 			zip.deleteOnExit();
+			if (new File(zip, "info.pdf").exists())
+				FileUtils.copyFile(new File(zip, "info.pdf"), new File(Paths.downloadGameType(gameName), "info.pdf"));
+			
 			for (File file : new File(zip, "AiLibraries").listFiles()) {
 				if (file.isFile()) {
 					continue;
