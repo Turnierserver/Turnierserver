@@ -1,7 +1,7 @@
 import sys
 import socket
 import json
-from io import StringIO
+from io import BytesIO
 from importlib import import_module
 from pprint import pprint
 from copy import deepcopy
@@ -22,12 +22,15 @@ def properties_to_dict(s):
 class Rerouted_Output():
 	def __init__(self):
 		"""Stream Durcheinander"""
-		self.buffer = StringIO()
+		self.buffer = BytesIO()
 		w_old = sys.stdout.write
 		w_new = self.buffer.write
 		def new_write(msg):
 			w_old(msg)
-			w_new(msg)
+			if isinstance(msg, str):
+				w_new(msg.encode("UTF-8", "ignore"))
+			else:
+				w_new(msg)
 		sys.stdout = self.buffer
 		sys.stderr = self.buffer
 		self.buffer.write = new_write
