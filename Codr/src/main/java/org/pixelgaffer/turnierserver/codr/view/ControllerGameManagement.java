@@ -217,28 +217,33 @@ public class ControllerGameManagement {
 	
 
 	@FXML void clickStartGameOnline() {
-		Task<Boolean> updateC = new Task<Boolean>() {
-			public Boolean call() {
-				return true;
+		Task<GameOnline> challenge = new Task<GameOnline>() {
+			public GameOnline call() {
+				try {
+					MainApp.webConnector.challenge(lvPlayerOnline1.getSelectionModel().getSelectedItem(), lvPlayerOnline2.getSelectionModel().getSelectedItem());
+					return null;/////////////////////
+				} catch (IOException e) {
+					e.printStackTrace();
+					return null;
+				}
 			}
 		};
 		
 		prStartGameOnline.setVisible(true);
 		
-		updateC.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-			
+		challenge.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			prStartGameOnline.setVisible(false);
+			if (newValue == null) {
+				Dialog.error("Die Herausforderung ist fehlgeschlagen");
+				return;
+			}
+			MainApp.onlineGames.add(newValue);
 		});
 		
-		Thread thread = new Thread(updateC, "updateConnected");
+		Thread thread = new Thread(challenge, "challenge");
 		thread.setDaemon(true);
 		thread.start();
 		
-		try {
-			MainApp.webConnector.challenge(lvPlayerOnline1.getSelectionModel().getSelectedItem(), lvPlayerOnline2.getSelectionModel().getSelectedItem());
-		} catch (IOException e) {
-			Dialog.error("Die Herausforderung ist fehlgeschlagen");
-			e.printStackTrace();
-		}
 	}
 	
 	
