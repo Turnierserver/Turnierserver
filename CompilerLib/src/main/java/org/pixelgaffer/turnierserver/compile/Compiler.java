@@ -184,8 +184,8 @@ public abstract class Compiler
 		
 		if (success)
 		{
-			// die ini-datei für die sandboxen schreiben
-			writeStartIni(bindir);
+			// die Properties-Datei für die Sandbox schreiben
+			writeStartProps(bindir);
 			
 			// packen
 			File archive = Files.createTempFile("aibin", ".tar.bz2").toFile();
@@ -238,8 +238,8 @@ public abstract class Compiler
 		// kompilieren
 		boolean success = compile(srcdir, bindir, p, output, libs);
 		
-		// die ini-datei für die sandbox schreiben
-		writeStartIni(bindir);
+		// die Properties-Datei für die Sandbox schreiben
+		writeStartProps(bindir);
 		
 		output.flush();
 		if (success)
@@ -251,30 +251,46 @@ public abstract class Compiler
 	public abstract boolean compile (File srcdir, File bindir, Properties p, PrintWriter output, LibraryDownloader libs)
 			throws IOException, InterruptedException;
 	
-	private void writeStartIni (File bindir) throws IOException
+	private void writeStartProps (File bindir) throws IOException
 	{
-		PrintWriter start = new PrintWriter(new FileWriter(new File(bindir, "start.ini")));
-		start.println("# GENERATED FILE - DO NOT EDIT");
-		start.println("Language=" + getLanguage());
-		start.println("Command=" + getCommand());
-		start.print("Arguments=");
+//		PrintWriter start = new PrintWriter(new FileWriter(new File(bindir, "start.ini")));
+//		start.println("# GENERATED FILE - DO NOT EDIT");
+//		start.println("Language=" + getLanguage());
+//		start.println("Command=" + getCommand());
+//		start.print("Arguments=");
+//		for (int i = 0; i < getArguments().length; i++)
+//		{
+//			if (i > 0)
+//				start.print(",");
+//			start.print(getArguments()[i].replace("\\", "\\\\").replace(",", "\\,"));
+//		}
+//		start.println();
+//		start.println("Libraries=" + getLibs().size());
+//		int count = 0;
+//		for (RequiredLibrary lib : getLibs())
+//		{
+//			start.println("[Lib" + count + "]");
+//			start.println("Name=" + lib.name);
+//			start.println("Path=" + lib.path);
+//			count++;
+//		}
+//		start.close();
+		
+		Properties props = new Properties();
+		props.put("language", getLanguage());
+		props.put("Command", getCommand());
+		props.put("arguments.size", Integer.toString(getArguments().length));
 		for (int i = 0; i < getArguments().length; i++)
-		{
-			if (i > 0)
-				start.print(",");
-			start.print(getArguments()[i].replace("\\", "\\\\").replace(",", "\\,"));
-		}
-		start.println();
-		start.println("Libraries=" + getLibs().size());
+			props.put("arguments." + i, getArguments()[i]);
+		props.put("libraries.size", Integer.toString(getLibs().size()));
 		int count = 0;
 		for (RequiredLibrary lib : getLibs())
 		{
-			start.println("[Lib" + count + "]");
-			start.println("Name=" + lib.name);
-			start.println("Path=" + lib.path);
+			props.put("libraries." + count + ".name", lib.name);
+			props.put("libraries." + count + ".path", lib.path);
 			count++;
 		}
-		start.close();
+		props.store(new FileOutputStream(new File(bindir, "start.prop")), "GENERATED FILE - DO NOT EDIT");
 	}
 	
 	protected String relativePath (File absolute, File base)
