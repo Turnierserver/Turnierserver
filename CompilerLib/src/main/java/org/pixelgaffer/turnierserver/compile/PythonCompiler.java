@@ -43,7 +43,7 @@ public class PythonCompiler extends Compiler
 				libraryDownloader.getFile("Python", "wrapper/1", "wrapper.py");
 			output.println("fertig");
 			output.println("> Füge die Bibliothek für den wrapper hinzu ... ");
-			getLibs().add(new RequiredLibrary("wrapper", "."));
+			getLibs().add(new RequiredLibrary("wrapper/1", "."));
 			output.println("fertig");
 		}
 		catch (Exception e)
