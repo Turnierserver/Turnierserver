@@ -4,6 +4,7 @@ package org.pixelgaffer.turnierserver.codr;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.codr.simulator.CodrGameImpl;
 
 
@@ -22,6 +23,12 @@ public class GameBase {
 	public class Participant {
 		public String name = "";
 		public int id = -1;
+		
+		public Participant(JSONObject json) {
+			name = json.getString("name");
+			id = json.getInt("id");
+		}
+		public Participant() {}
 	}
 	
 	
