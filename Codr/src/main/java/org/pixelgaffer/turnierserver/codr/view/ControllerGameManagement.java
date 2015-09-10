@@ -4,6 +4,7 @@ package org.pixelgaffer.turnierserver.codr.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -65,17 +66,53 @@ public class ControllerGameManagement {
 		MainApp.gameManager.loadGames();
 //		showGame();
 		
-		lvPlayerOffline1.getItems().clear();
-		lvPlayerOffline2.getItems().clear();
-		lvPlayerOffline1.getItems().addAll(MainApp.aiManager.ais);
-		lvPlayerOffline2.getItems().addAll(MainApp.aiManager.ais);
+		lvPlayerOffline1.setItems(MainApp.aiManager.ais);
+		lvPlayerOffline2.setItems(MainApp.aiManager.ais);
 
-		lvPlayerOnline1.getItems().clear();
-		lvPlayerOnline2.getItems().clear();
-		lvPlayerOnline1.getItems().addAll(MainApp.ownOnlineAis);
-		lvPlayerOnline2.getItems().addAll(MainApp.onlineAis);
+		lvPlayerOnline1.setItems(MainApp.ownOnlineAis);
+		lvPlayerOnline2.setItems(MainApp.onlineAis);
+		
+		lvGamesOffline.setItems(MainApp.gameManager.games);
+		lvGamesOnline.setItems(MainApp.onlineGames);
+
+		MainApp.aiManager.ais.addListener(new ListChangeListener<AiSimple>() {
+			@Override public void onChanged(ListChangeListener.Change<? extends AiSimple> change) {
+				initialSelectOffline();
+			}
+		});
+		MainApp.ownOnlineAis.addListener(new ListChangeListener<AiOnline>() {
+			@Override public void onChanged(ListChangeListener.Change<? extends AiOnline> change) {
+				initialSelectOnline();
+			}
+		});
+		MainApp.onlineAis.addListener(new ListChangeListener<AiOnline>() {
+			@Override public void onChanged(ListChangeListener.Change<? extends AiOnline> change) {
+				initialSelectOnline();
+			}
+		});
+
 	}
 	
+	
+	public void initialSelectOffline(){
+		if (lvPlayerOffline1.getItems().size() > 0){
+			lvPlayerOffline1.getSelectionModel().select(0);
+		}
+		if (lvPlayerOffline2.getItems().size() > 1){
+			lvPlayerOffline2.getSelectionModel().select(1);
+		}
+	}
+	public void initialSelectOnline(){
+		if (lvPlayerOnline1.getItems().size() > 0){
+			lvPlayerOnline1.getSelectionModel().select(0);
+		}
+		if (lvPlayerOnline2.getItems().size() > 1 && lvPlayerOnline1.getItems().size() > 0){
+			if (lvPlayerOnline1.getItems().get(0).equals(lvPlayerOnline2.getItems().get(0)))
+				lvPlayerOnline2.getSelectionModel().select(1);
+			else
+				lvPlayerOnline2.getSelectionModel().select(0);
+		}
+	}
 	
 //	public void showGame(GameBase ggame) {
 //		game = ggame;
