@@ -2,6 +2,7 @@
 .directory
 __pycache__
 Frontend/tmpfile
+Frontend/.data_and_stuff
 *.log
 AIs/
 Downloads/
