@@ -18,7 +18,7 @@ public class GameBase {
 	public final GameMode mode;
 	public String gameType;
 	public String date;
-	public static ObservableList<Participant> participants = FXCollections.observableArrayList();
+	public ObservableList<Participant> participants = FXCollections.observableArrayList();
 	
 	public class Participant {
 		public String name = "";
