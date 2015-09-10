@@ -15,6 +15,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
@@ -43,10 +44,11 @@ public class ControllerRanking {
 	@FXML TableView<Version> tvVersions;
 	@FXML TableView<OnlineGameInfo> tvGames;
 	@FXML ImageView imageView;
+	@FXML AnchorPane groundPane;
 	
 	
 	MainApp mainApp;
-	public AiOnline ai;
+	public AiOnline ai = null;
 	
 	
 	/**
@@ -57,32 +59,27 @@ public class ControllerRanking {
 	public void setMainApp(MainApp app) {
 		mainApp = app;
 		MainApp.cRanking = this;
+		showAi(null);
+		
+		tvAis.setItems(MainApp.onlineAis);
 		MainApp.onlineAis.addListener(new ListChangeListener<AiOnline>() {
 			@Override public void onChanged(ListChangeListener.Change<? extends AiOnline> change) {
-				System.out.println("test");
-	        	if (tvAis != null && tvAis.getItems().size() > 0){
-	        		for (AiOnline item : tvAis.getItems()){
-	        			System.out.println(item);
-	        		}
-	        		tvAis.requestFocus();
-	        		tvAis.getSelectionModel().select(2);
-	        		tvAis.getFocusModel().focus(0);
-	        		System.out.println("test fertig");
-			}
+				if (tvAis != null && tvAis.getItems().size() > 0){
+	        		tvAis.getSelectionModel().select(0);
+	        	}
 			}
 		});
 		tvAis.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
 			clickChangeAi(newValue);
 		});
 		
-		tvAis.setItems(MainApp.onlineAis);
 		
 		TableColumn<AiOnline, Image> col0 = new TableColumn<AiOnline, Image>("Bild");
-		col0.setMaxWidth(60);
-		col0.setMinWidth(60);
 		TableColumn<AiOnline, String> col1 = new TableColumn<AiOnline, String>("Name");
 		TableColumn<AiOnline, String> col2 = new TableColumn<AiOnline, String>("Besitzer");
 		TableColumn<AiOnline, String> col3 = new TableColumn<AiOnline, String>("ELO");
+		col0.setMaxWidth(60);
+		col0.setMinWidth(60);
 		col3.setMaxWidth(60);
 		col3.setMinWidth(60);
 		
@@ -206,7 +203,10 @@ public class ControllerRanking {
 		});
 		colG3.setCellValueFactory(new Callback<CellDataFeatures<OnlineGameInfo, String>, ObservableValue<String>>() {
 			public ObservableValue<String> call(CellDataFeatures<OnlineGameInfo, String> p) {
-				return new SimpleStringProperty(String.valueOf(p.getValue().won));
+				if (p.getValue().won)
+					return new SimpleStringProperty("Ja");
+				else
+					return new SimpleStringProperty("Nein");
 			}
 		});
 		
@@ -232,6 +232,7 @@ public class ControllerRanking {
 	
 	public void showAi() {
 		if (ai != null) {
+			groundPane.setVisible(true);
 			lbName.setText(ai.title);
 			tbDescription.setText(ai.description);
 			lbUser.setText(ai.userName);
@@ -281,6 +282,7 @@ public class ControllerRanking {
 			}
 			
 		} else {
+			groundPane.setVisible(false);
 			lbName.setText("Null");
 			tbDescription.setText("Aktuell wird keine KI angezeigt");
 			lbUser.setText("Keiner");
