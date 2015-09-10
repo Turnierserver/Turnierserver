@@ -960,14 +960,33 @@ def ai_upload_zip(id):
 	return {"error": False}, 200
 
 @api.route("/ai/<int:id>/<int:version_id>/download_zip")
+@json_out # Für die CommonErrors
 @authenticated
-def ai_download_zip(id, version_id):
+@rate_limited
+def download_zip(id, version_id):
 	ai = AI.query.get(id)
 	if not ai:
 		return CommonErrors.INVALID_ID
 	if not current_user.can_access(ai):
 		return CommonErrors.NO_ACCESS
-	return CommonErrors.NOT_IMPLEMENTED
+
+	version = AI_Version.query.filter(AI_Version.ai_id == id).filter(AI_Version.version_id == version_id).first()
+	if not version:
+		return CommonErrors.INVALID_ID
+
+	tmpdir = tempfile.mkdtemp()
+	_, tmpzip = tempfile.mkstemp()
+
+	if not ftp.download_tree(version.path, tmpdir):
+		return CommonErrors.FTP_ERROR
+
+	currdir = os.getcwd()
+	os.chdir(tmpdir)
+	zipf = zipfile.ZipFile(tmpzip, 'w')
+	zipdir(".", zipf)
+	zipf.close()
+	os.chdir(currdir)
+	return send_file(tmpzip, as_attachment=True, attachment_filename="{}_v{}.zip".format(ai.name, version_id))
 
 
 @api.route("/games/start", methods=["POST"])

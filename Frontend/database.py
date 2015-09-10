@@ -505,12 +505,11 @@ class AI_Version(db.Model):
 
 
 	def delete(self):
-		path = "AIs/{}/v{}/".format(self.ai_id, self.version_id)
 
 		@ftp.safe
 		def f():
 			logger.info("removing AI_Version data...")
-			ftp.ftp_host.rmtree(path)
+			ftp.ftp_host.rmtree(self.path)
 		try:
 			f()
 		except ftp.err:
@@ -520,8 +519,7 @@ class AI_Version(db.Model):
 		db.session.commit()
 
 	def copy_code(self, new_path):
-		mypath = "AIs/{}/v{}".format(self.ai_id, self.version_id)
-		return ftp.copy_tree(mypath, new_path)
+		return ftp.copy_tree(self.path, new_path)
 
 	@property
 	def current(self):
@@ -539,10 +537,9 @@ class AI_Version(db.Model):
 		if not self.ai:
 			logger.error("ai_version.ai is None; " + str(self.id))
 			return
-		bd = "AIs/" + str(self.ai.id)
-		if not ftp.ftp_host.path.isdir(bd+"/v"+str(self.version_id)):
-			ftp.ftp_host.mkdir(bd + "/v" + str(self.version_id))
-		with ftp.ftp_host.open(bd + "/v" + str(self.version_id) + "/libraries.txt", "w") as f:
+		if not ftp.ftp_host.path.isdir(self.path):
+			ftp.ftp_host.mkdir(self.path)
+		with ftp.ftp_host.open(self.path + "/libraries.txt", "w") as f:
 			for lib in self.extras:
 				f.write(lib.name + "\n")
 			if len(self.extras) == 0:
@@ -550,6 +547,10 @@ class AI_Version(db.Model):
 
 	def extra_names(self):
 		return [extra.name for extra in self.extras]
+
+	@property
+	def path(self):
+		return "AIs/{}/v{}".format(self.ai_id, self.version_id)
 
 	def __repr__(self):
 		return "<AI_Version(id={}, version_id={}, ai_id={}>".format(self.id, self.version_id, self.ai_id)
