@@ -245,13 +245,19 @@ public class WebConnector {
 		}
 	}
 
-	public void challenge(AiOnline...ais) throws IOException {
+	public GameOnline challenge(AiOnline...ais) throws IOException {
 		String[] args = new String[ais.length * 2];
 		for(int i = 0; i < ais.length; i++) {
 			args[i*2] = "ai[]";
 			args[i*2 + 1] = Integer.toString(ais[i].id);
 		}
-		sendPost("games/start", args);
+		String result = toString(sendPost("games/start", args));
+		if(result == null) {
+			throw new IOException("Fehler bei der Verbindung mit dem Server");
+		}
+		JSONObject json = new JSONObject(result);
+		
+		return new GameOnline(json.getInt("inprogress_id"), ais);
 	}
 	
 	public ObservableList<AiOnline> getAis(String game) {
