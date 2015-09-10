@@ -16,6 +16,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
 
@@ -164,6 +165,10 @@ public class ControllerGameManagement {
 		lvGamesOnline.getColumns().add(colOn1);
 		lvGamesOnline.getColumns().add(colOn2);
 		
+		lvGamesOnline.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+			showGame(newValue);
+		});
+		
 	}
 	
 	
@@ -197,8 +202,9 @@ public class ControllerGameManagement {
 	
 
 	public void showOnlineGame(GameOnline game) {
-		webView = new WebView();
-		webView.getEngine().load(mainApp.webConnector.getUrlFromGame(game));
+		WebEngine webEngine = webView.getEngine();
+		webEngine.setJavaScriptEnabled(true);
+		webEngine.load(MainApp.webConnector.getUrlFromGame(game));
 	}
 	public void showOfflineGame() {
 		// GameSaved game benutzen
