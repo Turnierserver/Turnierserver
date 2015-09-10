@@ -369,7 +369,7 @@ public class WebConnector {
 
 
 	public void uploadVersion(Version version, int id) throws ZipException, IOException {
-		HttpPost post = new HttpPost(url + "ai/" + id + "/new_version_from_zip");
+		HttpPost post = new HttpPost(url + "ai/" + id + "/upload_zip");
 		File file = new File(System.getProperty("java.io.tmpdir"), version.ai.title + "v" + version.number + System.currentTimeMillis() + ".zip");
 		ZipFile zip = new ZipFile(file);
 		ZipParameters params = new ZipParameters();
