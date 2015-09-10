@@ -128,55 +128,40 @@
           </VBox.margin>
         </TitledPane>
         <TitledPane animated="false" text="Einstellungen">
-          <content>
-            <AnchorPane prefHeight="215.0">
-              <children>
-                <GridPane hgap="5.0" prefHeight="90.0" prefWidth="309.0" vgap="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-                  <children>
-                    <Label text="Editor Design:" />
-                    <Label text="Schriftgröße:" GridPane.rowIndex="1" />
-                    <Label text="Python - Interpreter:" GridPane.rowIndex="3" />
-                    <Label text="C++ - Compiler:" GridPane.rowIndex="4" />
-                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                      <children>
-                        <TextField fx:id="tbCplusplusCompiler" />
-                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#clickCplusplusCompiler" prefWidth="30.0" text="..." />
-                      </children>
-                    </HBox>
-                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                      <children>
-                        <TextField fx:id="tbPythonInterpreter" />
-                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#clickPythonInterpreter" prefWidth="30.0" text="..." />
-                      </children>
-                    </HBox>
-                    <Slider fx:id="slFontSize" blockIncrement="1.0" max="40.0" min="5.0" snapToTicks="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                    <ToggleButton fx:id="btTheme" mnemonicParsing="false" text="Hell" GridPane.columnIndex="1" />
-                    <Label text="C++ - Compilertyp:" GridPane.rowIndex="5" />
-                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                      <children>
-                        <TextField fx:id="tbJDK" />
-                        <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#clickJDK" prefWidth="30.0" text="..." />
-                      </children>
-                    </HBox>
-                    <Label text="JDK-Home:" GridPane.rowIndex="2" />
-                              <ChoiceBox fx:id="cbCplusplusCompilerType" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                  </children>
-                  <columnConstraints>
-                    <ColumnConstraints hgrow="SOMETIMES" prefWidth="162.0" />
-                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="164.0" minWidth="82.0" prefWidth="147.0" />
-                  </columnConstraints>
-                  <rowConstraints>
-                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  </rowConstraints>
-                </GridPane>
-              </children>
-            </AnchorPane>
-          </content>
+                     <content>
+          <GridPane hgap="5.0" prefHeight="146.0" prefWidth="320.0" vgap="5.0">
+            <children>
+              <Label text="Editor Design:" />
+              <Label text="Schriftgröße:" GridPane.rowIndex="1" />
+              <Label text="Python - Interpreter:" GridPane.rowIndex="3" />
+              <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                <children>
+                  <TextField fx:id="tbPythonInterpreter" disable="true" />
+                  <Button disable="true" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickPythonInterpreter" prefWidth="30.0" text="..." />
+                </children>
+              </HBox>
+              <Slider fx:id="slFontSize" blockIncrement="1.0" max="40.0" min="5.0" snapToTicks="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+              <ToggleButton fx:id="btTheme" mnemonicParsing="false" text="Hell" GridPane.columnIndex="1" />
+              <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <children>
+                  <TextField fx:id="tbJDK" disable="true" text="in Umgebungsvar." />
+                  <Button disable="true" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickJDK" prefWidth="30.0" text="..." />
+                </children>
+              </HBox>
+              <Label text="JDK-Home:" GridPane.rowIndex="2" />
+            </children>
+            <columnConstraints>
+              <ColumnConstraints hgrow="NEVER" maxWidth="200.0" minWidth="145.0" prefWidth="145.0" />
+              <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" />
+            </columnConstraints>
+            <rowConstraints>
+              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+          </GridPane>
+                     </content>
         </TitledPane>
       </children>
       <padding>
