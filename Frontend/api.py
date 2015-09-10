@@ -1191,6 +1191,39 @@ def lib(lang, name, version):
 
 	return f()
 
+@api.route("/lib_upload/<string:lang>/<string:name>/<string:version>", methods=["POST"])
+@json_out
+@authenticated
+def upload_lib(lang, name, version):
+	if request.mimetype == "multipart/form-data":
+		if len(request.files) != 1:
+			return {"error": "Invalid number of files attached."}, 400
+		content = list(request.files.values())[0].read()
+	else:
+		content = request.data
+
+	mime = magic.from_buffer(content, mime=True).decode("ascii")
+	if mime != "application/zip":
+		return {"error": "Invalid mimetype for an ZIP-File.", "mimetype": mime}, 400
+
+	tmpdir = tempfile.mkdtemp()
+	_, tmpzip = tempfile.mkstemp()
+	with open(tmpzip, "wb") as f:
+		f.write(content)
+
+	try:
+		with zipfile.ZipFile(tmpzip) as z:
+			z.extractall(tmpdir)
+	except zipfile.BadZipFile:
+		return {"error": "Bad zip file."}, 400
+
+	p = "Libraries/{}/{}/{}".format(secure_filename(lang), secure_filename(name), secure_filename(version))
+
+	if not ftp.upload_tree(tmpdir, p):
+		return CommonErrors.FTP_ERROR
+
+	return {"error": False}, 200
+
 @api.route("/data_container/<int:game_id>")
 def data_container(game_id):
 	p = "Games/{}/data_container.zip".format(secure_filename(str(game_id)))
