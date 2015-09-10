@@ -145,6 +145,8 @@
                                                 <ProgressIndicator fx:id="prUpload" maxWidth="-Infinity" prefHeight="26.0" prefWidth="26.0" visible="false" />
                                              </children>
                                           </HBox>
+                                          <ProgressIndicator fx:id="prQualify" maxWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" prefHeight="26.0" prefWidth="26.0" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <ProgressIndicator fx:id="prCompile" maxWidth="-Infinity" prefHeight="26.0" prefWidth="26.0" visible="false" GridPane.columnIndex="1" />
                                        </children>
                                        <VBox.margin>
                                           <Insets />

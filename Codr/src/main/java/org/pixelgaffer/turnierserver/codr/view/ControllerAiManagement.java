@@ -80,9 +80,12 @@ public class ControllerAiManagement {
 	@FXML TabPane tpCode;
 	@FXML Hyperlink hlShowQualified;
 	@FXML ProgressIndicator prUpload;
+	@FXML ProgressIndicator prCompile;
+	@FXML ProgressIndicator prQualify;
 	@FXML TitledPane tpNewVersion;
 	@FXML BorderPane bpAis;
 	@FXML TreeView<File> tvFiles;
+	
 
 	public Tab infoTab;
 	public Tab newFileTab;
@@ -639,8 +642,26 @@ public class ControllerAiManagement {
 	 */
 	@FXML
 	void clickCompile() {
-		version.compile();
-		showAi();
+		Task<Boolean> compile = new Task<Boolean>() {
+			public Boolean call() {
+				try {
+					version.compile();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return true;
+			}
+		};
+
+		compile.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			prCompile.setVisible(false);
+			showAi();
+		});
+
+		prCompile.setVisible(true);
+		Thread thread = new Thread(compile, "compile");
+		thread.setDaemon(true);
+		thread.start();
 	}
 
 	/**
@@ -648,8 +669,26 @@ public class ControllerAiManagement {
 	 */
 	@FXML
 	void clickQualify() {
-		version.qualify();
-		showAi();
+		Task<Boolean> qualify = new Task<Boolean>() {
+			public Boolean call() {
+				try {
+					version.qualify();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return true;
+			}
+		};
+
+		qualify.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			prQualify.setVisible(false);
+			showAi();
+		});
+
+		prQualify.setVisible(true);
+		Thread thread = new Thread(qualify, "qualify");
+		thread.setDaemon(true);
+		thread.start();
 	}
 
 	/**
