@@ -49,8 +49,7 @@ public class SandboxMain
 	public static void main (String args[]) throws IOException
 	{
 		// Properties laden
-		loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
-		loadProperties(args.length > 1 ? args[1] : "/etc/turnierserver/sandbox.prop");
+		loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/sandbox.prop");
 		
 		// den Rechner nach Programmiersprachen durchsuchen
 		for (int i = 0; i < getIntRequired("languages.size"); i++)
