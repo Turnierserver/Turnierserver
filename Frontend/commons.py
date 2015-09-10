@@ -18,7 +18,7 @@ def authenticated(f):
 	@wraps(f)
 	def wrapper(*args, **kwargs):
 		if current_user:
-			if current_user.is_authenticated():
+			if current_user.is_authenticated:
 				try:
 					ret = f(*args, **kwargs)
 					db.session.commit()
@@ -35,7 +35,7 @@ def authenticated_web(f):
 	@wraps(f)
 	def wrapper(*args, **kwargs):
 		if current_user:
-			if current_user.is_authenticated():
+			if current_user.is_authenticated:
 				try:
 					ret = f(*args, **kwargs)
 					db.session.commit()

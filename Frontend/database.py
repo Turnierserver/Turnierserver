@@ -270,12 +270,9 @@ class User(db.Model):
 		return "<User(id={}, name={}, admin={})".format(self.id, self.name, self.admin)
 
 	# Flask.Login zeugs
-	def is_authenticated(self):
-		return True
-	def is_active(self):
-		return True
-	def is_anonymous(self):
-		return False
+	is_authenticatedated = True
+	is_active = True
+	is_anonymous = False
 	def get_id(self):
 		return self.id
 
@@ -686,7 +683,7 @@ class Game(db.Model):
 		## TODO: kein lookup jedes mal
 		for ai in chunk["output"]:
 			ai_id = ai.split("v")[0]
-			if not (current_user and current_user.is_authenticated() and current_user.can_access(AI.query.get(ai_id))):
+			if not (current_user and current_user.is_authenticated and current_user.can_access(AI.query.get(ai_id))):
 				chunk["output"][ai] = ""
 
 	@classmethod
@@ -698,7 +695,7 @@ class Game(db.Model):
 			return False, None
 		data.pop("isCrash", None)
 		data.pop("requestid", None)
-		if current_user and current_user.is_authenticated() and current_user.can_access(ai):
+		if current_user and current_user.is_authenticated and current_user.can_access(ai):
 			return True, data
 		return False, None
 

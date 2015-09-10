@@ -9,7 +9,7 @@
 
 <div class="ui segment">
 
-{% if current_user.is_authenticated() and current_user.can_access(ai) %}
+{% if current_user.is_authenticated and current_user.can_access(ai) %}
 <a class="ui teal right ribbon label" href="{{ url_for("authenticated.edit_ai", id=ai.id)}}">
 	Bearbeiten
 </a>

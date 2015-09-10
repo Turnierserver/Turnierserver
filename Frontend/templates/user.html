@@ -9,7 +9,7 @@
 
 <div class="ui segment">
 
-{% if current_user.is_authenticated() and current_user.can_access(user) %}
+{% if current_user.is_authenticated and current_user.can_access(user) %}
 <a class="ui teal right ribbon label" href="{{ url_for('authenticated.profile_id', id=user.id)}}">
 	Bearbeiten
 </a>

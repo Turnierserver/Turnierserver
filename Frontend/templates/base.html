@@ -6,7 +6,7 @@
 	(url_for("anonymous.game_list"), "game_list", "Spiele")
 ]%}
 
-{% if current_user and current_user.is_authenticated() %}
+{% if current_user and current_user.is_authenticated %}
 	{% if current_user.admin %}
 		{% do nav_menu.append((url_for("authenticated.admin"), "admin", "Admin-Interface")) %}
 	{% endif %}
@@ -36,7 +36,7 @@
 			{% for url, id, name in nav_menu %}
 			<a href="{{ url | e }}" class="{{'active' if active_page == id}} item">{{ name | e }}</a>
 			{% endfor %}
-			{% if not (current_user and current_user.is_authenticated()) %}
+			{% if not (current_user and current_user.is_authenticated) %}
 			<div class="item">
 				<div class="ui input">
 					<input id="login_email" name="email" type="text" placeholder="Email" style="max-width: 11em">
