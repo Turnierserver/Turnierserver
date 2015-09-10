@@ -145,7 +145,7 @@ public class WebConnector {
 	}
 		
 	public String getUrlFromGame(GameOnline game) {
-		return url.substring(url.length() - 4) + "game/" + (game.mode == GameMode.onlineInprogress ? "inprogress/" : "") + game.onlineId + "/mini";
+		return url.substring(0, url.length() - 4) + "game/" + (game.mode == GameMode.onlineInprogress ? "inprogress/" : "") + game.onlineId + "/mini";
 	}
 	
 	public int getUserID() {
