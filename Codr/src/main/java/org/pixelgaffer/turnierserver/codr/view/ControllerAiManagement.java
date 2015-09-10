@@ -727,6 +727,7 @@ public class ControllerAiManagement {
 		getOwn.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 
 			if (MainApp.ownOnlineAis == null) {
+				prUpload.setVisible(false);
 				lbUploaded.setText("Fehler");
 				Dialog.error("Bitte erst Anmelden");
 				return;
@@ -734,6 +735,7 @@ public class ControllerAiManagement {
 
 			AiBase result = Dialog.selectOwnVersion();
 			if (result == null) {
+				prUpload.setVisible(false);
 				lbUploaded.setText("Fehler");
 				return;
 			}
@@ -741,6 +743,7 @@ public class ControllerAiManagement {
 			if (result.getClass() == AiFake.class) {
 				localNameOfNewAi = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
 				if (localNameOfNewAi == null){
+					prUpload.setVisible(false);
 					lbUploaded.setText("Fehler");
 					return;
 				}
