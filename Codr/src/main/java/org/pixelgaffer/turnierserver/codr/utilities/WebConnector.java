@@ -246,11 +246,12 @@ public class WebConnector {
 	}
 
 	public void challenge(AiOnline...ais) throws IOException {
-		String[] ids = new String[ais.length];
+		String[] args = new String[ais.length * 2];
 		for(int i = 0; i < ais.length; i++) {
-			ids[i] = Integer.toString(ais[i].id);
+			args[i*2] = "ai[]";
+			args[i*2 + 1] = Integer.toString(ais[i].id);
 		}
-		sendPost("games/start?" + String.join("&", ids));
+		sendPost("games/start", args);
 	}
 	
 	public ObservableList<AiOnline> getAis(String game) {
