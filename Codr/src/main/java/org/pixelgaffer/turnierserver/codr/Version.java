@@ -45,7 +45,6 @@ public class Version {
 	public SimpleBooleanProperty compiled = new SimpleBooleanProperty(false);
 	public SimpleBooleanProperty qualified = new SimpleBooleanProperty(false);
 	public SimpleBooleanProperty finished = new SimpleBooleanProperty(false);
-	public SimpleBooleanProperty uploaded = new SimpleBooleanProperty(false);
 	public String compileOutput = "";
 	public String qualifyOutput = "";
 	public List<CodeEditor> files = new ArrayList<CodeEditor>();
@@ -252,7 +251,6 @@ public class Version {
 			compiled.set(Boolean.parseBoolean(prop.getProperty("compiled")));
 			qualified.set(Boolean.parseBoolean(prop.getProperty("qualified")));
 			finished.set(Boolean.parseBoolean(prop.getProperty("finished")));
-			uploaded.set(Boolean.parseBoolean(prop.getProperty("uploaded")));
 			compileOutput = prop.getProperty("compileOutput");
 			qualifyOutput = prop.getProperty("qualifyOutput");
 		} catch (IOException e) {
@@ -277,7 +275,6 @@ public class Version {
 		prop.setProperty("compiled", "" + compiled.get());
 		prop.setProperty("qualified", "" + qualified.get());
 		prop.setProperty("finished", "" + finished.get());
-		prop.setProperty("uploaded", "" + uploaded.get());
 		prop.setProperty("compileOutput", compileOutput);
 		prop.setProperty("qualifyOutput", qualifyOutput);
 		
