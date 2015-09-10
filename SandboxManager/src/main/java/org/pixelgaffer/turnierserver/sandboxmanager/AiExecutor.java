@@ -180,7 +180,7 @@ public class AiExecutor implements Runnable
 		aiProps.put("turnierserver.worker.server.port", getStringRequired("worker.port"));
 		aiProps.put("turnierserver.worker.server.aichar", "A");
 		aiProps.put("turnierserver.serializer.compress.worker", getStringRequired("turnierserver.serializer.compress.worker"));
-		aiProps.put("turnierserver.ai.prop", getJob().getUuid().toString());
+		aiProps.put("turnierserver.ai.uuid", getJob().getUuid().toString());
 		aiProps.store(new FileOutputStream(aiProp), "GENERATED FILE - DO NOT EDIT");
 		makeReadOnly(aiProp, false);
 	}
@@ -201,6 +201,7 @@ public class AiExecutor implements Runnable
 		cmd.add("--dir=/etc/=" + etc.getAbsolutePath());
 		cmd.add("--dir=/usr/lib/jvm/");
 		cmd.add("-c"); cmd.add("/box/bin/");
+		cmd.add("--env=LANG");
 		cmd.add("--run");
 		cmd.add("-b"); cmd.add(Integer.toString(boxid));
 		cmd.add("--");
