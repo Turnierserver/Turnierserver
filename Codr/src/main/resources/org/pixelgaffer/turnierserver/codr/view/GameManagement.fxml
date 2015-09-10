@@ -11,16 +11,9 @@
 
 <AnchorPane prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pixelgaffer.turnierserver.codr.view.ControllerGameManagement">
    <children>
-      <BorderPane layoutX="418.0" layoutY="125.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <center>
-            <WebView fx:id="webView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-               <BorderPane.margin>
-                  <Insets />
-               </BorderPane.margin>
-            </WebView>
-         </center>
-         <left>
-            <TabPane fx:id="tabPaneOnOffline" nodeOrientation="LEFT_TO_RIGHT" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.2887067395264117" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <items>
+            <TabPane fx:id="tabPaneOnOffline" nodeOrientation="LEFT_TO_RIGHT" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab fx:id="tabOnline" text="Offline">
                    <content>
@@ -28,12 +21,12 @@
                          <children>
                             <TitledPane text="Neues Spiel" VBox.vgrow="NEVER">
                                <content>
-                                  <BorderPane maxWidth="-Infinity" prefHeight="200.0" prefWidth="297.0">
+                                  <BorderPane prefHeight="200.0" prefWidth="300.0">
                                      <center>
-                                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" BorderPane.alignment="CENTER">
+                                        <HBox spacing="5.0" BorderPane.alignment="CENTER">
                                            <children>
-                                              <ListView fx:id="lvPlayerOffline1" />
-                                              <ListView fx:id="lvPlayerOffline2" />
+                                              <ListView fx:id="lvPlayerOffline1" HBox.hgrow="ALWAYS" />
+                                              <ListView fx:id="lvPlayerOffline2" HBox.hgrow="ALWAYS" />
                                            </children>
                                            <BorderPane.margin>
                                               <Insets top="10.0" />
@@ -70,20 +63,20 @@
                          <children>
                             <TitledPane fx:id="tpNewGameOnline" text="Neues Spiel" VBox.vgrow="NEVER">
                                <content>
-                                  <BorderPane maxWidth="-Infinity" prefHeight="221.0" prefWidth="297.0">
+                                  <BorderPane prefHeight="221.0" prefWidth="297.0">
                                      <center>
-                                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" BorderPane.alignment="CENTER">
+                                        <HBox spacing="5.0" BorderPane.alignment="CENTER">
                                            <children>
-                                                <VBox>
+                                                <VBox HBox.hgrow="ALWAYS">
                                                    <children>
                                                       <Label text="Deine KI" />
-                                                    <ListView fx:id="lvPlayerOnline1" prefHeight="200.0" prefWidth="200.0" />
+                                                    <ListView fx:id="lvPlayerOnline1" VBox.vgrow="ALWAYS" />
                                                    </children>
                                                 </VBox>
-                                                <VBox>
+                                                <VBox HBox.hgrow="ALWAYS">
                                                    <children>
                                                       <Label text="Gegnerische KI" />
-                                                    <ListView fx:id="lvPlayerOnline2" prefHeight="200.0" prefWidth="200.0" />
+                                                    <ListView fx:id="lvPlayerOnline2" VBox.vgrow="ALWAYS" />
                                                    </children>
                                                 </VBox>
                                            </children>
@@ -118,7 +111,8 @@
                 </Tab>
               </tabs>
             </TabPane>
-         </left>
-      </BorderPane>
+            <WebView fx:id="webView" prefHeight="200.0" prefWidth="200.0" />
+         </items>
+      </SplitPane>
    </children>
 </AnchorPane>

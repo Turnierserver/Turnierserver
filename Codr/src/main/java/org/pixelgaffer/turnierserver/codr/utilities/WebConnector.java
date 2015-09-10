@@ -280,6 +280,7 @@ public class WebConnector {
 
 
 	public ObservableList<GameOnline> getGames(String game) {
+		
 		ObservableList<GameOnline> result = FXCollections.observableArrayList();
 		String json;
 		try {
