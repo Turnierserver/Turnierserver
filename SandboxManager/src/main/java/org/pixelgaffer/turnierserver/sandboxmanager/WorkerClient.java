@@ -11,15 +11,15 @@ import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.getLogger
 import java.io.IOException;
 import java.util.UUID;
 
-import lombok.Getter;
-import naga.NIOSocket;
-import naga.SocketObserver;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.PropertyUtils;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
+
+import lombok.Getter;
+import naga.NIOSocket;
+import naga.SocketObserver;
 
 public class WorkerClient implements SocketObserver
 {
@@ -49,8 +49,17 @@ public class WorkerClient implements SocketObserver
 	public void sendMessage (UUID uuid, char event)
 	{
 		JSONObject json = new JSONObject();
-		json.append("uuid", uuid);
-		json.append("event", event);
+		json.put("uuid", uuid);
+		json.put("event", Character.toString(event));
+		client.write((json + "\n").getBytes(UTF_8));
+	}
+	
+	public void sendMessage (UUID uuid, char event, long cpuTime)
+	{
+		JSONObject json = new JSONObject();
+		json.put("uuid", uuid);
+		json.put("event", Character.toString(event));
+		json.put("cpuTime", cpuTime);
 		client.write((json + "\n").getBytes(UTF_8));
 	}
 	
@@ -108,7 +117,7 @@ public class WorkerClient implements SocketObserver
 	@Override
 	public void packetReceived (NIOSocket socket, byte[] packet)
 	{
-		System.out.println("packet empfangen");
+		getLogger().debug("Packet empfangen");
 		buf.add(packet);
 		byte line[];
 		while ((line = buf.readLine()) != null)
@@ -123,8 +132,8 @@ public class WorkerClient implements SocketObserver
 				String lang = json.getString("lang");
 				UUID uuid = UUID.fromString(json.getString("uuid"));
 				getLogger().info("Auftrag erhalten: Run AI " + id + "v" + version + " " + uuid);
-				
 				jobControl.addJob(new Job(id, version, lang, uuid));
+				getLogger().debug("Auftrag hat zurückgegeben");
 			}
 			else if (cmd.equals("T"))
 			{
@@ -139,6 +148,14 @@ public class WorkerClient implements SocketObserver
 				getLogger().info("Auftrag erhalten: Kill AI " + uuid);
 				
 				getLogger().todo("jobControl.killJob(uuid);");
+			}
+			else if (cmd.equals("C"))
+			{
+				getLogger().info("Auftrag erhalten: CPU-Time herausfinden");
+				
+				long time = CpuTimer.getCpuTime(jobControl.getCurrent().getBoxid());
+				getLogger().debug(time);
+				sendMessage(jobControl.getCurrent().getJob().getUuid(), 'C', time);
 			}
 			else
 				getLogger().debug("Also es wäre schön wenn ich den Befehl " + cmd + " verstehen würde");

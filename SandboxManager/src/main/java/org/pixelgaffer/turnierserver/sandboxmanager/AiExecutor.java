@@ -60,6 +60,7 @@ public class AiExecutor implements Runnable
 	@Getter
 	private Job job;
 	
+	@Getter
 	private int boxid;
 	private String boxdir;
 	private File dir, binArchive, binDir, aiProp;
