@@ -424,8 +424,32 @@ public class WebConnector {
 		}
 		return result.getString("compilelog");
 	}
-	 
-
+	
+	public boolean qualify(int id) throws IOException {
+		String response = toString(sendGet("ai/" + id + "/qualify_blocking"));
+		if (response == null) {
+			throw new IOException("Fehler bei der Verbindung mit dem Server");
+		}
+		return Boolean.parseBoolean(response);
+	}
+	
+	public void freeze(int id) throws IOException {
+		String response = toString(sendGet("ai/" + id + "/freeze"));
+		if (response == null) {
+			throw new IOException("Fehler bei der Verbindung mit dem Server");
+		}
+	}
+	
+	public void setActive(Version version) throws IOException {
+		setActive(((AiOnline)version.ai).id, version.number);
+	}
+	
+	public void setActive(int id, int version) throws IOException {
+		String response = toString(sendGet("ai/" + id + "/activate_version/" + version));
+		if (response == null) {
+			throw new IOException("Fehler bei der Verbindung mit dem Server");
+		}
+	}
 
 	public ObservableList<AiOnline> getOwnAis() {
 		return getUserAis(getUserID());
