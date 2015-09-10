@@ -21,6 +21,9 @@ public class Libraries implements LibraryDownloader {
 	
 	@Override
 	public File[] getLib(String language, String name) {
+		if(!name.contains("/")) {
+			name += "/1";
+		}
 		File dir = new File(Paths.library(language, name));
 		if (dir.exists())
 			return dir.listFiles();
