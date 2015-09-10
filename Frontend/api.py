@@ -1225,8 +1225,17 @@ def add_gametype(name):
 @admin_required
 def upload_codr():
 	ret = upload_single_file(request, "Data/codr.jar")
+	if not os.path.isdir(".data_and_stuff"):
+		os.mkdir(".data_and_stuff")
+
+	if request.mimetype == "multipart/form-data":
+		content = list(request.files.values())[0].read()
+	else:
+		content = request.data
+
 	with open(".data_and_stuff/codr_md5", "w") as f:
-		f.write(md5) ##FIXME
+		f.write(hashlib.md5(content).digest())
+
 	return ret
 
 @api.route("/codr_hash")
