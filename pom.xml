@@ -30,6 +30,7 @@
         <module>NetworkingLib</module>
         <module>Worker</module>
         <module>Utils</module>
+        <module>SandboxManager</module>
     </modules>
 
     <dependencies>
