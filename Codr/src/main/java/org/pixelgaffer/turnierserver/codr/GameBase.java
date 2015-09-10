@@ -29,6 +29,11 @@ public class GameBase {
 			id = json.getInt("id");
 		}
 		public Participant() {}
+		
+		public Participant(AiOnline ai) {
+			name = ai.title;
+			id = ai.id;
+		}
 	}
 	
 	
