@@ -107,7 +107,7 @@ def api_ais(gametype=None):
 		if not gametype:
 			return CommonErrors.BAD_REQUEST
 
-	return [ai.info() for ai in AI.filtered(gametype).all()]
+	return [ai.info() for ai in AI.filtered(gametype)]
 
 @api.route("/ai/<int:id>", methods=["GET"])
 @json_out
@@ -143,7 +143,7 @@ def api_games(gametype=None):
 			return CommonErrors.BAD_REQUEST
 		if not gametype:
 			return CommonErrors.BAD_REQUEST
-	return [game.info() for game in Game.query.filter(Game.type == gametype).all()]
+	return [game.info(versions=False) for game in Game.query.filter(Game.type == gametype).all()]
 
 @api.route("/game/<int:id>", methods=["GET"])
 @json_out
