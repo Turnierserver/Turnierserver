@@ -51,7 +51,7 @@ def admin_required(f):
 	@wraps(f)
 	def wrapper(*args, **kwargs):
 		if current_user:
-			if current_user.is_authenticated():
+			if current_user.is_authenticated:
 				if current_user.admin:
 					return f(*args, **kwargs)
 		return CommonErrors.NO_ACCESS
@@ -366,7 +366,7 @@ def api_login():
 @api.route("/logout", methods=["GET", "POST"])
 @json_out
 def api_logout():
-	if not current_user.is_authenticated():
+	if not current_user.is_authenticated:
 		return {'error': 'Not logged in.'}
 	logout_user()
 	return {'error': False}

@@ -68,7 +68,7 @@ backend.app = app
 def inject_globals():
 	logged_in = False
 	if current_user:
-		if current_user.is_authenticated():
+		if current_user.is_authenticated:
 			logged_in = True
 
 	current_gametype = GameType.selected(None, latest_on_none=True)

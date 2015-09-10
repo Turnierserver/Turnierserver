@@ -25,7 +25,7 @@ def ai_list():
 	if len(ais) == 0:
 		flash("Es gibt keine KIs des aktuellen Spieltypen!")
 		abort(403)
-	if current_user and current_user.is_authenticated():
+	if current_user and current_user.is_authenticated:
 		data = [ai for ai in AI.filtered() if ai.user == current_user and ai.active_version()]
 		if len(data):
 			return render_template("ai_list.html", ais=ais, type=ais[0].type,
