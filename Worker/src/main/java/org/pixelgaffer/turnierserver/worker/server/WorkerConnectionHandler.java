@@ -6,6 +6,8 @@ import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnection
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.SANDBOX;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import lombok.Getter;
 import lombok.ToString;
@@ -51,15 +53,8 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	{
 		if (type.getType() != SANDBOX)
 			WorkerMain.getLogger().warning("Schicke Job an " + type.getType() + " (sollte " + SANDBOX + " sein)");
-		//new Thread(() -> {
-		//	long passedMillis = Sandboxes.sandboxJobs.get(job.getUuid()).getCpuTimeDiff() / 1000000;
-		//	try {
-		//		getClient().write(Long.toString(passedMillis).getBytes(UTF_8));
-				getClient().write(Parsers.getSandbox().parse(job, true));
-		//	} catch (Exception e) {
-		//		e.printStackTrace();
-		//	}
-		//}).start();
+		getClient().write(Parsers.getSandbox().parse(job, true));
+
 	}
 	
 	/**
@@ -69,10 +64,23 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	{
 		if (type.getType() != AI)
 			WorkerMain.getLogger().warning("Schicke Nachricht an " + type.getType() + " (sollte " + AI + " sein)");
+		WorkerMain.getLogger().debug("Starte Thread");
 		new Thread(() -> {
-			sandbox.updateCpuTime();
+			WorkerMain.getLogger().debug("Sende updateCpuTime request");
+			try {
+				Sandbox sandbox = Sandboxes.sandboxJobs.get(mf.getAi());
+				WorkerMain.getLogger().debug(sandbox);
+				sandbox.updateCpuTime();
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				return;
+			}
+			WorkerMain.getLogger().debug("Sende Nachricht");
 			getClient().write(mf.getMessage());
+			WorkerMain.getLogger().debug("Fertisch");
 		}).start();
+		WorkerMain.getLogger().debug("Thread gestartet");
 		//getClient().write("\n".getBytes(UTF_8));
 	}
 	
@@ -164,6 +172,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 								{
 									MessageForward mf = new MessageForward(type.getUuid(), _line);
 									DataBuffer buf = new DataBuffer();
+									buf.add(Long.toString(Sandboxes.sandboxJobs.get(type.getUuid()).getCpuTimeDiff() / 1000000).getBytes(UTF_8));
 									buf.add(Parsers.getWorker().parse(mf, true));
 									WorkerServer.backendConnection.getClient().write(buf.readAll());
 								}

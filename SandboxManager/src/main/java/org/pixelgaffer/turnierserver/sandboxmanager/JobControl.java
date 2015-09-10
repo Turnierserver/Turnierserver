@@ -14,6 +14,7 @@ public class JobControl
 	private boolean active = true;
 	
 	private final Deque<Job> queue = new LinkedList<>();
+	@Getter
 	private AiExecutor current = null;
 	
 	/**
