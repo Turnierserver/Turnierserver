@@ -1,6 +1,8 @@
 package org.pixelgaffer.turnierserver.gamelogic;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.pixelgaffer.turnierserver.GsonGzipParser;
@@ -172,10 +174,14 @@ public abstract class GameLogic<E extends AiObject, R> {
 		}
 		
 		//Wenn der erste Buchstabe eine Zahl ist, wird die Zahl ausgelesen und geparsed
-		int passedMillis = string.length() > 0 && Character.isDigit(string.charAt(0)) ? Integer.parseInt(string.substring(0, string.indexOf('{'))) : 0;
+		int passedMillis = 0;
+		if(string.length() > 0 && Character.isDigit(string.charAt(0))) {
+			Integer.parseInt(string.substring(0, string.indexOf('{')));
+			string = string.substring(string.indexOf('{'));
+		}
 		
 		try {
-			receive(Parsers.getWorker().parse(message, token.getType()), ai, passedMillis);
+			receive(Parsers.getWorker().parse(string.getBytes(StandardCharsets.UTF_8), token.getType()), ai, passedMillis);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
