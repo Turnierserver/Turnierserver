@@ -35,20 +35,22 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameStat
 	protected abstract Object update();
 	
 	@Override
-	protected final void receive(R response, Ai ai) {
+	protected final void receive(R response, Ai ai, int passedMillis) {
 		if (getUserObject(ai).lost) {
 			logger.warning("Verlorene KI schickt noch stuff; wird ignoriert [" + ai.getId() + "]");
 			return;
 		}
 		logger.debug("Habe tolle Sachen von KI " + ai.getId() + " emfangen!");
+		
 		if (received.contains(ai)) {
-			getUserObject(ai).loose("Es wurde von der KI etwas empfangen obwohl dies nicht erwartet wurde");
+			logger.critical("Habe von einer KI zweimal was emfangen: " + ai.getId());
 			return;
 		}
 		
-		if (getUserObject(ai).stopCalculationTimer()) {
+		if(getUserObject(ai).subtractMillis(passedMillis)) {
 			return;
 		}
+		
 		received.add(ai);
 		gamestate.applyChanges(response, ai);
 		
@@ -98,17 +100,10 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameStat
 
 			try {
 				sendGameState();
-				for (Ai wrapper : game.getAis()) {
-					if (!getUserObject(wrapper).lost) {
-						getUserObject(wrapper).startCalculationTimer(10);
-					}
-				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
-			logger.debug("Werde jetzt ");
-			
+						
 			for (Ai wrapper : game.getAis()) {
 				if (getUserObject(wrapper).lost) {
 					received.add(wrapper);

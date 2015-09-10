@@ -2,6 +2,7 @@ package org.pixelgaffer.turnierserver.worker;
 
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.KILL_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.RUN_AI;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.CPU_TIME;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.TERM_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.FINISHED_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.KILLED_AI;
@@ -27,6 +28,55 @@ public class Sandbox
 {
 	@Getter
 	private SandboxInfo sandboxInfo = new SandboxInfo();
+	
+	@Getter
+	private long lastCpuTime;
+	private Object cpuTimeLock = new Object();
+	
+	public void updateCpuTime() 
+	{
+		try {
+			Sandboxes.send(new SandboxCommand(CPU_TIME, -1, -1, "", null));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		synchronized (cpuTimeLock) 
+		{
+			try 
+			{
+				cpuTimeLock.wait();
+			} 
+			catch (InterruptedException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public long getCpuTimeDiff()
+	{
+		long oldTime = lastCpuTime;
+		try 
+		{
+			Sandboxes.send(new SandboxCommand(CPU_TIME, -1, -1, "", null));
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		synchronized (cpuTimeLock) 
+		{
+			try 
+			{
+				cpuTimeLock.wait();
+			} 
+			catch (InterruptedException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		return Math.max(lastCpuTime - oldTime, 0);
+	}
 	
 	private void setBusy (boolean busy)
 	{
@@ -129,6 +179,10 @@ public class Sandbox
 			case STARTED_AI:
 				WorkerMain.getLogger().todo("Hier sollte ich mir überlegen ob ich iwas notifien soll");
 				setBusy(true);
+				break;
+			case CPU_TIME:
+				lastCpuTime = answer.getCpuTime();
+				cpuTimeLock.notifyAll();
 				break;
 			default:
 				WorkerMain.getLogger().critical("Unknown event received:" + answer);
