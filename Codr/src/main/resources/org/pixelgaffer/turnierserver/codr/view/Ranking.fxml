@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1100.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.pixelgaffer.turnierserver.codr.view.ControllerRanking">
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pixelgaffer.turnierserver.codr.view.ControllerRanking">
   <children>
     <SplitPane dividerPositions="0.40437158469945356" prefHeight="710.0" prefWidth="1110.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <items>
@@ -27,7 +27,7 @@
         </AnchorPane>
         <ScrollPane fitToWidth="true">
           <content>
-            <AnchorPane>
+            <AnchorPane fx:id="groundPane">
               <children>
                 <AnchorPane prefHeight="74.0" prefWidth="319.0">
                   <children>
@@ -44,7 +44,6 @@
                     </HBox>
                   </children>
                 </AnchorPane>
-                <ImageView fx:id="imageView" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="14.0" />
                 <VBox fx:id="vbContent" prefHeight="584.0" prefWidth="624.0" scaleZ="-1.0" spacing="5.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="85.0">
                   <children>
                     <TextArea fx:id="tbDescription" editable="false" maxWidth="-Infinity" prefHeight="97.0" prefWidth="300.0" text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet." wrapText="true" />
@@ -87,6 +86,7 @@
                     <TableView fx:id="tvVersions" columnResizePolicy="$x1" prefHeight="60.0" />
                   </children>
                 </VBox>
+                <ImageView fx:id="imageView" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="14.0" />
               </children>
             </AnchorPane>
           </content>
