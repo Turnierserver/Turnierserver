@@ -28,6 +28,7 @@ import org.pixelgaffer.turnierserver.codr.GameSaved;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
+import org.pixelgaffer.turnierserver.codr.utilities.Settings;
 
 
 
@@ -191,13 +192,13 @@ public class ControllerGameManagement {
 		if (game instanceof GameSaved)
 			showOfflineGame();
 		else
-			showOnlineGame();
+			showOnlineGame((GameOnline) game);
 	}
 	
 
-	public void showOnlineGame() {
-		// GameOnline game benutzen
-		// in javafx.scene.web.WebView webView darstellen
+	public void showOnlineGame(GameOnline game) {
+		webView = new WebView();
+		webView.getEngine().load(mainApp.webConnector.getUrlFromGame(game));
 	}
 	public void showOfflineGame() {
 		// GameSaved game benutzen
