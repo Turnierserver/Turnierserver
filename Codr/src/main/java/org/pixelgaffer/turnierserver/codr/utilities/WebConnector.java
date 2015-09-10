@@ -245,7 +245,14 @@ public class WebConnector {
 		}
 	}
 
-
+	public void challenge(AiOnline...ais) throws IOException {
+		String[] ids = new String[ais.length];
+		for(int i = 0; i < ais.length; i++) {
+			ids[i] = Integer.toString(ais[i].id);
+		}
+		sendPost("games/start?" + String.join("&", ids));
+	}
+	
 	public ObservableList<AiOnline> getAis(String game) {
 		ObservableList<AiOnline> result = FXCollections.observableArrayList();
 		int id = getGametypeID(game);
