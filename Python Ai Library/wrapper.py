@@ -1,7 +1,7 @@
 import sys
 import socket
 import json
-from io import BytesIO
+from io import StringIO
 from importlib import import_module
 from pprint import pprint
 from copy import deepcopy
@@ -22,16 +22,12 @@ def properties_to_dict(s):
 class Rerouted_Output():
 	def __init__(self):
 		"""Stream Durcheinander"""
-		self.buffer = BytesIO()
+		self.buffer = StringIO()
 		w_old = sys.stdout.write
 		w_new = self.buffer.write
 		def new_write(msg):
-			if isinstance(msg, str):
-				msg = msg.encode("UTF-8", "ignore")
-				w_old(msg)
-			elif isinstance(msg, bytes):
-				w_new(msg)
-				w_old(msg.decode("UTF-8", "ignore"))
+			w_old(msg)
+			w_new(msg)
 		sys.stdout = self.buffer
 		sys.stderr = self.buffer
 		self.buffer.write = new_write
@@ -49,8 +45,11 @@ class Rerouted_Output():
 class AIWrapper:
 	def __init__(self, cls, properties):
 		self.props = properties
+		print("erstelle socket")
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		print("socket erstellt")
 		self.ai = cls()
+		print("cls()")
 		self.output = Rerouted_Output()
 
 	def connect(self):
@@ -115,6 +114,7 @@ class AIWrapper:
 
 if __name__ == '__main__':
 	from game_wrapper import GameWrapper
+	print("encoding:", sys.getdefaultencoding())
 	print(sys.argv)
 	# __name__ aifile propfile
 	with open(sys.argv[2], "r") as f:
@@ -122,8 +122,10 @@ if __name__ == '__main__':
 	print("properties:")
 	pprint(props)
 	usermodule = import_module(".".join(sys.argv[1].split(".")[:-1]))
+	print("Nutzer-Modul importiert")
 	if not hasattr(usermodule, "AI"):
 		##TODO CRASH senden
 		raise RuntimeError("No AI class in " + sys.argv[1])
+	print("Lasse GameWrapper laufen")
 	gw = GameWrapper(usermodule.AI, props)
 	gw.run()
