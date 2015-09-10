@@ -68,6 +68,15 @@ def game(id):
 
 	return render_template(game.type.viz, game=game, inprogress=False, ai0=game.ais[0], ai1=game.ais[1], stream=stream)
 
+@anonymous_blueprint.route("/game/<int:id>/mini")
+def game_mini(id):
+	game = Game.query.get(id)
+	if not game:
+		abort(404)
+	stream = url_for("api.game_log", id=id)
+	return render_template(game.type.viz, game=game, inprogress=False, ai0=game.ais[0], ai1=game.ais[1], stream=stream, mini=True)
+
+
 @anonymous_blueprint.route("/game/inprogress/<int:id>")
 def inprogress_game(id):
 	## inpgrogress type
@@ -80,6 +89,20 @@ def inprogress_game(id):
 
 	stream = url_for("api.game_inprogress_log", id=game.id)
 	return render_template(game.type.viz, game=game, inprogress=True, ai0=game.ais[0], ai1=game.ais[1], stream=stream)
+
+@anonymous_blueprint.route("/game/inprogress/<int:id>/mini")
+def inprogress_game_mini(id):
+	## inpgrogress type
+	if not backend.request(id):
+		abort(404)
+	if not backend.request(id)["action"] == "start":
+		logger.warning("Invalid gameid!")
+		abort(404)
+	game = Game_inprogress(id, backend.request(id))
+
+	stream = url_for("api.game_inprogress_log", id=game.id)
+	return render_template(game.type.viz, game=game, inprogress=True, ai0=game.ais[0], ai1=game.ais[1], stream=stream, mini=True)
+
 
 
 def crossdomain(origin=None, methods=None, headers=None,

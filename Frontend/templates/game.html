@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% if not mini %}{% extends "base.html" %}{% else %}{% extends "minimal_base.html" %}{% endif %}
 {% block body %}
 
 {% if inprogress %}

@@ -72,7 +72,7 @@
 	{%- endif %}
 {%- endmacro %}
 
-<div class="ui segment">
+<div {% if mini %}style="padding: 1rem;"{% else %}class="ui segment"{% endif %}>
 	<div class="ui pointing secondary menu">
 		<div class="active item" data-tab="spielspezifisch" id="spielspezifisch">Spielspezifisch</div>
 		{% if not qualify and not inprogress %}
