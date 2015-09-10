@@ -308,8 +308,6 @@ public class Games
 			for (int i = 0; i < ais.size(); i++)
 			{
 				AiWrapper aiw = ais.get(i);
-				if (aiw.getObject() != null)
-					aiw.getObject().stop();
 				aiw.disconnect();
 				
 				// da aiDisconnected aufgerufen wurde wird die alte UUID

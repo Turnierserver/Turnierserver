@@ -51,7 +51,15 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	{
 		if (type.getType() != SANDBOX)
 			WorkerMain.getLogger().warning("Schicke Job an " + type.getType() + " (sollte " + SANDBOX + " sein)");
-		getClient().write(Parsers.getSandbox().parse(job, true));
+		new Thread(() -> {
+			long passedMillis = Sandboxes.sandboxJobs.get(job.getUuid()).getCpuTimeDiff() / 1000000;
+			try {
+				getClient().write(Long.toString(passedMillis).getBytes(UTF_8));
+				getClient().write(Parsers.getSandbox().parse(job, true));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 	}
 	
 	/**
@@ -61,7 +69,10 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	{
 		if (type.getType() != AI)
 			WorkerMain.getLogger().warning("Schicke Nachricht an " + type.getType() + " (sollte " + AI + " sein)");
-		getClient().write(mf.getMessage());
+		new Thread(() -> {
+			sandbox.updateCpuTime();
+			getClient().write(mf.getMessage());
+		}).start();
 		//getClient().write("\n".getBytes(UTF_8));
 	}
 	
