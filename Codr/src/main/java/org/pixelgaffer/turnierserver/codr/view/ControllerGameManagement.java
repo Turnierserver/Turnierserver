@@ -2,8 +2,23 @@ package org.pixelgaffer.turnierserver.codr.view;
 
 
 import java.io.IOException;
+import java.net.CookieHandler;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.http.cookie.Cookie;
+import org.pixelgaffer.turnierserver.codr.AiOnline;
+import org.pixelgaffer.turnierserver.codr.AiSimple;
+import org.pixelgaffer.turnierserver.codr.GameBase;
+import org.pixelgaffer.turnierserver.codr.GameOnline;
+import org.pixelgaffer.turnierserver.codr.GameSaved;
+import org.pixelgaffer.turnierserver.codr.MainApp;
+import org.pixelgaffer.turnierserver.codr.Version;
+import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -21,17 +36,6 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
-
-import org.pixelgaffer.turnierserver.codr.AiOnline;
-import org.pixelgaffer.turnierserver.codr.AiSimple;
-import org.pixelgaffer.turnierserver.codr.GameBase;
-import org.pixelgaffer.turnierserver.codr.GameBase.GameMode;
-import org.pixelgaffer.turnierserver.codr.GameOnline;
-import org.pixelgaffer.turnierserver.codr.GameSaved;
-import org.pixelgaffer.turnierserver.codr.MainApp;
-import org.pixelgaffer.turnierserver.codr.Version;
-import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
-import org.pixelgaffer.turnierserver.codr.utilities.Settings;
 
 
 
@@ -208,7 +212,23 @@ public class ControllerGameManagement {
 	public void showOnlineGame(GameOnline game) {
 		WebEngine webEngine = webView.getEngine();
 		webEngine.setJavaScriptEnabled(true);
-		webEngine.load(MainApp.webConnector.getUrlFromGame(game));
+		
+		URI uri = URI.create("MainApp.webConnector.getUrlFromGame(game)");
+		
+		List<String> cookies = new ArrayList<>();
+		for(Cookie cookie : mainApp.webConnector.cookies.getCookies()) {
+			cookies.add(cookie.getName() + "=" + cookie.getValue());
+		}
+		
+		Map<String, List<String>> headers = new LinkedHashMap<String, List<String>>();
+		headers.put("Set-Cookie", cookies);
+		try {
+			CookieHandler.getDefault().put(uri, headers);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		webEngine.load(uri.toString());
 	}
 	public void showOfflineGame() {
 		// GameSaved game benutzen

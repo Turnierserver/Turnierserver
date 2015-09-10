@@ -72,7 +72,7 @@ public class WebConnector {
 
 	private DateFormat cookieDateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.UK);
 
-	private CookieStore cookies = new BasicCookieStore();
+	public CookieStore cookies = new BasicCookieStore();
 	private CloseableHttpClient http = HttpClients.custom().setDefaultCookieStore(cookies).build();
 
 
