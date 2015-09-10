@@ -311,12 +311,12 @@ class AI(db.Model):
 	last_modified = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 	elo = db.Column(db.Float, default=1200)
 	user_id = db.Column(db.Integer, db.ForeignKey('t_users.id'))
-	user = db.relationship("User", backref=db.backref('t_ais', order_by=id))
+	user = db.relationship("User", backref=db.backref('t_ais', order_by=id), lazy="joined")
 	lang_id = db.Column(db.Integer, db.ForeignKey('t_langs.id'))
-	lang = db.relationship("Lang", backref=db.backref('t_ais', order_by=id))
+	lang = db.relationship("Lang", backref=db.backref('t_ais', order_by=id), lazy="joined")
 	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
-	type = db.relationship("GameType", backref=db.backref('t_ais', order_by=id))
-	version_list = db.relationship("AI_Version", primaryjoin="AI.id == AI_Version.ai_id", order_by="AI_Version.id", backref="AI", cascade="all, delete, delete-orphan")
+	type = db.relationship("GameType", backref=db.backref('t_ais', order_by=id), lazy="joined")
+	version_list = db.relationship("AI_Version", primaryjoin="AI.id == AI_Version.ai_id", order_by="AI_Version.id", backref="AI", cascade="all, delete, delete-orphan", lazy="joined")
 	game_assocs = db.relationship("AI_Game_Assoc", order_by="AI_Game_Assoc.game_id", cascade="all, delete, delete-orphan")
 	_active_version_id = db.Column(db.Integer, db.ForeignKey("t_ai_versions.id"), nullable=True,)
 
@@ -343,14 +343,18 @@ class AI(db.Model):
 
 		db_obj_init_msg(self)
 
-	def info(self):
-		return {
+	def info(self, versions=True):
+		d =  {
 			"id": self.id, "name": self.name,
 			"author": self.user.name,
 			"author_id": self.user.id,
 			"description": self.desc, "lang": self.lang.info(),
-			"gametype": self.type.info(), "versions": [v.info() for v in self.version_list],
-			"elo": self.elo}
+			"gametype": self.type.info(),
+			"elo": self.elo
+		}
+		if versions:
+			d["versions"] = [v.info() for v in self.version_list]
+		return d
 
 	@ftp.failsafe_locked
 	def icon(self):
@@ -615,8 +619,8 @@ class Game(db.Model):
 	def time(self, locale='de'):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
 
-	def info(self):
-		return {"id": self.id, "ais": [assoc.ai.info() for assoc in self.ai_assocs],
+	def info(self, versions=True):
+		return {"id": self.id, "ais": [assoc.ai.info(versions) for assoc in self.ai_assocs],
 				"type": self.type.info(), "scores": {assoc.ai.id: assoc.score for assoc in self.ai_assocs},
 				"moves": self.moves, "reason": self.reason, "timestamp": self.timestamp, "timestr": self.time()}
 
@@ -630,11 +634,14 @@ class Game(db.Model):
 		# > dann wäre das neue elo:
 		# > R'_A = R_A + 32 * (S_A - 1 / (1 + 10 ^ ((R_B - R_A) / 400)))
 
-
 		ai0_assoc = self.ai_assocs[0]
 		ai1_assoc = self.ai_assocs[1]
 		ai0 = ai0_assoc.ai
 		ai1 = ai1_assoc.ai
+
+		if ai0.user == ai1.user:
+			logger.info("Spiel zwischen KIs vom selben Nutzer; wird nicht gewertet")
+			return
 
 		if ai0_assoc.position < ai1_assoc.position:
 			ai0gewonnen = 1

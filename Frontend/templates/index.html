@@ -3,15 +3,15 @@
 
 {% if logged_in %}
 
-<div class="ui two buttons">
+<div>
 	<a href="/api/download_codr" id="codr_button" class="ui basic green button">Codr runterladen</a>
-	<button id="logout_button" class="ui basic red button">Ausloggen</button>
+	<button class="ui basic red button" onclick="$.post('/api/logout').done(function() { window.location.href = '/'; });">Ausloggen</button>
 </div>
 
 {{ aktuelles }}
 {% else %}
 
-<div class="ui three buttons">
+<div>
 	<button id="register_form_button" class="ui basic green button">Registrieren</button>
 	<button id="reset_form_button" class="ui basic green button">Passwort zurücksetzen</button>
 	<a href="/api/download_codr" id="codr_button" class="ui basic green button">Codr runterladen</a>

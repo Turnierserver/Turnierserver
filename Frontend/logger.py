@@ -20,10 +20,10 @@ logger.setLevel(logging.DEBUG)
 logger.propagate = False
 fh = logging.FileHandler('debug.log')
 fh.setLevel(logging.DEBUG)
-fh_err = logging.FileHandler('error.log')
-fh_err.setLevel(logging.ERROR)
 fh_wrn = logging.FileHandler('warning.log')
 fh_wrn.setLevel(logging.WARNING)
+fh_err = logging.FileHandler('error.log')
+fh_err.setLevel(logging.ERROR)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 
