@@ -31,7 +31,7 @@ public class GameOnline extends GameBase {
 		onlineId = json.getInt("id");
 		JSONObject gametypeObject = json.getJSONObject("type");
 		gameType = gametypeObject.getString("name");
-		date = gametypeObject.getString("timestampstr");
+		date = json.getString("timestr");
 		JSONArray array = json.getJSONArray("ais");
 		for(int i = 0; i < array.length(); i++) {
 			participants.add(new Participant(array.getJSONObject(i)));
