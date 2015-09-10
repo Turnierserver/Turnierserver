@@ -10,6 +10,8 @@ import time
 import zipfile
 import tempfile
 import os
+import hashlib
+import base64
 from pprint import pprint
 from collections import defaultdict
 
@@ -1233,7 +1235,7 @@ def upload_codr():
 	else:
 		content = request.data
 
-	with open(".data_and_stuff/codr_md5", "w") as f:
+	with open(".data_and_stuff/codr_md5", "wb") as f:
 		f.write(hashlib.md5(content).digest())
 
 	return ret
@@ -1242,8 +1244,8 @@ def upload_codr():
 @json_out
 def codr_hash():
 	try:
-		with open(".data_and_stuff/codr_md5", "r") as f:
-			return {"md5": f.read()}, 200
+		with open(".data_and_stuff/codr_md5", "rb") as f:
+			return {"md5_b64": base64.b64encode(f.read()).decode("ascii")}, 200
 	except Exception as e:
 		logger.exception(e)
 		return {}, 500
