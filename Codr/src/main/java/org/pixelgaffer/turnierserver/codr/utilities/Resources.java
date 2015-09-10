@@ -77,7 +77,6 @@ public class Resources {
 		comp2.update(IOUtils.toByteArray(reader2));
 		reader1.close();
 		reader2.close();
-		
 		return Arrays.equals(comp1.digest(), comp2.digest());
 	}
 	
