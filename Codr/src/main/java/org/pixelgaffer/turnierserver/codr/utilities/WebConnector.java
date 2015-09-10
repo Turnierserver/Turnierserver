@@ -234,7 +234,14 @@ public class WebConnector {
 			if (getSession() == null || getRememberToken() == null) {
 				return false;
 			}
-			boolean result = sendPost("loggedin") != null;
+			boolean result;
+			String json = toString(sendPost("loggedin"));
+			if (json == null){
+				result = false;
+			} else {
+				result = true;
+				userName = new JSONObject(json).getString("name");
+			}
 			if (!result) {
 				cookies.getCookies().clear();
 			}
