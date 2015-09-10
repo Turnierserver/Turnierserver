@@ -3,7 +3,10 @@ package org.pixelgaffer.turnierserver.sandboxmanager;
 import static java.lang.Math.min;
 import static org.pixelgaffer.turnierserver.FileOwnerChanger.changeOwner;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
-import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.*;
+import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.commands;
+import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.etc;
+import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.getClient;
+import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.getLogger;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -234,5 +237,19 @@ public class AiExecutor implements Runnable
 				e.printStackTrace();
 			}
 		}, "IsolateCleanup").start();
+	}
+	
+	public void terminateAi ()
+	{
+		getLogger().info("terminiere " + getJob());
+		proc.destroyForcibly();
+		getClient().sendMessage(getJob().getUuid(), 'T');
+	}
+	
+	public void killAi ()
+	{
+		getLogger().info("töte " + getJob());
+		proc.destroyForcibly();
+		getClient().sendMessage(getJob().getUuid(), 'K');
 	}
 }

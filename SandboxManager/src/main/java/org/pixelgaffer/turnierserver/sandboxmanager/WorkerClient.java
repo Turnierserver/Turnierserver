@@ -133,21 +133,20 @@ public class WorkerClient implements SocketObserver
 				UUID uuid = UUID.fromString(json.getString("uuid"));
 				getLogger().info("Auftrag erhalten: Run AI " + id + "v" + version + " " + uuid);
 				jobControl.addJob(new Job(id, version, lang, uuid));
-				getLogger().debug("Auftrag hat zurückgegeben");
 			}
 			else if (cmd.equals("T"))
 			{
 				UUID uuid = UUID.fromString(json.getString("uuid"));
 				getLogger().info("Auftrag erhalten: Terminate AI " + uuid);
 				
-				getLogger().todo("jobControl.terminateJob(uuid);");
+				jobControl.terminateJob(uuid);
 			}
 			else if (cmd.equals("K"))
 			{
 				UUID uuid = UUID.fromString(json.getString("uuid"));
 				getLogger().info("Auftrag erhalten: Kill AI " + uuid);
 				
-				getLogger().todo("jobControl.killJob(uuid);");
+				jobControl.killJob(uuid);
 			}
 			else if (cmd.equals("C"))
 			{

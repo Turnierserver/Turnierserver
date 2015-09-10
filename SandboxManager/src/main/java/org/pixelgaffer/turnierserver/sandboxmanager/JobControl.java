@@ -28,7 +28,7 @@ public class JobControl
 		{
 			queue.clear();
 			if (current != null)
-				getLogger().todo("current->terminateAi();");
+				current.terminateAi();
 		}
 	}
 	
@@ -54,7 +54,19 @@ public class JobControl
 		synchronized (queue)
 		{
 			if ((current != null) && (current.getJob().getUuid() == uuid))
-				getLogger().todo("current->killAi();");
+				current.terminateAi();
+			else
+				while (queue.remove(new Job(uuid)))
+					;
+		}
+	}
+	
+	public void killJob (UUID uuid)
+	{
+		synchronized (queue)
+		{
+			if ((current != null) && (current.getJob().getUuid() == uuid))
+				current.killAi();
 			else
 				while (queue.remove(new Job(uuid)))
 					;
