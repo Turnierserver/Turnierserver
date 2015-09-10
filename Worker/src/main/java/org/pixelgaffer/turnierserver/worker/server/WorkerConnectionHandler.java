@@ -5,13 +5,8 @@ import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnection
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.BACKEND;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.SANDBOX;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-
-import lombok.Getter;
-import lombok.ToString;
-import naga.NIOSocket;
 
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
@@ -24,6 +19,10 @@ import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 import org.pixelgaffer.turnierserver.worker.Sandbox;
 import org.pixelgaffer.turnierserver.worker.Sandboxes;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
+
+import lombok.Getter;
+import lombok.ToString;
+import naga.NIOSocket;
 
 @ToString(of = { "type" })
 public class WorkerConnectionHandler extends ConnectionHandler
@@ -64,23 +63,17 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	{
 		if (type.getType() != AI)
 			WorkerMain.getLogger().warning("Schicke Nachricht an " + type.getType() + " (sollte " + AI + " sein)");
-		WorkerMain.getLogger().debug("Starte Thread");
 		new Thread(() -> {
-			WorkerMain.getLogger().debug("Sende updateCpuTime request");
 			try {
 				Sandbox sandbox = Sandboxes.sandboxJobs.get(mf.getAi());
-				WorkerMain.getLogger().debug(sandbox);
 				sandbox.updateCpuTime();
 			}
 			catch(Exception e) {
 				e.printStackTrace();
 				return;
 			}
-			WorkerMain.getLogger().debug("Sende Nachricht");
 			getClient().write(mf.getMessage());
-			WorkerMain.getLogger().debug("Fertisch");
 		}).start();
-		WorkerMain.getLogger().debug("Thread gestartet");
 		//getClient().write("\n".getBytes(UTF_8));
 	}
 	
@@ -168,18 +161,22 @@ public class WorkerConnectionHandler extends ConnectionHandler
 							if ((WorkerServer.backendConnection != null)
 									&& WorkerServer.backendConnection.isConnected())
 							{
-								try
-								{
-									MessageForward mf = new MessageForward(type.getUuid(), _line);
-									DataBuffer buf = new DataBuffer();
-									buf.add(Long.toString(Sandboxes.sandboxJobs.get(type.getUuid()).getCpuTimeDiff() / 1000000).getBytes(UTF_8));
-									buf.add(Parsers.getWorker().parse(mf, true));
-									WorkerServer.backendConnection.getClient().write(buf.readAll());
-								}
-								catch (Exception e)
-								{
-									WorkerMain.getLogger().critical("Fehler beim Weiterleiten: " + e);
-								}
+								new Thread(() -> {
+									try
+									{
+										ByteArrayOutputStream message = new ByteArrayOutputStream();
+										message.write(Long.toString(Sandboxes.sandboxJobs.get(type.getUuid()).getCpuTimeDiff() / 1000000).getBytes(UTF_8));
+										message.write(_line);
+										MessageForward mf = new MessageForward(type.getUuid(), message.toByteArray());
+										DataBuffer buf = new DataBuffer();
+										buf.add(Parsers.getWorker().parse(mf, true));
+										WorkerServer.backendConnection.getClient().write(buf.readAll());
+									}
+									catch (Exception e)
+									{
+										WorkerMain.getLogger().critical("Fehler beim Weiterleiten: " + e);
+									}
+								}).start();
 							}
 							else
 								WorkerMain.getLogger().critical("Habe keine Verbindung zum Backend gefunden");

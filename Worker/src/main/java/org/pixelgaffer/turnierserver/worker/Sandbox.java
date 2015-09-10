@@ -35,11 +35,8 @@ public class Sandbox
 	
 	public void updateCpuTime() 
 	{
-		WorkerMain.getLogger().debug("update CPU time");
 		try {
-			WorkerMain.getLogger().debug("sende");
 			sendJob(new SandboxCommand(CPU_TIME, -1, -1, "", null));
-			WorkerMain.getLogger().debug("gesendet");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -47,9 +44,7 @@ public class Sandbox
 		{
 			try 
 			{
-				WorkerMain.getLogger().debug("warte auf notify");
 				cpuTimeLock.wait();
-				WorkerMain.getLogger().debug("ich wurde notifiziert");
 			} 
 			catch (InterruptedException e) 
 			{
@@ -61,25 +56,7 @@ public class Sandbox
 	public long getCpuTimeDiff()
 	{
 		long oldTime = lastCpuTime;
-		try 
-		{
-			Sandboxes.send(new SandboxCommand(CPU_TIME, -1, -1, "", null));
-		}
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-		synchronized (cpuTimeLock) 
-		{
-			try 
-			{
-				cpuTimeLock.wait();
-			} 
-			catch (InterruptedException e) 
-			{
-				e.printStackTrace();
-			}
-		}
+		updateCpuTime();
 		return Math.max(lastCpuTime - oldTime, 0);
 	}
 	
@@ -186,13 +163,10 @@ public class Sandbox
 				setBusy(true);
 				break;
 			case CPU_TIME:
-				WorkerMain.getLogger().debug("CPU time answer");
 				lastCpuTime = answer.getCpuTime();
-				WorkerMain.getLogger().debug("Habe CPU time gelesen und notify nun");
 				synchronized (cpuTimeLock) {
 					cpuTimeLock.notifyAll();
 				}
-				WorkerMain.getLogger().debug("notified");
 				break;
 			default:
 				WorkerMain.getLogger().critical("Unknown event received:" + answer);
