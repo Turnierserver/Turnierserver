@@ -139,8 +139,12 @@
                                              </GridPane.margin>
                                           </Hyperlink>
                           <Label fx:id="lbFinished" text="bereits fertiggestellt" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                          <Label fx:id="lbUploaded" text="bereits hochgeladen" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                          <ProgressIndicator fx:id="prUpload" maxWidth="-Infinity" prefHeight="26.0" prefWidth="26.0" visible="false" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
+                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                             <children>
+                                <Label fx:id="lbUploaded" text="bereits hochgeladen" />
+                                                <ProgressIndicator fx:id="prUpload" maxWidth="-Infinity" prefHeight="26.0" prefWidth="26.0" visible="false" />
+                                             </children>
+                                          </HBox>
                                        </children>
                                        <VBox.margin>
                                           <Insets />

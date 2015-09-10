@@ -222,7 +222,7 @@ public class ControllerAiManagement {
 			lbCompiled.visibleProperty().bind(version.compiled);
 			hlShowQualified.visibleProperty().bind(version.qualified);
 			lbFinished.visibleProperty().bind(version.finished);
-			lbUploaded.visibleProperty().bind(version.uploaded);
+			lbUploaded.setVisible(false);
 			btCompile.disableProperty().bind(version.finished.or(version.compiled));
 			btQualify.disableProperty().bind(version.compiled.not().or(version.finished).or(version.qualified));
 			btFinish.disableProperty().bind(version.finished);
@@ -241,7 +241,7 @@ public class ControllerAiManagement {
 			lbCompiled.visibleProperty().bind(new SimpleBooleanProperty(false));
 			hlShowQualified.visibleProperty().bind(new SimpleBooleanProperty(false));
 			lbFinished.visibleProperty().bind(new SimpleBooleanProperty(false));
-			lbUploaded.visibleProperty().bind(new SimpleBooleanProperty(false));
+			lbUploaded.setVisible(false);
 			btCompile.disableProperty().bind(new SimpleBooleanProperty(true));
 			btQualify.disableProperty().bind(new SimpleBooleanProperty(true));
 			btFinish.disableProperty().bind(new SimpleBooleanProperty(true));
@@ -266,7 +266,7 @@ public class ControllerAiManagement {
 				lbCompiled.visibleProperty().bind(new SimpleBooleanProperty(false));
 				hlShowQualified.visibleProperty().bind(new SimpleBooleanProperty(false));
 				lbFinished.visibleProperty().bind(new SimpleBooleanProperty(false));
-				lbUploaded.visibleProperty().bind(new SimpleBooleanProperty(false));
+				lbUploaded.setVisible(false);
 				btCompile.disableProperty().bind(new SimpleBooleanProperty(true));
 				btQualify.disableProperty().bind(new SimpleBooleanProperty(true));
 				btFinish.disableProperty().bind(new SimpleBooleanProperty(true));
@@ -671,7 +671,6 @@ public class ControllerAiManagement {
 	@FXML
 	void clickUpload() {
 
-		System.out.println("visible");
 		prUpload.setVisible(true);
 
 		Task<Boolean> getOwn = new Task<Boolean>() {
@@ -688,21 +687,24 @@ public class ControllerAiManagement {
 
 		getOwn.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 
-			System.out.println("Angekommen");
 			if (MainApp.ownOnlineAis == null) {
+				lbUploaded.setText("Fehler");
 				Dialog.error("Bitte erst Anmelden");
 				return;
 			}
 
 			AiBase result = Dialog.selectOwnVersion();
 			if (result == null) {
+				lbUploaded.setText("Fehler");
 				return;
 			}
 
 			if (result.getClass() == AiFake.class) {
 				localNameOfNewAi = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
-				if (localNameOfNewAi == null)
+				if (localNameOfNewAi == null){
+					lbUploaded.setText("Fehler");
 					return;
+				}
 			}
 
 			Task<String> upload = new Task<String>() {
@@ -757,19 +759,19 @@ public class ControllerAiManagement {
 										
 			upload.valueProperty().addListener((observableValue1, oldValue1, newValue1) -> {
 				if (newValue1.equals("aiCreating")){
-					System.out.println(newValue1);
+					lbUploaded.setText("erstelle KI...");
 				} else if (newValue1.equals("uploading")){
-					System.out.println(newValue1);
+					lbUploaded.setText("lade Version hoch...");
 				} else if (newValue1.equals("compiling")){
-					System.out.println(newValue1);
+					lbUploaded.setText("kompiliere Version...");
 				} else if (newValue1.equals("qualifying")){
-					System.out.println(newValue1);
+					lbUploaded.setText("qualifiziere Version...");
 				} else if (newValue1.equals("errorConnection")){
 					prUpload.setVisible(false);
+					lbUploaded.setText("Fehler");
 					Dialog.error("Fehler bei der Verbindung mit dem Server.", "Verbindungsfehler");
 				} else if (newValue1.substring(0, 10).equals("finished--")){
 					int id = Integer.parseInt(newValue1.substring(10));
-					prUpload.setVisible(false);
 					if (Dialog.okAbort("Die KI wurde erfolgreich hochgeladen, kompiliert und qualifiziert.\n"
 							+ "Soll sie fertiggestellt und aktiviert werden?", "Upload fertig")){
 						
@@ -798,16 +800,22 @@ public class ControllerAiManagement {
 						};
 						
 						finishActivate.valueProperty().addListener((observableValue2, oldValue2, newValue2) -> {
-							if (newValue1.equals("finishing")){
-								System.out.println(newValue2);
-							} else if (newValue1.equals("activating")){
-								System.out.println(newValue2);
-							} else if (newValue1.equals("errorConnection")){
+							if (newValue2.equals("finishing")){
+								lbUploaded.setText("stelle Version fertig...");
+							} else if (newValue2.equals("activating")){
+								lbUploaded.setText("aktiviere Version...");
+							} else if (newValue2.equals("errorConnection")){
 								prUpload.setVisible(false);
+								lbUploaded.setText("Fehler");
 								Dialog.error("Fehler bei der Verbindung mit dem Server.", "Verbindungsfehler");
-							} else if (newValue1.equals("finish")){
+							} else if (newValue2.equals("finish")){
 								prUpload.setVisible(false);
+								lbUploaded.setText("Version wurde hochgeladen");
 								Dialog.error("Die Version wurde erfolgreich fertiggestellt und aktiviert", "Fertig");
+							} else {
+								prUpload.setVisible(false);
+								lbUploaded.setText("Fehler");
+								Dialog.error(newValue1, "Fehler");
 							}
 						});
 						
@@ -816,9 +824,13 @@ public class ControllerAiManagement {
 						thread.setDaemon(true);
 						thread.start();
 						
+					} else {
+						prUpload.setVisible(false);
+						lbUploaded.setText("Version wurde hochgeladen");
 					}
 				} else {
 					prUpload.setVisible(false);
+					lbUploaded.setText("Fehler");
 					Dialog.error(newValue1, "Fehler");
 				}
 			});
@@ -828,7 +840,8 @@ public class ControllerAiManagement {
 			thread.start();
 		});
 
-		System.out.println("Angekommenerst0");
+		lbUploaded.setVisible(true);
+		lbUploaded.setText("Lade KIs...");
 		Thread thread = new Thread(getOwn, "getOwn");
 		thread.setDaemon(true);
 		thread.start();
