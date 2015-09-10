@@ -1,17 +1,10 @@
 package org.pixelgaffer.turnierserver.codr.view;
 
 
-import org.pixelgaffer.turnierserver.codr.AiOnline;
-import org.pixelgaffer.turnierserver.codr.GameOnline;
-import org.pixelgaffer.turnierserver.codr.MainApp;
-import org.pixelgaffer.turnierserver.codr.OnlineGameInfo;
-import org.pixelgaffer.turnierserver.codr.ParticipantResult;
-import org.pixelgaffer.turnierserver.codr.Version;
-import org.pixelgaffer.turnierserver.codr.utilities.Resources;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,6 +18,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
+
+import org.pixelgaffer.turnierserver.codr.AiOnline;
+import org.pixelgaffer.turnierserver.codr.MainApp;
+import org.pixelgaffer.turnierserver.codr.OnlineGameInfo;
+import org.pixelgaffer.turnierserver.codr.Version;
+import org.pixelgaffer.turnierserver.codr.utilities.Resources;
 
 
 public class ControllerRanking {
@@ -58,6 +57,20 @@ public class ControllerRanking {
 	public void setMainApp(MainApp app) {
 		mainApp = app;
 		MainApp.cRanking = this;
+		MainApp.onlineAis.addListener(new ListChangeListener<AiOnline>() {
+			@Override public void onChanged(ListChangeListener.Change<? extends AiOnline> change) {
+				System.out.println("test");
+	        	if (tvAis != null && tvAis.getItems().size() > 0){
+	        		for (AiOnline item : tvAis.getItems()){
+	        			System.out.println(item);
+	        		}
+	        		tvAis.requestFocus();
+	        		tvAis.getSelectionModel().select(2);
+	        		tvAis.getFocusModel().focus(0);
+	        		System.out.println("test fertig");
+			}
+			}
+		});
 		tvAis.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
 			clickChangeAi(newValue);
 		});
@@ -74,14 +87,12 @@ public class ControllerRanking {
 		col3.setMinWidth(60);
 		
 		col0.setCellValueFactory(new Callback<CellDataFeatures<AiOnline, Image>, ObservableValue<Image>>() {
-			
 			@Override
 			public ObservableValue<Image> call(CellDataFeatures<AiOnline, Image> arg0) {
 				return arg0.getValue().getPicture();
 			}
 		});
 		col0.setCellFactory(new Callback<TableColumn<AiOnline, Image>, TableCell<AiOnline, Image>>() {
-			
 			@Override
 			public TableCell<AiOnline, Image> call(TableColumn<AiOnline, Image> param) {
 				final ImageView imageview = new ImageView();
@@ -89,7 +100,6 @@ public class ControllerRanking {
 				imageview.setFitWidth(50);
 				
 				TableCell<AiOnline, Image> cell = new TableCell<AiOnline, Image>() {
-					
 					public void updateItem(Image item, boolean empty) {
 						if (item != null)
 							imageview.imageProperty().set(item);
@@ -101,19 +111,16 @@ public class ControllerRanking {
 			
 		});
 		col1.setCellValueFactory(new Callback<CellDataFeatures<AiOnline, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<AiOnline, String> p) {
 				return new SimpleStringProperty(p.getValue().title);
 			}
 		});
 		col2.setCellValueFactory(new Callback<CellDataFeatures<AiOnline, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<AiOnline, String> p) {
 				return new SimpleStringProperty(p.getValue().userName);
 			}
 		});
 		col3.setCellValueFactory(new Callback<CellDataFeatures<AiOnline, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<AiOnline, String> p) {
 				return new SimpleStringProperty(String.valueOf(p.getValue().elo));
 			}
@@ -136,13 +143,11 @@ public class ControllerRanking {
 		TableColumn<Version, String> colV3 = new TableColumn<>("Freigegeben");
 		
 		colV0.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
 				return new SimpleStringProperty(p.getValue().number + "");
 			}
 		});
 		colV1.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
 				if (p.getValue().compiled.get())
 					return new SimpleStringProperty("Ja");
@@ -151,7 +156,6 @@ public class ControllerRanking {
 			}
 		});
 		colV2.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
 				if (p.getValue().qualified.get())
 					return new SimpleStringProperty("Ja");
@@ -160,7 +164,6 @@ public class ControllerRanking {
 			}
 		});
 		colV3.setCellValueFactory(new Callback<CellDataFeatures<Version, String>, ObservableValue<String>>() {
-			
 			public ObservableValue<String> call(CellDataFeatures<Version, String> p) {
 				if (p.getValue().finished.get())
 					return new SimpleStringProperty("Ja");
