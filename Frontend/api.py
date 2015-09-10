@@ -301,7 +301,7 @@ def api_user_delete(id):
 @api.route("/langs")
 @json_out
 def api_langs():
-	return [l.info() for l in Lang.query.all()]
+	return [l.info(extra=True) for l in Lang.query.all()]
 
 @api.route("/gametypes")
 @json_out
