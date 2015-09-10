@@ -4,8 +4,6 @@ package org.pixelgaffer.turnierserver.codr;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import org.pixelgaffer.turnierserver.codr.simulator.CodrGameImpl;
-
 
 /**
  * Ist die Grund-Klasse für ein Spiel-Objekt.
@@ -17,7 +15,7 @@ public class GameBase {
 	public final GameMode mode;
 	public String gameType;
 	public String date;
-	public static ObservableList<Participant> participants = FXCollections.observableArrayList();
+	public ObservableList<Participant> participants = FXCollections.observableArrayList();
 	
 	public class Participant {
 		public String name = "";
