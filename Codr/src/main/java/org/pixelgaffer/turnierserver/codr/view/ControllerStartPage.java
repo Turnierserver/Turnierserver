@@ -58,8 +58,6 @@ public class ControllerStartPage {
 	@FXML public ToggleButton btTheme;
 	@FXML public Slider slFontSize;
 	@FXML public TextField tbPythonInterpreter;
-	@FXML public TextField tbCplusplusCompiler;
-	@FXML public ChoiceBox<String> cbCplusplusCompilerType;
 	@FXML public TextField tbJDK;
 	
 	
@@ -89,11 +87,6 @@ public class ControllerStartPage {
 		
 		
 		cbGameTypes.setItems(MainApp.gametypes);
-		
-		cbCplusplusCompilerType.getItems().add("gcc");
-		cbCplusplusCompilerType.getItems().add("clang");
-		cbCplusplusCompilerType.getItems().add("g++");
-		cbCplusplusCompilerType.getSelectionModel().select(0);
 		
 		tbPassword.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
 			
@@ -225,14 +218,6 @@ public class ControllerStartPage {
 		File result = Dialog.folderChooser(MainApp.stage, "Bitte einen Ordner auswählen");
 		if (result != null)
 			tbPythonInterpreter.setText(result.getPath());
-	}
-	
-	
-	@FXML
-	void clickCplusplusCompiler() {
-		File result = Dialog.folderChooser(MainApp.stage, "Bitte einen Ordner auswählen");
-		if (result != null)
-			tbCplusplusCompiler.setText(result.getPath());
 	}
 	
 	
