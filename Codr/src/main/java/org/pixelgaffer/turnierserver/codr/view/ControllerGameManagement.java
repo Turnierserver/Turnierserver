@@ -213,7 +213,7 @@ public class ControllerGameManagement {
 		WebEngine webEngine = webView.getEngine();
 		webEngine.setJavaScriptEnabled(true);
 		
-		URI uri = URI.create("MainApp.webConnector.getUrlFromGame(game)");
+		URI uri = URI.create(MainApp.webConnector.getUrlFromGame(game));
 		
 		List<String> cookies = new ArrayList<>();
 		for(Cookie cookie : mainApp.webConnector.cookies.getCookies()) {
