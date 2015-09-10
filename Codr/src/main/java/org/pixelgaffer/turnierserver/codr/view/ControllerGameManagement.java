@@ -230,6 +230,8 @@ public class ControllerGameManagement {
 		
 		webEngine.load(uri.toString());
 	}
+	
+	
 	public void showOfflineGame() {
 		// GameSaved game benutzen
 		// in javafx.scene.web.WebView webView darstellen
@@ -240,8 +242,7 @@ public class ControllerGameManagement {
 		Task<GameOnline> challenge = new Task<GameOnline>() {
 			public GameOnline call() {
 				try {
-					MainApp.webConnector.challenge(lvPlayerOnline1.getSelectionModel().getSelectedItem(), lvPlayerOnline2.getSelectionModel().getSelectedItem());
-					return null;/////////////////////
+					return MainApp.webConnector.challenge(lvPlayerOnline1.getSelectionModel().getSelectedItem(), lvPlayerOnline2.getSelectionModel().getSelectedItem());
 				} catch (IOException e) {
 					e.printStackTrace();
 					return null;
@@ -257,7 +258,8 @@ public class ControllerGameManagement {
 				Dialog.error("Die Herausforderung ist fehlgeschlagen");
 				return;
 			}
-			MainApp.onlineGames.add(newValue);
+			MainApp.onlineGames.add(0, newValue);
+			lvGamesOnline.getSelectionModel().selectFirst();
 		});
 		
 		Thread thread = new Thread(challenge, "challenge");
