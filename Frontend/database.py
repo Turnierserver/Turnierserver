@@ -553,13 +553,17 @@ class Lang(db.Model):
 	ace_name = db.Column(db.Text)
 	ai_list = db.relationship("AI", order_by="AI.id", backref="Lang")
 	libs = db.relationship("Library", backref="lang")
+	interpreter = db.Column(db.Text)
+	compiler = db.Column(db.Text)
 
 	def __init__(self, *args, **kwargs):
 		super(Lang, self).__init__(*args, **kwargs)
 		db_obj_init_msg(self)
 
-	def info(self):
-		return {"id": self.id, "name": self.name, "url": self.url}
+	def info(self, extra=False):
+		if extra:
+			return dict(id=self.id, name=self.name, url=self.url, interpreter=self.interpreter, compiler=self.compiler)
+		return {"id": self.id, "name": self.name}
 
 	def __repr__(self):
 		return "<Lang(id={}, name={}, url={}>".format(self.id, self.name, self.url)
