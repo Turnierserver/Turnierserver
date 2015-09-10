@@ -38,6 +38,8 @@ def json_out(f):
 			return jsonify_wrap(result)
 		if isinstance(result, list):
 			return jsonify_wrap(result)
+		if isinstance(result, bool):
+			return jsonify_wrap(result)
 
 		# isnt tuple, dict or list -> must be a Response
 		return result
@@ -701,6 +703,44 @@ def ai_qualify(id):
 			if can_access:
 				yield json.dumps(data), "crash"
 
+
+@api.route("/ai/<int:id>/qualify_blocking", methods=["GET"])
+@authenticated
+@rate_limited
+@sse_stream
+def ai_qualify_blocking(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return (CommonErrors.INVALID_ID[0]["error"], "error")
+	if not current_user.can_access(ai):
+		return (CommonErrors.NO_ACCESS[0]["error"], "error")
+
+
+	if not ai.latest_version().compiled:
+		return {"error": "AI_Version isnt compiled."}, 400
+	if ai.latest_version().frozen:
+		return {"error": "AI_Version is frozen."}, 400
+
+	reqid = backend.request_qualify(ai)
+	for data, event in backend.inprogress_log(reqid):
+		if event == "success":
+			d = backend.request(reqid)
+			if "position" in d:
+				if d["position"][str(-ai.type.id) + "v1"] <= d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)]:
+					ai.latest_version().qualified = False
+					return False
+				else:
+					ai.latest_version().compiled = True
+					ai.latest_version().qualified = True
+					return True
+			else:
+				logger.warning("no position in finished ai_qualify_blocking")
+			db.session.commit()
+		elif event == "crash":
+			return False
+
+
+
 @api.route("/ai/<int:id>/freeze", methods=["POST"])
 @json_out
 @authenticated
@@ -1184,7 +1224,20 @@ def add_gametype(name):
 @json_out
 @admin_required
 def upload_codr():
-	return upload_single_file(request, "Data/codr.jar")
+	ret = upload_single_file(request, "Data/codr.jar")
+	with open(".data_and_stuff/codr_md5", "w") as f:
+		f.write(md5) ##FIXME
+	return ret
+
+@api.route("/codr_hash")
+@json_out
+def codr_hash():
+	try:
+		with open(".data_and_stuff/codr_md5", "r") as f:
+			return {"md5": f.read()}, 200
+	except Exception as e:
+		logger.exception(e)
+		return {}, 500
 
 @api.route("/download_codr")
 def download_codr():

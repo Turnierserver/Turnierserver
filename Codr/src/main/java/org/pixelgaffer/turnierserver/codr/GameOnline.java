@@ -38,9 +38,13 @@ public class GameOnline extends GameBase {
 		}
 	}
 	
-	public GameOnline(int tempId) {
+	public GameOnline(int tempId, AiOnline...ais) {
 		super(GameMode.onlineInprogress);
 		onlineId = tempId;
+		date = "Gerade eben";
+		for(AiOnline ai : ais) {
+			participants.add(new Participant(ai));
+		}
 	}
 	
 	
