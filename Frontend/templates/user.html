@@ -36,6 +36,7 @@ KIs:
 		<th class="center aligned one wide data-rank">Platz</th>
 		<th class="center aligned two wide data-elo">ELO</th>
 		<th class="left aligned six wide data-name">Name</th>
+		<th class="left aligned six wide data-gametype">Spieltyp</th>
 		<th class="right aligned three wide data-lang">Sprache</th>
 		</tr>
 	</thead>
@@ -55,6 +56,15 @@ KIs:
 				<a class="content" href="{{url_for('anonymous.ai', id=ai.id)}}">
 					<div class="header">{{ai.name}}</div>
 				</a>
+			</td>
+			<td class="right aligned data-gametype">
+				<div class="content">
+					{% if current_gametype == ai.type %}
+					<div class="header"><b>{{ ai.type.name }}</b></div>
+					{% else %}
+					<div class="header">{{ ai.type.name }}</div>
+					{% endif %}
+				</div>
 			</td>
 			<td class="right aligned data-lang">
 				<a class="content" href="{{ ai.lang.url }}">
