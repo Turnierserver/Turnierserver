@@ -965,8 +965,14 @@ def ai_upload_zip(id):
 	except zipfile.BadZipFile:
 		return {"error": "Bad zip file."}, 400
 
-	if not ftp.upload_tree(tmpdir, "AIs/{}/v{}".format(ai.id, ai.latest_version().version_id)):
+	version = ai.latest_version()
+	if version.frozen:
+		version = ai.new_version(copy=False)
+
+	if not ftp.upload_tree(tmpdir, "AIs/{}/v{}".format(ai.id, version.version_id)):
 		return CommonErrors.FTP_ERROR
+
+	version.compiled, version.qualified, version.frozen = False, False, False
 
 	return {"error": False}, 200
 
