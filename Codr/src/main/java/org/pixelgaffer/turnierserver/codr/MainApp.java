@@ -151,7 +151,6 @@ public class MainApp extends Application {
 	 */
 	public static void updateConnected() {
 		Task<Boolean> updateC = new Task<Boolean>() {
-			
 			public Boolean call() {
 				if (MainApp.webConnector.ping()) {
 					return true;

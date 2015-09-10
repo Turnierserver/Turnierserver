@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.codr.view;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -47,6 +49,8 @@ public class ControllerGameManagement {
 	@FXML public Tab tabOnline;
 	@FXML public Tab tabOffline;
 	@FXML public WebView webView;
+	@FXML public ProgressIndicator prStartGameOnline;
+	@FXML public ProgressIndicator prStartGameOffline;
 	
 	
 	public GameSaved runningGame;
@@ -213,6 +217,32 @@ public class ControllerGameManagement {
 	
 
 	@FXML void clickStartGameOnline() {
+		Task<GameOnline> challenge = new Task<GameOnline>() {
+			public GameOnline call() {
+				try {
+					MainApp.webConnector.challenge(lvPlayerOnline1.getSelectionModel().getSelectedItem(), lvPlayerOnline2.getSelectionModel().getSelectedItem());
+					return null;/////////////////////
+				} catch (IOException e) {
+					e.printStackTrace();
+					return null;
+				}
+			}
+		};
+		
+		prStartGameOnline.setVisible(true);
+		
+		challenge.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			prStartGameOnline.setVisible(false);
+			if (newValue == null) {
+				Dialog.error("Die Herausforderung ist fehlgeschlagen");
+				return;
+			}
+			MainApp.onlineGames.add(newValue);
+		});
+		
+		Thread thread = new Thread(challenge, "challenge");
+		thread.setDaemon(true);
+		thread.start();
 		
 	}
 	

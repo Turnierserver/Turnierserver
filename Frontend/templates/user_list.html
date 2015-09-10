@@ -7,26 +7,30 @@
 {% endblock %}
 
 {% block body %}
-
+<div class="ui segment">
 
 <table id="users" class="ui very basic sortable table">
 	<thead>
 		<tr>
-		<th class="left aligned one wide">Icon</th>
-		<th class="left aligned ten wide data-name">Name</th>
-		<th class="right aligned two wide data-elo">Höchste ELO</th>
+		<th class="left aligned six wide data-name">Nutzername</th>
+		<th class="left aligned six wide data-fullname">Name</th>
+		<th class="right aligned one wide data-elo">Höchste ELO ({{current_gametype.name}})</th>
 		</tr>
 	</thead>
 	<tbody class="list">
 		{% for user in user_list %}
 		<tr>
-			<td>
-				<img class="ui avatar image" src="{{ url_for('api.user_icon', id=user.id) }}">
-			</td>
 			<td class="left aligned data-name">
 				<a class="content" href="{{url_for('anonymous.user', id=user.id)}}">
 					<div class="header">{{user.name}}</div>
 				</a>
+			</td>
+			<td class="left aligned data-fullname">
+				{% if user.name_public %}
+				<a class="content">
+					<div class="header">{{user.firstname}} {{user.lastname}}</div>
+				</a>
+				{% endif %}
 			</td>
 			<td class="right aligned data-elo">
 				{% if user.elo %}
@@ -37,6 +41,7 @@
 		{% endfor %}
 	</tbody>
 </table>
+</div>
 
 <script>
 var list = sortable_list("users");
