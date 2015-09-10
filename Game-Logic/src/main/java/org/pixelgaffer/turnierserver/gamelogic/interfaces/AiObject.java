@@ -20,7 +20,7 @@ public class AiObject {
 	/**
 	 * Die übrigen Rechenpunkte dieser AI
 	 */
-	public int millisLeft;
+	public int mikrosLeft;
 	
 	/**
 	 * Der score der AI, der am Ende in die Datenbank gespeichert wird (z.B. +1 für den Sieger, -1 für den Verlierer)
@@ -32,12 +32,12 @@ public class AiObject {
 	@Setter
 	private Ai ai;
 	
-	public boolean subtractMillis(int millis) {
-		millisLeft -= millis;
-		if(millis < 0 && !lost) {
+	public boolean subtractMikros(int mikros) {
+		mikrosLeft -= mikros;
+		if(mikros < 0 && !lost) {
 			loose("Die Ki hatte keine Zeit mehr");
 		}
-		return millis < 0;
+		return mikros < 0;
 	}
 	
 	public void loose(String reason) {

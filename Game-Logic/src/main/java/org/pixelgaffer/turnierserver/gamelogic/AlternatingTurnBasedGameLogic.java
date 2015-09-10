@@ -33,13 +33,13 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 	protected abstract Object update();
 	
 	@Override
-	protected final void receive(R response, Ai ai, int passedMillis) {
+	protected final void receive(R response, Ai ai, int passedMikros) {
 		if (turn == null || turn != ai) {
 			logger.critical("Die AI ist nicht an der Reihe, und hat trotzdem etwas gesendet");
 			return;
 		}
 		
-		if(getUserObject(ai).subtractMillis(passedMillis)) {
+		if(getUserObject(ai).subtractMikros(passedMikros)) {
 			return;
 		}
 		
