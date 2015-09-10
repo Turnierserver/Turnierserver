@@ -21,13 +21,6 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.image.Image;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.ZipParameters;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -48,6 +41,7 @@ import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.AiOnline;
 import org.pixelgaffer.turnierserver.codr.AiSimple;
+import org.pixelgaffer.turnierserver.codr.GameBase.GameMode;
 import org.pixelgaffer.turnierserver.codr.GameOnline;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.CompileException;
@@ -55,6 +49,13 @@ import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.DeletedException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NewException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NothingDoneException;
 import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
 
 /**
  * koordiniert die Verbindung zum Server und führt Up-/Downloads aus
@@ -142,8 +143,11 @@ public class WebConnector {
 			return null;
 		}
 	}
-
-
+		
+	public String getUrlFromGame(GameOnline game) {
+		return url.substring(url.length() - 4) + "game/" + (game.mode == GameMode.onlineInprogress ? "inprogress/" : "") + game.onlineId + "/mini";
+	}
+	
 	public int getUserID() {
 		try {
 			String json = toString(sendPost("loggedin"));
@@ -241,7 +245,14 @@ public class WebConnector {
 		}
 	}
 
-
+	public void challenge(AiOnline...ais) throws IOException {
+		String[] ids = new String[ais.length];
+		for(int i = 0; i < ais.length; i++) {
+			ids[i] = Integer.toString(ais[i].id);
+		}
+		sendPost("games/start?" + String.join("&", ids));
+	}
+	
 	public ObservableList<AiOnline> getAis(String game) {
 		ObservableList<AiOnline> result = FXCollections.observableArrayList();
 		int id = getGametypeID(game);
@@ -276,6 +287,7 @@ public class WebConnector {
 
 
 	public ObservableList<GameOnline> getGames(String game) {
+		
 		ObservableList<GameOnline> result = FXCollections.observableArrayList();
 		String json;
 		try {

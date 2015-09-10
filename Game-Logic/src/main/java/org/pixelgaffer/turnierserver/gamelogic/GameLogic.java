@@ -88,8 +88,10 @@ public abstract class GameLogic<E extends AiObject, R> {
      *            Die Antwort der AI
      * @param ai
      *            Die AI, welche diese Antwort gesendet hat
+     * @param passedMillis 
+     * 			  Die vergangenen Millis zwischen Antwort eingang und Antwort ausgang bei der KI
      */
-    protected abstract void receive(R response, Ai ai);
+    protected abstract void receive(R response, Ai ai, int passedMillis);
 	
 	/**
      * Wird aufgerufen, wenn eine AI aufgegeben hat (oder aufgegeben wurde, z.B.
@@ -139,9 +141,11 @@ public abstract class GameLogic<E extends AiObject, R> {
 		if(gameEnded) {
 			return;
 		}
+		
 		if (getUserObject(ai).lost) {
 			return;
 		}
+		
 		String string = null;
 		try {
 			Parser parser = Parsers.getWorker();
@@ -156,16 +160,22 @@ public abstract class GameLogic<E extends AiObject, R> {
 			getUserObject(ai).loose("Die Nachricht der KI konnte nicht gelesen werden");
 			return;
 		}
+		
 		if (string.equals("SURRENDER")) {
 			getUserObject(ai).loose("Die KI hat Aufgegeben");
 			return;
 		}
+		
 		if (string.startsWith("CRASH ")) {
 			getUserObject(ai).loose("Die KI ist gecrashed: " + string.substring("CRASH ".length()));
 			return;
 		}
+		
+		//Wenn der erste Buchstabe eine Zahl ist, wird die Zahl ausgelesen und geparsed
+		int passedMillis = string.length() > 0 && Character.isDigit(string.charAt(0)) ? Integer.parseInt(string.substring(0, string.indexOf('{'))) : 0;
+		
 		try {
-			receive(Parsers.getWorker().parse(message, token.getType()), ai);
+			receive(Parsers.getWorker().parse(message, token.getType()), ai, passedMillis);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -304,6 +314,24 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 */
 	public boolean allRoundsPlayed() {
 		return playedRounds == maxTurns && maxTurns > 0;
+	}
+	
+	/**
+	 * @return Die Anzahl an Spielern, für welche dieses Spiel ausgelegt ist
+	 */
+	public int playerAmt() {
+		return 2;
+	}
+	
+	/**
+	 * Teilt der Spiellogik mit, wenn sich eine Ai disconnected
+	 * 
+	 * @param ai Die Ai, die sich disconnected hat
+	 */
+	public void aiCrashed(Ai ai) {
+		if(!getUserObject(ai).lost) {
+			getUserObject(ai).loose("Die Ki hat sich disconnected. Dies kann daran liegen, dass ein Crash nicht abgefangen wurde, oder dass die Ki ihre verfügbare Zeit verbraucht hat und von der Sandbox terminiert wurde.");
+		}
 	}
 	
 	/**

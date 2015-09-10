@@ -3,24 +3,6 @@ package org.pixelgaffer.turnierserver.codr;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.io.FileUtils;
-import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
-import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
-import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NewException;
-import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NothingDoneException;
-import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
-import org.pixelgaffer.turnierserver.codr.utilities.Resources;
-import org.pixelgaffer.turnierserver.codr.utilities.Settings;
-import org.pixelgaffer.turnierserver.codr.utilities.WebConnector;
-import org.pixelgaffer.turnierserver.codr.view.ControllerAiManagement;
-import org.pixelgaffer.turnierserver.codr.view.ControllerGameManagement;
-import org.pixelgaffer.turnierserver.codr.view.ControllerRanking;
-import org.pixelgaffer.turnierserver.codr.view.ControllerRoot;
-import org.pixelgaffer.turnierserver.codr.view.ControllerStartPage;
-import org.pixelgaffer.turnierserver.codr.view.ControllerSubmission;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
@@ -47,6 +29,22 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+
+import org.apache.commons.io.FileUtils;
+import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
+import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
+import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NewException;
+import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.NothingDoneException;
+import org.pixelgaffer.turnierserver.codr.utilities.Exceptions.UpdateException;
+import org.pixelgaffer.turnierserver.codr.utilities.Resources;
+import org.pixelgaffer.turnierserver.codr.utilities.Settings;
+import org.pixelgaffer.turnierserver.codr.utilities.WebConnector;
+import org.pixelgaffer.turnierserver.codr.view.ControllerAiManagement;
+import org.pixelgaffer.turnierserver.codr.view.ControllerGameManagement;
+import org.pixelgaffer.turnierserver.codr.view.ControllerRanking;
+import org.pixelgaffer.turnierserver.codr.view.ControllerRoot;
+import org.pixelgaffer.turnierserver.codr.view.ControllerStartPage;
+import org.pixelgaffer.turnierserver.codr.view.ControllerSubmission;
 
 
 /**
