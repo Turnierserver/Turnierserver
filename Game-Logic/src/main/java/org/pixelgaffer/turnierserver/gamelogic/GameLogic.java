@@ -162,6 +162,13 @@ public abstract class GameLogic<E extends AiObject, R> {
 			return;
 		}
 		
+		//Wenn der erste Buchstabe eine Zahl ist, wird die Zahl ausgelesen und geparsed
+		int passedMikros = 0;
+		if(string.length() > 0 && Character.isDigit(string.charAt(0))) {
+			passedMikros = Integer.parseInt(string.substring(0, string.indexOf('{')));
+			string = string.substring(string.indexOf('{'));
+		}
+		
 		if (string.equals("SURRENDER")) {
 			getUserObject(ai).loose("Die KI hat Aufgegeben");
 			return;
@@ -170,13 +177,6 @@ public abstract class GameLogic<E extends AiObject, R> {
 		if (string.startsWith("CRASH ")) {
 			getUserObject(ai).loose("Die KI ist gecrashed: " + string.substring("CRASH ".length()));
 			return;
-		}
-		
-		//Wenn der erste Buchstabe eine Zahl ist, wird die Zahl ausgelesen und geparsed
-		int passedMikros = 0;
-		if(string.length() > 0 && Character.isDigit(string.charAt(0))) {
-			passedMikros = Integer.parseInt(string.substring(0, string.indexOf('{')));
-			string = string.substring(string.indexOf('{'));
 		}
 		
 		try {
