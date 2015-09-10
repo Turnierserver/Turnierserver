@@ -114,13 +114,13 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	}
 	
 	@Override
-	protected void receive(BuilderSolverResponse<B, S> response, Ai ai, int passedMillis) {
+	protected void receive(BuilderSolverResponse<B, S> response, Ai ai, int passedMikros) {
 		if (finished.contains(ai)) {
 			getUserObject(ai).loose("Die KI ist für diese Runde schon fertig und hat trotzdem noch einmal etwas gesendet");
 			return;
 		}
 		
-		if(getUserObject(ai).subtractMillis(passedMillis)) {
+		if(getUserObject(ai).subtractMikros(passedMikros)) {
 			return;
 		}
 		

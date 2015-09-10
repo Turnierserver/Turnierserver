@@ -35,7 +35,7 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameStat
 	protected abstract Object update();
 	
 	@Override
-	protected final void receive(R response, Ai ai, int passedMillis) {
+	protected final void receive(R response, Ai ai, int passedMikros) {
 		if (getUserObject(ai).lost) {
 			logger.warning("Verlorene KI schickt noch stuff; wird ignoriert [" + ai.getId() + "]");
 			return;
@@ -47,7 +47,7 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameStat
 			return;
 		}
 		
-		if(getUserObject(ai).subtractMillis(passedMillis)) {
+		if(getUserObject(ai).subtractMikros(passedMikros)) {
 			return;
 		}
 		

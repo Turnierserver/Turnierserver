@@ -2,7 +2,6 @@ package org.pixelgaffer.turnierserver.gamelogic;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import org.pixelgaffer.turnierserver.GsonGzipParser;
@@ -90,10 +89,10 @@ public abstract class GameLogic<E extends AiObject, R> {
      *            Die Antwort der AI
      * @param ai
      *            Die AI, welche diese Antwort gesendet hat
-     * @param passedMillis 
-     * 			  Die vergangenen Millis zwischen Antwort eingang und Antwort ausgang bei der KI
+     * @param passedMikros 
+     * 			  Die vergangenen Mikros zwischen Antwort eingang und Antwort ausgang bei der KI
      */
-    protected abstract void receive(R response, Ai ai, int passedMillis);
+    protected abstract void receive(R response, Ai ai, int passedMikros);
 	
 	/**
      * Wird aufgerufen, wenn eine AI aufgegeben hat (oder aufgegeben wurde, z.B.
@@ -174,14 +173,14 @@ public abstract class GameLogic<E extends AiObject, R> {
 		}
 		
 		//Wenn der erste Buchstabe eine Zahl ist, wird die Zahl ausgelesen und geparsed
-		int passedMillis = 0;
+		int passedMikros = 0;
 		if(string.length() > 0 && Character.isDigit(string.charAt(0))) {
-			Integer.parseInt(string.substring(0, string.indexOf('{')));
+			passedMikros = Integer.parseInt(string.substring(0, string.indexOf('{')));
 			string = string.substring(string.indexOf('{'));
 		}
 		
 		try {
-			receive(Parsers.getWorker().parse(string.getBytes(StandardCharsets.UTF_8), token.getType()), ai, passedMillis);
+			receive(Parsers.getWorker().parse(string.getBytes(StandardCharsets.UTF_8), token.getType()), ai, passedMikros);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -232,7 +231,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		renderData.calculationPoints = new HashMap<>();
 		renderData.points = new HashMap<>();
 		for(Ai ai : game.getAis()) {
-			renderData.calculationPoints.put(ai.getId(), getUserObject(ai).millisLeft);
+			renderData.calculationPoints.put(ai.getId(), getUserObject(ai).mikrosLeft);
 			renderData.points.put(ai.getId(), getUserObject(ai).score);
 		}
 		sendToFronted(renderData);
@@ -275,7 +274,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		int pos = 1;
 		
 		for (Ai ai : ordering.sortedCopy(game.getAis())) {
-			message.leftoverMillis.put(ai.getId(), getUserObject(ai).millisLeft);
+			message.leftoverMillis.put(ai.getId(), getUserObject(ai).mikrosLeft);
 			message.scores.put(ai.getId(), getUserObject(ai).score);
 			message.position.put(ai.getId(), pos);
 			pos++;

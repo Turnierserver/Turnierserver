@@ -165,7 +165,10 @@ public class WorkerConnectionHandler extends ConnectionHandler
 									try
 									{
 										ByteArrayOutputStream message = new ByteArrayOutputStream();
-										message.write(Long.toString(Sandboxes.sandboxJobs.get(type.getUuid()).getCpuTimeDiff() / 1000000).getBytes(UTF_8));
+										long cpuDiff = Sandboxes.sandboxJobs.get(type.getUuid()).getCpuTimeDiff();
+										long cpuDiffMikros = Math.round(cpuDiff / 1000.0);
+										String longString = Long.toString(cpuDiffMikros);
+										message.write(longString.getBytes(UTF_8));
 										message.write(_line);
 										MessageForward mf = new MessageForward(type.getUuid(), message.toByteArray());
 										DataBuffer buf = new DataBuffer();
