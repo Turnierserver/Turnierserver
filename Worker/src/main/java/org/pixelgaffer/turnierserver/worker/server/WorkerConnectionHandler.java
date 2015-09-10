@@ -51,15 +51,15 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	{
 		if (type.getType() != SANDBOX)
 			WorkerMain.getLogger().warning("Schicke Job an " + type.getType() + " (sollte " + SANDBOX + " sein)");
-		new Thread(() -> {
-			long passedMillis = Sandboxes.sandboxJobs.get(job.getUuid()).getCpuTimeDiff() / 1000000;
-			try {
-				getClient().write(Long.toString(passedMillis).getBytes(UTF_8));
+		//new Thread(() -> {
+		//	long passedMillis = Sandboxes.sandboxJobs.get(job.getUuid()).getCpuTimeDiff() / 1000000;
+		//	try {
+		//		getClient().write(Long.toString(passedMillis).getBytes(UTF_8));
 				getClient().write(Parsers.getSandbox().parse(job, true));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}).start();
+		//	} catch (Exception e) {
+		//		e.printStackTrace();
+		//	}
+		//}).start();
 	}
 	
 	/**
