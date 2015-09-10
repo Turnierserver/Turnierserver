@@ -17,7 +17,7 @@ import javafx.collections.ObservableList;
  */
 public class GameManager {
 	
-	public ObservableList<GameBase> games = FXCollections.observableArrayList();
+	public ObservableList<GameSaved> games = FXCollections.observableArrayList();
 	
 	
 	/**
