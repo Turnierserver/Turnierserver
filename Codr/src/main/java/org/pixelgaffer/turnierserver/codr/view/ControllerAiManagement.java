@@ -671,8 +671,10 @@ public class ControllerAiManagement {
 	@FXML
 	void clickUpload() {
 
-		Task<Boolean> getOwn = new Task<Boolean>() {
+		System.out.println("visible");
+		prUpload.setVisible(true);
 
+		Task<Boolean> getOwn = new Task<Boolean>() {
 			public Boolean call() {
 				if (MainApp.ownOnlineAis == null) {
 					System.out.println("vielleicht unmöglich");
@@ -731,43 +733,93 @@ public class ControllerAiManagement {
 					try {
 						updateValue("compiling");
 						MainApp.webConnector.compile(id);
-						return "finished";
 					} catch (IOException e) {
 						e.printStackTrace();
 						return "errorConnection";
 					} catch (CompileException e) {
 						return "Fehler beim Kompilieren auf dem Server:\n\n" + e.compileOutput;
 					}
+
+					try {
+						updateValue("qualifying");
+						if (MainApp.webConnector.qualify(id))
+							return "finished--" + id;
+						else
+							return "Fehler beim Qualifizieren auf dem Server.";
+					} catch (IOException e) {
+						e.printStackTrace();
+						return "errorConnection";
+					}
 					
 				}
 			};
-			
-			prUpload.setVisible(true);
+
 										
 			upload.valueProperty().addListener((observableValue1, oldValue1, newValue1) -> {
-				prUpload.setVisible(false);
-				switch (newValue1) {
-				case "aiCreating":
+				if (newValue1.equals("aiCreating")){
 					System.out.println(newValue1);
-					break;
-				case "uploading":
+				} else if (newValue1.equals("uploading")){
 					System.out.println(newValue1);
-					break;
-				case "compiling":
+				} else if (newValue1.equals("compiling")){
 					System.out.println(newValue1);
-					break;
-				case "qualifying":
+				} else if (newValue1.equals("qualifying")){
 					System.out.println(newValue1);
-					break;
-				case "errorConnection":
+				} else if (newValue1.equals("errorConnection")){
+					prUpload.setVisible(false);
 					Dialog.error("Fehler bei der Verbindung mit dem Server.", "Verbindungsfehler");
-					break;
-				case "finished":
-					Dialog.info("Die KI wurde erfolgreich hochgeladen, kompiliert (und qualifiziert).", "Upload fertig");
-					break;
-				default:
+				} else if (newValue1.substring(0, 10).equals("finished--")){
+					int id = Integer.parseInt(newValue1.substring(10));
+					prUpload.setVisible(false);
+					if (Dialog.okAbort("Die KI wurde erfolgreich hochgeladen, kompiliert und qualifiziert.\n"
+							+ "Soll sie fertiggestellt und aktiviert werden?", "Upload fertig")){
+						
+						Task<String> finishActivate = new Task<String>() {
+							public String call() {
+
+								try {
+									updateValue("finishing");
+									MainApp.webConnector.freeze(id);
+								} catch (IOException e) {
+									e.printStackTrace();
+									return "errorConnection";
+								}
+								
+								try {
+									updateValue("activating");
+									MainApp.webConnector.setActive(id, -1);
+								} catch (IOException e) {
+									e.printStackTrace();
+									return "errorConnection";
+								}
+								
+								return "finish";
+								
+							}
+						};
+						
+						finishActivate.valueProperty().addListener((observableValue2, oldValue2, newValue2) -> {
+							if (newValue1.equals("finishing")){
+								System.out.println(newValue2);
+							} else if (newValue1.equals("activating")){
+								System.out.println(newValue2);
+							} else if (newValue1.equals("errorConnection")){
+								prUpload.setVisible(false);
+								Dialog.error("Fehler bei der Verbindung mit dem Server.", "Verbindungsfehler");
+							} else if (newValue1.equals("finish")){
+								prUpload.setVisible(false);
+								Dialog.error("Die Version wurde erfolgreich fertiggestellt und aktiviert", "Fertig");
+							}
+						});
+						
+
+						Thread thread = new Thread(finishActivate, "finishActivate");
+						thread.setDaemon(true);
+						thread.start();
+						
+					}
+				} else {
+					prUpload.setVisible(false);
 					Dialog.error(newValue1, "Fehler");
-					break;
 				}
 			});
 
