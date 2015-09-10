@@ -178,7 +178,10 @@
 				</td>
 				<td class="center aligned">
 					{% if version.current and not version.frozen %}
-					<button class="ui basic teal button">ZIP hochladen</button>
+					<button class="ui basic teal button zip_upload_button">ZIP hochladen</button>
+					<form id="icon_form" action="/api/ai/{{ai.id}}/upload_icon" method="post" enctype="multipart/form-data">
+						<input id="file_input" type="file" name="icon" style="display: none;" />
+					</form>
 					{% else %}
 					<a class="ui basic teal button" href="{{url_for('api.download_zip', id=ai.id, version_id=version.version_id)}}">als ZIP runterladen</a>
 					{% endif %}
@@ -343,6 +346,10 @@ $(".activate_version").on('click', function() {
 		console.log(xhr.responseText.error);
 		alert(JSON.parse(xhr.responseText).error);
 	});
+});
+
+$(".zip_upload_button").on("click", function() {
+
 });
 
 </script>

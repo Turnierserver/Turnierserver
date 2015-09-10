@@ -943,10 +943,21 @@ def ai_upload_zip(id):
 	if any([not v.frozen for v in ai.version_list]):
 		ai.new_version(copy_prev=False)
 
+	if request.mimetype == "multipart/form-data":
+		if len(request.files) != 1:
+			return {"error": "Invalid number of files attached."}, 400
+		content = list(request.files.values())[0].read()
+	else:
+		content = request.data
+
+	mime = magic.from_buffer(content, mime=True).decode("ascii")
+	if mime != "application/zip":
+		return {"error": "Invalid mimetype for an ZIP-File.", "mimetype": mime}, 400
+
 	tmpdir = tempfile.mkdtemp()
 	_, tmpzip = tempfile.mkstemp()
 	with open(tmpzip, "wb") as f:
-		f.write(request.data)
+		f.write(content)
 
 	try:
 		with zipfile.ZipFile(tmpzip) as z:
