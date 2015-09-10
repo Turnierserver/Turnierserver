@@ -178,9 +178,9 @@
 				</td>
 				<td class="center aligned">
 					{% if version.current and not version.frozen %}
-					<button class="ui basic teal button zip_upload_button">ZIP hochladen</button>
-					<form id="icon_form" action="/api/ai/{{ai.id}}/upload_icon" method="post" enctype="multipart/form-data">
-						<input id="file_input" type="file" name="icon" style="display: none;" />
+					<div id="zip_upload_button" class="ui primary basic teal button">ZIP hochladen</div>
+					<form id="zip_upload_form" action="/api/ai/{{ai.id}}/upload_zip" method="post" enctype="multipart/form-data">
+						<input id="zip_upload_input" type="file" name="data" style="display: none" />
 					</form>
 					{% else %}
 					<a class="ui basic teal button" href="{{url_for('api.download_zip', id=ai.id, version_id=version.version_id)}}">als ZIP runterladen</a>
@@ -348,8 +348,39 @@ $(".activate_version").on('click', function() {
 	});
 });
 
-$(".zip_upload_button").on("click", function() {
+$("#zip_upload_button").on("click", function() {
+	$("#zip_upload_input").trigger("click");
+});
 
+$("#zip_upload_input").change(function(e){
+	var fd = new FormData();
+	fd.append('file', $("#zip_upload_input")[0].files[0]);
+	$.ajax({
+		url: $("#zip_upload_form").attr("action"),
+		type: $("#zip_upload_form").attr("method"),
+		dataType: "JSON",
+		data: fd,
+		processData: false,
+		contentType: false,
+		success: function (data, status)
+		{
+			console.log(data);
+			if (data.error) {
+				if (data.mimetype) {
+					alert(data.error + ": " + data.mimetype);
+				} else {
+					alert(data.error);
+				}
+			} else {
+				location.reload();
+			}
+		},
+		error: function (xhr, desc, err)
+		{
+			alert(err);
+		}
+	});
+	e.preventDefault();
 });
 
 </script>

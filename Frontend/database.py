@@ -380,7 +380,7 @@ class AI(db.Model):
 
 	def latest_frozen_version(self):
 		for v in self.version_list[::-1]:
-			if v.frozen:
+			if v.frozen and v.qualified and v.compiled:
 				return v
 
 	def new_version(self, copy_prev=True):
