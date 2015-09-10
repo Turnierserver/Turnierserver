@@ -36,6 +36,7 @@
                                      <bottom>
                                         <HBox alignment="CENTER_RIGHT" spacing="10.0" BorderPane.alignment="CENTER">
                                            <children>
+                                                <ProgressIndicator fx:id="prStartGameOffline" prefHeight="26.0" prefWidth="26.0" visible="false" />
                                               <Button mnemonicParsing="false" onAction="#clickStartGameOffline" prefHeight="31.0" text="Starten" />
                                            </children>
                                            <BorderPane.margin>
@@ -88,6 +89,7 @@
                                      <bottom>
                                         <HBox alignment="CENTER_RIGHT" spacing="10.0" BorderPane.alignment="CENTER">
                                            <children>
+                                                <ProgressIndicator fx:id="prStartGameOnline" prefHeight="26.0" prefWidth="26.0" visible="false" />
                                               <Button mnemonicParsing="false" onAction="#clickStartGameOnline" prefHeight="31.0" text="Herausfordern" />
                                            </children>
                                            <BorderPane.margin>
