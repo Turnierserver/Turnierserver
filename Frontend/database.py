@@ -270,7 +270,7 @@ class User(db.Model):
 		return "<User(id={}, name={}, admin={})".format(self.id, self.name, self.admin)
 
 	# Flask.Login zeugs
-	is_authenticatedated = True
+	is_authenticated = True
 	is_active = True
 	is_anonymous = False
 	def get_id(self):
