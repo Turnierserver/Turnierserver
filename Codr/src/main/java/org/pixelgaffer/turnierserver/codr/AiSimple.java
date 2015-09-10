@@ -100,7 +100,11 @@ public class AiSimple extends AiBase {
 	
 	
 	public File getPictureFile() {
-		return new File(Paths.aiPicture(this));
+		String path = Paths.aiPicture(this);
+		if (path == null)
+			return null;
+		else
+			return new File(path);
 	}
 	
 	

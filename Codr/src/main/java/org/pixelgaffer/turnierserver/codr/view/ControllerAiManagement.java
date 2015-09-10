@@ -674,94 +674,107 @@ public class ControllerAiManagement {
 		Task<Boolean> getOwn = new Task<Boolean>() {
 
 			public Boolean call() {
-				System.out.println("Angekommenerst 1");
-				if (MainApp.webConnector.isLoggedIn()) {
-					System.out.println("Angekommenerst 1,5");
+				if (MainApp.ownOnlineAis == null) {
+					System.out.println("vielleicht unmöglich");
 					MainApp.ownOnlineAis = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+				} else if (MainApp.ownOnlineAis.size() == 0){
+					MainApp.ownOnlineAis.addAll(MainApp.webConnector.getOwnAis(MainApp.actualGameType.get()));
 				}
-				System.out.println("Angekommenerst 2");
 				return true;
 			}
 		};
 
 		getOwn.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 
-					System.out.println("Angekommen");
-					if (MainApp.ownOnlineAis == null) {
-						Dialog.error("Bitte erst Anmelden");
-						return;
+			System.out.println("Angekommen");
+			if (MainApp.ownOnlineAis == null) {
+				Dialog.error("Bitte erst Anmelden");
+				return;
+			}
+
+			AiBase result = Dialog.selectOwnVersion();
+			if (result == null) {
+				return;
+			}
+
+			if (result.getClass() == AiFake.class) {
+				localNameOfNewAi = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
+				if (localNameOfNewAi == null)
+					return;
+			}
+
+			Task<String> upload = new Task<String>() {
+				public String call() {
+					int id = -1;
+					if (result instanceof AiOnline) {
+						id = ((AiOnline) result).id;
+					} else {
+						updateValue("aiCreating");
+						id = MainApp.webConnector.createAi(ai, localNameOfNewAi);
+					}
+					if (id == -1) {
+						return "errorConnection";
+					}
+					
+					try {
+						updateValue("uploading");
+						MainApp.webConnector.uploadVersion(version, id);
+					} catch (ZipException | IOException e) {
+						e.printStackTrace();
+						return "errorConnection";
+					} catch (IllegalStateException e) {
+						return "Fehler beim Hochladen: " + e.getMessage();
+					} catch (Exception e){
+						e.printStackTrace();
 					}
 
-					AiBase result = Dialog.selectOwnVersion();
-					if (result == null) {
-						return;
+					try {
+						updateValue("compiling");
+						MainApp.webConnector.compile(id);
+						return "finished";
+					} catch (IOException e) {
+						e.printStackTrace();
+						return "errorConnection";
+					} catch (CompileException e) {
+						return "Fehler beim Kompilieren auf dem Server:\n\n" + e.compileOutput;
 					}
+					
+				}
+			};
+			
+			prUpload.setVisible(true);
+										
+			upload.valueProperty().addListener((observableValue1, oldValue1, newValue1) -> {
+				prUpload.setVisible(false);
+				switch (newValue1) {
+				case "aiCreating":
+					System.out.println(newValue1);
+					break;
+				case "uploading":
+					System.out.println(newValue1);
+					break;
+				case "compiling":
+					System.out.println(newValue1);
+					break;
+				case "qualifying":
+					System.out.println(newValue1);
+					break;
+				case "errorConnection":
+					Dialog.error("Fehler bei der Verbindung mit dem Server.", "Verbindungsfehler");
+					break;
+				case "finished":
+					Dialog.info("Die KI wurde erfolgreich hochgeladen, kompiliert (und qualifiziert).", "Upload fertig");
+					break;
+				default:
+					Dialog.error(newValue1, "Fehler");
+					break;
+				}
+			});
 
-					if (result.getClass() == AiFake.class) {
-						localNameOfNewAi = Dialog.textInput("Bitte einen Namen eingeben", "Neue KI erstellen");
-						if (localNameOfNewAi == null)
-							return;
-					}
-
-					Task<String> upload = new Task<String>() {
-
-						public String call() {
-							int id = -1;
-							if (result instanceof AiOnline) {
-								id = ((AiOnline) result).id;
-							} else {
-								id = MainApp.webConnector.createAi(ai, localNameOfNewAi);
-							}
-							if (id == -1) {
-								return "errorConnection";
-							}
-
-							try {
-								MainApp.webConnector.uploadVersion(version, id);
-							} catch (ZipException | IOException e) {
-								e.printStackTrace();
-								return "errorConnection";
-							} catch (IllegalStateException e) {
-								return "Fehler beim Hochladen: " + e.getMessage();
-							}
-
-							try {
-								MainApp.webConnector.compile(id);
-								return "finished";
-							} catch (IOException e) {
-								e.printStackTrace();
-								return "errorConnection";
-							} catch (CompileException e) {
-								return "Fehler beim Kompilieren auf dem Server:\n\n" + e.compileOutput;
-							}
-						}
-					};
-
-					prUpload.setVisible(true);
-
-					upload.valueProperty().addListener((observableValue1, oldValue1, newValue1) -> {
-						prUpload.setVisible(false);
-						switch (newValue1) {
-						case "errorConnection":
-							Dialog.error(
-									"Fehler bei der Verbindung mit dem Server.",
-									"Verbindungsfehler");
-							break;
-						case "finished":
-							Dialog.info(
-									"Die KI wurde erfolgreich hochgeladen, kompiliert (und qualifiziert).",
-									"Upload fertig");
-							break;
-						default:
-							Dialog.error(newValue1, "Fehler");
-							break;
-						}
-					});
-
-					Thread thread = new Thread(upload, "upload");
-					thread.setDaemon(true);
-					thread.start();
-				});
+			Thread thread = new Thread(upload, "upload");
+			thread.setDaemon(true);
+			thread.start();
+		});
 
 		System.out.println("Angekommenerst0");
 		Thread thread = new Thread(getOwn, "getOwn");

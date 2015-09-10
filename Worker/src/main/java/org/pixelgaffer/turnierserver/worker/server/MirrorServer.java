@@ -6,6 +6,8 @@ import static org.pixelgaffer.turnierserver.PropertyUtils.WORKER_MIRROR_PASSWORD
 import static org.pixelgaffer.turnierserver.PropertyUtils.WORKER_MIRROR_SALT_LENGTH;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getIntRequired;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
+import static org.pixelgaffer.turnierserver.networking.SHA256.sha256;
+
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
@@ -15,12 +17,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Random;
+
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 import org.pixelgaffer.turnierserver.worker.LibraryCache;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
@@ -51,7 +52,7 @@ public class MirrorServer extends Thread
 			try
 			{
 				Socket client = server.accept();
-				WorkerMain.getLogger().info(client.getInetAddress().getHostName() + " hat sich verbunden");
+				WorkerMain.getLogger().info(client.getInetAddress().getHostAddress() + " hat sich verbunden");
 				new Thread( () -> {
 					try
 					{
@@ -91,8 +92,10 @@ public class MirrorServer extends Thread
 						OutputStream out = client.getOutputStream();
 						
 						byte[] salt = generateSalt();
-						out.write(salt);
-						byte[] hash = sha256(salt);
+						out.write(Base64.getEncoder().encode(salt));
+						out.write(0xa);
+						byte[] hash = sha256(getStringRequired(WORKER_MIRROR_PASSWORD).getBytes(), salt,
+								getIntRequired(WORKER_MIRROR_PASSWORD_REPEATS));
 						line = in.readLine();
 						if (line == null)
 							throw new EOFException();
@@ -113,7 +116,8 @@ public class MirrorServer extends Thread
 							File tar = LibraryCache.getCache().getLibTarBz2(language, name);
 							out.write((Long.toString(tar.length()) + "\n").getBytes(UTF_8));
 							FileInputStream fin = new FileInputStream(tar);
-							byte buf[] = new byte[8192]; int read;
+							byte buf[] = new byte[8192];
+							int read;
 							while ((read = fin.read(buf)) > 0)
 								out.write(buf, 0, read);
 							fin.close();
@@ -153,18 +157,5 @@ public class MirrorServer extends Thread
 		byte[] salt = new byte[getIntRequired(WORKER_MIRROR_SALT_LENGTH)];
 		r.nextBytes(salt);
 		return salt;
-	}
-	
-	private static byte[] sha256 (byte[] salt) throws NoSuchAlgorithmException
-	{
-		byte[] hash = getStringRequired(WORKER_MIRROR_PASSWORD).getBytes();
-		for (int i = 0; i < getIntRequired(WORKER_MIRROR_PASSWORD_REPEATS); i++)
-		{
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			md.update(salt);
-			md.update(hash);
-			hash = md.digest();
-		}
-		return hash;
 	}
 }
