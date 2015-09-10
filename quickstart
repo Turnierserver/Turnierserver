@@ -1,0 +1,11 @@
+# pacman -S postgresql
+
+im Frontend
+# pip install -r requirements.txt
+
+mkdir /var/cache/worker
+chmod 777 /var/cache/worker
+
+yaourt -S isolate-git
+
+jdk8 als jdk haben
