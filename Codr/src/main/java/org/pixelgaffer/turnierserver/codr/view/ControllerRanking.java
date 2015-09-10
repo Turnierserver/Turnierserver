@@ -75,11 +75,11 @@ public class ControllerRanking {
 		
 		
 		TableColumn<AiOnline, Image> col0 = new TableColumn<AiOnline, Image>("Bild");
-		col0.setMaxWidth(60);
-		col0.setMinWidth(60);
 		TableColumn<AiOnline, String> col1 = new TableColumn<AiOnline, String>("Name");
 		TableColumn<AiOnline, String> col2 = new TableColumn<AiOnline, String>("Besitzer");
 		TableColumn<AiOnline, String> col3 = new TableColumn<AiOnline, String>("ELO");
+		col0.setMaxWidth(60);
+		col0.setMinWidth(60);
 		col3.setMaxWidth(60);
 		col3.setMinWidth(60);
 		
@@ -203,7 +203,10 @@ public class ControllerRanking {
 		});
 		colG3.setCellValueFactory(new Callback<CellDataFeatures<OnlineGameInfo, String>, ObservableValue<String>>() {
 			public ObservableValue<String> call(CellDataFeatures<OnlineGameInfo, String> p) {
-				return new SimpleStringProperty(String.valueOf(p.getValue().won));
+				if (p.getValue().won)
+					return new SimpleStringProperty("Ja");
+				else
+					return new SimpleStringProperty("Nein");
 			}
 		});
 		

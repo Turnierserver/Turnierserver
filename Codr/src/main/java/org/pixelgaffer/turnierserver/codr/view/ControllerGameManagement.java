@@ -4,29 +4,29 @@ package org.pixelgaffer.turnierserver.codr.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.util.Callback;
 
-import org.pixelgaffer.turnierserver.codr.AiBase;
 import org.pixelgaffer.turnierserver.codr.AiOnline;
 import org.pixelgaffer.turnierserver.codr.AiSimple;
 import org.pixelgaffer.turnierserver.codr.GameBase;
-import org.pixelgaffer.turnierserver.codr.GameBase.GameMode;
 import org.pixelgaffer.turnierserver.codr.GameOnline;
 import org.pixelgaffer.turnierserver.codr.GameSaved;
 import org.pixelgaffer.turnierserver.codr.MainApp;
-import org.pixelgaffer.turnierserver.codr.ParticipantResult;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 
@@ -71,9 +71,6 @@ public class ControllerGameManagement {
 
 		lvPlayerOnline1.setItems(MainApp.ownOnlineAis);
 		lvPlayerOnline2.setItems(MainApp.onlineAis);
-		
-		lvGamesOffline.setItems(MainApp.gameManager.games);
-		lvGamesOnline.setItems(MainApp.onlineGames);
 
 		MainApp.aiManager.ais.addListener(new ListChangeListener<AiSimple>() {
 			@Override public void onChanged(ListChangeListener.Change<? extends AiSimple> change) {
@@ -91,6 +88,59 @@ public class ControllerGameManagement {
 			}
 		});
 
+		
+		lvGamesOffline.setItems(MainApp.gameManager.games);
+		lvGamesOnline.setItems(MainApp.onlineGames);
+		
+		
+		
+		TableColumn<GameSaved, Image> col0 = new TableColumn<GameSaved, Image>("Spieler 1");
+		TableColumn<GameSaved, String> col1 = new TableColumn<GameSaved, String>("Spieler 2");
+		TableColumn<GameSaved, String> col2 = new TableColumn<GameSaved, String>("Wann");
+		
+		col0.setCellValueFactory(new Callback<CellDataFeatures<GameSaved, Image>, ObservableValue<Image>>() {
+			@Override
+			public ObservableValue<Image> call(CellDataFeatures<GameSaved, Image> arg0) {
+				return arg0.getValue().getPicture();
+			}
+		});
+		col0.setCellFactory(new Callback<TableColumn<GameSaved, Image>, TableCell<GameSaved, Image>>() {
+			@Override
+			public TableCell<GameSaved, Image> call(TableColumn<GameSaved, Image> param) {
+				final ImageView imageview = new ImageView();
+				imageview.setFitHeight(50);
+				imageview.setFitWidth(50);
+				
+				TableCell<AiOnline, Image> cell = new TableCell<AiOnline, Image>() {
+					public void updateItem(Image item, boolean empty) {
+						if (item != null)
+							imageview.imageProperty().set(item);
+					}
+				};
+				cell.setGraphic(imageview);
+				return cell;
+			}
+			
+		});
+		col1.setCellValueFactory(new Callback<CellDataFeatures<GameSaved, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<GameSaved, String> p) {
+				return new SimpleStringProperty(p.getValue().title);
+			}
+		});
+		col2.setCellValueFactory(new Callback<CellDataFeatures<GameSaved, String>, ObservableValue<String>>() {
+			public ObservableValue<String> call(CellDataFeatures<GameSaved, String> p) {
+				return new SimpleStringProperty(p.getValue().userName);
+			}
+		});
+		
+		col0.setStyle("-fx-alignment: CENTER-LEFT;");
+		col1.setStyle("-fx-alignment: CENTER-LEFT;");
+		col2.setStyle("-fx-alignment: CENTER-LEFT;");
+		
+		lvGamesOffline.getColumns().add(col0);
+		lvGamesOffline.getColumns().add(col1);
+		lvGamesOffline.getColumns().add(col2);
+		
 	}
 	
 	
