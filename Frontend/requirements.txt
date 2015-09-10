@@ -1,5 +1,5 @@
 Flask>=0.10.1
-Flask-Login>=0.2.11
+Flask-Login>=0.3.0
 Flask-Cache>=0.13.1
 SQLAlchemy>=1.0.4
 Flask-SQLAlchemy>=2.0
