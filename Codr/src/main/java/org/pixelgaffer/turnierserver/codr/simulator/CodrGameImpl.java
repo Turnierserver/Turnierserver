@@ -17,7 +17,9 @@ import java.util.UUID;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.pixelgaffer.turnierserver.codr.GameBase;
+import lombok.Getter;
+import lombok.NonNull;
+
 import org.pixelgaffer.turnierserver.codr.GameSaved;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Libraries;
@@ -25,9 +27,6 @@ import org.pixelgaffer.turnierserver.codr.utilities.Paths;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
-
-import lombok.Getter;
-import lombok.NonNull;
 
 public class CodrGameImpl implements Game, Frontend
 {

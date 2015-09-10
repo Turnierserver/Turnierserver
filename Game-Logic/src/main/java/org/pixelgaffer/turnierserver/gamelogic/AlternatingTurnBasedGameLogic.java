@@ -33,13 +33,13 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 	protected abstract Object update();
 	
 	@Override
-	protected final void receive(R response, Ai ai) {
+	protected final void receive(R response, Ai ai, int passedMillis) {
 		if (turn == null || turn != ai) {
-			getUserObject(ai).loose("Die KI ist nicht am Zug, hat jedoch etwas geschickt");
+			logger.critical("Die AI ist nicht an der Reihe, und hat trotzdem etwas gesendet");
 			return;
 		}
 		
-		if (getUserObject(ai).stopCalculationTimer()) {
+		if(getUserObject(ai).subtractMillis(passedMillis)) {
 			return;
 		}
 		
@@ -57,7 +57,6 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 		turn = game.getAis().get((ai.getIndex() + 1) % game.getAis().size());
 		try {
 			sendGameState(ai);
-			getUserObject(ai).startCalculationTimer(10);
 		} catch (IOException e) {
 			getUserObject(ai).loose("Es gab ein Problem mit der Kommunikation mit der KI");
 		}

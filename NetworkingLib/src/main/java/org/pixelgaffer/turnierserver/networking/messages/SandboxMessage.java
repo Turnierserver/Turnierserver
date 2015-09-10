@@ -2,16 +2,17 @@ package org.pixelgaffer.turnierserver.networking.messages;
 
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
  * Diese Message wird von der Sandbox geschickt, wenn sich der Zustand einer KI
  * ändert.
  */
-@AllArgsConstructor
-@ToString
+@RequiredArgsConstructor
+@ToString(exclude={"cpuTime"})
 public class SandboxMessage
 {
 	/** KI gestartet. */
@@ -22,12 +23,16 @@ public class SandboxMessage
 	public static final char TERMINATED_AI = 'T';
 	/** KI auf Auftrag der Logik beendet. */
 	public static final char KILLED_AI = 'K';
+	public static final char CPU_TIME = 'C';
 	
 	/** Die Zustandsänderung der KI. */
-	@Getter
+	@Getter @NonNull
 	private char event;
 	
 	/** Die vom Backend zugewiesene UUID. */
-	@Getter
+	@Getter @NonNull
 	private UUID uuid;
+	
+	@Getter
+	private long cpuTime = -1;
 }

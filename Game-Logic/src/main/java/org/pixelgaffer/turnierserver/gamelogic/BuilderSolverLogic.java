@@ -114,13 +114,13 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	}
 	
 	@Override
-	protected void receive(BuilderSolverResponse<B, S> response, Ai ai) {
+	protected void receive(BuilderSolverResponse<B, S> response, Ai ai, int passedMillis) {
 		if (finished.contains(ai)) {
 			getUserObject(ai).loose("Die KI ist für diese Runde schon fertig und hat trotzdem noch einmal etwas gesendet");
 			return;
 		}
 		
-		if (getUserObject(ai).stopCalculationTimer()) {
+		if(getUserObject(ai).subtractMillis(passedMillis)) {
 			return;
 		}
 		
@@ -132,7 +132,6 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 			}
 			
 			result = getUserObject(ai).building.build(response.build);
-			System.out.println(getUserObject(ai).building.getClass().getName());
 			logger.info("Wurde das Feld erfolgreich gebaut?: " + result.valid);
 		} else {
 			if (response.solve == null) {
@@ -153,17 +152,12 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 				change.change = result.changes;
 				change.building = building;
 				sendToAi(change, ai);
-				getUserObject(ai).startCalculationTimer(10);
 			} catch (IOException e) {
 				getUserObject(ai).loose("Es gab ein Problem mit der Kommunikation mit der KI");
 			}
 		}
 		if (result.finished) {
 			logger.info("Die Aufgabe wurde beendet!");
-			if (getUserObject(ai).stopCalculationTimer()) {
-				logger.warning("Die ai hat keine Zeit mehr und hat nun verloren");
-				return;
-			}
 			finished.add(ai);
 			if (!result.valid) {
 				logger.info("Die Aufgabe wurde nicht erfolgreich beendet!");
@@ -180,7 +174,7 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	}
 	
 	private void check() {
-		if (finished.size() != game.getAis().size()) {
+		if (finished.size() != (building ? getBuilder() : getSolver()).size()) {
 			return;
 		}
 		
@@ -222,7 +216,6 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 			getUserObject(ai).succesful = false;
 			try {
 				sendToAi(change, ai);
-				getUserObject(ai).startCalculationTimer(10);
 			} catch (IOException e) {
 				getUserObject(ai).loose("Es gab ein Problem mit der Kommunikation mit der KI");
 			}
@@ -242,7 +235,6 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 			getUserObject(ai).succesful = false;
 			try {
 				sendToAi(change, ai);
-				getUserObject(ai).startCalculationTimer(10);
 			} catch (IOException e) {
 				getUserObject(ai).loose("Es gab ein Problem mit der Kommunikation mit der KI");
 			}

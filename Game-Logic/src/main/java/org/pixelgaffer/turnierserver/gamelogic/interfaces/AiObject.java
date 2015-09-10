@@ -32,89 +32,12 @@ public class AiObject {
 	@Setter
 	private Ai ai;
 	
-	/**
-	 * Gibt an, ob geupdated werden soll
-	 */
-	private boolean updating = false;
-	
-	/**
-	 * Das letzte mal als startCalculationTimer oder updateCalculationTimer aufgerufen wurde
-	 */
-	private long lastCalculationStart = -1;
-	
-	/**
-	 * Startet den Berechnungtimer
-	 */
-	public void startCalculationTimer() {
-		startCalculationTimer(-1);
-	}
-	
-	/**
-	 * Startet den Berechnungtimer
-	 * 
-	 * @param Die
-	 *            Intervalle, in welchen die Rechenpunkte geupdated werden sollen (<= 0, wenn sie nicht automatisch geupdated werden sollen)
-	 */
-	public void startCalculationTimer(final int updateTime) {
-		if (lastCalculationStart != -1) {
-			return;
+	public boolean subtractMillis(int millis) {
+		millisLeft -= millis;
+		if(millis < 0 && !lost) {
+			loose("Die Ki hatte keine Zeit mehr");
 		}
-		lastCalculationStart = System.currentTimeMillis();
-		if (updateTime > 0) {
-			updating = true;
-			new Thread(() -> {
-				while (updating) {
-					updateCalculationTimer();
-					try {
-						Thread.sleep(updateTime);
-					} catch (Exception e) {
-						return;
-					}
-				}
-			}).start();
-		}
-	}
-	
-	/**
-	 * Hält den Berechnungstimer an
-	 */
-	public boolean stopCalculationTimer() {
-		if (lastCalculationStart == -1) {
-			return lost;
-		}
-		if (updating) {
-			updating = false;
-		}
-		millisLeft -= System.currentTimeMillis() - lastCalculationStart;
-		lastCalculationStart = -1;
-		if (millisLeft <= 0) {
-			loose("Die KI hat keine Zeit mehr");
-		}
-		return lost;
-	}
-	
-	/**
-	 * Hält den Berechnungstimer an
-	 */
-	public void stop() {
-		if (updating) {
-			updating = false;
-		}
-	}
-	
-	/**
-	 * Updated die übrige Berechnungszeit
-	 */
-	public void updateCalculationTimer() {
-		if (lastCalculationStart == -1) {
-			return;
-		}
-		long currentMillis = System.currentTimeMillis();
-		millisLeft -= currentMillis - lastCalculationStart;
-		lastCalculationStart = currentMillis;
-		if (millisLeft <= 0) {
-			stopCalculationTimer();
-		}
+		return millis < 0;
 	}
 	
 	public void loose(String reason) {
@@ -123,7 +46,6 @@ public class AiObject {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println();
 		logic.sendToFronted(new LostMessage(reason, ai.getId(), logic.getGame().getFrontend().getRequestId()));
 		lost = true;
 		logic.lost(ai);
