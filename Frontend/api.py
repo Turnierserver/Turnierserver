@@ -212,16 +212,6 @@ def api_user(id):
 	else:
 		return CommonErrors.INVALID_ID
 
-@api.route("/user/<int:id>/icon", methods=["GET"])
-@cache.memoize(timeout=env.cache_max_age)
-def user_icon(id):
-	user = User.query.get(id)
-	if user:
-		return user.icon()
-	else:
-		abort(404)
-
-
 @api.route("/user/<int:id>/update", methods=["POST"])
 @json_out
 @authenticated
@@ -541,18 +531,6 @@ def api_ai_reset_icon(id):
 			return CommonErrors.FTP_ERROR
 	else:
 		return CommonErrors.INVALID_ID
-
-@api.route("/user/<int:id>/upload_icon", methods=["POST"])
-@json_out
-@authenticated
-def api_user_upload_icon(id):
-	user = User.query.get(id)
-	if user:
-		cache.delete_memoized(api_user_icon, id)
-		return upload_single_file(request, "Users/"+str(id)+"/icon.png", image=True)
-	else:
-		return CommonErrors.INVALID_ID
-
 
 @api.route("/ai/<int:id>/update", methods=["POST"])
 @json_out
@@ -965,8 +943,14 @@ def ai_upload_zip(id):
 	except zipfile.BadZipFile:
 		return {"error": "Bad zip file."}, 400
 
-	if not ftp.upload_tree(tmpdir, "AIs/{}/v{}".format(ai.id, ai.latest_version().version_id)):
+	version = ai.latest_version()
+	if version.frozen:
+		version = ai.new_version(copy=False)
+
+	if not ftp.upload_tree(tmpdir, "AIs/{}/v{}".format(ai.id, version.version_id)):
 		return CommonErrors.FTP_ERROR
+
+	version.compiled, version.qualified, version.frozen = False, False, False
 
 	return {"error": False}, 200
 

@@ -244,13 +244,6 @@ class User(db.Model):
 	def info(self):
 		return {"id": self.id, "name": self.name, "ais": [ai.info() for ai in self.ai_list]}
 
-	@ftp.failsafe_locked
-	def icon(self):
-		if ftp.ftp_host.path.isfile("Users/"+str(self.id)+"/icon.png"):
-			return ftp.send_file("Users/"+str(self.id)+"/icon.png")
-		else:
-			return ftp.send_file("Users/default.png")
-
 	def can_access(self, obj):
 		if isinstance(obj, AI):
 			return obj in self.ai_list or self.admin
@@ -380,7 +373,7 @@ class AI(db.Model):
 
 	def latest_frozen_version(self):
 		for v in self.version_list[::-1]:
-			if v.frozen:
+			if v.frozen and v.qualified and v.compiled:
 				return v
 
 	def new_version(self, copy_prev=True):
