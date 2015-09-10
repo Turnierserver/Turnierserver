@@ -89,7 +89,6 @@ public class ControllerStartPage {
 		cbGameTypes.setItems(MainApp.gametypes);
 		
 		tbPassword.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
-			
 			@Override
 			public void handle(KeyEvent event) {
 				if (event.getCode() == KeyCode.ENTER) {
@@ -115,7 +114,14 @@ public class ControllerStartPage {
 	
 	@FXML
 	void clickInfo() {
-		Dialog.error("Diese Funktion wird noch nicht unterstützt.", "Unsupported");
+		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+			try {
+				desktop.open(new File("Downloads/" + MainApp.actualGameType.get() + "/info.pdf"));
+			} catch (Exception e) {
+				Dialog.error("Zu dem Spiel " + MainApp.actualGameType.get() + " gibt es keine info.pdf");
+			}
+		}
 	}
 	
 	

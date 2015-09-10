@@ -15,7 +15,7 @@
          <items>
             <TabPane fx:id="tabPaneOnOffline" nodeOrientation="LEFT_TO_RIGHT" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab fx:id="tabOffline" text="Offline">
+                <Tab fx:id="tabOffline" disable="true" text="Offline">
                    <content>
                       <VBox spacing="10.0">
                          <children>

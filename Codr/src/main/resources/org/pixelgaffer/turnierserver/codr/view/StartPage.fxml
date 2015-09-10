@@ -148,10 +148,10 @@
                   <Button disable="true" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickJDK" prefWidth="30.0" text="..." />
                 </children>
               </HBox>
-              <Label text="JDK-Home:" GridPane.rowIndex="2" />
+              <Label text="JDK-Home (in Umgebungsvar.)" GridPane.rowIndex="2" />
             </children>
             <columnConstraints>
-              <ColumnConstraints hgrow="NEVER" maxWidth="200.0" minWidth="145.0" prefWidth="145.0" />
+              <ColumnConstraints hgrow="NEVER" prefWidth="210.0" />
               <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" />
             </columnConstraints>
             <rowConstraints>
