@@ -26,11 +26,12 @@ class Rerouted_Output():
 		w_old = sys.stdout.write
 		w_new = self.buffer.write
 		def new_write(msg):
-			w_old(msg)
 			if isinstance(msg, str):
-				w_new(msg.encode("UTF-8", "ignore"))
-			else:
+				msg = msg.encode("UTF-8", "ignore")
+				w_old(msg)
+			elif isinstance(msg, bytes):
 				w_new(msg)
+				w_old(msg.decode("UTF-8", "ignore"))
 		sys.stdout = self.buffer
 		sys.stderr = self.buffer
 		self.buffer.write = new_write
