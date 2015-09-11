@@ -125,6 +125,11 @@ public abstract class GameLogic<E extends AiObject, R> {
 	protected abstract void gameFinished();
 	
 	/**
+	 * Wird in startGame() nach setup() aufgerufen, muss eine erste RenderData schicken
+	 */
+	protected abstract void sendFirstRenderData();
+	
+	/**
 	 * Castet das User Object der AI (Util-Methode)
 	 * 
 	 * @param ai
@@ -315,6 +320,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 			getUserObject(ai).setAi(ai);
 		}
 		setup();
+		sendFirstRenderData();
 	}
 	
 	/**
