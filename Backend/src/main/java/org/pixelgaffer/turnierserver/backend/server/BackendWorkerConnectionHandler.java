@@ -132,7 +132,8 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 							Games.aiTerminated(l.getObject(SandboxMessage.class).getUuid());
 						else
 							Games.aiDisconnected(l.getObject(SandboxMessage.class).getUuid(), workerConnection);
-						BackendMain.getLogger().todo("hier muss die spiellogik informiert werden");
+						AiWrapper ai = Games.getAiWrapper(l.getObject(SandboxMessage.class).getUuid());
+						ai.getGame().getLogic().aiCrashed(ai);
 					}
 					else
 						BackendMain.getLogger().critical("Unknown ProtocolLine Mode " + ((char)l.getMode()));
