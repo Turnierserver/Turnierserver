@@ -1,7 +1,5 @@
 package org.pixelgaffer.turnierserver.sandboxmanager;
 
-import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.getLogger;
-
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -22,7 +20,7 @@ public class JobControl
 	 */
 	public void shutdown ()
 	{
-		getLogger().info("Shutting down the JobControll");
+		SandboxMain.getLogger().info("Shutting down the JobControll");
 		active = false;
 		synchronized (queue)
 		{
@@ -79,13 +77,13 @@ public class JobControl
 		{
 			if (queue.isEmpty())
 			{
-				getLogger().debug("Habe aktuell keinen Auftrag, setze current auf null");
+				SandboxMain.getLogger().debug("Habe aktuell keinen Auftrag, setze current auf null");
 				current = null;
 			}
 			else
 				doJob(queue.pollFirst());
 		}
 		else
-			getLogger().warning("Aktueller Job ist " + current.getJob().getUuid() + " aber " + uuid + " wurde beendet");
+			SandboxMain.getLogger().warning("Aktueller Job ist " + current.getJob().getUuid() + " aber " + uuid + " wurde beendet");
 	}
 }

@@ -5,8 +5,6 @@ import static org.pixelgaffer.turnierserver.FileOwnerChanger.changeOwner;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
 import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.commands;
 import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.etc;
-import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.getClient;
-import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.getLogger;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -164,7 +162,7 @@ public class AiExecutor implements Runnable
 		start = new Properties();
 		start.load(new FileInputStream(new File(binDir, "start.prop")));
 		int libs = Integer.parseInt(start.getProperty("libraries.size"));
-		getLogger().debug("Libraries: " + libs);
+		SandboxMain.getLogger().debug("Libraries: " + libs);
 		for (int i = 0; i < libs; i++)
 		{
 			File path = new File(binDir, start.getProperty("libraries." + i + ".path"));
@@ -215,21 +213,21 @@ public class AiExecutor implements Runnable
 			cmd.add(start.getProperty("arguments." + i));
 		}
 		cmd.add("/box/" + aiProp.getName());
-		getLogger().debug("Der Befehl ist " + cmd);
+		SandboxMain.getLogger().debug("Der Befehl ist " + cmd);
 		
 		ProcessBuilder pb = new ProcessBuilder(cmd);
 		pb.redirectErrorStream(true);
 		pb.redirectOutput(Redirect.INHERIT);
 		proc = pb.start();
-		getClient().sendMessage(getJob().getUuid(), 'S');
+		SandboxMain.getClient().sendMessage(getJob().getUuid(), 'S');
 		
 		new Thread (() -> {
 			int ret;
 			try
 			{
 				ret = proc.waitFor();
-				getLogger().debug("Die KI hat sich mit dem Statuscode " + ret + " beendet");
-				getClient().sendMessage(getJob().getUuid(), 'F');
+				SandboxMain.getLogger().debug("Die KI hat sich mit dem Statuscode " + ret + " beendet");
+				SandboxMain.getClient().sendMessage(getJob().getUuid(), 'F');
 				new ProcessBuilder("isolate", "--cleanup", "-b", Integer.toString(boxid)).start().waitFor();
 			}
 			catch (Exception e)
@@ -241,15 +239,15 @@ public class AiExecutor implements Runnable
 	
 	public void terminateAi ()
 	{
-		getLogger().info("terminiere " + getJob());
+		SandboxMain.getLogger().info("terminiere " + getJob());
 		proc.destroyForcibly();
-		getClient().sendMessage(getJob().getUuid(), 'T');
+		SandboxMain.getClient().sendMessage(getJob().getUuid(), 'T');
 	}
 	
 	public void killAi ()
 	{
-		getLogger().info("töte " + getJob());
+		SandboxMain.getLogger().info("töte " + getJob());
 		proc.destroyForcibly();
-		getClient().sendMessage(getJob().getUuid(), 'K');
+		SandboxMain.getClient().sendMessage(getJob().getUuid(), 'K');
 	}
 }

@@ -6,7 +6,6 @@ import static org.pixelgaffer.turnierserver.PropertyUtils.getIntRequired;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
 import static org.pixelgaffer.turnierserver.networking.NetworkService.getService;
 import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.commands;
-import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.getLogger;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -66,7 +65,7 @@ public class WorkerClient implements SocketObserver
 	@Override
 	public void connectionOpened (NIOSocket socket)
 	{
-		getLogger().info("Mit dem Worker verbunden");
+		SandboxMain.getLogger().info("Mit dem Worker verbunden");
 		connected = true;
 		
 		JSONArray langs = new JSONArray(commands.keySet().toArray());
@@ -104,7 +103,7 @@ public class WorkerClient implements SocketObserver
 	@Override
 	public void connectionBroken (NIOSocket socket, Exception e)
 	{
-		getLogger().critical("Verbindung zum Worker kaputt" + (e == null ? "" : ": " + e));
+		SandboxMain.getLogger().critical("Verbindung zum Worker kaputt" + (e == null ? "" : ": " + e));
 		connected = false;
 		synchronized (this)
 		{
@@ -117,7 +116,7 @@ public class WorkerClient implements SocketObserver
 	@Override
 	public void packetReceived (NIOSocket socket, byte[] packet)
 	{
-		getLogger().debug("Packet empfangen");
+		SandboxMain.getLogger().debug("Packet empfangen");
 		buf.add(packet);
 		byte line[];
 		while ((line = buf.readLine()) != null)
@@ -131,33 +130,33 @@ public class WorkerClient implements SocketObserver
 				int version = json.getInt("version");
 				String lang = json.getString("lang");
 				UUID uuid = UUID.fromString(json.getString("uuid"));
-				getLogger().info("Auftrag erhalten: Run AI " + id + "v" + version + " " + uuid);
+				SandboxMain.getLogger().info("Auftrag erhalten: Run AI " + id + "v" + version + " " + uuid);
 				jobControl.addJob(new Job(id, version, lang, uuid));
 			}
 			else if (cmd.equals("T"))
 			{
 				UUID uuid = UUID.fromString(json.getString("uuid"));
-				getLogger().info("Auftrag erhalten: Terminate AI " + uuid);
+				SandboxMain.getLogger().info("Auftrag erhalten: Terminate AI " + uuid);
 				
 				jobControl.terminateJob(uuid);
 			}
 			else if (cmd.equals("K"))
 			{
 				UUID uuid = UUID.fromString(json.getString("uuid"));
-				getLogger().info("Auftrag erhalten: Kill AI " + uuid);
+				SandboxMain.getLogger().info("Auftrag erhalten: Kill AI " + uuid);
 				
 				jobControl.killJob(uuid);
 			}
 			else if (cmd.equals("C"))
 			{
-				getLogger().info("Auftrag erhalten: CPU-Time herausfinden");
+				SandboxMain.getLogger().info("Auftrag erhalten: CPU-Time herausfinden");
 				
 				long time = CpuTimer.getCpuTime(jobControl.getCurrent().getBoxid());
-				getLogger().debug(time);
+				SandboxMain.getLogger().debug(time);
 				sendMessage(jobControl.getCurrent().getJob().getUuid(), 'C', time);
 			}
 			else
-				getLogger().debug("Also es wäre schön wenn ich den Befehl " + cmd + " verstehen würde");
+				SandboxMain.getLogger().debug("Also es wäre schön wenn ich den Befehl " + cmd + " verstehen würde");
 		}
 	}
 	
