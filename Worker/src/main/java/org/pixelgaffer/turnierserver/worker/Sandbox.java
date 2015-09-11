@@ -1,21 +1,26 @@
 package org.pixelgaffer.turnierserver.worker;
 
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.CPU_TIME;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.KILL_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.RUN_AI;
-import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.CPU_TIME;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.TERM_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.FINISHED_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.KILLED_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.STARTED_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.TERMINATED_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.SANDBOX;
+
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+
 import org.pixelgaffer.turnierserver.networking.messages.SandboxCommand;
 import org.pixelgaffer.turnierserver.networking.messages.SandboxMessage;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo.SandboxInfo;
 import org.pixelgaffer.turnierserver.worker.server.WorkerConnectionHandler;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
@@ -31,26 +36,39 @@ public class Sandbox
 	
 	@Getter
 	private long lastCpuTime;
+	private Semaphore semaphore = new Semaphore(1, true);
 	private Object cpuTimeLock = new Object();
 	
 	public void updateCpuTime() 
 	{
-		try {
-			sendJob(new SandboxCommand(CPU_TIME, -1, -1, "", null));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Thread sendJob = new Thread(() -> {
+			try {
+				while(semaphore.tryAcquire(500, TimeUnit.MICROSECONDS)) {
+					semaphore.release();
+				}
+				sendJob(new SandboxCommand(CPU_TIME, -1, -1, "", null));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+		WorkerMain.getLogger().debug("Gehe in Synchronized in update " + currentJob + " in thread " + Thread.currentThread());
 		synchronized (cpuTimeLock) 
 		{
 			try 
 			{
+				WorkerMain.getLogger().debug("Warte auf notify in uuid " + currentJob + " in thread " + Thread.currentThread());
+				sendJob.start();
+				semaphore.acquire();
 				cpuTimeLock.wait();
+				semaphore.release();
+				WorkerMain.getLogger().debug("Wurde notified in uuid " + currentJob + " in thread " + Thread.currentThread());
 			} 
 			catch (InterruptedException e) 
 			{
 				e.printStackTrace();
 			}
 		}
+		WorkerMain.getLogger().debug("Gehe aus Synchronized in update " + currentJob + " in thread " + Thread.currentThread());
 	}
 	
 	public long getCpuTimeDiff()
@@ -164,9 +182,13 @@ public class Sandbox
 				break;
 			case CPU_TIME:
 				lastCpuTime = answer.getCpuTime();
+				WorkerMain.getLogger().debug("Gehe in Synchronized in " + currentJob + " in thread " + Thread.currentThread());
 				synchronized (cpuTimeLock) {
+					WorkerMain.getLogger().debug("Notify " + currentJob + " in thread " + Thread.currentThread());
 					cpuTimeLock.notifyAll();
+					WorkerMain.getLogger().debug("Notified " + currentJob + " in thread " + Thread.currentThread());
 				}
+				WorkerMain.getLogger().debug("Gehe aus Synchronized in " + currentJob + " in thread " + Thread.currentThread());
 				break;
 			default:
 				WorkerMain.getLogger().critical("Unknown event received:" + answer);

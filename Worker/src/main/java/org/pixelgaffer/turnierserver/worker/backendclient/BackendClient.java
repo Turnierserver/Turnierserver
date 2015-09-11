@@ -142,7 +142,6 @@ public class BackendClient implements SocketObserver, Backend
 	@Override
 	public void packetReceived (NIOSocket socket, byte[] packet)
 	{
-		WorkerMain.getLogger().debug("anfang");
 		buf.add(packet);
 		byte line[];
 		while ((line = buf.readLine()) != null)
@@ -201,7 +200,6 @@ public class BackendClient implements SocketObserver, Backend
 				WorkerMain.getLogger().critical("Failed to parse Command: " + e);
 			}
 		}
-		WorkerMain.getLogger().debug("ende");
 	}
 	
 	@Override

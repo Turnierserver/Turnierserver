@@ -64,6 +64,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 		if (type.getType() != AI)
 			WorkerMain.getLogger().warning("Schicke Nachricht an " + type.getType() + " (sollte " + AI + " sein)");
 		new Thread(() -> {
+			WorkerMain.getLogger().debug("Will message " + new String(mf.getMessage(), UTF_8) + " forwarden");
 			try {
 				Sandbox sandbox = Sandboxes.sandboxJobs.get(mf.getAi());
 				sandbox.updateCpuTime();
@@ -72,7 +73,9 @@ public class WorkerConnectionHandler extends ConnectionHandler
 				e.printStackTrace();
 				return;
 			}
+			WorkerMain.getLogger().debug("Werde nun " + new String(mf.getMessage(), UTF_8) + " forwarden");
 			getClient().write(mf.getMessage());
+			WorkerMain.getLogger().debug("Habe message " + new String(mf.getMessage(), UTF_8) + " forwarden");
 		}).start();
 		//getClient().write("\n".getBytes(UTF_8));
 	}
@@ -109,7 +112,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 		while ((line = buffer.readLine()) != null)
 		{
 			byte _line[] = line;
-			WorkerMain.getLogger().debug("Empfangen von KI: " + new String(packet, UTF_8));
+			WorkerMain.getLogger().debug("Empfangen: " + new String(packet, UTF_8));
 //			new Thread( () -> {				
 				// wenn type noch null ist, diesen lesen
 					if (type == null)
@@ -191,13 +194,10 @@ public class WorkerConnectionHandler extends ConnectionHandler
 							try
 							{
 								MessageForward mf = Parsers.getWorker().parse(_line, MessageForward.class);
-								WorkerMain.getLogger().debug("Empfangen: " + mf);
 								WorkerConnectionHandler con = WorkerServer.aiConnections.get(mf.getAi());
 								if (con == null)
 									throw new IllegalArgumentException("Unbekannte KI mit der UUID " + mf.getAi());
-								WorkerMain.getLogger().debug("Sende:    " + mf);
 								con.sendMessage(mf);
-								WorkerMain.getLogger().debug("Gesendet: " + mf);
 							}
 							catch (Exception e)
 							{
