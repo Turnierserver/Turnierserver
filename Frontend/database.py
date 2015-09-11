@@ -185,7 +185,7 @@ class SyncedFTP:
 		try:
 			return f()
 		except self.err:
-			logger.warning("upload_tree failed!")
+			logger.warning("download_tree failed!")
 			return False
 
 
