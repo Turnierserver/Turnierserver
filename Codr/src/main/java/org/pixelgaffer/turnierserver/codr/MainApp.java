@@ -351,7 +351,8 @@ public class MainApp extends Application {
 				
 				try {
 					File myself = new File((System.getProperty("java.class.path").split(System.getProperty("path.separator"))[0]));
-					if (myself.isDirectory()) {
+					
+					if (!myself.isDirectory()) {
 						byte[] onlineHash = webConnector.getCodrHash();
 						byte[] myHash = Resources.getHash(myself);
 
@@ -449,10 +450,6 @@ public class MainApp extends Application {
 			}
 		};
 		
-		Thread thread1 = new Thread(loadOnlineGames, "loadOnlineGames");
-		Thread thread2 = new Thread(loadOnline, "loadOnlineAis");
-		Thread thread3 = new Thread(loadOwn, "loadOwnOnlineAis");
-		
 		loadOnlineGames.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue != null) {
 				onlineGames.clear();
@@ -464,6 +461,8 @@ public class MainApp extends Application {
 				onlineAis.clear();
 				onlineAis.addAll(newValue);
 			}
+			cRanking.btActualize.setVisible(true);
+			cRanking.prActualize.setVisible(false);
 		});
 		loadOwn.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue != null) {
@@ -472,14 +471,27 @@ public class MainApp extends Application {
 			}
 		});
 		
+		
+		//Visuelles
+		cRanking.btActualize.setVisible(false);
+		cRanking.prActualize.setVisible(true);
+		
+		
+
+		Thread thread1 = new Thread(loadOnlineGames, "loadOnlineGames");
 		thread1.setDaemon(true);
 		thread1.start();
 		
+		Thread thread2 = new Thread(loadOnline, "loadOnlineAis");
 		thread2.setDaemon(true);
 		thread2.start();
 		
+		Thread thread3 = new Thread(loadOwn, "loadOwnOnlineAis");
 		thread3.setDaemon(true);
 		thread3.start();
+		
+		
+		
 	}
 	
 	
