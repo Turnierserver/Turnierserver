@@ -48,11 +48,13 @@ app.register_blueprint(authenticated_blueprint)
 handle_errors(app)
 
 if env.airbrake:
-	#airbrake.io
+	with open("../.git/refs/heads/master", "r") as f: head = f.read()
+
 	logger.info("Initializing Airbrake")
 	import airbrake
 	airbrake_logger = airbrake.getLogger(api_key=env.airbrake_key, project_id=env.airbrake_id)
 	def log_exception(sender, exception, **extra):
+		extra["commit"] = head
 		airbrake_logger.exception(exception, extra=extra)
 	got_request_exception.connect(log_exception, app)
 
