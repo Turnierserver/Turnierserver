@@ -79,6 +79,8 @@ public class AiExecutor implements Runnable
 		try
 		{
 			ProcessBuilder pb = new ProcessBuilder("isolate", "--cg", "--init", "-b", Integer.toString(boxid));
+			pb.redirectErrorStream(true);
+	                pb.redirectOutput(Redirect.INHERIT);
 			System.out.println("$ " + pb.command());
 			Process p = pb.start();
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
