@@ -255,7 +255,7 @@ public class MainApp extends Application {
 	 * 
 	 * @param newStartWarning Gibt an, ob gewarnt werden soll, bevor Codr neu gestartet wird.
 	 */
-	public void checkNewVersion(boolean newStartWarning) {
+	public static void checkNewVersion(boolean newStartWarning) {
 		File myself = new File((System.getProperty("java.class.path").split(System.getProperty("path.separator"))[0]));
 		if (myself.isDirectory()) {
 			ErrorLog.write("Du hast nicht die Jar-Version von Codr");
@@ -328,7 +328,7 @@ public class MainApp extends Application {
 	/**
 	 * Sucht nach neunen Spieltypen, neuen Sprachen und Aktualisierungen von Codr.
 	 */
-	public void loadOnlineResources() {
+	public static void loadOnlineResources() {
 		
 		final Task<Object> updateTask = new Task<Object>() {
 			@Override
@@ -393,7 +393,7 @@ public class MainApp extends Application {
 	 * Nimmt die Ergebnisse der Suche von loadOnlineResources entgegen.
 	 * @param text
 	 */
-	public void onlineResourcesFinished(String text) {
+	private static void onlineResourcesFinished(String text) {
 		switch (text) {
 		case "neue Spieltypen":
 			if (Dialog.okAbort("Neue Spieltypen sind verfügbar. Wollen Sie zum aktuellen wechseln?")) {
@@ -422,7 +422,7 @@ public class MainApp extends Application {
 	/**
 	 * Lädt die online-KIs und -Spiele
 	 */
-	public void loadOnlineRanking() {
+	public static void loadOnlineRanking() {
 		
 		Task<ObservableList<GameOnline>> loadOnlineGames = new Task<ObservableList<GameOnline>>() {
 			
