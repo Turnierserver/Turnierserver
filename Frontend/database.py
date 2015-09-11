@@ -29,9 +29,10 @@ db = SQLAlchemy(session_options={"expire_on_commit": False})
 
 def refresh_session():
 	## TODO: ne bessere Art, die verbindung zur DB zu refreshen
+	logger.debug("refresh_session()")
 	try:
-		db.session.query(User).first()
-	except sqlalchemy.exc.OperationalError:
+		db.session.refresh(Lang.query.first())
+	except (sqlalchemy.exc.OperationalError, sqlalchemy.exc.DatabaseError):
 		logger.debug("refreshed session.")
 
 class SyncedFTPError(Exception):
@@ -393,6 +394,22 @@ class AI(db.Model):
 		return self.version_list[-1]
 
 	def delete(self):
+		self._active_version_id = None
+		db.session.commit()
+
+		for v in self.version_list:
+			v.delete()
+
+		@ftp.safe
+		def f():
+			logger.info("removing AI data...")
+			ftp.ftp_host.rmtree("AIs/"+str(self.id))
+
+		try:
+			f()
+		except ftp.err:
+			logger.error("couldn't delete AI data!")
+
 		db.session.delete(self)
 		db.session.commit()
 
