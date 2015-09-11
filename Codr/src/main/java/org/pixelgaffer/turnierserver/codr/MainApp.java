@@ -3,6 +3,8 @@ package org.pixelgaffer.turnierserver.codr;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Base64;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
@@ -225,7 +227,6 @@ public class MainApp extends Application {
 				cGame.tpNewGameOnline.setExpanded(true);
 				cAi.btUpload.setVisible(true);
 				cRanking.btChallenge.setVisible(true);
-				cRoot.tabSubmission.setDisable(false);
 			} else {
 				cStart.vbLogin.getChildren().clear();
 				cStart.vbLogin.getChildren().add(cStart.gpLogin);
@@ -233,7 +234,6 @@ public class MainApp extends Application {
 				cGame.tpNewGameOnline.setExpanded(false);
 				cAi.btUpload.setVisible(false);
 				cRanking.btChallenge.setVisible(false);
-				cRoot.tabSubmission.setDisable(true);
 			}
 			cStart.prLogin.setVisible(false);
 			cStart.prLogin1.setVisible(false);
@@ -325,6 +325,7 @@ public class MainApp extends Application {
 	 * Sucht nach neunen Spieltypen, neuen Sprachen und Aktualisierungen von Codr.
 	 */
 	public void loadOnlineResources() {
+		
 		final Task<Object> updateTask = new Task<Object>() {
 			
 			@Override
@@ -349,10 +350,18 @@ public class MainApp extends Application {
 				}
 				
 				try {
-					if (webConnector.updateCodr()) {
-						updateMessage("neuer Codr");
+					File myself = new File((System.getProperty("java.class.path").split(System.getProperty("path.separator"))[0]));
+					if (myself.isDirectory()) {
+						byte[] onlineHash = webConnector.getCodrHash();
+						byte[] myHash = Resources.getHash(myself);
+
+						if (!Arrays.equals(onlineHash, myHash))
+							if (webConnector.updateCodr())
+								updateMessage("neuer Codr");
 					}
-				} catch (IOException e) {
+					
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 				
 				updateMessage("laden fertig");

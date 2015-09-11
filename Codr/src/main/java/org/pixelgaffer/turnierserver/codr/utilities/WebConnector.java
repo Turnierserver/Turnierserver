@@ -17,6 +17,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -344,7 +345,7 @@ public class WebConnector {
 		if (img == null) {
 			return;
 		}
-		HttpPost post = new HttpPost("ai/" + id + "/upload_icon");
+		HttpPost post = new HttpPost(url + "ai/" + id + "/upload_icon");
 		ByteArrayEntity entity = new ByteArrayEntity(FileUtils.readFileToByteArray(img));
 		post.setEntity(entity);
 		HttpResponse response = http.execute(post);
@@ -703,6 +704,17 @@ public class WebConnector {
 	}
 
 
+	public byte[] getCodrHash() throws IOException {
+		try {
+			String result = toString(sendGet("codr_hash"));
+			JSONObject json = new JSONObject(result);
+			return Base64.getDecoder().decode(json.getString("md5_b64"));
+		} catch (IOException e) {
+			return null;
+		}
+	}
+	
+	
 	public boolean updateCodr() throws IOException {
 		return loadCodr();
 	}

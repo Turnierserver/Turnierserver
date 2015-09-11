@@ -1,6 +1,0 @@
-defOs=ArchLinux_64
-defMem=712
-defCpus=1
-defCpuExecutionCap=100
-defUtc=on
-defUsb=off
