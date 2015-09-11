@@ -73,10 +73,10 @@ def inject_globals():
 
 	current_gametype = GameType.selected(None, latest_on_none=True)
 	return dict(env=env, logged_in=logged_in, current_gametype=current_gametype,
-		latest_gametype=GameType.latest(), gametypes=GameType.query.all())
+	            latest_gametype=GameType.latest(), gametypes=GameType.query.all())
 
 
-db_session_timeout = time.time()
+db_session_timeout = 0
 
 @app.before_request
 def refresh_db_session():

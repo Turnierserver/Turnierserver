@@ -350,6 +350,9 @@ def api_login():
 	user = User.query.filter(User.email.ilike(email)).first()
 
 	if not user:
+		user = User.query.filter(User.name==email).first()
+
+	if not user:
 		return {'error': 'Invalid email.'}, 404
 
 	if not user.validated:
