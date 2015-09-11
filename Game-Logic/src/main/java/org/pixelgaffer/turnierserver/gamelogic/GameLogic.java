@@ -1,7 +1,10 @@
 package org.pixelgaffer.turnierserver.gamelogic;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 
 import org.pixelgaffer.turnierserver.GsonGzipParser;
@@ -61,6 +64,8 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 */
 	protected boolean gameEnded = false;
 	
+	protected DecimalFormat df = new DecimalFormat("#.##");
+	
 	/**
 	 * Sortiert Ais absteigend nach Score
 	 */
@@ -74,6 +79,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	
 	public GameLogic(TypeToken<R> token) {
 		this.token = token;
+		df.setRoundingMode(RoundingMode.HALF_UP);
 	}
 	
 	/**
@@ -179,6 +185,8 @@ public abstract class GameLogic<E extends AiObject, R> {
 			return;
 		}
 		
+		logger.debug("Empfangen: " + string);
+		
 		try {
 			receive(Parsers.getWorker().parse(string.getBytes(StandardCharsets.UTF_8), token.getType()), ai, passedMikros);
 		} catch (IOException e) {
@@ -231,7 +239,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		renderData.calculationPoints = new HashMap<>();
 		renderData.points = new HashMap<>();
 		for(Ai ai : game.getAis()) {
-			renderData.calculationPoints.put(ai.getId(), getUserObject(ai).mikrosLeft);
+			renderData.calculationPoints.put(ai.getId(),getUserObject(ai).mikrosLeft / 1000f);
 			renderData.points.put(ai.getId(), getUserObject(ai).score);
 		}
 		sendToFronted(renderData);
