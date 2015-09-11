@@ -32,7 +32,7 @@ public class JobControl
 	
 	public void doJob (Job job)
 	{
-		current = new AiExecutor(job);
+		current = new AiExecutor(job, this);
 		new Thread(current, "AiExecutor-Thread").start();
 	}
 	
@@ -51,7 +51,7 @@ public class JobControl
 	{
 		synchronized (queue)
 		{
-			if ((current != null) && (current.getJob().getUuid() == uuid))
+			if ((current != null) && (current.getJob().getUuid().equals(uuid)))
 				current.terminateAi();
 			else
 				while (queue.remove(new Job(uuid)))
@@ -63,7 +63,7 @@ public class JobControl
 	{
 		synchronized (queue)
 		{
-			if ((current != null) && (current.getJob().getUuid() == uuid))
+			if ((current != null) && (current.getJob().getUuid().equals(uuid)))
 				current.killAi();
 			else
 				while (queue.remove(new Job(uuid)))
@@ -73,7 +73,7 @@ public class JobControl
 	
 	public void jobFinished (UUID uuid)
 	{
-		if (current.getJob().getUuid() == uuid)
+		if (current.getJob().getUuid().equals(uuid))
 		{
 			if (queue.isEmpty())
 			{
