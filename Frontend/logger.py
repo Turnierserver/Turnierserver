@@ -52,6 +52,7 @@ logger.addHandler(ch)
 formatter = logging.Formatter(hellblau + "[%(asctime)s]" + normal + " WERKZEUG" + normal + " %(message)s")
 formatter.datefmt = "%d.%m %H:%M:%S"
 wl = logging.getLogger('werkzeug')
+wl.propagate = False
 wl.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
