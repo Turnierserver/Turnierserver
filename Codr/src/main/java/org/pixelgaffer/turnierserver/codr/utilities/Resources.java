@@ -6,9 +6,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Base64;
 
 import javafx.scene.image.Image;
 
@@ -55,29 +57,32 @@ public class Resources {
 		}
 	}
 	
+	/**
+	 * berechnet den MD5 Hash einer Datei und lädt sie herunter
+	 */
+	public static byte[] getHash(File file) throws FileNotFoundException, IOException {
+		
+		java.security.MessageDigest digest = null;
+		try {
+			digest = java.security.MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			return null;
+		}
+		InputStream in = new FileInputStream(file);
+		byte[] buf = new byte[8192]; int read;
+		while ((read = in.read(buf)) > 0)
+		 digest.update(buf, 0, read);
+		in.close();
+		return digest.digest();
+	}
+	
 	
 	/**
 	 * berechnet den Hash von zwei Dateien und vergleicht, ob sie identisch sind.
 	 * @return true, wenn sie identisch sind
 	 */
 	public static boolean compareFiles(File f1, File f2) throws FileNotFoundException, IOException {
-		MessageDigest comp1;
-		MessageDigest comp2;
-		try {
-			comp1 = MessageDigest.getInstance("MD5");
-			comp2 = MessageDigest.getInstance("MD5");
-		} catch (NoSuchAlgorithmException e) {
-			ErrorLog.write("Fatal Error: Der angegebene Hashalgorithmus existiert nicht.");
-			e.printStackTrace();
-			return false;
-		}
-		FileReader reader1 = new FileReader(f1);
-		FileReader reader2 = new FileReader(f2);
-		comp1.update(IOUtils.toByteArray(reader1));
-		comp2.update(IOUtils.toByteArray(reader2));
-		reader1.close();
-		reader2.close();
-		return Arrays.equals(comp1.digest(), comp2.digest());
+		return Arrays.equals(getHash(f1), getHash(f2));
 	}
 	
 	
