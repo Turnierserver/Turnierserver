@@ -184,7 +184,7 @@
                                 <Label text="Ausgabe:" BorderPane.alignment="TOP_LEFT" />
                                        </top>
                                        <center>
-                                <TextArea fx:id="tbOutput" prefHeight="0.0" prefWidth="0.0" BorderPane.alignment="CENTER" />
+                                <TextArea fx:id="tbOutput" editable="false" prefHeight="0.0" prefWidth="0.0" BorderPane.alignment="CENTER" />
                                        </center>
                                     </BorderPane>
                                  </center>
