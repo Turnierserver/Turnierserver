@@ -57,6 +57,7 @@ public class LibraryCache implements LibraryDownloader
 		for (String file : dir.list())
 		{
 			File f = new File(dir, file);
+			WorkerMain.getLogger().debug(f);
 			if (f.isDirectory())
 				addToTar(f, tar, prefix + file + "/");
 			else
