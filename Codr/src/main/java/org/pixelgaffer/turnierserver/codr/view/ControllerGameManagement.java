@@ -25,6 +25,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
@@ -55,6 +56,10 @@ public class ControllerGameManagement {
 	@FXML public WebView webView;
 	@FXML public ProgressIndicator prStartGameOnline;
 	@FXML public ProgressIndicator prStartGameOffline;
+	@FXML public ProgressIndicator prActualize;
+	@FXML public Button btActualize;
+	
+	
 	
 	
 	public GameSaved runningGame;
@@ -294,6 +299,11 @@ public class ControllerGameManagement {
 		Thread thread = new Thread(play, "play");
 		thread.setDaemon(true);
 		thread.start();
+	}
+	
+	
+	@FXML void clickActualize() {
+		mainApp.loadOnlineRanking();
 	}
 	
 }

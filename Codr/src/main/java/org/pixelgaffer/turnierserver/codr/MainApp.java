@@ -200,11 +200,15 @@ public class MainApp extends Application {
 	public static void updateLoggedIn() {
 		
 		Task<Boolean> updateL = new Task<Boolean>() {
-			
 			public Boolean call() {
-				if (webConnector.isLoggedIn()) {
-					return true;
-				} else {
+				try {
+					if (webConnector.isLoggedIn()) {
+						return true;
+					} else {
+						return false;
+					}
+				} catch (IOException e) {
+					MainApp.updateConnected();
 					return false;
 				}
 			}
@@ -327,7 +331,6 @@ public class MainApp extends Application {
 	public void loadOnlineResources() {
 		
 		final Task<Object> updateTask = new Task<Object>() {
-			
 			@Override
 			protected Object call() throws InterruptedException {
 				try {
@@ -371,7 +374,6 @@ public class MainApp extends Application {
 		};
 		
 		updateTask.messageProperty().addListener(new ChangeListener<String>() {
-			
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				onlineResourcesFinished(newValue);
@@ -444,8 +446,12 @@ public class MainApp extends Application {
 			
 			public ObservableList<AiOnline> call() {
 				ObservableList<AiOnline> newOwnOnline = null;
-				if (MainApp.webConnector.isLoggedIn())
-					newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+				try {
+					if (MainApp.webConnector.isLoggedIn())
+						newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+				} catch (IOException e) {
+					return null;
+				}
 				return newOwnOnline;
 			}
 		};
@@ -454,12 +460,18 @@ public class MainApp extends Application {
 			if (newValue != null) {
 				onlineGames.clear();
 				onlineGames.addAll(newValue);
+			} else {
+				MainApp.updateConnected();
 			}
+			cGame.btActualize.setVisible(true);
+			cGame.prActualize.setVisible(false);
 		});
 		loadOnline.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue != null) {
 				onlineAis.clear();
 				onlineAis.addAll(newValue);
+			} else {
+				MainApp.updateConnected();
 			}
 			cRanking.btActualize.setVisible(true);
 			cRanking.prActualize.setVisible(false);
@@ -468,6 +480,8 @@ public class MainApp extends Application {
 			if (newValue != null) {
 				ownOnlineAis.clear();
 				ownOnlineAis.addAll(newValue);
+			} else {
+				MainApp.updateLoggedIn();
 			}
 		});
 		
@@ -475,6 +489,8 @@ public class MainApp extends Application {
 		//Visuelles
 		cRanking.btActualize.setVisible(false);
 		cRanking.prActualize.setVisible(true);
+		cGame.btActualize.setVisible(false);
+		cGame.prActualize.setVisible(true);
 		
 		
 
