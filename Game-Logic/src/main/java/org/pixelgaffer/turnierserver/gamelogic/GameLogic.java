@@ -1,11 +1,12 @@
 package org.pixelgaffer.turnierserver.gamelogic;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.pixelgaffer.turnierserver.GsonGzipParser;
 import org.pixelgaffer.turnierserver.Logger;
@@ -76,6 +77,8 @@ public abstract class GameLogic<E extends AiObject, R> {
 	@Getter
 	@Setter
 	protected boolean started;
+	
+	private List<Ai> crashed = new ArrayList<>();
 	
 	public GameLogic(TypeToken<R> token) {
 		this.token = token;
@@ -318,6 +321,13 @@ public abstract class GameLogic<E extends AiObject, R> {
 			ai.setObject(createUserObject(ai));
 			getUserObject(ai).setLogic(this);
 			getUserObject(ai).setAi(ai);
+			if(crashed.contains(ai)) {
+				getUserObject(ai).loose("Die Ki hat sich am Anfang des Spieles beendet");
+				crashed.remove(ai);
+				if(gameEnded) {
+					return;
+				}
+			}
 		}
 		setup();
 		sendFirstRenderData();
@@ -352,6 +362,10 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @param ai Die Ai, die sich disconnected hat
 	 */
 	public void aiCrashed(Ai ai) {
+		if(getUserObject(ai) == null) {
+			crashed.add(ai);
+			return;
+		}
 		if(!getUserObject(ai).lost) {
 			getUserObject(ai).loose("Die Ki hat sich disconnected. Dies kann daran liegen, dass ein Crash nicht abgefangen wurde, oder dass die Ki ihre verfügbare Zeit verbraucht hat und von der Sandbox terminiert wurde.");
 		}
