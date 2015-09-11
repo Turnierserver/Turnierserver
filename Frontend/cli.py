@@ -189,16 +189,17 @@ def manage(manager, app):
 	@manager.command
 	def recompile_ais():
 		"Kompiliert KIs"
+		if prompt_bool("Quali KIs rekompilieren"):
+			for gt in GameType.query.all():
+				_compile_quali_ai(gt)
 		all = prompt_bool("Compile all?")
 		for ai in AI.query.all():
 			if all or prompt_bool("Compile '"+ai.name + "' by " + ai.user.name):
-				if ai.latest_version().frozen:
-					print("AI_Version is frozen")
-					continue
 				ai.latest_version().compiled = True
 				print("Compiling", ai.name)
 				for data, event in backend.compile(ai):
 					print(event, ":", data)
+		db.session.commit()
 
 	@manager.command
 	def add_gametype():
