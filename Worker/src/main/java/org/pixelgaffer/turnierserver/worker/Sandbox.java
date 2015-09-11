@@ -39,7 +39,7 @@ public class Sandbox
 	private Semaphore semaphore = new Semaphore(1, true);
 	private Object cpuTimeLock = new Object();
 	
-	public void updateCpuTime() 
+	public void updateCpuTime ()
 	{
 		Thread sendJob = new Thread(() -> {
 			try {
@@ -52,9 +52,9 @@ public class Sandbox
 			}
 		});
 		WorkerMain.getLogger().debug("Gehe in Synchronized in update " + currentJob + " in thread " + Thread.currentThread());
-		synchronized (cpuTimeLock) 
+		synchronized (cpuTimeLock)
 		{
-			try 
+			try
 			{
 				WorkerMain.getLogger().debug("Warte auf notify in uuid " + currentJob + " in thread " + Thread.currentThread());
 				sendJob.start();
@@ -62,8 +62,8 @@ public class Sandbox
 				cpuTimeLock.wait();
 				semaphore.release();
 				WorkerMain.getLogger().debug("Wurde notified in uuid " + currentJob + " in thread " + Thread.currentThread());
-			} 
-			catch (InterruptedException e) 
+			}
+			catch (InterruptedException e)
 			{
 				e.printStackTrace();
 			}
@@ -71,7 +71,7 @@ public class Sandbox
 		WorkerMain.getLogger().debug("Gehe aus Synchronized in update " + currentJob + " in thread " + Thread.currentThread());
 	}
 	
-	public long getCpuTimeDiff()
+	public long getCpuTimeDiff ()
 	{
 		long oldTime = lastCpuTime;
 		updateCpuTime();
@@ -183,7 +183,7 @@ public class Sandbox
 			case CPU_TIME:
 				lastCpuTime = answer.getCpuTime();
 				WorkerMain.getLogger().debug("Gehe in Synchronized in " + currentJob + " in thread " + Thread.currentThread());
-				synchronized (cpuTimeLock) {
+				synchronized (cpuTimeLock)
 					WorkerMain.getLogger().debug("Notify " + currentJob + " in thread " + Thread.currentThread());
 					cpuTimeLock.notifyAll();
 					WorkerMain.getLogger().debug("Notified " + currentJob + " in thread " + Thread.currentThread());
