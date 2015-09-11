@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/etc">
-        <file>passwd</file>
-        <file>java-jdk8/amd64/jvm.cfg</file>
-    </qresource>
-</RCC>
