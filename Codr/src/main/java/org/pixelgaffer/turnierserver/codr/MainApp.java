@@ -350,13 +350,15 @@ public class MainApp extends Application {
 				}
 				
 				try {
-					byte[] onlineHash = webConnector.getCodrHash();
-					byte[] myHash = Resources.getHash(new File((System.getProperty("java.class.path").split(System.getProperty("path.separator"))[0])));
+					File myself = new File((System.getProperty("java.class.path").split(System.getProperty("path.separator"))[0]));
+					if (myself.isDirectory()) {
+						byte[] onlineHash = webConnector.getCodrHash();
+						byte[] myHash = Resources.getHash(myself);
 
-					if (!Arrays.equals(onlineHash, myHash))
-						if (webConnector.updateCodr())
-							updateMessage("neuer Codr");
-							
+						if (!Arrays.equals(onlineHash, myHash))
+							if (webConnector.updateCodr())
+								updateMessage("neuer Codr");
+					}
 					
 				} catch (Exception e) {
 					e.printStackTrace();
