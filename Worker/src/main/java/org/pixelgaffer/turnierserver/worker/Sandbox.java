@@ -184,6 +184,7 @@ public class Sandbox
 				lastCpuTime = answer.getCpuTime();
 				WorkerMain.getLogger().debug("Gehe in Synchronized in " + currentJob + " in thread " + Thread.currentThread());
 				synchronized (cpuTimeLock)
+				{
 					WorkerMain.getLogger().debug("Notify " + currentJob + " in thread " + Thread.currentThread());
 					cpuTimeLock.notifyAll();
 					WorkerMain.getLogger().debug("Notified " + currentJob + " in thread " + Thread.currentThread());
