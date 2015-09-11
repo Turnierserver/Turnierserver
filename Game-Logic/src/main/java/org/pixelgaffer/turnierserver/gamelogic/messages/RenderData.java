@@ -31,7 +31,7 @@ public class RenderData {
 	/**
 	 * Die übrigen Rechenpunkte der AIs
 	 */
-	public HashMap<String, Integer> calculationPoints;
+	public HashMap<String, Float> calculationPoints;
 	/**
 	 * Die Punkte der AIs
 	 */
