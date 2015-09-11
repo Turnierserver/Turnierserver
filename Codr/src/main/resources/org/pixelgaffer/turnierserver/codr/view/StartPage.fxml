@@ -58,7 +58,7 @@
                 </VBox>
                            </bottom>
                            <center>
-              <Label text="Codr funktioniert sowohl im Online- als auch im Offline-Modus. Ohne Internetverbindung sind allerdings einige Funktionen, wie die Anzeige der Rangliste, nicht verfügbar.&#10;Wenn du dich mit deinen Logindaten vom Turnierserver anmeldest, steht dir auch die Möglichkeit, KIs hochzuladen zur Verfügung." wrapText="true" BorderPane.alignment="CENTER">
+              <Label text="Codr funktioniert sowohl im Online- als auch im Offline-Modus. Ohne Internetverbindung sind jedoch einige Funktionen, wie die Anzeige der Rangliste, nicht verfügbar.&#10;Wenn du dich mit deinen Logindaten vom Turnierserver anmeldest, steht dir auch die Möglichkeit, KIs hochzuladen zur Verfügung." wrapText="true" BorderPane.alignment="CENTER">
                                  <BorderPane.margin>
                                     <Insets bottom="10.0" />
                                  </BorderPane.margin>
@@ -136,7 +136,7 @@
               <Label text="Python - Interpreter:" GridPane.rowIndex="3" />
               <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                 <children>
-                  <TextField fx:id="tbPythonInterpreter" disable="true" />
+                  <TextField fx:id="tbPythonInterpreter" disable="true" text="in Umgebungsvar." />
                   <Button disable="true" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickPythonInterpreter" prefWidth="30.0" text="..." />
                 </children>
               </HBox>
@@ -148,10 +148,10 @@
                   <Button disable="true" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickJDK" prefWidth="30.0" text="..." />
                 </children>
               </HBox>
-              <Label text="JDK-Home (in Umgebungsvar.)" GridPane.rowIndex="2" />
+              <Label text="JDK-Home:" GridPane.rowIndex="2" />
             </children>
             <columnConstraints>
-              <ColumnConstraints hgrow="NEVER" prefWidth="210.0" />
+              <ColumnConstraints hgrow="NEVER" prefWidth="150.0" />
               <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" />
             </columnConstraints>
             <rowConstraints>

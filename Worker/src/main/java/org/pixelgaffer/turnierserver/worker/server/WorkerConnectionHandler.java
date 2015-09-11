@@ -64,6 +64,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 		if (type.getType() != AI)
 			WorkerMain.getLogger().warning("Schicke Nachricht an " + type.getType() + " (sollte " + AI + " sein)");
 		new Thread(() -> {
+			WorkerMain.getLogger().debug("Will message " + new String(mf.getMessage(), UTF_8) + " forwarden");
 			try {
 				Sandbox sandbox = Sandboxes.sandboxJobs.get(mf.getAi());
 				sandbox.updateCpuTime();
@@ -72,7 +73,9 @@ public class WorkerConnectionHandler extends ConnectionHandler
 				e.printStackTrace();
 				return;
 			}
+			WorkerMain.getLogger().debug("Werde nun " + new String(mf.getMessage(), UTF_8) + " forwarden");
 			getClient().write(mf.getMessage());
+			WorkerMain.getLogger().debug("Habe message " + new String(mf.getMessage(), UTF_8) + " forwarden");
 		}).start();
 		//getClient().write("\n".getBytes(UTF_8));
 	}
@@ -104,15 +107,13 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	@Override
 	public void packetReceived (NIOSocket socket, byte[] packet)
 	{
-		WorkerMain.getLogger().debug("anfang");
 		buffer.add(packet);
 		byte line[];
 		while ((line = buffer.readLine()) != null)
 		{
 			byte _line[] = line;
-//			new Thread( () -> {
-				WorkerMain.getLogger().debug("\t" + new String(_line, UTF_8));
-				
+			WorkerMain.getLogger().debug("Empfangen: " + new String(packet, UTF_8));
+//			new Thread( () -> {				
 				// wenn type noch null ist, diesen lesen
 					if (type == null)
 					{
@@ -170,6 +171,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 										String longString = Long.toString(cpuDiffMikros);
 										message.write(longString.getBytes(UTF_8));
 										message.write(_line);
+										WorkerMain.getLogger().debug("Forwarde von KI zu Backend: " + new String(message.toByteArray(), UTF_8));
 										MessageForward mf = new MessageForward(type.getUuid(), message.toByteArray());
 										DataBuffer buf = new DataBuffer();
 										buf.add(Parsers.getWorker().parse(mf, true));
@@ -192,13 +194,10 @@ public class WorkerConnectionHandler extends ConnectionHandler
 							try
 							{
 								MessageForward mf = Parsers.getWorker().parse(_line, MessageForward.class);
-								WorkerMain.getLogger().debug("Empfangen: " + mf);
 								WorkerConnectionHandler con = WorkerServer.aiConnections.get(mf.getAi());
 								if (con == null)
 									throw new IllegalArgumentException("Unbekannte KI mit der UUID " + mf.getAi());
-								WorkerMain.getLogger().debug("Sende:    " + mf);
 								con.sendMessage(mf);
-								WorkerMain.getLogger().debug("Gesendet: " + mf);
 							}
 							catch (Exception e)
 							{
@@ -220,6 +219,5 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					}
 //				}).start();
 		}
-		WorkerMain.getLogger().debug("ende");
 	}
 }

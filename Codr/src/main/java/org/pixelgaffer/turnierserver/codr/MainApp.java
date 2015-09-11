@@ -200,11 +200,15 @@ public class MainApp extends Application {
 	public static void updateLoggedIn() {
 		
 		Task<Boolean> updateL = new Task<Boolean>() {
-			
 			public Boolean call() {
-				if (webConnector.isLoggedIn()) {
-					return true;
-				} else {
+				try {
+					if (webConnector.isLoggedIn()) {
+						return true;
+					} else {
+						return false;
+					}
+				} catch (IOException e) {
+					MainApp.updateConnected();
 					return false;
 				}
 			}
@@ -251,7 +255,7 @@ public class MainApp extends Application {
 	 * 
 	 * @param newStartWarning Gibt an, ob gewarnt werden soll, bevor Codr neu gestartet wird.
 	 */
-	public void checkNewVersion(boolean newStartWarning) {
+	public static void checkNewVersion(boolean newStartWarning) {
 		File myself = new File((System.getProperty("java.class.path").split(System.getProperty("path.separator"))[0]));
 		if (myself.isDirectory()) {
 			ErrorLog.write("Du hast nicht die Jar-Version von Codr");
@@ -324,10 +328,9 @@ public class MainApp extends Application {
 	/**
 	 * Sucht nach neunen Spieltypen, neuen Sprachen und Aktualisierungen von Codr.
 	 */
-	public void loadOnlineResources() {
+	public static void loadOnlineResources() {
 		
 		final Task<Object> updateTask = new Task<Object>() {
-			
 			@Override
 			protected Object call() throws InterruptedException {
 				try {
@@ -351,7 +354,8 @@ public class MainApp extends Application {
 				
 				try {
 					File myself = new File((System.getProperty("java.class.path").split(System.getProperty("path.separator"))[0]));
-					if (myself.isDirectory()) {
+					
+					if (!myself.isDirectory()) {
 						byte[] onlineHash = webConnector.getCodrHash();
 						byte[] myHash = Resources.getHash(myself);
 
@@ -370,7 +374,6 @@ public class MainApp extends Application {
 		};
 		
 		updateTask.messageProperty().addListener(new ChangeListener<String>() {
-			
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				onlineResourcesFinished(newValue);
@@ -390,7 +393,7 @@ public class MainApp extends Application {
 	 * Nimmt die Ergebnisse der Suche von loadOnlineResources entgegen.
 	 * @param text
 	 */
-	public void onlineResourcesFinished(String text) {
+	private static void onlineResourcesFinished(String text) {
 		switch (text) {
 		case "neue Spieltypen":
 			if (Dialog.okAbort("Neue Spieltypen sind verfügbar. Wollen Sie zum aktuellen wechseln?")) {
@@ -419,7 +422,7 @@ public class MainApp extends Application {
 	/**
 	 * Lädt die online-KIs und -Spiele
 	 */
-	public void loadOnlineRanking() {
+	public static void loadOnlineRanking() {
 		
 		Task<ObservableList<GameOnline>> loadOnlineGames = new Task<ObservableList<GameOnline>>() {
 			
@@ -443,43 +446,68 @@ public class MainApp extends Application {
 			
 			public ObservableList<AiOnline> call() {
 				ObservableList<AiOnline> newOwnOnline = null;
-				if (MainApp.webConnector.isLoggedIn())
-					newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+				try {
+					if (MainApp.webConnector.isLoggedIn())
+						newOwnOnline = MainApp.webConnector.getOwnAis(MainApp.actualGameType.get());
+				} catch (IOException e) {
+					return null;
+				}
 				return newOwnOnline;
 			}
 		};
-		
-		Thread thread1 = new Thread(loadOnlineGames, "loadOnlineGames");
-		Thread thread2 = new Thread(loadOnline, "loadOnlineAis");
-		Thread thread3 = new Thread(loadOwn, "loadOwnOnlineAis");
 		
 		loadOnlineGames.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue != null) {
 				onlineGames.clear();
 				onlineGames.addAll(newValue);
+			} else {
+				MainApp.updateConnected();
 			}
+			cGame.btActualize.setVisible(true);
+			cGame.prActualize.setVisible(false);
 		});
 		loadOnline.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue != null) {
 				onlineAis.clear();
 				onlineAis.addAll(newValue);
+			} else {
+				MainApp.updateConnected();
 			}
+			cRanking.btActualize.setVisible(true);
+			cRanking.prActualize.setVisible(false);
 		});
 		loadOwn.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			if (newValue != null) {
 				ownOnlineAis.clear();
 				ownOnlineAis.addAll(newValue);
+			} else {
+				MainApp.updateLoggedIn();
 			}
 		});
 		
+		
+		//Visuelles
+		cRanking.btActualize.setVisible(false);
+		cRanking.prActualize.setVisible(true);
+		cGame.btActualize.setVisible(false);
+		cGame.prActualize.setVisible(true);
+		
+		
+
+		Thread thread1 = new Thread(loadOnlineGames, "loadOnlineGames");
 		thread1.setDaemon(true);
 		thread1.start();
 		
+		Thread thread2 = new Thread(loadOnline, "loadOnlineAis");
 		thread2.setDaemon(true);
 		thread2.start();
 		
+		Thread thread3 = new Thread(loadOwn, "loadOwnOnlineAis");
 		thread3.setDaemon(true);
 		thread3.start();
+		
+		
+		
 	}
 	
 	

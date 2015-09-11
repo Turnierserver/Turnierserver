@@ -53,7 +53,10 @@
                             <TableView fx:id="lvGamesOffline" VBox.vgrow="ALWAYS">
                                  <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                                 </columnResizePolicy></TableView>
+                                 </columnResizePolicy>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin></TableView>
                          </children>
                       </VBox>
                    </content>
@@ -107,6 +110,19 @@
                                  <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                  </columnResizePolicy></TableView>
+                              <StackPane>
+                                 <children>
+                                    <Button fx:id="btActualize" defaultButton="true" mnemonicParsing="false" onAction="#clickActualize" prefWidth="2000.0" text="Aktualisieren">
+                                       <StackPane.margin>
+                                          <Insets />
+                                       </StackPane.margin>
+                                    </Button>
+                                    <ProgressIndicator fx:id="prActualize" prefHeight="31.0" prefWidth="31.0" visible="false" StackPane.alignment="CENTER" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="-10.0" />
+                                 </VBox.margin>
+                              </StackPane>
                          </children>
                       </VBox>
                    </content>
