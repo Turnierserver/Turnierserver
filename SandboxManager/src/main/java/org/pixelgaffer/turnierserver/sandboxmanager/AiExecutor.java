@@ -84,9 +84,13 @@ public class AiExecutor implements Runnable
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			boxdir = in.readLine();
 			if (p.waitFor() != 0)
-				throw new AiStartException("Error while initialising isolate");
+				throw new AiStartException("Error while initialising isolate (exit code: " + p.exitValue() + ")");
 			dir = new File(boxdir, "box");
 			dir.mkdirs();
+		}
+		catch (AiStartException e)
+		{
+			throw e;
 		}
 		catch (Exception e)
 		{
