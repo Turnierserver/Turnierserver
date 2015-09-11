@@ -332,7 +332,7 @@ public class ControllerRanking {
 	
 	@FXML
 	public void clickActualize() {
-		mainApp.loadOnlineRanking();
+		MainApp.loadOnlineRanking();
 	}
 	
 	
