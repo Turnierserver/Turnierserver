@@ -104,15 +104,13 @@ public class WorkerConnectionHandler extends ConnectionHandler
 	@Override
 	public void packetReceived (NIOSocket socket, byte[] packet)
 	{
-		WorkerMain.getLogger().debug("anfang");
 		buffer.add(packet);
 		byte line[];
 		while ((line = buffer.readLine()) != null)
 		{
 			byte _line[] = line;
-//			new Thread( () -> {
-				WorkerMain.getLogger().debug("\t" + new String(_line, UTF_8));
-				
+			WorkerMain.getLogger().debug("Empfangen von KI: " + new String(packet, UTF_8));
+//			new Thread( () -> {				
 				// wenn type noch null ist, diesen lesen
 					if (type == null)
 					{
@@ -170,6 +168,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 										String longString = Long.toString(cpuDiffMikros);
 										message.write(longString.getBytes(UTF_8));
 										message.write(_line);
+										WorkerMain.getLogger().debug("Forwarde von KI zu Backend: " + new String(message.toByteArray(), UTF_8));
 										MessageForward mf = new MessageForward(type.getUuid(), message.toByteArray());
 										DataBuffer buf = new DataBuffer();
 										buf.add(Parsers.getWorker().parse(mf, true));
@@ -220,6 +219,5 @@ public class WorkerConnectionHandler extends ConnectionHandler
 					}
 //				}).start();
 		}
-		WorkerMain.getLogger().debug("ende");
 	}
 }

@@ -57,7 +57,6 @@ public class Sandbox
 	{
 		long oldTime = lastCpuTime;
 		updateCpuTime();
-		WorkerMain.getLogger().debug("CPU Time diff: " + (lastCpuTime - oldTime));
 		return Math.max(lastCpuTime - oldTime, 0);
 	}
 	
@@ -165,7 +164,6 @@ public class Sandbox
 				break;
 			case CPU_TIME:
 				lastCpuTime = answer.getCpuTime();
-				WorkerMain.getLogger().debug("CPU Time: " + lastCpuTime);
 				synchronized (cpuTimeLock) {
 					cpuTimeLock.notifyAll();
 				}
