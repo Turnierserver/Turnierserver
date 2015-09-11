@@ -170,7 +170,7 @@ public class Games
 	 * Diese Klasse ist die Implementation des Game-Interfaces der Game-Logic
 	 * Bibliothek.
 	 */
-	static class GameImpl implements Game
+	public static class GameImpl implements Game
 	{
 		static enum GameState
 		{
@@ -393,8 +393,7 @@ public class Games
 		UUID uuid = randomUuid();
 		
 		// die KIs herausfinden. QualiKI: -gameId version 1
-		BackendMain.getLogger().todo("Nico muss mir die Anzahl der KIs sagen. Benutze default-Wert 2");
-		int numAis = 2;
+		int numAis = logic.playerAmt();
 		String ais[] = new String[numAis];
 		ais[0] = ai;
 		for (int i = 1; i < numAis; i++)
