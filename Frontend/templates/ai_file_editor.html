@@ -97,6 +97,15 @@
 		readOnly: false
 	});
 
+	editor.commands.addCommand({
+		name: 'build',
+		bindKey: {win: 'Ctrl-B',  mac: 'Command-B'},
+		exec: function() {
+			location.href = "{{url_for('authenticated.compile_ai', id=ai.id)}}"
+		},
+		readOnly: false
+	});
+
 	$("#save").on("click", function() {
 		upload(editor)
 	});
