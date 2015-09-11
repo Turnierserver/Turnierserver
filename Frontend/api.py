@@ -1224,6 +1224,24 @@ def upload_lib(lang, name, version):
 
 	return {"error": False}, 200
 
+@api.route("/lib_register/<string:lang>/<string:name>/<string:display_name>/<string:version>", methods=["PUT"])
+@json_out
+@admin_required
+def lib_register(lang, name, display_name, version):
+	lang = Lang.query.filter(Lang.name==lang).first()
+	if not lang:
+		return CommonErrors.INVALID_ID
+	l = Library.query.filter(Library.lang==lang).first()
+	if not l:
+		l = Library(lang=lang, name=name, display_name=display_name, version=version)
+		db.session.add(l)
+	else:
+		l.name = name
+		l.display_name = display_name
+		l.version = version
+	db.session.commit()
+	return {"error": False}, 200
+
 @api.route("/data_container/<int:game_id>")
 def data_container(game_id):
 	p = "Games/{}/data_container.zip".format(secure_filename(str(game_id)))
