@@ -60,6 +60,8 @@ public class AiExecutor implements Runnable
 	
 	@Getter
 	private Job job;
+	@Getter
+	private JobControl jobControl;
 	
 	@Getter
 	private int boxid;
@@ -68,9 +70,10 @@ public class AiExecutor implements Runnable
 	private Properties start;
 	private Process proc;
 	
-	public AiExecutor (Job job) throws AiStartException
+	public AiExecutor (Job job, JobControl ctrl) throws AiStartException
 	{
 		this.job = job;
+		jobControl = ctrl;
 		
 		// isolate id finden
 		boxid = (getJob().getId() + 100) % 100;
@@ -235,6 +238,7 @@ public class AiExecutor implements Runnable
 				SandboxMain.getLogger().debug("Die KI hat sich mit dem Statuscode " + ret + " beendet");
 				SandboxMain.getClient().sendMessage(getJob().getUuid(), 'F');
 				new ProcessBuilder("isolate", "--cleanup", "-b", Integer.toString(boxid)).start().waitFor();
+				jobControl.jobFinished(getJob().getUuid());
 			}
 			catch (Exception e)
 			{

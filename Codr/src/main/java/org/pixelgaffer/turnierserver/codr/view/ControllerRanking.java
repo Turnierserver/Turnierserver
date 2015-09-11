@@ -8,6 +8,7 @@ import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
@@ -45,6 +46,9 @@ public class ControllerRanking {
 	@FXML TableView<OnlineGameInfo> tvGames;
 	@FXML ImageView imageView;
 	@FXML AnchorPane groundPane;
+	@FXML public Button btActualize;
+	@FXML public ProgressIndicator prActualize;
+	
 	
 	
 	MainApp mainApp;
@@ -311,7 +315,7 @@ public class ControllerRanking {
 		}
 	}
 	
-	
+
 	@FXML
 	public void clickChallenge() {
 		if (btChallenge.getText().equals("Löschen")) {
@@ -323,6 +327,12 @@ public class ControllerRanking {
 			MainApp.cGame.lvPlayerOnline2.getSelectionModel().select(ai);
 			MainApp.cRoot.tabPane.getSelectionModel().select(MainApp.cRoot.tabGameManagement);
 		}
+	}
+	
+	
+	@FXML
+	public void clickActualize() {
+		MainApp.loadOnlineRanking();
 	}
 	
 	

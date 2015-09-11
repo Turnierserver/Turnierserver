@@ -226,8 +226,8 @@ $(document).ready(function () {
 		d.ai1_td = 0;
 		d.ai2_td = 0;
 		if (data.length > 0) {
-			d.ai1_td = (data[data.length-1].ai1_tabs - calculationPoints[0]);
-			d.ai2_td = (data[data.length-1].ai2_tabs - calculationPoints[1]);
+			d.ai1_td = Math.round((data[data.length-1].ai1_tabs - calculationPoints[0]) * 100) / 100;
+			d.ai2_td = Math.round((data[data.length-1].ai2_tabs - calculationPoints[1]) * 100) / 100;
 		}
 
 		d.ai1_name = labels[0];

@@ -125,6 +125,11 @@ public abstract class GameLogic<E extends AiObject, R> {
 	protected abstract void gameFinished();
 	
 	/**
+	 * Wird in startGame() nach setup() aufgerufen, muss eine erste RenderData schicken
+	 */
+	protected abstract void sendFirstRenderData();
+	
+	/**
 	 * Castet das User Object der AI (Util-Methode)
 	 * 
 	 * @param ai
@@ -145,11 +150,15 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 *            Die AI, von welcher die Nachricht kommt
 	 */
 	public void receiveMessage(byte[] message, Ai ai) {
+		logger.debug("Nachricht empfangen!");
+		
 		if(gameEnded) {
+			logger.warning("Game already ended!");
 			return;
 		}
 		
 		if (getUserObject(ai).lost) {
+			logger.warning("Ai already ended!");
 			return;
 		}
 		
@@ -311,6 +320,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 			getUserObject(ai).setAi(ai);
 		}
 		setup();
+		sendFirstRenderData();
 	}
 	
 	/**

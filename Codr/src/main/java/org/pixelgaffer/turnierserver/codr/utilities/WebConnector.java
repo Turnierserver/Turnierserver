@@ -231,27 +231,22 @@ public class WebConnector {
 	 * @return Ob die ESU momentan eingeloggt ist
 	 * @throws IOException
 	 */
-	public boolean isLoggedIn() {
-		try {
-			if (getSession() == null || getRememberToken() == null) {
-				return false;
-			}
-			boolean result;
-			String json = toString(sendPost("loggedin"));
-			if (json == null){
-				result = false;
-			} else {
-				result = true;
-				userName = new JSONObject(json).getString("name");
-			}
-			if (!result) {
-				cookies.getCookies().clear();
-			}
-			return result;
-		} catch (IOException e) {
-			ErrorLog.write("Fehler bei der Abfrage des Loginstatuses: " + e);
+	public boolean isLoggedIn() throws IOException {
+		if (getSession() == null || getRememberToken() == null) {
 			return false;
 		}
+		boolean result;
+		String json = toString(sendPost("loggedin"));
+		if (json == null){
+			result = false;
+		} else {
+			result = true;
+			userName = new JSONObject(json).getString("name");
+		}
+		if (!result) {
+			cookies.getCookies().clear();
+		}
+		return result;
 	}
 
 	public GameOnline challenge(AiOnline...ais) throws IOException {

@@ -129,7 +129,7 @@
                                       </rowConstraints>
                                        <children>
                           <Button fx:id="btCompile" mnemonicParsing="false" onAction="#clickCompile" prefHeight="31.0" prefWidth="105.0" text="Kompilieren" />
-                          <Button fx:id="btQualify" mnemonicParsing="false" onAction="#clickQualify" prefHeight="31.0" prefWidth="105.0" text="Qualifizieren" GridPane.rowIndex="1" />
+                          <Button fx:id="btQualify" mnemonicParsing="false" onAction="#clickQualify" prefHeight="31.0" prefWidth="105.0" text="Qualifizieren" visible="false" GridPane.rowIndex="1" />
                           <Button fx:id="btFinish" mnemonicParsing="false" onAction="#clickFinish" prefHeight="31.0" prefWidth="105.0" text="Fertigstellen" GridPane.rowIndex="2" />
                           <Button fx:id="btUpload" mnemonicParsing="false" onAction="#clickUpload" prefHeight="31.0" prefWidth="105.0" text="Hochladen" GridPane.rowIndex="3" />
                           <Label fx:id="lbCompiled" text="bereits kompiliert" GridPane.columnIndex="1" />
