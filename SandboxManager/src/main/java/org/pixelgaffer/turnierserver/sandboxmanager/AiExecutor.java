@@ -82,8 +82,7 @@ public class AiExecutor implements Runnable
 		try
 		{
 			ProcessBuilder pb = new ProcessBuilder("isolate", "--cg", "--init", "-b", Integer.toString(boxid));
-			pb.redirectErrorStream(true);
-	                pb.redirectOutput(Redirect.INHERIT);
+			pb.redirectError(Redirect.INHERIT);
 			System.out.println("$ " + pb.command());
 			Process p = pb.start();
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -132,6 +131,7 @@ public class AiExecutor implements Runnable
 			else
 			{
 				File file = new File(d, entry.getName());
+				System.out.println(file.getAbsolutePath());
 				OutputStream out = new FileOutputStream(file);
 				long size = entry.getSize();
 				long read = 0;
@@ -237,7 +237,12 @@ public class AiExecutor implements Runnable
 				ret = proc.waitFor();
 				SandboxMain.getLogger().debug("Die KI hat sich mit dem Statuscode " + ret + " beendet");
 				SandboxMain.getClient().sendMessage(getJob().getUuid(), 'F');
-				new ProcessBuilder("isolate", "--cleanup", "-b", Integer.toString(boxid)).start().waitFor();
+				ProcessBuilder pb0 = new ProcessBuilder("isolate", "--cleanup", "-b", Integer.toString(boxid));
+				SandboxMain.getLogger().debug(pb0.command());
+				pb0.redirectErrorStream(true);
+				pb0.redirectOutput(Redirect.INHERIT);
+				if (pb0.start().waitFor() != 0)
+					SandboxMain.getLogger().critical("Fehler beim Aufräumen von isolate");
 				jobControl.jobFinished(getJob().getUuid());
 			}
 			catch (Exception e)
@@ -250,14 +255,14 @@ public class AiExecutor implements Runnable
 	public void terminateAi ()
 	{
 		SandboxMain.getLogger().info("terminiere " + getJob());
-		proc.destroyForcibly();
+		proc.destroy();
 		SandboxMain.getClient().sendMessage(getJob().getUuid(), 'T');
 	}
 	
 	public void killAi ()
 	{
 		SandboxMain.getLogger().info("töte " + getJob());
-		proc.destroyForcibly();
+		proc.destroy();
 		SandboxMain.getClient().sendMessage(getJob().getUuid(), 'K');
 	}
 }
