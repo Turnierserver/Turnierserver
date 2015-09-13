@@ -60,4 +60,8 @@ public class WorkerCommand
 	/** Die UUID die das Backend diesem Job zugewiesen hat. */
 	@Getter
 	private UUID uuid;
+	
+	/** Die maximale Laufzeit der KI. Wird von isolate begrenzt. */
+	@Getter
+	private float maxRuntime;
 }

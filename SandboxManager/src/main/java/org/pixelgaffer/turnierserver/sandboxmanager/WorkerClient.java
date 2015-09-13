@@ -23,18 +23,21 @@ import static org.pixelgaffer.turnierserver.PropertyUtils.RECON_IVAL;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getIntRequired;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
 import static org.pixelgaffer.turnierserver.networking.NetworkService.getService;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.CPU_TIME;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.KILL_AI;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.RUN_AI;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxCommand.TERM_AI;
 import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.commands;
-
 import java.io.IOException;
 import java.util.UUID;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.PropertyUtils;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
+import org.pixelgaffer.turnierserver.networking.messages.SandboxCommand;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
-
 import lombok.Getter;
 import naga.NIOSocket;
 import naga.SocketObserver;
@@ -140,42 +143,44 @@ public class WorkerClient implements SocketObserver
 		byte line[];
 		while ((line = buf.readLine()) != null)
 		{
-			String linestr = new String(line, UTF_8);
-			JSONObject json = new JSONObject(linestr);
-			String cmd = json.getString("command");
-			if (cmd.equals("R"))
+			try
 			{
-				int id = json.getInt("id");
-				int version = json.getInt("version");
-				String lang = json.getString("lang");
-				UUID uuid = UUID.fromString(json.getString("uuid"));
-				SandboxMain.getLogger().info("Auftrag erhalten: Run AI " + id + "v" + version + " " + uuid);
-				jobControl.addJob(new Job(id, version, lang, uuid));
+				SandboxCommand cmd = Parsers.getSandbox().parse(line, SandboxCommand.class);
+				switch (cmd.getCommand()) {
+					case RUN_AI:
+						SandboxMain.getLogger().info("Auftrag erhalten: Run AI "
+								+ cmd.getId() + "v" + cmd.getVersion() + " " + cmd.getUuid());
+						jobControl.addJob(new Job(cmd.getId(), cmd.getVersion(), cmd.getLang(), cmd.getUuid(),
+								cmd.getMaxRuntime()));
+						break;
+						
+					case TERM_AI:
+						SandboxMain.getLogger().info("Auftrag erhalten: Terminate AI " + cmd.getUuid());
+						jobControl.terminateJob(cmd.getUuid());
+						break;
+						
+					case KILL_AI:
+						SandboxMain.getLogger().info("Auftrag erhalten: Kill AI " + cmd.getUuid());
+						jobControl.killJob(cmd.getUuid());
+						break;
+						
+					case CPU_TIME:
+						SandboxMain.getLogger().info("Auftrag erhalten: CPU-Time herausfinden");
+					{
+						long time = CpuTimer.getCpuTime(jobControl.getCurrent().getBoxid());
+						SandboxMain.getLogger().debug(time);
+						sendMessage(jobControl.getCurrent().getJob().getUuid(), 'C', time);
+					}
+						break;
+					default:
+						SandboxMain.getLogger().debug("Also es wäre schön wenn ich den Befehl " + cmd + " verstehen würde");
+				}
 			}
-			else if (cmd.equals("T"))
+			catch (Exception e)
 			{
-				UUID uuid = UUID.fromString(json.getString("uuid"));
-				SandboxMain.getLogger().info("Auftrag erhalten: Terminate AI " + uuid);
-				
-				jobControl.terminateJob(uuid);
+				SandboxMain.getLogger().critical("Error while parsing: " + new String(line, UTF_8));
+				e.printStackTrace();
 			}
-			else if (cmd.equals("K"))
-			{
-				UUID uuid = UUID.fromString(json.getString("uuid"));
-				SandboxMain.getLogger().info("Auftrag erhalten: Kill AI " + uuid);
-				
-				jobControl.killJob(uuid);
-			}
-			else if (cmd.equals("C"))
-			{
-				SandboxMain.getLogger().info("Auftrag erhalten: CPU-Time herausfinden");
-				
-				long time = CpuTimer.getCpuTime(jobControl.getCurrent().getBoxid());
-				SandboxMain.getLogger().debug(time);
-				sendMessage(jobControl.getCurrent().getJob().getUuid(), 'C', time);
-			}
-			else
-				SandboxMain.getLogger().debug("Also es wäre schön wenn ich den Befehl " + cmd + " verstehen würde");
 		}
 	}
 	

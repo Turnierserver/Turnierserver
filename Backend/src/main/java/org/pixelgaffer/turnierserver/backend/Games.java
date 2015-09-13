@@ -18,12 +18,6 @@
  */
 package org.pixelgaffer.turnierserver.backend;
 
-import it.sauronsoftware.ftp4j.FTPAbortedException;
-import it.sauronsoftware.ftp4j.FTPDataTransferException;
-import it.sauronsoftware.ftp4j.FTPException;
-import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
-import it.sauronsoftware.ftp4j.FTPListParseException;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -38,13 +32,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-
 import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
@@ -55,6 +42,16 @@ import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
+import it.sauronsoftware.ftp4j.FTPAbortedException;
+import it.sauronsoftware.ftp4j.FTPDataTransferException;
+import it.sauronsoftware.ftp4j.FTPException;
+import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
+import it.sauronsoftware.ftp4j.FTPListParseException;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Games
@@ -93,27 +90,28 @@ public class Games
 			
 			// die ki noch 1 min speichern um laggs in der verbindung zu
 			// vermeiden
-				try
+			try
+			{
+				Thread.sleep(60000);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				synchronized (lock)
 				{
-					Thread.sleep(60000);
+					aiWrappers.remove(uuid);
+					uuids.remove(uuid);
 				}
-				catch (InterruptedException e)
-				{
-					e.printStackTrace();
-				}
-				finally
-				{
-					synchronized (lock)
-					{
-						aiWrappers.remove(uuid);
-						uuids.remove(uuid);
-					}
-				}
-			}).start();
+			}
+		}).start();
 	}
 	
 	/**
-	 * Die AI mit der angegebenen UUID wurde von Backend/Worker/Sandbox beendet
+	 * Die AI mit der angegebenen UUID wurde von Backend/Worker/Sandbox
+	 * beendet
 	 * und das Spiel muss neu gestartet werden.
 	 */
 	public static void aiTerminated (UUID uuid) throws IOException, InstantiationException, IllegalAccessException
@@ -151,8 +149,7 @@ public class Games
 			do
 			{
 				uuid = UUID.randomUUID();
-			}
-			while (uuids.contains(uuid));
+			} while (uuids.contains(uuid));
 			uuids.add(uuid);
 		}
 		return uuid;
@@ -223,9 +220,12 @@ public class Games
 		@Getter
 		private GameState state = GameState.WAITING;
 		
-		private GameImpl (int gameId, @NonNull UUID uuid, int requestId, String[] languages, String ... ais) throws IOException
+		private GameImpl (int gameId, @NonNull GameLogic<?, ?> logic, @NonNull UUID uuid, int requestId,
+				String[] languages, String ... ais)
+						throws IOException
 		{
 			this.gameId = gameId;
+			this.logic = logic;
 			this.uuid = uuid;
 			this.requestId = requestId;
 			// die KIs erstellen
@@ -246,7 +246,7 @@ public class Games
 				{
 					aiWrappers.put(aiw.getUuid(), aiw);
 				}
-				 
+				
 				// einen Worker mit der KI beauftragen
 				WorkerConnection w = Workers.getStartableWorker(aiw.getLang());
 				w.addJob(aiw, gameId);
@@ -283,7 +283,8 @@ public class Games
 		
 		/**
 		 * Diese Methode wird aufgerufen wenn eine KI sich mit dem Worker
-		 * verbunden hat. Wenn alle KIs verbunden sind wird das Spiel gestartet.
+		 * verbunden hat. Wenn alle KIs verbunden sind wird das Spiel
+		 * gestartet.
 		 */
 		public synchronized void aiConnected ()
 		{
@@ -323,7 +324,7 @@ public class Games
 			logic = logic.getClass().newInstance();
 			BackendFrontendConnectionHandler.getFrontend().sendMessage(
 					Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(getRequestId(), "restarted"), false));
-			
+					
 			for (int i = 0; i < ais.size(); i++)
 			{
 				AiWrapper aiw = ais.get(i);
@@ -346,7 +347,8 @@ public class Games
 	}
 	
 	/**
-	 * Lädt die Jar-Datei der GameLogic für das angegebene Spiel herunter, liest
+	 * Lädt die Jar-Datei der GameLogic für das angegebene Spiel herunter,
+	 * liest
 	 * die Manifest-Datei, und lädt die GameLogic-Klasse.
 	 */
 	public static GameLogic<?, ?> loadGameLogic (int gameId) // keep in sync
@@ -391,8 +393,7 @@ public class Games
 	{
 		GameLogic<?, ?> logic = loadGameLogic(gameId);
 		UUID uuid = randomUuid();
-		GameImpl game = new GameImpl(gameId, uuid, requestId, languages, ais);
-		game.logic = logic;
+		GameImpl game = new GameImpl(gameId, logic, uuid, requestId, languages, ais);
 		synchronized (lock)
 		{
 			games.put(uuid, game);
@@ -417,10 +418,9 @@ public class Games
 		ais[0] = ai;
 		for (int i = 1; i < numAis; i++)
 			ais[1] = "-" + gameId + "v1";
-		String[] languages = {language, "Java"};
+		String[] languages = { language, "Java" };
 		// Spiel starten
-		GameImpl game = new GameImpl(gameId, uuid, requestId, languages, ais);
-		game.logic = logic;
+		GameImpl game = new GameImpl(gameId, logic, uuid, requestId, languages, ais);
 		synchronized (lock)
 		{
 			games.put(uuid, game);

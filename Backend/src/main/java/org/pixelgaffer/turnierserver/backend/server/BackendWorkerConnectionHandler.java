@@ -23,12 +23,8 @@ import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.A
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.INFO;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.SANDBOX_MESSAGE;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.TERMINATED_AI;
-
+import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.KILLAI;
 import java.io.IOException;
-
-import lombok.NonNull;
-import naga.NIOSocket;
-
 import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.AiWrapper;
@@ -47,6 +43,8 @@ import org.pixelgaffer.turnierserver.networking.messages.SandboxMessage;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
+import lombok.NonNull;
+import naga.NIOSocket;
 
 /**
  * Diese Klasse ist der ConnectionHandler für den BackendServer.
@@ -139,7 +137,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 						if (ai == null)
 						{
 							BackendMain.getLogger().critical("Unknown AI with UUID " + aicon.getUuid() + " connected");
-							sendCommand(new WorkerCommand(WorkerCommand.KILLAI, -1, -1, null, -1, aicon.getUuid()));
+							sendCommand(new WorkerCommand(KILLAI, -1, -1, null, -1, aicon.getUuid(), -1));
 						}
 						else
 							ai.connected();
