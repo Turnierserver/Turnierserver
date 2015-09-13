@@ -331,13 +331,13 @@ public abstract class GameLogic<E extends AiObject, R> {
 			ai.setObject(createUserObject(ai));
 			getUserObject(ai).setLogic(this);
 			getUserObject(ai).setAi(ai);
-			if(crashed.contains(ai)) {
-				getUserObject(ai).loose("Die Ki hat sich am Anfang des Spieles beendet");
-				crashed.remove(ai);
-				if(gameEnded) {
-					return;
-				}
+		}
+		while(!crashed.isEmpty()) {
+			getUserObject(crashed.get(0)).loose("Die Ki hat sich am Anfang des Spieles beendet");
+			if(gameEnded) {
+				return;
 			}
+			crashed.remove(0);
 		}
 		setup();
 		sendFirstRenderData();
