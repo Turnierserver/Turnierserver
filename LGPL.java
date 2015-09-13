@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import static java.nio.charset.StandardCharsets.*;
 import java.io.*;
 import java.util.*;
 import java.text.*;
@@ -25,7 +26,7 @@ public class LGPL
 	static void handlePython (File f) throws Exception
 	{
 		System.out.println(f);
-		BufferedReader in = new BufferedReader(new FileReader(f));
+		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(f), UTF_8));
 		StringBuilder sb = new StringBuilder();
 		sb.append("####################################################################################\n");
 		sb.append("# ").append(f.getName()).append("\n");
@@ -64,7 +65,7 @@ public class LGPL
 			}
 		}
 		in.close();
-		PrintWriter out = new PrintWriter(f);
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(f), UTF_8));
 		out.print(sb.toString());
 		out.close();
 	}
@@ -76,7 +77,7 @@ public class LGPL
 		if (!f.getName().endsWith(".java") && !f.getName().endsWith(".cpp") && !f.getName().endsWith(".h"))
 			return;
 		System.out.println(f);
-		BufferedReader in = new BufferedReader(new FileReader(f));
+		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(f), UTF_8));
 		StringBuilder sb = new StringBuilder();
 		sb.append("/*\n");
 		sb.append(" * ").append(f.getName()).append("\n");
@@ -115,7 +116,7 @@ public class LGPL
 			}
 		}
 		in.close();
-		PrintWriter out = new PrintWriter(f);
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(f), UTF_8));
 		out.print(sb.toString());
 		out.close();
 	}
