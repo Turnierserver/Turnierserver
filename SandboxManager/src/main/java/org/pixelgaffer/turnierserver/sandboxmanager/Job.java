@@ -19,7 +19,6 @@
 package org.pixelgaffer.turnierserver.sandboxmanager;
 
 import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -40,4 +39,6 @@ public class Job
 	@NonNull
 	@Getter
 	private UUID uuid;
+	@Getter
+	private float timeout;
 }
