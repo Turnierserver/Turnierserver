@@ -22,36 +22,16 @@ import static java.lang.Math.min;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getIntRequired;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
-
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-
-import org.omg.CORBA.Any;
-import org.omg.CORBA.AnySeqHolder;
-import org.omg.CORBA.BooleanSeqHolder;
-import org.omg.CORBA.CharSeqHolder;
-import org.omg.CORBA.DoubleSeqHolder;
-import org.omg.CORBA.FloatSeqHolder;
-import org.omg.CORBA.LongLongSeqHolder;
-import org.omg.CORBA.LongSeqHolder;
-import org.omg.CORBA.OctetSeqHolder;
-import org.omg.CORBA.ShortSeqHolder;
-import org.omg.CORBA.TypeCode;
-import org.omg.CORBA.ULongLongSeqHolder;
-import org.omg.CORBA.ULongSeqHolder;
-import org.omg.CORBA.UShortSeqHolder;
-import org.omg.CORBA.WCharSeqHolder;
 import org.pixelgaffer.turnierserver.networking.SHA256;
 
 public class MirrorClient
@@ -62,6 +42,7 @@ public class MirrorClient
 		retrieveLib(Integer.toString(version), Integer.toString(id), filename);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static void retrieveLib (String language, String lib, String filename)
 			throws IOException, NoSuchAlgorithmException
 	{
