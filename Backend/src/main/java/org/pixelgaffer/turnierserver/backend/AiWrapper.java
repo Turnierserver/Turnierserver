@@ -18,25 +18,17 @@
  */
 package org.pixelgaffer.turnierserver.backend;
 
-import it.sauronsoftware.ftp4j.FTPAbortedException;
-import it.sauronsoftware.ftp4j.FTPDataTransferException;
-import it.sauronsoftware.ftp4j.FTPException;
-import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
-
 import java.io.IOException;
 import java.util.UUID;
-
+import org.pixelgaffer.turnierserver.backend.Games.GameImpl;
+import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
+import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
+import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
-import org.pixelgaffer.turnierserver.backend.Games.GameImpl;
-import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
-import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
-import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
-import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 
 /**
  * Diese Klasse repräsentiert eine KI intern für Backend und Spiellogik.

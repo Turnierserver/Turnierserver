@@ -105,7 +105,7 @@ public class ControllerStartPage {
 		MainApp.actualGameType.bindBidirectional(cbGameTypes.valueProperty());
 		cbGameTypes.valueProperty().addListener((observableValue, oldValue, newValue) -> {
 			MainApp.aiManager.loadAis();
-			mainApp.loadOnlineRanking();
+			MainApp.loadOnlineRanking();
 			MainApp.cAi.lvAis.getSelectionModel().selectFirst();
 		});
 		cbGameTypes.getSelectionModel().selectLast();
@@ -215,7 +215,7 @@ public class ControllerStartPage {
 	@FXML
 	void clickTryOnline() {
 		MainApp.updateConnected();
-		mainApp.loadOnlineResources();
+		MainApp.loadOnlineResources();
 	}
 	
 	

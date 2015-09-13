@@ -321,7 +321,7 @@ public class ControllerRanking {
 		if (btChallenge.getText().equals("Löschen")) {
 			MainApp.webConnector.deleteKI(ai.id);
 			MainApp.onlineAis.remove(ai);
-			mainApp.loadOnlineResources();
+			MainApp.loadOnlineResources();
 		} else {
 			MainApp.cGame.tabPaneOnOffline.getSelectionModel().select(MainApp.cGame.tabOnline);
 			MainApp.cGame.lvPlayerOnline2.getSelectionModel().select(ai);

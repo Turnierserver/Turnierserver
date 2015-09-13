@@ -5,11 +5,9 @@ import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.http.cookie.Cookie;
 import org.pixelgaffer.turnierserver.codr.AiOnline;
 import org.pixelgaffer.turnierserver.codr.AiSimple;
@@ -19,7 +17,6 @@ import org.pixelgaffer.turnierserver.codr.GameSaved;
 import org.pixelgaffer.turnierserver.codr.MainApp;
 import org.pixelgaffer.turnierserver.codr.Version;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -221,7 +218,7 @@ public class ControllerGameManagement {
 		URI uri = URI.create(MainApp.webConnector.getUrlFromGame(game));
 		
 		List<String> cookies = new ArrayList<>();
-		for(Cookie cookie : mainApp.webConnector.cookies.getCookies()) {
+		for(Cookie cookie : MainApp.webConnector.cookies.getCookies()) {
 			cookies.add(cookie.getName() + "=" + cookie.getValue());
 		}
 		
@@ -303,7 +300,7 @@ public class ControllerGameManagement {
 	
 	
 	@FXML void clickActualize() {
-		mainApp.loadOnlineRanking();
+		MainApp.loadOnlineRanking();
 	}
 	
 }

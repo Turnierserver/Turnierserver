@@ -1,11 +1,9 @@
 package org.pixelgaffer.turnierserver.codr;
 
 
+import org.json.JSONObject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
-import org.json.JSONObject;
-import org.pixelgaffer.turnierserver.codr.simulator.CodrGameImpl;
 
 
 /**
