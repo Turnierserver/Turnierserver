@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.GsonGzipParser;
 import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.Parser;
@@ -19,6 +20,7 @@ import org.pixelgaffer.turnierserver.gamelogic.messages.GameFinished;
 import org.pixelgaffer.turnierserver.gamelogic.messages.RenderData;
 
 import com.google.common.collect.Ordering;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import lombok.Getter;
@@ -180,7 +182,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 				string = new String(message, "UTF-8");
 			}
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			Airbrake.log(e1).printStackTrace();
 			getUserObject(ai).loose("Die Nachricht der KI konnte nicht gelesen werden");
 			return;
 		}
@@ -206,8 +208,11 @@ public abstract class GameLogic<E extends AiObject, R> {
 		
 		try {
 			receive(Parsers.getWorker().parse(string.getBytes(StandardCharsets.UTF_8), token.getType()), ai, passedMikros);
+		} catch (JsonSyntaxException e) {
+			getUserObject(ai).loose("Die von der Ki gesendete Antwort hatte nicht das richtige Format! Bitte wende dich an turnier@bwinf.de!");
 		} catch (IOException e) {
-			e.printStackTrace();
+			getUserObject(ai).loose("Es gab ein Problem mit der Kommunikation mit deiner Ki! Bitte wende dich an turnier@bwinf.de!");
+			Airbrake.log(e).printStackTrace();
 		}
 	}
 	
@@ -225,7 +230,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		try {
 			game.getFrontend().sendMessage(Parsers.getFrontend().parse(object, false));
 		} catch (IOException e) {
-			e.printStackTrace();
+			Airbrake.log(e).printStackTrace();
 		}
 	}
 	
@@ -310,7 +315,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		try {
 			game.finishGame();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Airbrake.log(e).printStackTrace();
 		}
 	}
 	

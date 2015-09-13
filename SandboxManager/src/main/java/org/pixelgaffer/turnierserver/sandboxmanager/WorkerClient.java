@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.PropertyUtils;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
@@ -101,7 +102,7 @@ public class WorkerClient implements SocketObserver
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				Airbrake.log(e).printStackTrace();
 			}
 			
 			try

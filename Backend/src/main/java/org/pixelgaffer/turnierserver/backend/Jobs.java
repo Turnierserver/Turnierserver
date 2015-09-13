@@ -36,6 +36,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
 import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendCommand;
@@ -162,7 +163,7 @@ public class Jobs
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					Airbrake.log(e).printStackTrace();
 					BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
 					try
 					{
@@ -171,7 +172,7 @@ public class Jobs
 					}
 					catch (IOException e1)
 					{
-						e1.printStackTrace();
+						Airbrake.log(e1).printStackTrace();
 					}
 				}
 			}
@@ -186,7 +187,7 @@ public class Jobs
 					}
 					catch (Exception e)
 					{
-						e.printStackTrace();
+						Airbrake.log(e).printStackTrace();
 						BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
 						try
 						{
@@ -195,7 +196,7 @@ public class Jobs
 						}
 						catch (IOException e1)
 						{
-							e1.printStackTrace();
+							Airbrake.log(e1).printStackTrace();
 						}
 					}
 				}
@@ -210,7 +211,7 @@ public class Jobs
 					}
 					catch (Exception e)
 					{
-						e.printStackTrace();
+						Airbrake.log(e).printStackTrace();
 						BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
 						try
 						{
@@ -219,12 +220,14 @@ public class Jobs
 						}
 						catch (IOException e1)
 						{
-							e1.printStackTrace();
+							Airbrake.log(e1).printStackTrace();
 						}
 					}
 				}
-				else
+				else {
 					BackendMain.getLogger().critical("Unknown action from Frontend: " + cmd.getAction());
+					Airbrake.log("Unknown action from Frontend: " + cmd.getAction());
+				}
 				
 				synchronized (pending)
 				{

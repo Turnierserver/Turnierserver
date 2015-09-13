@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Random;
 
+import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 import org.pixelgaffer.turnierserver.worker.LibraryCache;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
@@ -147,7 +148,7 @@ public class MirrorServer extends Thread
 					}
 					catch (Exception e)
 					{
-						e.printStackTrace();
+						Airbrake.log(e).printStackTrace();
 					}
 					finally
 					{
@@ -163,7 +164,7 @@ public class MirrorServer extends Thread
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				Airbrake.log(e).printStackTrace();
 			}
 		}
 	}
