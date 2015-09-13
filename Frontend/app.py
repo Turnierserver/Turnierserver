@@ -1,6 +1,7 @@
 import arrow
 from flask import Flask, got_request_exception
 from werkzeug.contrib.fixers import ProxyFix
+from werkzeug.serving import WSGIRequestHandler
 from flask.ext.login import current_user
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
@@ -58,9 +59,17 @@ if env.airbrake:
 		airbrake_logger.exception(exception, extra=extra)
 	got_request_exception.connect(log_exception, app)
 
-if True:
-	# fix fuer Gunicorn und NGINX
-	app.wsgi_app = ProxyFix(app.wsgi_app)
+# Client-IPs von NGINX übernehmen
+app.wsgi_app = ProxyFix(app.wsgi_app)
+
+def address_string(self):
+	forwarded_for = self.headers.get('X-Forwarded-For', '').split(',')
+	if forwarded_for and forwarded_for[0]:
+		return forwarded_for[0]
+	else:
+		return self.client_address[0]
+WSGIRequestHandler.address_string = address_string
+
 
 
 cache.init_app(app)
