@@ -133,6 +133,11 @@ public abstract class GameLogic<E extends AiObject, R> {
 	protected abstract void sendFirstRenderData();
 	
 	/**
+	 * @return Das an isolate übergebene timeout, in millis
+	 */
+	public abstract int aiTimeout();
+	
+	/**
 	 * Castet das User Object der AI (Util-Methode)
 	 * 
 	 * @param ai
@@ -355,7 +360,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	public int playerAmt() {
 		return 2;
 	}
-	
+		
 	/**
 	 * Teilt der Spiellogik mit, wenn sich eine Ai disconnected
 	 * 
