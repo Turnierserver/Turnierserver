@@ -1,0 +1,12 @@
+Backend/
+Codr/src/main/java/org/pixelgaffer/turnierserver/codr/CodeEditor.java
+Codr/src/main/java/org/pixelgaffer/turnierserver/codr/simulator/
+CompilerLib/
+GameBuilder/
+GenerateSyntaxZip.java
+KatePartParser/
+LGPL.java
+NetworkingLib/
+SandboxManager/
+Utils/
+Worker/
