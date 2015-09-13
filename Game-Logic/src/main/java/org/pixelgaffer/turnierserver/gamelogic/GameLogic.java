@@ -135,9 +135,9 @@ public abstract class GameLogic<E extends AiObject, R> {
 	protected abstract void sendFirstRenderData();
 	
 	/**
-	 * @return Das an isolate übergebene timeout, in millis
+	 * @return Das an isolate übergebene timeout, in Sekunden
 	 */
-	public abstract int aiTimeout();
+	public abstract float aiTimeout();
 	
 	/**
 	 * Castet das User Object der AI (Util-Methode)
