@@ -29,7 +29,7 @@ db = SQLAlchemy(session_options={"expire_on_commit": False})
 
 def refresh_session():
 	## TODO: ne bessere Art, die verbindung zur DB zu refreshen
-	logger.debug("refresh_session()")
+	# logger.debug("refresh_session()")
 	try:
 		db.session.refresh(Lang.query.first())
 	except (sqlalchemy.exc.OperationalError, sqlalchemy.exc.DatabaseError):
