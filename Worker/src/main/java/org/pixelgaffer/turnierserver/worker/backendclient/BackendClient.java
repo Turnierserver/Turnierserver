@@ -38,6 +38,7 @@ import lombok.Getter;
 import naga.NIOSocket;
 import naga.SocketObserver;
 
+import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.PropertyUtils;
 import org.pixelgaffer.turnierserver.compile.Backend;
@@ -111,7 +112,7 @@ public class BackendClient implements SocketObserver, Backend
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Airbrake.log(e).printStackTrace();
 		}
 	}
 	
@@ -126,7 +127,7 @@ public class BackendClient implements SocketObserver, Backend
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				Airbrake.log(e).printStackTrace();
 			}
 			
 			try
@@ -188,7 +189,7 @@ public class BackendClient implements SocketObserver, Backend
 					catch (Exception e)
 					{
 						WorkerMain.getLogger().critical("Fehler beim Senden des StartKI-Befehls: " + e);
-						e.printStackTrace();
+						Airbrake.log(e).printStackTrace();
 					}
 				}
 				else if (cmd.getAction() == TERMAI || cmd.getAction() == KILLAI)
@@ -207,7 +208,7 @@ public class BackendClient implements SocketObserver, Backend
 					catch (IOException ioe)
 					{
 						WorkerMain.getLogger().critical("Fehler beim Senden des StopKI-Befehls: " + ioe);
-						ioe.printStackTrace();
+						Airbrake.log(ioe).printStackTrace();
 					}
 				}
 				else

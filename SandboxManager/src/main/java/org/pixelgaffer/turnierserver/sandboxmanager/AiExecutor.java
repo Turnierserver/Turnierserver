@@ -44,6 +44,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.pixelgaffer.turnierserver.Airbrake;
 
 public class AiExecutor implements Runnable
 {
@@ -265,7 +266,7 @@ public class AiExecutor implements Runnable
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				Airbrake.log(e).printStackTrace();
 			}
 		}, "IsolateCleanup").start();
 	}

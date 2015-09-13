@@ -45,6 +45,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
 import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendCommandProcessed;
@@ -301,7 +302,7 @@ public class Games
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				Airbrake.log(e).printStackTrace();
 			}
 		}
 		

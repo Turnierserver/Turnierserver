@@ -32,6 +32,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import naga.ConnectionAcceptor;
 
+import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendServer;
 import org.pixelgaffer.turnierserver.backend.server.BackendWorkerServer;
@@ -63,7 +64,7 @@ public class BackendMain
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				Airbrake.log(e).printStackTrace();
 			}
 			jobsStore.delete();
 		}
@@ -90,7 +91,7 @@ public class BackendMain
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				Airbrake.log(e).printStackTrace();
 			}
 			
 		}, "BackendMain-ShutdownHook"));

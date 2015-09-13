@@ -2,6 +2,7 @@ package org.pixelgaffer.turnierserver.gamelogic.interfaces;
 
 import java.io.IOException;
 
+import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 import org.pixelgaffer.turnierserver.gamelogic.messages.LostMessage;
@@ -44,7 +45,7 @@ public class AiObject {
 		try {
 			ai.disconnect();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Airbrake.log(e).printStackTrace();
 		}
 		logic.sendToFronted(new LostMessage(reason, ai.getId(), logic.getGame().getFrontend().getRequestId()));
 		lost = true;

@@ -29,6 +29,7 @@ import java.io.IOException;
 import lombok.NonNull;
 import naga.NIOSocket;
 
+import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.AiWrapper;
 import org.pixelgaffer.turnierserver.backend.BackendMain;
@@ -159,7 +160,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 				catch (Exception e)
 				{
 					BackendMain.getLogger().critical("Failed to parse answer from Worker: " + e);
-					e.printStackTrace();
+					Airbrake.log(e).printStackTrace();
 				}
 			}
 		}

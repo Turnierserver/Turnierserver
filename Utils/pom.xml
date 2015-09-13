@@ -21,6 +21,11 @@
             <version>2.3.1</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+        	<groupId>io.airbrake</groupId>
+        	<artifactId>airbrake-java</artifactId>
+        	<version>2.2.8</version>
+        </dependency>
     </dependencies>
 
     <distributionManagement>
