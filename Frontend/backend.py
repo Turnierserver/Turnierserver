@@ -45,7 +45,7 @@ class Backend(threading.Thread):
 
 	def request_compile(self, ai):
 		if ai.latest_version().frozen:
-			logger.error("request_compile mit freigegebener KI aufgerufen!")
+			logger.warning("request_compile mit freigegebener KI aufgerufen!")
 		reqid = self.latest_request_id
 		self.latest_request_id += 1
 		d = {
