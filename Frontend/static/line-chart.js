@@ -1,4 +1,4 @@
-function LineChart(divID, line_functions, data, ylabel) {
+function LineChart(divID, line_functions, data, ylabel, log_scale) {
 	var self = this;
 	var current_index;
 	var vis = d3.select(divID);
@@ -11,7 +11,11 @@ function LineChart(divID, line_functions, data, ylabel) {
 	var width = 800 - margin.left - margin.right;
 	var height = 250 - margin.top - margin.bottom;
 	var x = d3.scale.linear().range([0, width]);
-	var y = d3.scale.linear().range([height, 0]);
+	if (log_scale) {
+		var y = d3.scale.log().range([height, 0]).clamp(true).nice();
+	} else {
+		var y = d3.scale.linear().range([height, 0]);
+	}
 	var xAxis = d3.svg.axis()
 		.scale(x)
 		.orient("bottom");
@@ -39,6 +43,8 @@ function LineChart(divID, line_functions, data, ylabel) {
 		.attr("class", "x axis")
 		.attr("transform", "translate(0," + height + ")")
 		.call(xAxis);
+
+
 	svg.append("g")
 		.attr("class", "y axis")
 		.call(yAxis)
@@ -47,6 +53,7 @@ function LineChart(divID, line_functions, data, ylabel) {
 		.attr("y", 6)
 		.attr("dy", ".71em")
 		.style("text-anchor", "end");
+
 
 	$.each(lines, function(index) {
 		svg.append("path")
@@ -119,7 +126,11 @@ function LineChart(divID, line_functions, data, ylabel) {
 								 .attr("height", height + margin.top + margin.bottom)
 		hoverLine.attr("y2", height);
 		x = d3.scale.linear().range([0, width]);
-		y = d3.scale.linear().range([height, 0]);
+		if (log_scale) {
+			y = d3.scale.log().range([height, 0]).clamp(true).nice();
+		} else {
+			y = d3.scale.linear().range([height, 0]);
+		}
 		self.set_axis_domain();
 		xAxis = d3.svg.axis()
 			.scale(x)
@@ -129,6 +140,8 @@ function LineChart(divID, line_functions, data, ylabel) {
 			.orient("left");
 		svg.selectAll("g .x.axis").call(xAxis)
 			.attr("transform", "translate(0," + height + ")");
+
+
 		svg.selectAll("g .y.axis").call(yAxis);
 		self.update_chart();
 
@@ -153,6 +166,8 @@ function LineChart(divID, line_functions, data, ylabel) {
 			xvars[0] = Math.min(xvars_[0], xvars[0]);
 			xvars[1] = Math.max(xvars_[1], xvars[1]);
 			yvars[0] = Math.min(yvars_[0], yvars[0]);
+			if (log_scale)
+				yvars[0] = Math.max(1, yvars[0]);
 			yvars[1] = Math.max(yvars_[1], yvars[1]);
 		})
 		x.domain(xvars);
@@ -170,9 +185,21 @@ function LineChart(divID, line_functions, data, ylabel) {
 		svg.select(".x.axis")
 			.duration(750)
 			.call(xAxis);
-		svg.select(".y.axis")
-			.duration(750)
-			.call(yAxis);
+		if (log_scale) {
+			svg.select(".y.axis")
+				.duration(750)
+				.call(yAxis)
+			if (svg.selectAll(".y.axis .tick text")[0].length) {
+				svg.selectAll(".y.axis .tick text")
+					.text(null)
+					.filter(function(d) {return d / Math.pow(10, Math.ceil(Math.log(d) / Math.LN10 - 1e-12)) === 1;})
+					.text(function(d) {return d})
+			}
+		} else {
+			svg.select(".y.axis")
+				.duration(750)
+				.call(yAxis);
+		}
 	};
 
 	this.getIndexFromPosition = function(xPosition) {
