@@ -71,7 +71,7 @@ var td_chart = new LineChart("#td_chart",
 		x: function (d) { return d.step; },
 		y: function (d) { return d.ai2_td; },
 		label: function(d) { return d.ai2_name + ": " + d.ai2_td + "ms"; }
-	}], data, function(d) { return "Schritt: " + d.step; }
+	}], data, function(d) { return "Schritt: " + d.step; }, true
 );
 
 $("#rechenpunkte").on("click", td_chart.on_resize);
