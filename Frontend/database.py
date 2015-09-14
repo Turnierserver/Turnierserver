@@ -709,7 +709,6 @@ class Game(db.Model):
 
 	@classmethod
 	def filter_crash(cls, data):
-		logger.warning(str(data))
 		ai = AI.query.get(int(data["id"].split("v")[0]))
 		if not ai:
 			logger.error("crash on nonexistant ai")
