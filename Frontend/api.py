@@ -198,6 +198,8 @@ def game_inprogress_log(id):
 			can_access, data = Game.filter_crash(data)
 			if can_access:
 				yield json.dumps(data), "crash"
+		elif data_type == "success":
+			pass
 		else:
 			logger.error("invalid log_sse type: " + str(data_type) + " " + str(data))
 

@@ -71,7 +71,7 @@ var td_chart = new LineChart("#td_chart",
 		x: function (d) { return d.step; },
 		y: function (d) { return d.ai2_td; },
 		label: function(d) { return d.ai2_name + ": " + d.ai2_td + "ms"; }
-	}], data, function(d) { return "Schritt: " + d.step; }
+	}], data, function(d) { return "Schritt: " + d.step; }, true
 );
 
 $("#rechenpunkte").on("click", td_chart.on_resize);
@@ -259,6 +259,7 @@ $(document).ready(function () {
 		console.log("game_finished", e.data);
 		$("#finished_message").show();
 		$("#finished_message").find("a").attr("href", e.data);
+		NProgress.done();
 	});
 
 	// ## in ne generelle lib verschieben

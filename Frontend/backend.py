@@ -15,6 +15,8 @@ from pprint import pprint
 class Backend(threading.Thread):
 	daemon = True
 	game_update_queues = WeakSet()
+	sleep_time = 60
+
 	def __init__(self):
 		threading.Thread.__init__(self)
 		self.sock = None
@@ -45,7 +47,7 @@ class Backend(threading.Thread):
 
 	def request_compile(self, ai):
 		if ai.latest_version().frozen:
-			logger.error("request_compile mit freigegebener KI aufgerufen!")
+			logger.warning("request_compile mit freigegebener KI aufgerufen!")
 		reqid = self.latest_request_id
 		self.latest_request_id += 1
 		d = {
@@ -220,7 +222,7 @@ class Backend(threading.Thread):
 	def request(self, reqid):
 		if reqid in self.requests:
 			return self.requests[reqid]
-		logger.warning("request for id " + str(reqid) + " failed!")
+		logger.warning("request with id " + str(reqid) + " doesnt exist!")
 
 	def lock_for_req(self, reqid, timeout=30):
 		try:
@@ -305,6 +307,7 @@ class Backend(threading.Thread):
 			if not self.connected:
 				self.connect()
 			if self.connected:
+				self.sleep_time = 60
 				r = self.sock.recv(1024*1024).decode("utf-8")
 				if r == '':
 					self.connected = False
@@ -322,8 +325,9 @@ class Backend(threading.Thread):
 					else:
 						self.parse(json.loads(d))
 			else:
-				logger.debug("No connection to Backend...")
-				time.sleep(3*60)
+				self.sleep_time = min(self.sleep_time * 2, 60*60*3)
+				logger.debug("No connection to Backend; sleeping " + str(self.sleep_time) + " seconds.")
+				time.sleep(self.sleep_time)
 
 
 backend = Backend()
