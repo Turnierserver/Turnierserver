@@ -1,8 +1,6 @@
 # unnötiges generiertes zeugs
 .directory
 __pycache__
-Frontend/tmpfile
-Frontend/.data_and_stuff
 *.log
 AIs/
 Downloads/
@@ -45,7 +43,12 @@ Makefile
 .idea
 *.iml
 META-INF
+
+Frontend/nginx.access
+Frontend/nginx.err
 Frontend/tmp
+Frontend/tmpfile
+Frontend/.data_and_stuff
 
 # anderer müll
 GameBuilder/buildgame

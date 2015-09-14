@@ -259,6 +259,7 @@ $(document).ready(function () {
 		console.log("game_finished", e.data);
 		$("#finished_message").show();
 		$("#finished_message").find("a").attr("href", e.data);
+		NProgress.done();
 	});
 
 	// ## in ne generelle lib verschieben
