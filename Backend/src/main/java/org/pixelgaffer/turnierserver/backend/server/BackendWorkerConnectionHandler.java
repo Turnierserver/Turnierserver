@@ -22,6 +22,7 @@ import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.A
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.ANSWER;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.INFO;
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.ProtocolLine.SANDBOX_MESSAGE;
+import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.FINISHED_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.TERMINATED_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.KILLAI;
 import java.io.IOException;
@@ -147,8 +148,9 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 						if (l.getObject(SandboxMessage.class).getEvent() == TERMINATED_AI)
 							Games.aiTerminated(l.getObject(SandboxMessage.class).getUuid());
 						else
-						{
 							Games.aiDisconnected(l.getObject(SandboxMessage.class).getUuid(), workerConnection);
+						if (l.getObject(SandboxMessage.class).getEvent() == FINISHED_AI)
+						{
 							AiWrapper ai = Games.getAiWrapper(l.getObject(SandboxMessage.class).getUuid());
 							ai.crashed();
 						}
