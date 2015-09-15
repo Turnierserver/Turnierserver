@@ -13,8 +13,6 @@ import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 import org.pixelgaffer.turnierserver.gamelogic.messages.BuilderSolverChange;
 import org.pixelgaffer.turnierserver.gamelogic.messages.BuilderSolverResponse;
 
-import com.google.gson.reflect.TypeToken;
-
 /**
  * @param <E>
  *            Das AiObject
@@ -38,10 +36,6 @@ public abstract class BuilderSolverLogic<E extends BuilderSolverAiObject<G>, G e
 	 * Die Liste mit den Ais, die ihre momentane Aufgabe schon erfüllt haben
 	 */
 	private List<Ai> finished = new ArrayList<>();
-	
-	public BuilderSolverLogic(TypeToken<BuilderSolverResponse<B, S>> token) {
-		super(token);
-	}
 	
 	/**
 	 * Gibt eine Liste mit allen Ais zurück, die Builden sollen

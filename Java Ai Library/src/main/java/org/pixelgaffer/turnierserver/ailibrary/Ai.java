@@ -9,21 +9,17 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.Map;
 
 import org.pixelgaffer.turnierserver.Logger;
-import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.PropertyUtils;
 
-import com.google.gson.reflect.TypeToken;
-
 /**
- * @param <E>
- *            Der GameState
  * @param <R>
  *            Die Antwort der Spiellogik
+ * @param <U>
+ *            Die Antwort der Ki
  */
-public abstract class Ai<E, R> implements Runnable {
+public abstract class Ai implements Runnable {
 	
 	public static Logger logger = new Logger();
 	
@@ -44,15 +40,8 @@ public abstract class Ai<E, R> implements Runnable {
 	 * Der kummulierte String von System.out
 	 */
 	protected StringBuilder output = new StringBuilder();
-	/**
-	 * Der momentane Gamestate des Servers
-	 */
-	protected Map<String, String> gamestate;
-	
-	private TypeToken<R> token;
-	
-	public Ai(TypeToken<R> token, String[] args) {
-		this.token = token;
+		
+	public Ai(String[] args) {
 		try {
 			PropertyUtils.loadProperties(args.length > 0 ? args[0] : "ai.prop");
 			logger.info("Connecting to " + PropertyUtils.getStringRequired(PropertyUtils.WORKER_HOST) + ":" + PropertyUtils.getIntRequired(PropertyUtils.WORKER_SERVER_PORT));
@@ -79,20 +68,13 @@ public abstract class Ai<E, R> implements Runnable {
 	/**
 	 * Wird aufgerufen, sobald der Server ein Gamestate-Update sendet
 	 * 
-	 * @param state
-	 *            Der Gamestate
+	 * @param answer Die Antwort vom Server
+	 * 
 	 * @return Die Antwort an den Server, null wenn keine gesendet werden soll
 	 *         (der Server wartet bei rundenbasierten Spielen trotzdem auf eine
 	 *         Antwort)
 	 */
-	protected abstract Object update(E state);
-	
-	/**
-	 * Gibt den momentanen Spielzustand zurück
-	 * 
-	 * @return Der momentane Spielzustand
-	 */
-	protected abstract E getState(R change);
+	protected abstract String update(String answer);
 	
 	public final void run() {
 		
@@ -105,9 +87,7 @@ public abstract class Ai<E, R> implements Runnable {
 				logger.info("erhalten");
 				if (line == null) System.exit(0);
 				logger.info("JSON erhalten: " + line);
-				R updates = Parsers.getWorker().parse(line.getBytes("UTF-8"), token.getType());
-				logger.info("Geparsed zu: " + updates);
-				Object response = update(getState(updates));
+				String response = update(line);
 				logger.info("Sende response:" + response);
 				if (response != null) {
 					send(response);
@@ -120,42 +100,38 @@ public abstract class Ai<E, R> implements Runnable {
 	}
 	
 	/**
-	 * Sendet ein Objekt. Wenn ein Objekt nicht geparsed werden kann, oder wenn bei rundenbasierten Spielen mehrere Objekte pro Runde gesendet werden, verliert die ki automatisch
-	 * 
-	 * @param o
-	 */
-	protected final void send(Object o) {
-		try {
-			out.write(Parsers.getWorker().parse(o, true));
-			out.flush();
-		} catch (Exception e) {
-			crash(e);
-		}
-	}
-	
-	/**
 	 * ACHTUNG: Mit dieser Methode gibt die KI automatisch auf
 	 */
 	public final void surrender() {
-		try {
-			out.write(("SURRENDER\n").getBytes(UTF_8));
-			out.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		send("SURRENDER");
 	}
 	
 	/**
 	 * ACHTUNG: Mit dieser Methode signalisiert man einen Crash -> Die KI verliert
 	 */
 	public final void crash(Throwable t) {
+		crash(t.getMessage());
+	}
+	
+	/**
+	 * ACHTUNG: Mit dieser Methode signalisiert man einen Crash -> Die KI verliert
+	 */
+	public final void crash(String reason) {
 		try {
-			out.write(("CRASH " + t.getMessage() + "\n").getBytes(UTF_8));
+			out.write((reason + "\n").getBytes(UTF_8));
 			out.flush();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
+		}
+	}
+	
+	public final void send(String s) {
+		try {
+			out.write((s + "\n").getBytes(UTF_8));
+			out.flush();
+		} catch (Exception e) {
+			crash(e);
 		}
 	}
 	
@@ -173,14 +149,10 @@ public abstract class Ai<E, R> implements Runnable {
 		}
 	}
 	
-	/**
-	 * Tolle Extension-Methode für xtend
-	 * 
-	 * @param builder
-	 *            Der Builder, der geleert werden soll
-	 */
-	protected void clear(StringBuilder builder) {
-		builder.delete(0, builder.length());
+	protected String getOutput() {
+		String result = output.toString().replace("\\n", "\\\\n").replace("\n", "\\n");
+		output.delete(0, output.length());
+		return result;
 	}
 	
 }
