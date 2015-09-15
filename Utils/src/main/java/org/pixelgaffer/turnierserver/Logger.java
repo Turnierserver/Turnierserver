@@ -54,7 +54,7 @@ public class Logger
 		log(o, Category.CRITICAL);
 	}
 	
-	protected void log (Object o, Category category)
+	protected synchronized void log (Object o, Category category)
 	{
 		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
 		StackTraceElement caller = stacktrace[3];
