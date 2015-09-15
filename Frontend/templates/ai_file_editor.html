@@ -29,7 +29,7 @@
 
 		<div class="divider"></div>
 		<button id="save" class="ui basic small {% if readonly %}disabled{% endif %} button" data-content="Du kannst auch speichern, indem du Ctrl + S drückst.">speichern</button>
-		<a id="compile" class="ui basic small {% if readonly %}disabled{% endif %} button" href="{{url_for("authenticated.compile_ai", id=ai.id)}}">Kompilieren</a>
+		<button id="compile" class="ui basic small {% if readonly %}disabled{% endif %} button" data-content="Du kannst auch kompilieren, indem du Ctrl + B drückst.">Kompilieren</button>
 
 	{% if not is_libs %}
 
@@ -58,6 +58,7 @@
 	<script>
 
 	$('#save').popup();
+	$("#compile").popup();
 
 	function upload(editor) {
 		console.log("Saving and Uploading...")
@@ -77,6 +78,24 @@
 			alert(JSON.parse(xhr.responseText).error)
 			$("#code-seg").removeClass("loading");
 		})
+	}
+
+	function compile(editor) {
+		console.log("Saving and Redirecting...")
+		$("#code-seg").addClass("loading")
+		d = {
+			path: "{{submit_path}}",
+			filename: "{{submit_name}}",
+			data: editor.getSession().getValue()
+		}
+		$.post("/api/ai/{{ai.id}}/upload", d).done(function(data) {
+			console.log("File uploaded.", data)
+			location.href = "{{url_for('authenticated.compile_ai', id=ai.id)}}"
+		}).fail(function(xhr, textStatus, errorThrown) {
+			console.log(xhr.responseText.error)
+			alert(JSON.parse(xhr.responseText).error)
+			$("#code-seg").removeClass("loading");
+		});
 	}
 
 
@@ -100,14 +119,15 @@
 	editor.commands.addCommand({
 		name: 'build',
 		bindKey: {win: 'Ctrl-B',  mac: 'Command-B'},
-		exec: function() {
-			location.href = "{{url_for('authenticated.compile_ai', id=ai.id)}}"
-		},
+		exec: compile,
 		readOnly: false
 	});
 
 	$("#save").on("click", function() {
 		upload(editor)
+	});
+	$("#compile").on("click", function() {
+		compile(editor)
 	});
 
 
