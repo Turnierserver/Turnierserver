@@ -50,14 +50,23 @@ public abstract class Ai implements Runnable {
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			out.write((PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR) + PropertyUtils.getStringRequired(PropertyUtils.AI_UUID) + "\n").getBytes(UTF_8));
 			out.flush();
+			
+			boolean debug = PropertyUtils.getBoolean("turnierserver.debug", false);
+			logger.info("Debugging is " + (debug ? "enabled" : "disabled"));
+			PrintStream stdout = System.out;
 			System.setOut(new PrintStream(new OutputStream() {
 				public void write(int b) throws IOException {
 					output.append((char) b);
+					if (debug)
+						stdout.write(b);
 				}
 			}));
+			PrintStream stderr = System.err;
 			System.setErr(new PrintStream(new OutputStream() {
 				public void write(int b) throws IOException {
 					output.append((char) b);
+					if (debug)
+						stderr.write(b);
 				}
 			}));
 		} catch (Exception e) {
@@ -80,13 +89,14 @@ public abstract class Ai implements Runnable {
 		
 		try {
 			while (true) {
+				logger.debug("in mainloop");
 				if (con.isClosed()) {
 					System.exit(0);
 				}
 				String line = in.readLine();
 				logger.info("erhalten");
 				if (line == null) System.exit(0);
-				logger.info("JSON erhalten: " + line);
+				logger.info("erhalten: " + line);
 				String response = update(line);
 				logger.info("Sende response:" + response);
 				if (response != null) {
