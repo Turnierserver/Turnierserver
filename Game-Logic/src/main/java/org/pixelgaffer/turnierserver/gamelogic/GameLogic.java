@@ -192,8 +192,8 @@ public abstract class GameLogic<E extends AiObject, R> {
 		//Wenn der erste Buchstabe eine Zahl ist, wird die Zahl ausgelesen und geparsed
 		int passedMikros = 0;
 		if(string.length() > 0 && Character.isDigit(string.charAt(0))) {
-			passedMikros = Integer.parseInt(string.substring(0, string.indexOf('|')));
-			string = string.substring(string.indexOf('|'));
+			passedMikros = Integer.parseInt(string.substring(0, string.indexOf('|') + 1));
+			string = string.substring(string.indexOf('|') + 1);
 		}
 		else {
 			string = string.substring(1);
