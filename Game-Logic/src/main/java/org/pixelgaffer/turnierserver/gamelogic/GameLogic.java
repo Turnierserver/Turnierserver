@@ -283,7 +283,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 			System.err.println("WUUUUUT?? (sendToAi aufgerufen)");
 			return;
 		}
-		ai.sendMessage(object.toString().getBytes(StandardCharsets.UTF_8));
+		ai.sendMessage((object + "\n").getBytes(StandardCharsets.UTF_8));
 	}
 	
 	/**

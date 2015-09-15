@@ -57,7 +57,6 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 	/** Die erstellte WorkerConnection. */
 	private WorkerConnection workerConnection;
 	
-	
 	public BackendWorkerConnectionHandler (NIOSocket socket)
 	{
 		super(socket);
@@ -148,9 +147,11 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 						if (l.getObject(SandboxMessage.class).getEvent() == TERMINATED_AI)
 							Games.aiTerminated(l.getObject(SandboxMessage.class).getUuid());
 						else
+						{
 							Games.aiDisconnected(l.getObject(SandboxMessage.class).getUuid(), workerConnection);
-						AiWrapper ai = Games.getAiWrapper(l.getObject(SandboxMessage.class).getUuid());
-						ai.getGame().getLogic().aiCrashed(ai);
+							AiWrapper ai = Games.getAiWrapper(l.getObject(SandboxMessage.class).getUuid());
+							ai.crashed();
+						}
 					}
 					else
 						BackendMain.getLogger().critical("Unknown ProtocolLine Mode " + ((char)l.getMode()));

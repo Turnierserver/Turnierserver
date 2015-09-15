@@ -20,10 +20,10 @@ package org.pixelgaffer.turnierserver.sandboxmanager;
 
 import static java.lang.Math.min;
 import static org.pixelgaffer.turnierserver.FileOwnerChanger.changeOwner;
+import static org.pixelgaffer.turnierserver.PropertyUtils.getString;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
 import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.commands;
 import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.etc;
-
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
@@ -37,14 +37,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-
-import lombok.Getter;
-import lombok.SneakyThrows;
-
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.pixelgaffer.turnierserver.Airbrake;
+import lombok.Getter;
+import lombok.SneakyThrows;
 
 public class AiExecutor implements Runnable
 {
@@ -211,6 +209,7 @@ public class AiExecutor implements Runnable
 		aiProps.put("turnierserver.worker.server.aichar", "A");
 		aiProps.put("turnierserver.serializer.compress.worker", getStringRequired("turnierserver.serializer.compress.worker"));
 		aiProps.put("turnierserver.ai.uuid", getJob().getUuid().toString());
+		aiProps.put("turnierserver.debug", getString("turnierserver.debug", "false"));
 		aiProps.store(new FileOutputStream(aiProp), "GENERATED FILE - DO NOT EDIT");
 		makeReadOnly(aiProp, false);
 	}
