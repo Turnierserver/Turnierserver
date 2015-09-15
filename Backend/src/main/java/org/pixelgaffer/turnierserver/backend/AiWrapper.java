@@ -131,6 +131,8 @@ public class AiWrapper implements Ai
 	 */
 	public void crashed ()
 	{
+		BackendMain.getLogger().info("Die KI " + uuid + " ist abgestürtzt");
+		
 		// wenn das Spiel noch läuft der GameLogik mitteilen dass die KI sich
 		// beendet hat
 		if (getGame().getState() == GameState.STARTED)
