@@ -1,7 +1,7 @@
 extends default
 
-for FILES as FILE deploy: upload "${SOURCES}/${FILE}" to "/api/upload_game_libs/${GAMEID}/Python"
+for FILES as FILE deploy: upload "${SOURCES}/${FILE}" to "/api/upload_game_libs/<gameid>/Python"
 
 # außerdem noch den simple player hochladen
 SIMPLE_PLAYER ?= simpleplayer/Python
-deploy: upload "${SIMPLE_PLAYER}" to "/api/upload_simple_player/${GAMEID}/Python"
+deploy: upload "${SIMPLE_PLAYER}" to "/api/upload_simple_player/<gameid>/Python"

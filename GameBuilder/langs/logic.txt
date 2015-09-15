@@ -9,4 +9,4 @@ JAR = ${BINDIR}/${NAME}-Logic-${VERSION}.jar
 absolute JAR
 
 # beim Hochladen nur das Jar-Archiv hochladen
-deploy: upload "${JAR}" to "/api/upload_game_logic/${GAMEID}"
+deploy: upload "${JAR}" to "/api/upload_game_logic/<gameid>"

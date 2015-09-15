@@ -56,6 +56,7 @@ private:
 	QString email;
 	QString pass;
 	QNetworkAccessManager *mgr = 0;
+	bool https = false;
 	
 	// zeugs zum cachen des hosts und der email
 	QSettings pwCache;
