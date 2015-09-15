@@ -14,6 +14,10 @@ import javafx.scene.layout.AnchorPane;
 
 public class ControllerRoot {
 	
+	
+	
+	@FXML public Label lbVersion;
+	
 	@FXML public TabPane tabPane;
 	@FXML public Tab tabStartPage;
 	@FXML public Tab tabKiManagement;
@@ -26,6 +30,7 @@ public class ControllerRoot {
 	AnchorPane anchorRanking;
 	AnchorPane anchorSubmission;
 	
+	
 	MainApp mainApp;
 	
 	
@@ -37,6 +42,8 @@ public class ControllerRoot {
 	public void setMainApp(MainApp app) {
 		mainApp = app;
 		MainApp.cRoot = this;
+		
+		lbVersion.setText("Version: " + MainApp.version);
 		
 		try {
 			FXMLLoader loader = new FXMLLoader();
