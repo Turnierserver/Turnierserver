@@ -188,6 +188,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 										long cpuDiffMikros = Math.round(cpuDiff / 1000.0);
 										String longString = Long.toString(cpuDiffMikros);
 										message.write(longString.getBytes(UTF_8));
+										message.write("|".getBytes(UTF_8));
 										message.write(_line);
 										WorkerMain.getLogger().debug("Forwarde von KI zu Backend: " + new String(message.toByteArray(), UTF_8));
 										MessageForward mf = new MessageForward(type.getUuid(), message.toByteArray());

@@ -6,8 +6,6 @@ import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 
-import com.google.gson.reflect.TypeToken;
-
 /**
  * @param <E>
  *            Das AiObject
@@ -15,10 +13,6 @@ import com.google.gson.reflect.TypeToken;
  *            Die Antwort der Ai
  */
 public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> extends GameStateLogic<E, R> {
-	
-	public AlternatingTurnBasedGameLogic(TypeToken<R> token) {
-		super(token);
-	}
 	
 	/**
 	 * Die Ai, die gerade am Zug ist

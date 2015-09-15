@@ -7,9 +7,6 @@ import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.BuilderSolverAiObject;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.BuilderSolverGameState;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
-import org.pixelgaffer.turnierserver.gamelogic.messages.BuilderSolverResponse;
-
-import com.google.gson.reflect.TypeToken;
 
 /**
  * @param <E>
@@ -22,10 +19,6 @@ import com.google.gson.reflect.TypeToken;
  *            Die SolverResponse
  */
 public abstract class AllBuilderAllSolverLogic<E extends BuilderSolverAiObject<G>, G extends BuilderSolverGameState<?, B, S>, B, S> extends BuilderSolverLogic<E, G, B, S> {
-	
-	public AllBuilderAllSolverLogic(TypeToken<BuilderSolverResponse<B, S>> token) {
-		super(token);
-	}
 	
 	@Override
 	public List<Ai> getBuilder() {

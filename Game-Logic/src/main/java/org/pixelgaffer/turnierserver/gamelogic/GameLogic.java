@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +21,8 @@ import org.pixelgaffer.turnierserver.gamelogic.messages.GameFinished;
 import org.pixelgaffer.turnierserver.gamelogic.messages.RenderData;
 
 import com.google.common.collect.Ordering;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -33,7 +31,6 @@ import lombok.Setter;
  * @param <R>
  *            Die Antwort der Ai
  */
-@NoArgsConstructor
 public abstract class GameLogic<E extends AiObject, R> {
 	
 	public static final Logger logger = new Logger();
@@ -73,17 +70,14 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * Sortiert Ais absteigend nach Score
 	 */
 	private AiOrdering ordering = new AiOrdering();
-	
-	private TypeToken<R> token;
-	
+		
 	@Getter
 	@Setter
 	protected boolean started;
 	
 	private List<Ai> crashed = new ArrayList<>();
 	
-	public GameLogic(TypeToken<R> token) {
-		this.token = token;
+	public GameLogic() {
 		df.setRoundingMode(RoundingMode.HALF_UP);
 	}
 	
@@ -140,6 +134,14 @@ public abstract class GameLogic<E extends AiObject, R> {
 	public abstract float aiTimeout();
 	
 	/**
+	 * Parsed die Antwort der Ki
+	 * 
+	 * @param string Die Antwort der Ki
+	 * @return Das geparste Objekt
+	 */
+	protected abstract R parse(String string) throws ParseException;
+	
+	/**
 	 * Castet das User Object der AI (Util-Methode)
 	 * 
 	 * @param ai
@@ -190,8 +192,11 @@ public abstract class GameLogic<E extends AiObject, R> {
 		//Wenn der erste Buchstabe eine Zahl ist, wird die Zahl ausgelesen und geparsed
 		int passedMikros = 0;
 		if(string.length() > 0 && Character.isDigit(string.charAt(0))) {
-			passedMikros = Integer.parseInt(string.substring(0, string.indexOf('{')));
-			string = string.substring(string.indexOf('{'));
+			passedMikros = Integer.parseInt(string.substring(0, string.indexOf('|')));
+			string = string.substring(string.indexOf('|'));
+		}
+		else {
+			string = string.substring(1);
 		}
 		
 		if (string.equals("SURRENDER")) {
@@ -207,12 +212,9 @@ public abstract class GameLogic<E extends AiObject, R> {
 		logger.debug("Empfangen: " + string);
 		
 		try {
-			receive(Parsers.getWorker().parse(string.getBytes(StandardCharsets.UTF_8), token.getType()), ai, passedMikros);
-		} catch (JsonSyntaxException e) {
-			getUserObject(ai).loose("Die von der Ki gesendete Antwort hatte nicht das richtige Format! Bitte wende dich an turnier@bwinf.de!");
-		} catch (IOException e) {
-			getUserObject(ai).loose("Es gab ein Problem mit der Kommunikation mit deiner Ki! Bitte wende dich an turnier@bwinf.de!");
-			Airbrake.log(e).printStackTrace();
+			receive(parse(string), ai, passedMikros);
+		} catch (ParseException e) {
+			getUserObject(ai).loose("Es trat ein Fehler beim parsen der Nachricht auf: " + string + "!");
 		}
 	}
 	
@@ -281,7 +283,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 			System.err.println("WUUUUUT?? (sendToAi aufgerufen)");
 			return;
 		}
-		ai.sendMessage(Parsers.getWorker().parse(object, false));
+		ai.sendMessage(object.toString().getBytes(StandardCharsets.UTF_8));
 	}
 	
 	/**
