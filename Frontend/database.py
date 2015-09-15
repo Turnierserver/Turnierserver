@@ -833,18 +833,10 @@ def populate():
 		db.session.add_all(o)
 		db.session.commit()
 
-	py = Lang(name="Python", ace_name="python", url="https://www.python.org")
-	java = Lang(name="Java", ace_name="java", url="https://www.java.com")
-	cpp = Lang(name="C++", ace_name="cpp", url="http://isocpp.org")
-	langs = [py, java, cpp]
-	db_save(langs)
-
-	minesweeper = GameType(name="Minesweeper", viz="vizs/minesweeper.html")
-	gametypes = [minesweeper]
-	db_save(gametypes)
+	db_save([Lang(name="Python", ace_name="python", url="https://www.python.org"), Lang(name="Java", ace_name="java", url="https://www.java.com")])
+	db_save([GameType(name="Groker")])
 
 	admin = User(name="admin", admin=True, email="admin@ad.min")
 	admin.set_pw("admin")
 	admin.validate(admin.validation_code)
-
 	db_save([admin])

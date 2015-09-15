@@ -63,6 +63,8 @@ if env.airbrake:
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 def address_string(self):
+	if not hasattr(self, "headers"):
+		return self.client_address[0]
 	forwarded_for = self.headers.get('X-Forwarded-For', '').split(',')
 	if forwarded_for and forwarded_for[0]:
 		return forwarded_for[0]

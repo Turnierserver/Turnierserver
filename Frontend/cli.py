@@ -206,3 +206,35 @@ def manage(manager, app):
 		"Fügt Spieltyp hinzu"
 		name = prompt("Name")
 		_add_gametype(name)
+
+	@manager.command
+	def quickstart():
+		"Richtet DB und FTP ein"
+		if prompt_bool("Datenbank einrichten?"):
+			populate()
+		if not prompt_bool("FTP einrichten?"):
+			return
+		structure = {
+			"Users": {},
+			"Libraries": {l.name: {} for l in Lang.query},
+			"Games": {str(g.id): {
+				l.name: {"example_ai": {}, "ailib": {}} for l in Lang.query
+			} for g in GameType.query},
+			"Data": {},
+			"AIs": {}
+		}
+		@ftp.safe
+		def ftp_safe():
+			def f(k, v, path=""):
+				p = path + k
+				print("MKDIR:", p)
+				ftp.ftp_host.mkdir(p)
+				for k, v in v.items():
+					f(k, v, p + "/")
+			for k, v in structure.items():
+				f(k, v)
+			print("Vergess nicht das Standartbild in AIs/default.png zu setzen.")
+		try:
+			ftp_safe()
+		except ftp.err:
+			print("FTP-Zeugs hat nicht geklappt!")

@@ -1,12 +1,27 @@
 # pacman -S postgresql
 
-im Frontend
+im Frontendordner
 # pip install -r requirements.txt
 
-mkdir /var/cache/worker
-chmod 777 /var/cache/worker
+# mkdir /var/cache/worker
+# chmod 777 /var/cache/worker
 
-yaourt -S isolate-git
+# yaourt -S isolate-git
+
 bei PIs /boot/cmdline.txt cgroup_enable=memory (vor elevator=) einfügen
 
 jdk8 als jdk haben
+
+FTP-Server aufsetzen,
+DB aufsetzen und sicherstellen das UTF-8 unterstützt wird
+
+beides in die _cfg.py eintragen
+$ python3 app.py quickstart ausführen
+
+mit buildNetworkZeugs.sh fast alles Java-Zeugs bauen,
+die AI-Lib manuell bauen
+
+den GameBuilder bauen und symlinken oder so,
+mit dem GameBuilder die GameTypes bauen und hochladen
+
+mit tmux_start.sh das Zeugs starten und testen
