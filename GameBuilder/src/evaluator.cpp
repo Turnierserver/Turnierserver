@@ -351,7 +351,7 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 					QNetworkRequest createRequest("http://" + host + "/api/add_gametype/" + instructions().values().value("NAME"));
 					QEventLoop loop;
 					QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
-					reply = mgr->get(createRequest);
+					reply = mgr->post(createRequest);
 					loop.exec();
 					if (reply->error() != QNetworkReply::NoError)
 					{
