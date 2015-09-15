@@ -77,7 +77,7 @@ class SyncedFTP:
 					except (ftputil.error.FTPError, socket.error) as e:
 						logger.warning(e)
 						self.connect()
-						raise e
+						return meth(*args, **kwargs)
 				except (ftputil.error.FTPError, socket.error) as e:
 					logger.warning(e)
 					logger.info("SL_FTP_E "+str(e))
