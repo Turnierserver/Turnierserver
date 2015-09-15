@@ -4,6 +4,7 @@ package org.pixelgaffer.turnierserver.codr;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+
 import org.apache.commons.io.FileUtils;
 import org.pixelgaffer.turnierserver.codr.utilities.Dialog;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
@@ -19,6 +20,7 @@ import org.pixelgaffer.turnierserver.codr.view.ControllerRanking;
 import org.pixelgaffer.turnierserver.codr.view.ControllerRoot;
 import org.pixelgaffer.turnierserver.codr.view.ControllerStartPage;
 import org.pixelgaffer.turnierserver.codr.view.ControllerSubmission;
+
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
@@ -37,7 +39,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
@@ -63,6 +65,7 @@ public class MainApp extends Application {
 	
 	public static Settings settings;
 	
+	public static String version = "0.01";  //VERSION//VERSION//VERSION//VERSION//VERSION//VERSION//VERSION//
 	
 	public static WebConnector webConnector;
 	public static GameManager gameManager = new GameManager();
@@ -634,11 +637,11 @@ public class MainApp extends Application {
 	 */
 	public void showMainStage() {
 		
-		BorderPane root = new BorderPane();
+		AnchorPane root = new AnchorPane();
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("view/RootLayout.fxml"));
-			root = (BorderPane) loader.load();
+			root = (AnchorPane) loader.load();
 			((ControllerRoot) loader.getController()).setMainApp(this);
 		} catch (IOException e) {
 			ErrorLog.write("RootLayout konnte nicht geladen werden (FXML-Fehler): " + e);

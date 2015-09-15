@@ -1,36 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
 <?import java.lang.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane prefHeight="750.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pixelgaffer.turnierserver.codr.view.ControllerRoot">
-   <center>
-      <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-        <tabs>
-          <Tab fx:id="tabStartPage" text="Start" />
-          <Tab fx:id="tabKiManagement" text="KI-Verwaltung">
-            <content>
-              <AnchorPane fx:id="anchorKiManagement" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-            </content>
-          </Tab>
-            <Tab fx:id="tabGameManagement" text="Spiel">
-               <content>
-                  <AnchorPane fx:id="anchorGameManagement" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-               </content>
-            </Tab>
-            <Tab fx:id="tabRanking" text="Rangliste">
-               <content>
-                  <AnchorPane fx:id="anchorRanking" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-               </content>
-            </Tab>
-            <Tab fx:id="tabSubmission" disable="true" text="Einsendung">
-               <content>
-                  <AnchorPane fx:id="anchorSubmission" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-               </content>
-            </Tab>
-        </tabs>
-      </TabPane>
-   </center>
-</BorderPane>
+<AnchorPane prefHeight="750.0" prefWidth="1200.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.pixelgaffer.turnierserver.codr.view.ControllerRoot">
+  <children>
+    <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <tabs>
+        <Tab fx:id="tabStartPage" text="Start" />
+        <Tab fx:id="tabKiManagement" text="KI-Verwaltung">
+          <content>
+            <AnchorPane fx:id="anchorKiManagement" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+          </content>
+        </Tab>
+        <Tab fx:id="tabGameManagement" text="Spiel">
+          <content>
+            <AnchorPane fx:id="anchorGameManagement" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+          </content>
+        </Tab>
+        <Tab fx:id="tabRanking" text="Rangliste">
+          <content>
+            <AnchorPane fx:id="anchorRanking" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+          </content>
+        </Tab>
+        <Tab fx:id="tabSubmission" disable="true" text="Einsendung">
+          <content>
+            <AnchorPane fx:id="anchorSubmission" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+          </content>
+        </Tab>
+      </tabs>
+    </TabPane>
+    <Label fx:id="lbVersion" text="Version" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="7.0" />
+  </children>
+</AnchorPane>
