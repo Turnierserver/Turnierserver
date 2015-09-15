@@ -234,7 +234,7 @@ public class Jobs
 					pending.remove(cmd);
 				}
 				
-			}).start();
+			}, "JobProcessor").start();
 	}
 	
 	/**

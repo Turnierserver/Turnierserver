@@ -21,6 +21,7 @@ package org.pixelgaffer.turnierserver.backend;
 import java.io.IOException;
 import java.util.UUID;
 import org.pixelgaffer.turnierserver.backend.Games.GameImpl;
+import org.pixelgaffer.turnierserver.backend.Games.GameImpl.GameState;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
@@ -82,8 +83,8 @@ public class AiWrapper implements Ai
 	private String lang;
 	
 	/**
-	 * Wird aufgerufen wenn die KI mit dem Worker verbunden wurde. Wenn alle KIs
-	 * verbunden sind, wird das Spiel endgültig gestartet.
+	 * Wird aufgerufen wenn die KI mit dem Worker verbunden wurde. Wenn alle
+	 * KIs verbunden sind, wird das Spiel endgültig gestartet.
 	 */
 	public void connected ()
 	{
@@ -122,5 +123,23 @@ public class AiWrapper implements Ai
 		BackendMain.getLogger().info("Die KI " + uuid + " wird disconnected");
 		connected = false;
 		connection.killJob(this);
+	}
+	
+	/**
+	 * Wird aufgerufen, wenn die KI, aus welchen Gründen auch immer,
+	 * abgestürtzt ist oder sich beendet hat.
+	 */
+	public void crashed ()
+	{
+		// wenn das Spiel noch läuft der GameLogik mitteilen dass die KI sich
+		// beendet hat
+		if (getGame().getState() == GameState.STARTED)
+			getGame().getLogic().aiCrashed(this);
+			
+		// wenn sich die KI noch gar nicht verbunden hat diese als gestartet
+		// markieren damit
+		// die GameLogik das spiel startet und die KI entsprechend behandelt
+		if (!isConnected())
+			connected();
 	}
 }
