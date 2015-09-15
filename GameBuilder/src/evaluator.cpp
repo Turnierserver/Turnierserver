@@ -196,13 +196,24 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 			}
 			QString destination = match.captured("destination");
 			
-			fprintf(stderr, "WARNUNG: Benutze unsicheres http-Protokol\n");
 			
 			// wenn der NetworkManager 0 ist diesen erstellen
 			if (!mgr)
 			{
 				QTextStream in(stdin);
 				mgr = new QNetworkAccessManager;
+				
+				// testen ob https unterstützt wird
+				QNetworkRequest pingRequest("https://" + host + "/api/ping");
+				pingRequest.setHeader(QNetworkRequest::UserAgentHeader, "GameBuilder (QtNetwork " QT_VERSION_STR ")");
+				QEventLoop loop1;
+				QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop1, SLOT(quit()));
+				QNetworkReply *reply = mgr->get(pingRequest);
+				loop1.exec();
+				https = reply->error() != QNetworkReply::NoError;
+				delete reply;
+				if (!https)
+					fprintf(stderr, "WARNUNG: Benutze unsicheres http-Protokol\n");
 				
 				pwCache.beginGroup("pwCache");
 				
@@ -285,7 +296,7 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 				QJsonDocument doc(json);
 				QEventLoop loop;
 				QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
-				QNetworkReply *reply = mgr->post(loginRequest, doc.toJson(QJsonDocument::Compact));
+				reply = mgr->post(loginRequest, doc.toJson(QJsonDocument::Compact));
 				loop.exec();
 				if (reply->error() != QNetworkReply::NoError)
 				{
@@ -303,7 +314,7 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 			}
 			
 			// schauen ob es den gametype schon gibt
-			bool gameExists = false;
+			bool gameExists = false; int gameid = -1;
 			QNetworkRequest checkRequest("http://" + host + "/api/gametypes"); // sollte https werden
 			QEventLoop loop1;
 			QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop1, SLOT(quit()));
@@ -328,30 +339,26 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 			for (int i = 0; i < gametypes.size(); i++)
 			{
 				QJsonObject gametype = gametypes[i].toObject();
-				if (gametype.value("id").toInt() == instructions().values().value("GAMEID").toInt())
+				
+				if (gametype.value("name").toString() == instructions().values().value("NAME"))
 				{
-					if (gametype.value("name").toString() == instructions().values().value("NAME"))
-						gameExists = true;
-					else
-					{
-						printf("Das Spiel mit der id %d heißt %s statt %s\n", gametype.value("id").toInt(), qPrintable(gametype.value("name").toString()), qPrintable(instructions().values().value("NAME")));
-						printf("Alle Spiele:\n");
-						printf("%s\n", jsonDoc.toJson(QJsonDocument::Indented).data());
-						return 1;
-					}
+					gameExists = true;
+					gameid = gametype.value("id").toInt();
 				}
+				
 			}
 			delete reply;
+			destination.replace("<gameid>", QString::number(gameid));
 			
 			if (!gameExists)
 			{
-				printf("Das Spiel %d (%s) existiert noch nicht. Möchtest du es anlegen? [y/n] ", instructions().values().value("GAMEID").toInt(), qPrintable(instructions().values().value("NAME")));
+				printf("Das Spiel %s existiert noch nicht. Möchtest du es anlegen? [y/n] ", qPrintable(instructions().values().value("NAME")));
 				if (getc(stdin) == 'y')
 				{
 					QNetworkRequest createRequest("http://" + host + "/api/add_gametype/" + instructions().values().value("NAME"));
 					QEventLoop loop;
 					QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
-					reply = mgr->post(createRequest);
+					reply = mgr->post(createRequest, QByteArray());
 					loop.exec();
 					if (reply->error() != QNetworkReply::NoError)
 					{
@@ -369,17 +376,9 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 					}
 					QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
 					QJsonObject gameObj = jsonDoc.object();
-					if (gameObj.value("id").toInt() == instructions().values().value("GAMEID").toInt())
-					{
-						printf("Das neue Spiel wurde erfolgreich angelegt\n");
-						delete reply;
-					}
-					else
-					{
-						printf("Das Spiel wurde unter einer anderen id erstellt: %d. Bitte trage die neue id in die game.txt ein\n", gameObj.value("id").toInt());
-						delete reply;
-						return 1;
-					}
+					gameid = gameObj.value("id").toInt();
+					printf("Das neue Spiel wurde erfolgreich angelegt\n");
+					delete reply;
 				}
 				else
 					return 1;

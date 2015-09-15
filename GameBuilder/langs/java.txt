@@ -1,9 +1,9 @@
 extends javadef
 
 # beim Hochladen das Jar-Archiv und die Bibliotheken hochladen
-deploy: upload "${JAR}" to "/api/upload_game_libs/${GAMEID}/Java"
-for LIBS as LIB deploy: upload "${LIB}" to "/api/upload_game_libs/${GAMEID}/Java"
+deploy: upload "${JAR}" to "/api/upload_game_libs/<gameid>/Java"
+for LIBS as LIB deploy: upload "${LIB}" to "/api/upload_game_libs/<gameid>/Java"
 
 # außerdem noch den simple player hochladen
 SIMPLE_PLAYER ?= simpleplayer/Java
-deploy: upload "${SIMPLE_PLAYER}" to "/api/upload_simple_player/${GAMEID}/Java"
+deploy: upload "${SIMPLE_PLAYER}" to "/api/upload_simple_player/<gameid>/Java"
