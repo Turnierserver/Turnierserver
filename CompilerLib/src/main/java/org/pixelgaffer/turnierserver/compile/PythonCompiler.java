@@ -45,6 +45,10 @@ public class PythonCompiler extends Compiler
 			throws IOException
 	{
 		// den wrapper laden
+		if (p.getProperty("filename") == null) {
+			output.println("FEHLER: filename fehlt in der settings.prop");
+			return false;
+		}
 		try
 		{
 			output.print("> Lade game_wrapper.py herunter ... ");
