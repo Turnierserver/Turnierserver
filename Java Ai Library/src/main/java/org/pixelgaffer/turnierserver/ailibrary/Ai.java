@@ -51,7 +51,7 @@ public abstract class Ai implements Runnable {
 			out.write((PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR) + PropertyUtils.getStringRequired(PropertyUtils.AI_UUID) + "\n").getBytes(UTF_8));
 			out.flush();
 			
-			boolean debug = PropertyUtils.getBoolean("turnierserver.debug", false);
+			boolean debug = true;
 			logger.info("Debugging is " + (debug ? "enabled" : "disabled"));
 			PrintStream stdout = System.out;
 			System.setOut(new PrintStream(new OutputStream() {
@@ -94,15 +94,19 @@ public abstract class Ai implements Runnable {
 					System.exit(0);
 				}
 				String line = in.readLine();
-				logger.info("erhalten");
 				if (line == null) System.exit(0);
-				logger.info("erhalten: " + line);
+				logger.debug("erhalten:");
+				logger.debug(line);
+				logger.debug("==================================================");
 				String response = update(line);
-				logger.info("Sende response:" + response);
+				logger.debug("response:");
+				logger.debug(response);
+				logger.debug("==================================================");
+				response += ":" + output.toString().substring(0, Math.min(1000, output.length())).replace("\\", "\\\\").replace("\n", "\\n");
+				output.delete(0, output.length());
 				if (response != null) {
 					send(response);
 				}
-				logger.info("gesendet");
 			}
 		} catch (Exception e) {
 			crash(e);
@@ -120,7 +124,8 @@ public abstract class Ai implements Runnable {
 	 * ACHTUNG: Mit dieser Methode signalisiert man einen Crash -> Die KI verliert
 	 */
 	public final void crash(Throwable t) {
-		crash(t.getMessage());
+		t.printStackTrace();
+		crash(t.getMessage() == null ? t.toString() : t.getMessage());
 	}
 	
 	/**
@@ -128,7 +133,7 @@ public abstract class Ai implements Runnable {
 	 */
 	public final void crash(String reason) {
 		try {
-			out.write((reason + "\n").getBytes(UTF_8));
+			out.write(("CRASH " + reason + "\n").getBytes(UTF_8));
 			out.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -157,12 +162,6 @@ public abstract class Ai implements Runnable {
 				crash(e);
 			}
 		}
-	}
-	
-	protected String getOutput() {
-		String result = output.toString().replace("\\n", "\\\\n").replace("\n", "\\n");
-		output.delete(0, output.length());
-		return result;
 	}
 	
 }
