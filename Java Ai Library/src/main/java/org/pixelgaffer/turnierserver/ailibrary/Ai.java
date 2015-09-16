@@ -51,7 +51,7 @@ public abstract class Ai implements Runnable {
 			out.write((PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR) + PropertyUtils.getStringRequired(PropertyUtils.AI_UUID) + "\n").getBytes(UTF_8));
 			out.flush();
 			
-			boolean debug = true;
+			boolean debug = PropertyUtils.getBoolean("turnierserver.debug", false);;
 			logger.info("Debugging is " + (debug ? "enabled" : "disabled"));
 			PrintStream stdout = System.out;
 			System.setOut(new PrintStream(new OutputStream() {
