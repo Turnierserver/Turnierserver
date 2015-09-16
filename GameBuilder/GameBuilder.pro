@@ -34,8 +34,9 @@ SOURCES += \
     src/evaluator.cpp
 
 DISTFILES += \
-    langs/default.txt \
     examples/game.txt \
+    langs/default.txt \
+	langs/go.txt \
     langs/logic.txt \
 	langs/java.txt \
     langs/javadef.txt \
