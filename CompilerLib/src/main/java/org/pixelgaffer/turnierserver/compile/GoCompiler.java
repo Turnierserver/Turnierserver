@@ -49,7 +49,6 @@ public class GoCompiler extends Compiler
 			output.println("> Baue Quelldatei(en)  ... ");
 			HashMap<String, String> env = new HashMap<String, String>();
 			env.put("GOPATH", System.getenv("GOPATH") + ":" + srcdir.getAbsolutePath());
-			execute(srcdir, output, env, "bash", "-c", "echo $GOPATH");
 			int returncode = execute(srcdir, output, env, "go", "build", "-o", "executable", "main");
 			if (returncode != 0)
 			{
@@ -68,7 +67,7 @@ public class GoCompiler extends Compiler
 		FileUtils.copyDirectory(srcdir, bindir);
 		output.println("fertig");
 		
-		setCommand("executable");
+		setCommand("./executable");
 		setArguments(new String[] { });
 		
 		return true;

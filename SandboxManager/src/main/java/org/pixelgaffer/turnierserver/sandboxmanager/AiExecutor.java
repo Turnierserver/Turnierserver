@@ -223,6 +223,11 @@ public class AiExecutor implements Runnable
 			command = start.getProperty("command");
 		else
 			command = commands.get(getJob().getLang());
+		if (command.startsWith(".")) {
+			SandboxMain.getLogger().debug("Flagging " + new File(binDir, command.substring(2)).getAbsolutePath() + " as executable");
+			new File(binDir, command.substring(2)).setExecutable(true);
+			command = "/box/bin" + command.substring(1);
+		}
 		cmd.add("--cg");
 		cmd.add("-p");
 		cmd.add("--share-net");

@@ -449,7 +449,7 @@ class AI(db.Model):
 	def copy_example_code(self):
 		if self.latest_version().frozen:
 			self.new_version()
-		self.latest_version().copiled = False
+		self.latest_version().compiled = False
 		self.latest_version().qualified = False
 		db.session.commit()
 		source_dir_base = "Games/{}/{}/example_ai".format(self.type.id, self.lang.name)
@@ -480,6 +480,11 @@ class AI(db.Model):
 
 	def available_extras(self):
 		return Library.query.filter(Library.lang == self.latest_version().lang)
+
+	def modified_str(self, locale="de"):
+		if self.last_modified:
+			return arrow.get(self.last_modified).to('local').humanize(locale=locale)
+		return {"de": "Nie"}.get(locale, "never")
 
 	def __repr__(self):
 		return "<AI(id={}, name={}, user_id={}, lang={}, type={}, modified={}>".format(
