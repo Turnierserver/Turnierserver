@@ -82,6 +82,36 @@ int Evaluator::target(const QString &target)
 		if (ret != 0)
 			return ret;
 	}
+	if (target == "deploy" && mgr)
+	{
+		bool gameExists = false; int gameid = -1;
+		QPair<QString, QByteArray> result = apiGetCall("/api/gametypes");
+		if (!result.first.isEmpty())
+		{
+			fprintf(stderr, "Fehler beim Abrufen der Spiele: %s\n", qPrintable(result.first));
+			return 1;
+		}
+		QJsonDocument jsonDoc = QJsonDocument::fromJson(result.second);
+		QJsonArray gametypes = jsonDoc.array();
+		for (int i = 0; i < gametypes.size(); i++)
+		{
+			QJsonObject gametype = gametypes[i].toObject();
+			
+			if (gametype.value("name").toString() == instructions().values().value("NAME"))
+			{
+				gameExists = true;
+				gameid = gametype.value("id").toInt();
+			}
+			
+		}
+		
+		if (gameExists)
+		{
+			QString error = apiGetCall("/api/make_data_container/" + QString::number(gameid)).first;
+			if (!error.isEmpty())
+				fprintf(stderr, "Fehler beim Bauen dese Daten-Containers (wird von Codr benötigt): %s\n", qPrintable(error));
+		}
+	}
 	return 0;
 }
 

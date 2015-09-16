@@ -155,21 +155,30 @@ def manage(manager, app):
 				print("Failed to sync", ai.name)
 
 	@manager.command
-	def add_admin():
-		"Fügt einen Admin hinzu und zeigt alle aktuellen Admins."
-		print("Aktuelle Admins:")
-		for admin in User.query.filter(User.admin == True).all():
-			print(admin)
-		print()
-		if prompt_bool("Sicher, dass du einen neuen Admin hinzufügen willst?"):
-			name = prompt("Name?")
-			email = prompt("Email?")
-			pw = prompt_pass("Passwort?")
-			admin = User(name=name, email=email, admin=True)
-			admin.set_pw(pw)
-			db.session.add(admin)
-			db.session.commit()
-			print(admin)
+	def manage_admins():
+		"Managed Admins."
+		while True:
+			print("Aktuelle Admins:")
+			for admin in User.query.filter(User.admin == True).all():
+				print(admin)
+			print()
+			if prompt_bool("Willst du einen Admin hinzufügen?"):
+				name = prompt("Name?")
+				email = prompt("Email?")
+				pw = prompt_pass("Passwort?")
+				admin = User(name=name, email=email, admin=True)
+				admin.set_pw(pw)
+				admin.validate(admin.validation_code)
+				admin.name_public = False
+				db.session.add(admin)
+				db.session.commit()
+				print(admin)
+			elif prompt_bool("Willst du einen Admin entfernen?"):
+				for admin in User.query.filter(User.admin == True).all():
+					if prompt_bool("'{}' entfernen?".format(admin)):
+						admin.delete()
+			else:
+				return
 
 	@manager.command
 	def make_data_container(game_id):
@@ -227,8 +236,11 @@ def manage(manager, app):
 		def ftp_safe():
 			def f(k, v, path=""):
 				p = path + k
-				print("MKDIR:", p)
-				ftp.ftp_host.mkdir(p)
+				if not ftp.ftp_host.path.isdir(p):
+					print("MKDIR:", p)
+					ftp.ftp_host.mkdir(p)
+				else:
+					print("EXISTS:", p)
 				for k, v in v.items():
 					f(k, v, p + "/")
 			for k, v in structure.items():
