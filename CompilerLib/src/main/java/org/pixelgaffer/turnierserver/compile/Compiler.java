@@ -272,32 +272,9 @@ public abstract class Compiler
 	
 	private void writeStartProps (File bindir) throws IOException
 	{
-//		PrintWriter start = new PrintWriter(new FileWriter(new File(bindir, "start.ini")));
-//		start.println("# GENERATED FILE - DO NOT EDIT");
-//		start.println("Language=" + getLanguage());
-//		start.println("Command=" + getCommand());
-//		start.print("Arguments=");
-//		for (int i = 0; i < getArguments().length; i++)
-//		{
-//			if (i > 0)
-//				start.print(",");
-//			start.print(getArguments()[i].replace("\\", "\\\\").replace(",", "\\,"));
-//		}
-//		start.println();
-//		start.println("Libraries=" + getLibs().size());
-//		int count = 0;
-//		for (RequiredLibrary lib : getLibs())
-//		{
-//			start.println("[Lib" + count + "]");
-//			start.println("Name=" + lib.name);
-//			start.println("Path=" + lib.path);
-//			count++;
-//		}
-//		start.close();
-		
 		Properties props = new Properties();
 		props.put("language", getLanguage());
-		props.put("Command", getCommand());
+		props.put("command", getCommand());
 		props.put("arguments.size", Integer.toString(getArguments().length));
 		for (int i = 0; i < getArguments().length; i++)
 			props.put("arguments." + i, getArguments()[i]);
@@ -334,7 +311,7 @@ public abstract class Compiler
 		fos.close();
 	}
 	
-	protected int execute (File wd, PrintWriter output, HashMap env, String ... command) throws IOException, InterruptedException
+	protected int execute (File wd, PrintWriter output, HashMap<String, String> env, String ... command) throws IOException, InterruptedException
 	{
 		output.print("$");
 		for (String cmd : command)
