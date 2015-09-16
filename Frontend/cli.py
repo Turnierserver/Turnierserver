@@ -169,6 +169,7 @@ def manage(manager, app):
 				admin = User(name=name, email=email, admin=True)
 				admin.set_pw(pw)
 				admin.validate(admin.validation_code)
+				admin.name_public = False
 				db.session.add(admin)
 				db.session.commit()
 				print(admin)
@@ -235,8 +236,11 @@ def manage(manager, app):
 		def ftp_safe():
 			def f(k, v, path=""):
 				p = path + k
-				print("MKDIR:", p)
-				ftp.ftp_host.mkdir(p)
+				if not ftp.ftp_host.path.isdir(p):
+					print("MKDIR:", p)
+					ftp.ftp_host.mkdir(p)
+				else:
+					print("EXISTS:", p)
 				for k, v in v.items():
 					f(k, v, p + "/")
 			for k, v in structure.items():
