@@ -211,6 +211,8 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 				QNetworkReply *reply = mgr->get(pingRequest);
 				loop1.exec();
 				https = reply->error() != QNetworkReply::NoError;
+				if (https)
+					https = reply->readAll().trimmed() == "Pong";
 				delete reply;
 				if (!https)
 					fprintf(stderr, "WARNUNG: Benutze unsicheres http-Protokol\n");
@@ -287,54 +289,27 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 				pwCache.endGroup();
 				
 				// anmelden
-				QNetworkRequest loginRequest("http://" + host + "/api/login"); // sollte https werden
-				loginRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-				loginRequest.setHeader(QNetworkRequest::UserAgentHeader, "GameBuilder (QtNetwork " QT_VERSION_STR ")");
 				QJsonObject json;
 				json.insert("email", email);
 				json.insert("password", pass);
 				QJsonDocument doc(json);
-				QEventLoop loop;
-				QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
-				reply = mgr->post(loginRequest, doc.toJson(QJsonDocument::Compact));
-				loop.exec();
-				if (reply->error() != QNetworkReply::NoError)
+				QString error = apiPostCall("/api/login", "application/json", doc.toJson(QJsonDocument::Compact)).first;
+				if (!error.isEmpty())
 				{
-					fprintf(stderr, "Fehler beim Anmelden: %s\n", qPrintable(reply->errorString()));
-					if (reply->header(QNetworkRequest::ContentTypeHeader).toString() == "application/json")
-					{
-						QJsonDocument jsondoc = QJsonDocument::fromJson(reply->readAll());
-						QJsonObject json = jsondoc.object();
-						fprintf(stderr, "Fehler: %s\n", qPrintable(json.value("error").toString()));
-					}
-					else
-						fprintf(stderr, "%s\n", reply->readAll().data());
+					fprintf(stderr, "Fehler beim Anmelden: %s\n", qPrintable(error));
 					return 1;
 				}
 			}
 			
 			// schauen ob es den gametype schon gibt
 			bool gameExists = false; int gameid = -1;
-			QNetworkRequest checkRequest("http://" + host + "/api/gametypes"); // sollte https werden
-			QEventLoop loop1;
-			QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop1, SLOT(quit()));
-			QNetworkReply *reply = mgr->get(checkRequest);
-			loop1.exec();
-			if (reply->error() != QNetworkReply::NoError)
+			QPair<QString, QByteArray> result = apiGetCall("/api/gametypes");
+			if (!result.first.isEmpty())
 			{
-				fprintf(stderr, "Fehler beim Abrufen der Spiele: %s\n", qPrintable(reply->errorString()));
-				if (reply->header(QNetworkRequest::ContentTypeHeader).toString() == "application/json")
-				{
-					QJsonDocument jsondoc = QJsonDocument::fromJson(reply->readAll());
-					QJsonObject json = jsondoc.object();
-					fprintf(stderr, "Fehler: %s\n", qPrintable(json.value("error").toString()));
-				}
-				else
-					fprintf(stderr, "%s\n", reply->readAll().data());
-				delete reply;
+				fprintf(stderr, "Fehler beim Abrufen der Spiele: %s\n", qPrintable(result.first));
 				return 1;
 			}
-			QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+			QJsonDocument jsonDoc = QJsonDocument::fromJson(result.second);
 			QJsonArray gametypes = jsonDoc.array();
 			for (int i = 0; i < gametypes.size(); i++)
 			{
@@ -347,7 +322,6 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 				}
 				
 			}
-			delete reply;
 			destination.replace("<gameid>", QString::number(gameid));
 			
 			if (!gameExists)
@@ -355,30 +329,16 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 				printf("Das Spiel %s existiert noch nicht. Möchtest du es anlegen? [y/n] ", qPrintable(instructions().values().value("NAME")));
 				if (getc(stdin) == 'y')
 				{
-					QNetworkRequest createRequest("http://" + host + "/api/add_gametype/" + instructions().values().value("NAME"));
-					QEventLoop loop;
-					QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
-					reply = mgr->post(createRequest, QByteArray());
-					loop.exec();
-					if (reply->error() != QNetworkReply::NoError)
+					result = apiPostCall("/api/add_gametype/" + instructions().values().value("NAME"), "application/octet-stream", "");
+					if (!result.first.isEmpty())
 					{
-						fprintf(stderr, "Fehler beim Erstellen des Spiels: %s\n", qPrintable(reply->errorString()));
-						if (reply->header(QNetworkRequest::ContentTypeHeader).toString() == "application/json")
-						{
-							QJsonDocument jsondoc = QJsonDocument::fromJson(reply->readAll());
-							QJsonObject json = jsondoc.object();
-							fprintf(stderr, "Fehler: %s\n", qPrintable(json.value("error").toString()));
-						}
-						else
-							fprintf(stderr, "%s\n", reply->readAll().data());
-						delete reply;
+						fprintf(stderr, "Fehler beim Erstellen des Spiels: %s\n", qPrintable(result.first));
 						return 1;
 					}
-					QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+					QJsonDocument jsonDoc = QJsonDocument::fromJson(result.second);
 					QJsonObject gameObj = jsonDoc.object();
 					gameid = gameObj.value("id").toInt();
 					printf("Das neue Spiel wurde erfolgreich angelegt\n");
-					delete reply;
 				}
 				else
 					return 1;
@@ -396,41 +356,14 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 			if (!in.open(QIODevice::ReadOnly))
 			{
 				fprintf(stderr, "Kann Datei %s nicht öffnen", qPrintable(file));
-				if (reply->header(QNetworkRequest::ContentTypeHeader).toString() == "application/json")
-				{
-					QJsonDocument jsondoc = QJsonDocument::fromJson(reply->readAll());
-					QJsonObject json = jsondoc.object();
-					fprintf(stderr, "Fehler: %s\n", qPrintable(json.value("error").toString()));
-				}
-				else
-					fprintf(stderr, "%s\n", reply->readAll().data());
-				delete reply;
 				return 1;
 			}
-			QNetworkRequest request("http://" + host + destination); // sollte https werden
-			printf("Uploading %s -> %s\n", qPrintable(file), qPrintable(request.url().toString()));
-			request.setHeader(QNetworkRequest::ContentTypeHeader, "application/octet-stream");
-			request.setHeader(QNetworkRequest::UserAgentHeader, "GameBuilder (QtNetwork " QT_VERSION_STR ")");
-			request.setRawHeader("X-FileName", fileInfo.fileName().toUtf8());
-			QEventLoop loop2;
-			QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop2, SLOT(quit()));
-			reply = mgr->post(request, &in);
-			loop2.exec();
-			if (reply->error() != QNetworkReply::NoError)
+			result = apiPostCall(destination, "application/octet-stream", &in);
+			if (!result.first.isEmpty())
 			{
-				fprintf(stderr, "Fehler beim Hochladen von %s: %s\n", qPrintable(file), qPrintable(reply->errorString()));
-				if (reply->header(QNetworkRequest::ContentTypeHeader).toString() == "application/json")
-				{
-					QJsonDocument jsondoc = QJsonDocument::fromJson(reply->readAll());
-					QJsonObject json = jsondoc.object();
-					fprintf(stderr, "Fehler: %s\n", qPrintable(json.value("error").toString()));
-				}
-				else
-					fprintf(stderr, "%s\n", reply->readAll().data());
-				delete reply;
+				fprintf(stderr, "Fehler beim Hochladen von %s: %s\n", qPrintable(file), qPrintable(result.first));
 				return 1;
 			}
-			delete reply;
 		}
 		else
 		{
@@ -448,6 +381,150 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 		}
 	}
 	return 0;
+}
+
+QPair<QString, QByteArray> Evaluator::apiGetCall(const QUrl &url)
+{
+	QNetworkRequest request(url);
+	printf("GET %s\n", qPrintable(request.url().toString()));
+#ifdef NO_CERT_CHECK
+	if (url.scheme() == "https")
+	{
+		fprintf(stderr, "WARNUNG: Überspringe SSL-Überprüfung\n");
+		QSslConfiguration conf = request.sslConfiguration();
+		conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+		request.setSslConfiguration(conf);
+	}
+#endif
+	request.setHeader(QNetworkRequest::UserAgentHeader, "GameBuilder (QtNetwork " QT_VERSION_STR ")");
+	QEventLoop loop;
+	QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+	QNetworkReply *reply = mgr->get(request);
+	loop.exec();
+	QUrl redirect = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+	if(redirect.isValid() && reply->url() != redirect)
+	{
+	    if(redirect.isRelative())
+	        redirect = reply->url().resolved(redirect);
+		return apiGetCall(redirect);
+	}
+	QByteArray c = reply->readAll();
+	QString error;
+	if (reply->error() != QNetworkReply::NoError)
+	{
+		fprintf(stderr, "Fehler beim Aufrufen von %s: %s\n", qPrintable(request.url().toString()), qPrintable(reply->errorString()));
+		if (reply->header(QNetworkRequest::ContentTypeHeader).toString() == "application/json")
+		{
+			QJsonDocument jsondoc = QJsonDocument::fromJson(c);
+			QJsonObject json = jsondoc.object();
+			error = json.value("error").toString();
+		}
+		else
+		{
+			error = c.data();
+			if (error.isEmpty())
+				error = reply->errorString();
+		}
+	}
+	delete reply;
+	return qMakePair(error, c);
+}
+
+QPair<QString, QByteArray> Evaluator::apiPostCall(const QUrl &url, const QString &contentType, const QByteArray &content)
+{
+	QNetworkRequest request(url);
+	printf("POST %s\n", qPrintable(request.url().toString()));
+#ifdef NO_CERT_CHECK
+	if (url.scheme() == "https")
+	{
+		fprintf(stderr, "WARNUNG: Überspringe SSL-Überprüfung\n");
+		QSslConfiguration conf = request.sslConfiguration();
+		conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+		request.setSslConfiguration(conf);
+	}
+#endif
+	request.setHeader(QNetworkRequest::ContentTypeHeader, contentType);
+	request.setHeader(QNetworkRequest::UserAgentHeader, "GameBuilder (QtNetwork " QT_VERSION_STR ")");
+	QEventLoop loop;
+	QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+	QNetworkReply *reply = mgr->post(request, content);
+	loop.exec();
+	QUrl redirect = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+	if(redirect.isValid() && reply->url() != redirect)
+	{
+	    if(redirect.isRelative())
+	        redirect = reply->url().resolved(redirect);
+		return apiPostCall(redirect, contentType, content);
+	}
+	QByteArray c = reply->readAll();
+	QString error;
+	if (reply->error() != QNetworkReply::NoError)
+	{
+		fprintf(stderr, "Fehler beim Aufrufen von %s: %s\n", qPrintable(request.url().toString()), qPrintable(reply->errorString()));
+		if (reply->header(QNetworkRequest::ContentTypeHeader).toString() == "application/json")
+		{
+			QJsonDocument jsondoc = QJsonDocument::fromJson(reply->readAll());
+			QJsonObject json = jsondoc.object();
+			error = json.value("error").toString();
+		}
+		else
+		{
+			error = reply->readAll().data();
+			if (error.isEmpty())
+				error = reply->errorString();
+		}
+	}
+	delete reply;
+	return qMakePair(error, c);
+}
+
+QPair<QString, QByteArray> Evaluator::apiPostCall(const QUrl &url, const QString &contentType, QFile *file)
+{
+	QNetworkRequest request(url);
+	printf("POST %s\n", qPrintable(request.url().toString()));
+#ifdef NO_CERT_CHECK
+	if (url.scheme() == "https")
+	{
+		fprintf(stderr, "WARNUNG: Überspringe SSL-Überprüfung\n");
+		QSslConfiguration conf = request.sslConfiguration();
+		conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+		request.setSslConfiguration(conf);
+	}
+#endif
+	request.setHeader(QNetworkRequest::ContentTypeHeader, contentType);
+	request.setHeader(QNetworkRequest::UserAgentHeader, "GameBuilder (QtNetwork " QT_VERSION_STR ")");
+	request.setRawHeader("X-FileName", QFileInfo(file->fileName()).fileName().toUtf8());
+	QEventLoop loop;
+	QObject::connect(mgr, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+	QNetworkReply *reply = mgr->post(request, file);
+	loop.exec();
+	QUrl redirect = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+	if(redirect.isValid() && reply->url() != redirect)
+	{
+	    if(redirect.isRelative())
+	        redirect = reply->url().resolved(redirect);
+		return apiPostCall(redirect, contentType, file);
+	}
+	QByteArray c = reply->readAll();
+	QString error;
+	if (reply->error() != QNetworkReply::NoError)
+	{
+		fprintf(stderr, "Fehler beim Aufrufen von %s: %s\n", qPrintable(request.url().toString()), qPrintable(reply->errorString()));
+		if (reply->header(QNetworkRequest::ContentTypeHeader).toString() == "application/json")
+		{
+			QJsonDocument jsondoc = QJsonDocument::fromJson(reply->readAll());
+			QJsonObject json = jsondoc.object();
+			error = json.value("error").toString();
+		}
+		else
+		{
+			error = reply->readAll().data();
+			if (error.isEmpty())
+				error = reply->errorString();
+		}
+	}
+	delete reply;
+	return qMakePair(error, c);
 }
 
 QString Evaluator::createZip(const QDir &dir, QString filename)

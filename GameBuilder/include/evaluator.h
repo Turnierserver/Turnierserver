@@ -20,10 +20,13 @@
 #ifndef EVALUATOR_H
 #define EVALUATOR_H
 
+#include <QFile>
 #include <QList>
 #include <QNetworkAccessManager>
+#include <QPair>
 #include <QSettings>
 #include <QString>
+#include <QUrl>
 
 class BuildInstructions;
 class LangSpec;
@@ -45,6 +48,24 @@ public:
 	
 private:
 	int target(const QString &target, LangSpec *spec);
+	
+	QPair<QString, QByteArray> apiGetCall(const QString &destination)
+	{
+		return apiGetCall(QUrl((https ? "https://" : "http://") + host + destination));
+	}
+	QPair<QString, QByteArray> apiGetCall(const QUrl &url);
+	
+	QPair<QString, QByteArray> apiPostCall(const QString &destination, const QString &contentType, const QByteArray &content)
+	{
+		return apiPostCall(QUrl((https ? "https://" : "http://") + host + destination), contentType, content);
+	}
+	QPair<QString, QByteArray> apiPostCall(const QUrl &url, const QString &contentType, const QByteArray &content);
+	
+	QPair<QString, QByteArray> apiPostCall(const QString &destination, const QString &contentType, QFile *file)
+	{
+		return apiPostCall(QUrl((https ? "https://" : "http://") + host + destination), contentType, file);
+	}
+	QPair<QString, QByteArray> apiPostCall(const QUrl &url, const QString &contentType, QFile *file);
 	
 	QString createZip(const QDir &dir, QString filename = QString());
 	
