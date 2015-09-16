@@ -30,6 +30,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -333,7 +334,7 @@ public abstract class Compiler
 		fos.close();
 	}
 	
-	protected int execute (File wd, PrintWriter output, String ... command) throws IOException, InterruptedException
+	protected int execute (File wd, PrintWriter output, HashMap env, String ... command) throws IOException, InterruptedException
 	{
 		output.print("$");
 		for (String cmd : command)
@@ -346,6 +347,7 @@ public abstract class Compiler
 		output.println();
 		
 		ProcessBuilder pb = new ProcessBuilder(command);
+		pb.environment().putAll(env);
 		File log = Files.createTempFile("compiler", ".txt").toFile();
 		pb.redirectErrorStream(true);
 		pb.redirectOutput(log);
@@ -362,5 +364,10 @@ public abstract class Compiler
 		log.delete();
 		output.flush();
 		return returncode;
+	}
+	
+	protected int execute (File wd, PrintWriter output, String ... command) throws IOException, InterruptedException
+	{
+		return execute(wd, output, new HashMap<String, String>(), command);
 	}
 }
