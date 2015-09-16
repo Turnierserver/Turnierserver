@@ -6,13 +6,20 @@ im Frontendordner
 # mkdir /var/cache/worker
 # chmod 777 /var/cache/worker
 
-# yaourt -S isolate-git
+$ yaourt -S isolate-git
 
 bei PIs /boot/cmdline.txt cgroup_enable=memory (vor elevator=) einfügen
 
 jdk8 als jdk haben
 
-FTP-Server aufsetzen,
+FTP-Server aufsetzen
+$ yaourt -S proftpd
+
+# pacman -S postgresql
+# passwd postgres
+$ su - postgres -c "initdb --locale en_US.UTF-8 -D '/var/lib/postgres/data'"
+$ su - postgres -c "createdb -O postgres -E UTF8 Turnierserver"
+
 DB aufsetzen und sicherstellen das UTF-8 unterstützt wird
 
 beides in die _cfg.py eintragen
