@@ -833,10 +833,15 @@ def populate():
 		db.session.add_all(o)
 		db.session.commit()
 
-	db_save([Lang(name="Python", ace_name="python", url="https://www.python.org"), Lang(name="Java", ace_name="java", url="https://www.java.com")])
+	db_save([
+		Lang(name="Python", ace_name="python", url="https://www.python.org"),
+		Lang(name="Java", ace_name="java", url="https://www.java.com"),
+		Lang(name="Go", ace_name="golang", url="https://www.golang.org")
+	])
 	db_save([GameType(name="Groker")])
 
 	admin = User(name="admin", admin=True, email="admin@ad.min")
 	admin.set_pw("admin")
 	admin.validate(admin.validation_code)
+	admin.name_public = False
 	db_save([admin])

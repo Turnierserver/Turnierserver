@@ -694,7 +694,7 @@ def ai_qualify(id):
 		elif event == "success":
 			d = backend.request(reqid)
 			if "position" in d:
-				if d["position"][str(-ai.type.id) + "v1"] <= d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)]:
+				if d["position"][str(-ai.type.id) + "v1"] < d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)]:
 					logger.info("AI " + str(ai.id) + " '" + str(ai.name) + "' failed its qualification")
 					yield "", "failed"
 					ai.latest_version().qualified = False
@@ -733,7 +733,7 @@ def ai_qualify_blocking(id):
 		if event == "success":
 			d = backend.request(reqid)
 			if "position" in d:
-				if d["position"][str(-ai.type.id) + "v1"] <= d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)]:
+				if d["position"][str(-ai.type.id) + "v1"] < d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)]:
 					ai.latest_version().qualified = False
 					return False
 				else:

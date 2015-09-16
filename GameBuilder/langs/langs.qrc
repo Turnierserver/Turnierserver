@@ -1,9 +1,10 @@
 <RCC>
     <qresource prefix="/langs">
-		<file alias="default">default.txt</file>
-		<file alias="java">java.txt</file>
+        <file alias="default">default.txt</file>
+		<file alias="go">go.txt</file>
+        <file alias="java">java.txt</file>
         <file alias="javadef">javadef.txt</file>
-		<file alias="logic">logic.txt</file>
-		<file alias="python">python.txt</file>
+        <file alias="logic">logic.txt</file>
+        <file alias="python">python.txt</file>
     </qresource>
 </RCC>
