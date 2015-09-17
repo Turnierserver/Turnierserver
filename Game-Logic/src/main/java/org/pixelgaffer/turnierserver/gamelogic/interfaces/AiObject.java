@@ -35,10 +35,10 @@ public class AiObject {
 	
 	public boolean subtractMikros(int mikros) {
 		mikrosLeft -= mikros;
-		if(mikros < 0 && !lost) {
+		if(mikrosLeft <= 0 && !lost) {
 			loose("Die Ki hatte keine Zeit mehr");
 		}
-		return mikros < 0;
+		return mikrosLeft < 0;
 	}
 	
 	public void loose(String reason) {
