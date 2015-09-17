@@ -70,7 +70,8 @@ public abstract class Ai implements Runnable {
 				}
 			}));
 		} catch (Exception e) {
-			crash(e);
+			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 	
@@ -98,7 +99,13 @@ public abstract class Ai implements Runnable {
 				logger.debug("erhalten:");
 				logger.debug(line);
 				logger.debug("==================================================");
-				String response = update(line);
+				String response;
+				try {
+					response = update(line);
+				} catch(Exception e) {
+					crash(e);
+					continue;
+				}
 				logger.debug("response:");
 				logger.debug(response);
 				logger.debug("==================================================");
@@ -109,7 +116,8 @@ public abstract class Ai implements Runnable {
 				}
 			}
 		} catch (Exception e) {
-			crash(e);
+			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 	
