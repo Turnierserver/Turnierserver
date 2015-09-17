@@ -65,7 +65,7 @@ public class MainApp extends Application {
 	
 	public static Settings settings;
 	
-	public static String version = "0.01";  //VERSION//VERSION//VERSION//VERSION//VERSION//VERSION//VERSION//
+	public static String version = "0.02";  //VERSION//VERSION//VERSION//VERSION//VERSION//VERSION//VERSION//
 	
 	public static WebConnector webConnector;
 	public static GameManager gameManager = new GameManager();
