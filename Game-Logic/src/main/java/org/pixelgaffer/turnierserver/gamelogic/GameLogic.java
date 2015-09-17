@@ -170,7 +170,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		}
 		
 		if (getUserObject(ai).lost) {
-			logger.warning("Ai already ended!");
+			logger.warning("Ai already lost!");
 			return;
 		}
 		
@@ -214,7 +214,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		try {
 			receive(parse(string), ai, passedMikros);
 		} catch (ParseException e) {
-			getUserObject(ai).loose("Es trat ein Fehler beim parsen der Nachricht auf: " + string + "!");
+			getUserObject(ai).loose(Airbrake.log("Es trat ein Fehler beim parsen der Nachricht auf: " + string + "!"));
 		}
 	}
 	
@@ -226,7 +226,6 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 */
 	public void sendToFronted(Object object) {
 		if(gameEnded) {
-			System.err.println("WUUUUUT?? (sendToFrontend aufgerufen)");
 			return;
 		}
 		try {
@@ -248,7 +247,6 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 */
 	public void sendRenderData(Object data) {
 		if(gameEnded) {
-			System.err.println("WUUUUUT?? (sendRenderData aufgerufen)");
 			return;
 		}
 		RenderData renderData = new RenderData();
@@ -280,7 +278,6 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 */
 	public void sendToAi(Object object, Ai ai) throws IOException {
 		if(gameEnded) {
-			System.err.println("WUUUUUT?? (sendToAi aufgerufen)");
 			return;
 		}
 		ai.sendMessage((object + "\n").getBytes(StandardCharsets.UTF_8));
@@ -291,7 +288,6 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 */
 	public void endGame(String reason) {
 		if(gameEnded) {
-			System.err.println("WUUUUUT?? (endGame aufgerufen)");
 			return;
 		}
 		gameFinished();
