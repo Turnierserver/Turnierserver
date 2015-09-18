@@ -117,7 +117,12 @@ def _add_gametype(name):
 def _compile_quali_ai(gt):
 	ai = Mock()
 	ai.id = -gt.id
-	ai.lang = Lang.query.filter(Lang.name == "Java").first()
+	lang = next(filter(None, [
+		Lang.query.filter(Lang.name == "Go").first(),
+		Lang.query.filter(Lang.name == "Java").first(),
+		Lang.query.first()
+	]))
+	ai.lang = lang
 	ai.type = gt
 	ai.name = "QualiKi-"+gt.name
 	v = ai.latest_version()
