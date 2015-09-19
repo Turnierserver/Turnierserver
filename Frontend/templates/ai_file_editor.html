@@ -142,21 +142,21 @@
 	$(".ui.dropdown").dropdown({
 		onChange: function(text, value) {
 			editor.setTheme("ace/theme/" + text);
-			Cookies.set("editor_theme", "ace/theme/" + text, { expires: Infinity });
+			Cookies.set("editor_theme", "ace/theme/" + text, { expires: 365 });
 		}
 	});
 
 	$("#increase_font_size").on("click", function() {
 		font_size++;
 		$("#editor").css("font-size", font_size);
-		Cookies.set("editor_font_size", font_size, { expires: Infinity });
+		Cookies.set("editor_font_size", font_size, { expires: 365 });
 	});
 
 	$("#decrease_font_size").on("click", function() {
 		font_size--;
 		font_size = Math.max(font_size, 5);
 		$("#editor").css("font-size", font_size);
-		Cookies.set("editor_font_size", font_size, { expires: Infinity });
+		Cookies.set("editor_font_size", font_size, { expires: 365 });
 	});
 
 	</script>
