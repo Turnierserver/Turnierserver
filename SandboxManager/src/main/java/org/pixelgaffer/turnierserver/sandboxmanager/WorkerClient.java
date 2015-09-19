@@ -149,7 +149,7 @@ public class WorkerClient implements SocketObserver
 				switch (cmd.getCommand()) {
 					case RUN_AI:
 						SandboxMain.getLogger().info("Auftrag erhalten: Run AI "
-								+ cmd.getId() + "v" + cmd.getVersion() + " " + cmd.getUuid());
+								+ cmd.getId() + "v" + cmd.getVersion() + " " + cmd.getUuid() + " " + cmd.getLang());
 						jobControl.addJob(new Job(cmd.getId(), cmd.getVersion(), cmd.getLang(), cmd.getUuid(),
 								cmd.getMaxRuntime()));
 						break;

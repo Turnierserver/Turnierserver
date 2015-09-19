@@ -204,7 +204,7 @@ public class Jobs
 				{
 					try
 					{
-						Games.startQualifyGame(cmd.getGametype(), cmd.getRequestid(), cmd.getLanguage(), cmd.getId());
+						Games.startQualifyGame(cmd.getGametype(), cmd.getRequestid(), cmd.getLanguage(), cmd.getId(), cmd.getQualilang());
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(
 								Parsers.getFrontend().parse(
 										new BackendFrontendCommandProcessed(cmd.getRequestid()), false));
