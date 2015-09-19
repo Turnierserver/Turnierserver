@@ -405,7 +405,7 @@ public class Games
 	 * Startet ein Qualifikations-Spiel des angegebenen Typs mit der
 	 * angegegebenen KI.
 	 */
-	public static Game startQualifyGame (int gameId, int requestId, String language, String ai)
+	public static Game startQualifyGame (int gameId, int requestId, String language, String ai, String qualilang)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
 			ReflectiveOperationException, FTPListParseException
 	{
@@ -418,7 +418,7 @@ public class Games
 		ais[0] = ai;
 		for (int i = 1; i < numAis; i++)
 			ais[1] = "-" + gameId + "v1";
-		String[] languages = { language, "Java" };
+		String[] languages = { language, qualilang };
 		// Spiel starten
 		GameImpl game = new GameImpl(gameId, logic, uuid, requestId, languages, ais);
 		synchronized (lock)

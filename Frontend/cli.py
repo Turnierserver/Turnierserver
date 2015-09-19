@@ -119,6 +119,7 @@ def _compile_quali_ai(gt):
 	ai.id = -gt.id
 	lang = next(filter(None, [
 		Lang.query.filter(Lang.name == "Go").first(),
+		Lang.query.filter(Lang.name == "Python").first(),
 		Lang.query.filter(Lang.name == "Java").first(),
 		Lang.query.first()
 	]))

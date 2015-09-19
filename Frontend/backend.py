@@ -6,7 +6,7 @@ import time
 import threading
 from queue import Queue, Empty
 from weakref import WeakSet
-from database import db, Game, AI
+from database import db, Game, AI, Lang
 from logger import logger
 
 from pprint import pprint
@@ -140,10 +140,20 @@ class Backend(threading.Thread):
 	def request_qualify(self, ai):
 		if ai.latest_version().frozen:
 			logger.error("request_qualify mit freigegebener KI aufgerufen!")
+
+		quali_lang = next(filter(None, [
+			Lang.query.filter(Lang.name == "Go").first(),
+			Lang.query.filter(Lang.name == "Python").first(),
+			Lang.query.filter(Lang.name == "Java").first(),
+			Lang.query.first()
+		]))
+		logger.info("Erwarte, dass Quali-KI als {}-SimplePlayer kompiliert wurde".format(quali_lang.name))
+
 		reqid = self.latest_request_id
 		self.latest_request_id += 1
 		d = {'action': 'qualify', 'id': str(ai.id)+'v'+str(ai.latest_version().version_id),
-			'gametype': ai.type.id, "language": ai.latest_version().lang.name, "requestid": reqid}
+			'gametype': ai.type.id, "language": ai.latest_version().lang.name,
+			"requestid": reqid, "qualilang": quali_lang.name}
 		self.requests[reqid] = d
 		self.send_dict(d)
 		self.requests[reqid]["queue"] = Queue()
@@ -153,7 +163,7 @@ class Backend(threading.Thread):
 		self.requests[reqid]["ai_objs"] = [ai, AI.query.get(-ai.type.id)]
 		self.requests[reqid]["states"] = []
 		self.requests[reqid]["crashes"] = []
-		logger.info("Backend[{}]: Quali-Spiel mit '{}' gestartet".format(reqid, ai.name))
+		logger.info("Backend[{}]: Quali-Spiel mit '{}' ({}) gestartet".format(reqid, ai.name, ai.lang.name))
 		return reqid
 
 	def send_dict(self, d):
