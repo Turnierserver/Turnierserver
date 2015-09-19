@@ -51,7 +51,7 @@ $("#gametype").dropdown({
 		console.log(text, value, elem)
 		if ($(elem).hasClass("gt_select")) {
 			console.log("setting gt to " + text);
-			Cookies.set("gametype", text, { expires: Infinity });
+			Cookies.set("gametype", text, { expires: 365 });
 			location.reload();
 		}
 	}
