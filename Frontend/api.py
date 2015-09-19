@@ -694,14 +694,14 @@ def ai_qualify(id):
 		elif event == "success":
 			d = backend.request(reqid)
 			if "position" in d:
-				if d["position"][str(-ai.type.id) + "v1"] < d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)]:
-					logger.info("AI " + str(ai.id) + " '" + str(ai.name) + "' failed its qualification")
-					yield "", "failed"
-					ai.latest_version().qualified = False
-				else:
+				if d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)] > d["position"][str(-ai.type.id) + "v1"]:
 					yield "", "qualified"
 					ai.latest_version().compiled = True
 					ai.latest_version().qualified = True
+				else:
+					logger.info("AI " + str(ai.id) + " '" + str(ai.name) + "' failed its qualification")
+					yield "", "failed"
+					ai.latest_version().qualified = False
 			else:
 				logger.warning("no position in finished ai_qualify")
 			db.session.commit()
@@ -733,13 +733,14 @@ def ai_qualify_blocking(id):
 		if event == "success":
 			d = backend.request(reqid)
 			if "position" in d:
-				if d["position"][str(-ai.type.id) + "v1"] < d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)]:
-					ai.latest_version().qualified = False
-					return False
-				else:
+				if d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)] > d["position"][str(-ai.type.id) + "v1"]:
+					yield "", "qualified"
 					ai.latest_version().compiled = True
 					ai.latest_version().qualified = True
-					return True
+				else:
+					logger.info("AI " + str(ai.id) + " '" + str(ai.name) + "' failed its qualification")
+					yield "", "failed"
+					ai.latest_version().qualified = False
 			else:
 				logger.warning("no position in finished ai_qualify_blocking")
 			db.session.commit()
@@ -1199,7 +1200,10 @@ def lib(lang, name, version):
 @api.route("/lib_upload/<string:lang>/<string:name>/<string:version>", methods=["POST"])
 @json_out
 @authenticated
-def upload_lib(lang, name, version):
+def upload_lib(lang, name, version, hidden=True):
+	if not Lang.query.filter(Lang.name == lang).first():
+		return CommonErrors.INVALID_ID
+
 	if request.mimetype == "multipart/form-data":
 		if len(request.files) != 1:
 			return {"error": "Invalid number of files attached."}, 400
@@ -1226,6 +1230,13 @@ def upload_lib(lang, name, version):
 
 	if not ftp.upload_tree(tmpdir, p):
 		return CommonErrors.FTP_ERROR
+
+	if not hidden:
+		l = Library.query.filter(Library.name == name).first()
+		if not l:
+			l = Library(name=name, lang_id=Lang.query.filter(Lang.name==lang).first().id)
+			db.session.add(l)
+		l.display_name = l.name + " " + version
 
 	return {"error": False}, 200
 

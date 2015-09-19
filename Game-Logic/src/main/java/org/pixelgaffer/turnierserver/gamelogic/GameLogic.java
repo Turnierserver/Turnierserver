@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -65,12 +66,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	protected boolean gameEnded = false;
 	
 	protected DecimalFormat df = new DecimalFormat("#.##");
-	
-	/**
-	 * Sortiert Ais absteigend nach Score
-	 */
-	private AiOrdering ordering = new AiOrdering();
-		
+
 	@Getter
 	@Setter
 	protected boolean started;
@@ -284,7 +280,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	}
 	
 	/**
-	 * Beendet das Spiel (Die scores müssen davor gesetzt werden!)
+	 * Beendet das Spiel (Die Scores müssen davor gesetzt werden!)
 	 */
 	public void endGame(String reason) {
 		if(gameEnded) {
@@ -298,14 +294,17 @@ public abstract class GameLogic<E extends AiObject, R> {
 		message.position = new HashMap<>();
 		message.requestid = game.getFrontend().getRequestId();
 		message.reason = reason;
+
+		List<Integer> scores = new ArrayList<>();
+		for (Ai ai : game.getAis()) {
+			scores.add(getUserObject(ai).score);
+		}
+		Collections.sort(scores);
 		
-		int pos = 1;
-		
-		for (Ai ai : ordering.sortedCopy(game.getAis())) {
+		for (Ai ai : game.getAis()) {
 			message.leftoverMillis.put(ai.getId(), getUserObject(ai).mikrosLeft);
 			message.scores.put(ai.getId(), getUserObject(ai).score);
-			message.position.put(ai.getId(), pos);
-			pos++;
+			message.position.put(ai.getId(), scores.indexOf(getUserObject(ai).score) + 1);
 		}
 		
 		sendToFronted(message);
@@ -376,24 +375,6 @@ public abstract class GameLogic<E extends AiObject, R> {
 		}
 		if(!getUserObject(ai).lost) {
 			getUserObject(ai).loose("Die Ki hat sich disconnected. Dies kann daran liegen, dass ein Crash nicht abgefangen wurde, oder dass die Ki ihre verfügbare Zeit verbraucht hat und von der Sandbox terminiert wurde.");
-		}
-	}
-	
-	/**
-	 * Sortiert Ais aufsteigend nach Score
-	 * 
-	 */
-	public static class AiOrdering extends Ordering<Ai> {
-		
-		@Override
-		public int compare(Ai ai1, Ai ai2) {
-			AiObject o1 = ai1.getObject();
-			AiObject o2 = ai2.getObject();
-			// bei gleichen Punktzahlen die Spielzeit mit einbeziehen
-			if (Integer.compare(o2.score, o1.score) == 0) {
-				return Integer.compare(o2.mikrosLeft, o1.mikrosLeft);
-			}
-			return Integer.compare(o2.score, o1.score);
 		}
 	}
 	
