@@ -389,6 +389,10 @@ public abstract class GameLogic<E extends AiObject, R> {
 		public int compare(Ai ai1, Ai ai2) {
 			AiObject o1 = ai1.getObject();
 			AiObject o2 = ai2.getObject();
+			// bei gleichen Punktzahlen die Spielzeit mit einbeziehen
+			if (Integer.compare(o2.score, o1.score) == 0) {
+				return Integer.compare(o2.mikrosLeft, o1.mikrosLeft);
+			}
 			return Integer.compare(o2.score, o1.score);
 		}
 	}
