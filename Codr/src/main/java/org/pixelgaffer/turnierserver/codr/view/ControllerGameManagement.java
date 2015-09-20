@@ -241,6 +241,16 @@ public class ControllerGameManagement {
 	
 
 	@FXML void clickStartGameOnline() {
+		
+		if (lvPlayerOnline1.getSelectionModel().getSelectedItem() == null || lvPlayerOnline2.getSelectionModel().getSelectedItem() == null) {
+			Dialog.error("Bitte erst die KIs auswählen");
+			return;
+		}
+		if (lvPlayerOnline1.getSelectionModel().getSelectedItem().id == lvPlayerOnline2.getSelectionModel().getSelectedItem().id){
+			Dialog.error("Bitte nicht die gleiche KI auswählen");
+			return;
+		}
+		
 		Task<GameOnline> challenge = new Task<GameOnline>() {
 			public GameOnline call() {
 				try {
@@ -276,7 +286,7 @@ public class ControllerGameManagement {
 			Dialog.error("Bitte erst die KIs auswählen");
 			return;
 		}
-		if (lvPlayerOffline1.getSelectionModel().getSelectedItem() == lvPlayerOffline2.getSelectionModel().getSelectedItem()){
+		if (lvPlayerOffline1.getSelectionModel().getSelectedItem().equals(lvPlayerOffline2.getSelectionModel().getSelectedItem())){
 			Dialog.error("Bitte nicht die gleiche KI auswählen");
 			return;
 		}
