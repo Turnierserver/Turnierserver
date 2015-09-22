@@ -1,5 +1,3 @@
-# pacman -S postgresql
-
 im Frontendordner
 # pip install -r requirements.txt
 
@@ -11,6 +9,9 @@ $ yaourt -S isolate-git
 bei PIs /boot/cmdline.txt cgroup_enable=memory (vor elevator=) einfügen
 
 jdk8 als jdk haben
+
+für den GameBuilder
+# pacman -S quazip-qt5
 
 FTP-Server aufsetzen
 $ yaourt -S proftpd
