@@ -10,8 +10,7 @@ def properties_to_dict(s):
 	d = {}
 	for line in s.split("\n"):
 		if not line.startswith("#") and len(line) > 2:
-			key = line.split("=")[0]
-			val = "=".join(line.split("=")[1:])
+			key, _, val = line.partition("=")
 			if val.isdigit():
 				val = int(val)
 			if val in ["true", "false"]:

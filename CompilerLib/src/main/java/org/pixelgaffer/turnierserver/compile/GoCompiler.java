@@ -48,7 +48,10 @@ public class GoCompiler extends Compiler
 		{
 			output.println("> Baue Quelldatei(en)  ... ");
 			HashMap<String, String> env = new HashMap<String, String>();
-			env.put("GOPATH", System.getenv("GOPATH") + ":" + srcdir.getAbsolutePath());
+			if (System.getenv("GOPATH") != null)
+				env.put("GOPATH", System.getenv("GOPATH") + ":" + srcdir.getAbsolutePath());
+			else
+				env.put("GOPATH", srcdir.getAbsolutePath());
 			int returncode = execute(srcdir, output, env, "go", "build", "-o", "executable", "main");
 			if (returncode != 0)
 			{
