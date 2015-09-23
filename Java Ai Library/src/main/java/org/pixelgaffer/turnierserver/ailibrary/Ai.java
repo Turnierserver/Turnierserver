@@ -20,9 +20,9 @@ import org.pixelgaffer.turnierserver.PropertyUtils;
  *            Die Antwort der Ki
  */
 public abstract class Ai implements Runnable {
-	
+
 	public static Logger logger = new Logger();
-	
+
 	/**
 	 * Die Connection zum Worker
 	 */
@@ -35,12 +35,12 @@ public abstract class Ai implements Runnable {
 	 * Der BufferedReader der Connection
 	 */
 	private BufferedReader in;
-	
+
 	/**
 	 * Der kummulierte String von System.out
 	 */
 	protected StringBuilder output = new StringBuilder();
-		
+
 	public Ai(String[] args) {
 		try {
 			PropertyUtils.loadProperties(args.length > 0 ? args[0] : "ai.prop");
@@ -50,7 +50,7 @@ public abstract class Ai implements Runnable {
 			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			out.write((PropertyUtils.getStringRequired(PropertyUtils.WORKER_SERVER_AICHAR) + PropertyUtils.getStringRequired(PropertyUtils.AI_UUID) + "\n").getBytes(UTF_8));
 			out.flush();
-			
+
 			boolean debug = PropertyUtils.getBoolean("turnierserver.debug", false);;
 			logger.info("Debugging is " + (debug ? "enabled" : "disabled"));
 			PrintStream stdout = System.out;
@@ -74,31 +74,27 @@ public abstract class Ai implements Runnable {
 			System.exit(1);
 		}
 	}
-	
+
 	/**
 	 * Wird aufgerufen, sobald der Server ein Gamestate-Update sendet
-	 * 
+	 *
 	 * @param answer Die Antwort vom Server
-	 * 
+	 *
 	 * @return Die Antwort an den Server, null wenn keine gesendet werden soll
 	 *         (der Server wartet bei rundenbasierten Spielen trotzdem auf eine
 	 *         Antwort)
 	 */
 	protected abstract String update(String answer);
-	
+
 	public final void run() {
-		
+
 		try {
 			while (true) {
-				logger.debug("in mainloop");
 				if (con.isClosed()) {
 					System.exit(0);
 				}
 				String line = in.readLine();
 				if (line == null) System.exit(0);
-				logger.debug("erhalten:");
-				logger.debug(line);
-				logger.debug("==================================================");
 				String response;
 				try {
 					response = update(line);
@@ -106,9 +102,6 @@ public abstract class Ai implements Runnable {
 					crash(e);
 					continue;
 				}
-				logger.debug("response:");
-				logger.debug(response);
-				logger.debug("==================================================");
 				response += ":" + output.toString().substring(0, Math.min(1000, output.length())).replace("\\", "\\\\").replace("\n", "\\n");
 				output.delete(0, output.length());
 				if (response != null) {
@@ -120,14 +113,14 @@ public abstract class Ai implements Runnable {
 			System.exit(1);
 		}
 	}
-	
+
 	/**
 	 * ACHTUNG: Mit dieser Methode gibt die KI automatisch auf
 	 */
 	public final void surrender() {
 		send("SURRENDER");
 	}
-	
+
 	/**
 	 * ACHTUNG: Mit dieser Methode signalisiert man einen Crash -> Die KI verliert
 	 */
@@ -135,7 +128,7 @@ public abstract class Ai implements Runnable {
 		t.printStackTrace();
 		crash(t.getMessage() == null ? t.toString() : t.getMessage());
 	}
-	
+
 	/**
 	 * ACHTUNG: Mit dieser Methode signalisiert man einen Crash -> Die KI verliert
 	 */
@@ -148,7 +141,7 @@ public abstract class Ai implements Runnable {
 			System.exit(1);
 		}
 	}
-	
+
 	public final void send(String s) {
 		try {
 			out.write((s + "\n").getBytes(UTF_8));
@@ -157,7 +150,7 @@ public abstract class Ai implements Runnable {
 			crash(e);
 		}
 	}
-	
+
 	/**
 	 * Muss in der Main-Methode aufgerufen werden, damit die KI sich zum Worker verbinden kann
 	 */
@@ -171,5 +164,5 @@ public abstract class Ai implements Runnable {
 			}
 		}
 	}
-	
+
 }
