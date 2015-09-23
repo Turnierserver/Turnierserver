@@ -21,10 +21,23 @@ package org.pixelgaffer.turnierserver.compile;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.pixelgaffer.turnierserver.compile.LibraryDownloader.LibraryDownloaderMode;
+import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
+
+import it.sauronsoftware.ftp4j.FTPAbortedException;
+import it.sauronsoftware.ftp4j.FTPDataTransferException;
+import it.sauronsoftware.ftp4j.FTPException;
+import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
+import it.sauronsoftware.ftp4j.FTPListParseException;
 
 public class GoCompiler extends Compiler
 {
@@ -43,15 +56,35 @@ public class GoCompiler extends Compiler
 							LibraryDownloader libraryDownloader)
 			throws IOException
 	{
-		// den wrapper laden
+
+		output.print("> Kopiere Wrapper ... ");
+		Path wrapperdir = Files.createTempDirectory("go-wrapper-");
+		File wrappersrc = new File(wrapperdir.toFile(), "src/main");
+		Files.createDirectories(wrappersrc.toPath());
+		try {
+			DatastoreFtpClient.retrieveAiLibrary(getGame(), getLanguage(), wrappersrc);
+		} catch (FTPIllegalReplyException | FTPException | FTPDataTransferException | FTPAbortedException
+				| FTPListParseException e) {
+			output.println("FTP-Fehler " + e.toString());
+			return false;
+		}
+		output.println("fertig");
+
 		try
 		{
 			output.println("> Baue Quelldatei(en)  ... ");
 			HashMap<String, String> env = new HashMap<String, String>();
+			List<String> gopath = new ArrayList<>();
 			if (System.getenv("GOPATH") != null)
-				env.put("GOPATH", System.getenv("GOPATH") + ":" + srcdir.getAbsolutePath());
-			else
-				env.put("GOPATH", srcdir.getAbsolutePath());
+				gopath = new ArrayList<>(Arrays.asList(System.getenv("GOPATH").split(":")));
+
+			gopath.add(srcdir.getAbsolutePath());
+			
+			if (wrapperdir != null)
+				gopath.add(wrapperdir.toFile().getAbsolutePath());
+
+			env.put("GOPATH", String.join(":", gopath));
+			
 			int returncode = execute(srcdir, output, env, "go", "build", "-o", "executable", "main");
 			if (returncode != 0)
 			{
@@ -66,8 +99,12 @@ public class GoCompiler extends Compiler
 			return false;
 		}
 		
-		output.print("> Kopiere Ordner ... ");
-		FileUtils.copyDirectory(srcdir, bindir);
+		output.print("> Räume auf ... ");
+		FileUtils.deleteDirectory(wrapperdir.toFile());
+		output.println("fertig");
+		
+		output.print("> Kopiere Executable ... ");
+		FileUtils.copyFile(new File(srcdir, "executable"), new File(bindir, "executable"));
 		output.println("fertig");
 		
 		setCommand("./executable");
