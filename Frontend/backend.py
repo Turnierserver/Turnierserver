@@ -285,6 +285,9 @@ class Backend(threading.Thread):
 		for d in self.requests[id]["crashes"]:
 			yield d, "crash"
 
+		if "finished_game_obj" in self.requests[id]:
+			yield (self.requests[id]["finished_game_obj"], "finished_game_obj")
+
 		queue = Queue()
 		self.requests[id]["queues"].add(queue)
 		while True:
@@ -302,6 +305,9 @@ class Backend(threading.Thread):
 				else:
 					logger.debug("no data in frame. " + str(update))
 				if "finished_game_obj" in d:
+					if not d["finished_game_obj"]:
+						logger.error("finished_game_obj is None")
+						continue
 					yield (d["finished_game_obj"], "finished_game_obj")
 			except Empty:
 				return
