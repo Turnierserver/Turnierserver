@@ -28,10 +28,10 @@ char* removeComment (char *s)
 	return s;
 }
 
-char* escape (char *s)
+char* escape (const char *s)
 {
 	char *e = malloc(strlen(s) * 2 + 1); // worst case
-	char *p = s; char *r = e;
+	const char *p = s; char *r = e;
 	while (*p)
 	{
 		if (*p == '\n')
@@ -60,10 +60,10 @@ char* escape (char *s)
 	return e;
 }
 
-char* unescape (char *s, char *cont)
+char* unescape (const char *s, char *cont)
 {
 	char *u = malloc(strlen(s) + 1);
-	char *p = s; char *r = u;
+	const char *p = s; char *r = u;
 	char esc = 0;
 	while (*p)
 	{
