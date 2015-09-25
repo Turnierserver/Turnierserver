@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/langs">
+		<file alias="c">c.txt</file>
         <file alias="default">default.txt</file>
 		<file alias="go">go.txt</file>
         <file alias="java">java.txt</file>

@@ -30,9 +30,11 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
@@ -149,6 +151,9 @@ public abstract class Compiler
 	@Setter(AccessLevel.PROTECTED)
 	private String arguments[];
 	
+	@Getter
+	private final Map<String, String> environment = new HashMap<>();
+	
 	public abstract String getLanguage();
 	
 	@AllArgsConstructor
@@ -190,8 +195,8 @@ public abstract class Compiler
 		{
 			pw.println("> Fehler beim Lesen der Datei settings.prop: " + ioe);
 			pw.close();
-			srcdir.delete();
-			bindir.delete();
+			delete(srcdir);
+			delete(bindir);
 			return new CompileResult(false, output);
 		}
 		
@@ -199,7 +204,7 @@ public abstract class Compiler
 		boolean success = compile(srcdir, bindir, p, pw, libs);
 		
 		// aufräumen
-		srcdir.delete();
+		delete(srcdir);
 		
 		if (success)
 		{
@@ -225,11 +230,11 @@ public abstract class Compiler
 			DatastoreFtpClient.storeAi(getAi(), getVersion(), new FileInputStream(archive));
 			
 			// aufräumen
-			archive.delete();
+			delete(archive);
 		}
 		
 		// aufräumen
-		bindir.delete();
+		delete(bindir);
 		
 		pw.close();
 		return new CompileResult(success, output);
@@ -286,6 +291,14 @@ public abstract class Compiler
 			props.put("libraries." + count + ".path", lib.path);
 			count++;
 		}
+		props.put("environment.size", Integer.toString(getEnvironment().size()));
+		count = 0;
+		for (String key : getEnvironment().keySet())
+		{
+			props.put("environment." + count + ".key", key);
+			props.put("environment." + count + ".value", getEnvironment().get(key));
+			count++;
+		}
 		props.store(new FileOutputStream(new File(bindir, "start.prop")), "GENERATED FILE - DO NOT EDIT");
 	}
 	
@@ -311,7 +324,18 @@ public abstract class Compiler
 		fos.close();
 	}
 	
-	protected int execute (File wd, PrintWriter output, HashMap<String, String> env, String ... command) throws IOException, InterruptedException
+	protected void delete (File f)
+	{
+		if (f.isDirectory())
+		{
+			for (File f0 : f.listFiles())
+				delete(f0);
+		}
+		f.delete();
+	}
+	
+	protected int execute (File wd, PrintWriter output, Map<String, String> env, List<String> command)
+			throws IOException, InterruptedException
 	{
 		output.print("$");
 		for (String cmd : command)
@@ -343,8 +367,21 @@ public abstract class Compiler
 		return returncode;
 	}
 	
-	protected int execute (File wd, PrintWriter output, String ... command) throws IOException, InterruptedException
+	protected int execute (File wd, PrintWriter output, Map<String, String> env, String ... command)
+			throws IOException, InterruptedException
+	{
+		return execute(wd, output, env, Arrays.asList(command));
+	}
+	
+	protected int execute (File wd, PrintWriter output, List<String> command)
+			throws IOException, InterruptedException
 	{
 		return execute(wd, output, new HashMap<String, String>(), command);
+	}
+	
+	protected int execute (File wd, PrintWriter output, String ... command)
+			throws IOException, InterruptedException
+	{
+		return execute(wd, output, new HashMap<String, String>(), Arrays.asList(command));
 	}
 }

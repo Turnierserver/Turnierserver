@@ -21,7 +21,7 @@ package org.pixelgaffer.turnierserver.sandboxmanager;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.UUID;
-
+import org.pixelgaffer.turnierserver.Airbrake;
 import lombok.Getter;
 
 public class JobControl
@@ -50,7 +50,16 @@ public class JobControl
 	
 	public void doJob (Job job)
 	{
-		current = new AiExecutor(job, this);
+		try
+		{
+			current = new AiExecutor(job, this);
+		}
+		catch (Exception e)
+		{
+			Airbrake.log(e).printStackTrace();
+			jobFinished(job.getUuid());
+			SandboxMain.getClient().sendMessage(job.getUuid(), 'T');
+		}
 		new Thread(current, "AiExecutor-Thread").start();
 	}
 	
@@ -72,8 +81,7 @@ public class JobControl
 			if ((current != null) && (current.getJob().getUuid().equals(uuid)))
 				current.terminateAi();
 			else
-				while (queue.remove(new Job(uuid)))
-					;
+				while (queue.remove(new Job(uuid)));
 		}
 	}
 	
@@ -84,8 +92,7 @@ public class JobControl
 			if ((current != null) && (current.getJob().getUuid().equals(uuid)))
 				current.killAi();
 			else
-				while (queue.remove(new Job(uuid)))
-					;
+				while (queue.remove(new Job(uuid)));
 		}
 	}
 	
@@ -102,6 +109,7 @@ public class JobControl
 				doJob(queue.pollFirst());
 		}
 		else
-			SandboxMain.getLogger().warning("Aktueller Job ist " + current.getJob().getUuid() + " aber " + uuid + " wurde beendet");
+			SandboxMain.getLogger()
+					.warning("Aktueller Job ist " + current.getJob().getUuid() + " aber " + uuid + " wurde beendet");
 	}
 }

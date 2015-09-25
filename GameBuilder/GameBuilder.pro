@@ -40,7 +40,8 @@ DISTFILES += \
     langs/logic.txt \
 	langs/java.txt \
     langs/javadef.txt \
-    langs/python.txt
+    langs/python.txt \
+    langs/c.txt
 
 RESOURCES += \
     langs/langs.qrc \

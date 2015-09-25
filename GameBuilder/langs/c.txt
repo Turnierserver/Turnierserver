@@ -1,0 +1,25 @@
+extends default
+
+# der Befehl des Compilers
+COMPILER = gcc
+
+# das shared object
+SOFILE = ${BINDIR}/libwrapper.so
+absolute SOFILE
+
+# kompilieren
+FLAGS = -fPIC ${DEBUG ? "-g" : "-O2"} --shared
+FLAGS += -o "${BINDIR}/libwrapper.so"
+for FILES as FILE FLAGS += "${SOURCES}/${FILE}" 
+for LIBS as LIB FLAGS += "${LIB}"
+for INCLUDEPATH as PATH FLAGS += "-I${PATH}"
+build: exec ${COMPILER} ${FLAGS}
+
+# beim Hochladen die Header, die Libs und das SO hochladen
+deploy: upload "${SOFILE}" to "/api/upload_game_libs/<gameid>/C"
+for LIBS as LIB deploy: upload "${LIB}" to "/api/upload_game_libs/<gameid>/C"
+for HEADERS as HEADER deploy: upload "${HEADER}" to "/api/upload_game_libs/<gameid>/C"
+
+# außerdem noch den simple player hochladen
+SIMPLE_PLAYER ?= simpleplayer/C
+deploy: upload "${SIMPLE_PLAYER}" to "/api/upload_simple_player/<gameid>/C"

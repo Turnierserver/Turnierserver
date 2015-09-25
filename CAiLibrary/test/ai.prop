@@ -1,0 +1,6 @@
+turnierserver.worker.host=192.168.2.101
+turnierserver.worker.server.port=1337
+turnierserver.worker.server.aichar=A
+turnierserver.serializer.compress.worker=false
+turnierserver.ai.uuid=3941eed2-5c60-4689-964d-af9460e88eca
+turnierserver.debug=true

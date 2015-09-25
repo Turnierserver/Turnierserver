@@ -42,12 +42,11 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.pixelgaffer.turnierserver.Airbrake;
 import lombok.Getter;
-import lombok.SneakyThrows;
 
 public class AiExecutor implements Runnable
 {
 	@SuppressWarnings("serial")
-	public class AiStartException extends RuntimeException
+	public class AiStartException extends Exception
 	{
 		public AiStartException ()
 		{
@@ -119,13 +118,21 @@ public class AiExecutor implements Runnable
 		}
 	}
 	
-	@SneakyThrows
 	@Override
 	public void run ()
 	{
-		download();
-		generateProps();
-		executeAi();
+		try
+		{
+			download();
+			generateProps();
+			executeAi();
+		}
+		catch (Exception e)
+		{
+			Airbrake.log(e).printStackTrace();
+			jobControl.jobFinished(getJob().getUuid());
+			SandboxMain.getClient().sendMessage(getJob().getUuid(), 'T');
+		}
 	}
 	
 	private static void makeReadOnly (File f, boolean executable) throws IOException
@@ -223,22 +230,32 @@ public class AiExecutor implements Runnable
 			command = start.getProperty("command");
 		else
 			command = commands.get(getJob().getLang());
-		if (command.startsWith(".")) {
-			SandboxMain.getLogger().debug("Flagging " + new File(binDir, command.substring(2)).getAbsolutePath() + " as executable");
+		if (command.startsWith("."))
+		{
+			SandboxMain.getLogger()
+					.debug("Flagging " + new File(binDir, command.substring(2)).getAbsolutePath() + " as executable");
 			new File(binDir, command.substring(2)).setExecutable(true);
 			command = "/box/bin" + command.substring(1);
 		}
 		cmd.add("--cg");
 		cmd.add("-p");
 		cmd.add("--share-net");
-		cmd.add("-q"); cmd.add("0,0");
+		cmd.add("-q");
+		cmd.add("0,0");
 		cmd.add("--time=" + job.getTimeout());
 		cmd.add("--dir=/etc/=" + etc.getAbsolutePath());
 		cmd.add("--dir=/usr/lib/jvm/");
-		cmd.add("-c"); cmd.add("/box/bin/");
+		cmd.add("-c");
+		cmd.add("/box/bin/");
 		cmd.add("--env=LANG");
+		for (int i = 0; i < Integer.parseInt(start.getProperty("environment.size")); i++)
+		{
+			cmd.add("--env=" + start.getProperty("environment." + i + ".key") + "="
+					+ start.getProperty("environment." + i + ".value"));
+		}
 		cmd.add("--run");
-		cmd.add("-b"); cmd.add(Integer.toString(boxid));
+		cmd.add("-b");
+		cmd.add(Integer.toString(boxid));
 		cmd.add("--");
 		cmd.add(command);
 		for (int i = 0; i < Integer.parseInt(start.getProperty("arguments.size")); i++)
@@ -254,7 +271,7 @@ public class AiExecutor implements Runnable
 		proc = pb.start();
 		SandboxMain.getClient().sendMessage(getJob().getUuid(), 'S');
 		
-		new Thread (() -> {
+		new Thread( () -> {
 			int ret;
 			try
 			{
@@ -273,7 +290,7 @@ public class AiExecutor implements Runnable
 			{
 				Airbrake.log(e).printStackTrace();
 			}
-		}, "IsolateCleanup").start();
+		} , "IsolateCleanup").start();
 	}
 	
 	public void terminateAi ()
