@@ -119,8 +119,7 @@ public class CCompiler extends Compiler
 				boolean c = filename.endsWith(".c");
 				List<String> command = new LinkedList<>();
 				command.add(c ? "gcc" : "g++");
-				if (filename.endsWith(".cxx"))
-					command.add("-std=c++11");
+				command.add("-std=c++11");
 				File out = new File(bindir, filename.substring(0, filename.lastIndexOf('.')) + ".o");
 				command.add("-o");
 				command.add(out.getName());
