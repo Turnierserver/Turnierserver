@@ -49,7 +49,7 @@ char* toString (int i)
 		*p = '-';
 		p++;
 	}
-	for (uint k = 0; k < size; k++)
+	for (int k = size - 1; k >= 0; k--)
 	{
 		*p = "0123456789" [(i / (int)pow(10, k)) % 10];
 		p++;
