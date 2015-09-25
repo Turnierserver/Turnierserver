@@ -15,9 +15,9 @@ extern "C" {
 /// removes all leading and trailing whitespaces
 char* trim (char *s);
 /// escapes all \, \n and \r in s
-char* escape (char *s);
+char* escape (const char *s);
 /// resolves all escaped chars in s, setting const[0] to 1 if s ends with a backslash
-char* unescape (char *s, char *cont);
+char* unescape (const char *s, char *cont);
 
 struct _properties
 {
