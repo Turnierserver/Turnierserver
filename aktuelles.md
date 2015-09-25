@@ -48,6 +48,12 @@ Die erste Datei heißt `libraries.txt` und enthält alle Bibliotheken, welche zu
 
 Momentan stellen wir noch keine Python Bibliotheken zur Verfügung. Schau weiter unten nach, wie du uns Bibliotheken vorschlagen kannst.
 
+**C(++):**
+
+Momentan stellen wir noch keine C(++) Bibliotheken zur Verfügung. Schau weiter unten nach, wie du uns Bibliotheken vorschlagen kannst.
+
+**Bibliothek vorschlagen:**
+
 Sende einfach eine Email mit dem Namen, der Sprache und der Version der Bibliothek und wieso diese nützlich für die Benutzer dieser Plattform ist an
 [turnier@bwinf.de](mailto:turnier@bwinf.de), um uns diese Vorzuschlagen.
 
@@ -70,6 +76,11 @@ Bei einer Python AI muss einfach folgendes in die erste Zeile geschrieben werden
 filename=name_der_datei.py
 ```
 Die Datei kann hierbei einen beliebigen Namen und Pfad haben. Bei Ordnern sollte auf die Paket-Importregeln geachet werden. (. statt /)
+
+**C(++)**
+
+Bei einer C(++)-KI ist enthält diese Datei eine optionale Zeile, mit der man angeben kann, ob die KI mit Debugging-Symbolane (`-g`)
+oder optimiert (`-O2`) gebaut wird. Allerdings gibt es aktuell keine Möglichkeit die KI zu debuggen.
 
 ----------------------------------------------------------
 
