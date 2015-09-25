@@ -1,0 +1,4 @@
+turnierserver.worker.host=\:\:1
+turnierserver.worker.server.port=1337
+nonsense=bullshit
+

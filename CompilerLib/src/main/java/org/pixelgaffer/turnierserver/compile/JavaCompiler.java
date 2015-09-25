@@ -36,6 +36,7 @@ public class JavaCompiler extends Compiler
 		super(ai, version, game);
 	}
 	
+	@Override
 	public String getLanguage ()
 	{
 		return "Java";

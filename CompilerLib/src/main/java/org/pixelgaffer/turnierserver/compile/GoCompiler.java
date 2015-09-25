@@ -28,11 +28,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
-
 import org.apache.commons.io.FileUtils;
-import org.pixelgaffer.turnierserver.compile.LibraryDownloader.LibraryDownloaderMode;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
-
 import it.sauronsoftware.ftp4j.FTPAbortedException;
 import it.sauronsoftware.ftp4j.FTPDataTransferException;
 import it.sauronsoftware.ftp4j.FTPException;
