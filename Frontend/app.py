@@ -14,7 +14,7 @@ logger.info("Starte Frontend")
 from api import api, login_manager
 from views.anonymous import anonymous_blueprint
 from views.authenticated import authenticated_blueprint
-from database import db, refresh_session, GameType
+from database import db, refresh_session, GameType, Lang
 from backend import backend
 from _cfg import env
 from errorhandling import handle_errors
@@ -101,7 +101,14 @@ def refresh_db_session():
 @manager.command
 def run():
 	"Startet den Server."
+
+	if not (Lang.query.first() and GameType.query.first()):
+		logger.critical("Missing Lang(s) / GameType(s)")
+		exit()
+
 	app_run_params = dict(host="::", port=env.web_port, threaded=True)
+	if env.DEBUG and not env.USE_RELOADER:
+		app_run_params["use_reloader"] = False
 	if env.ssl:
 		import ssl
 		context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
