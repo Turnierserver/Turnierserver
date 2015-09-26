@@ -33,14 +33,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import lombok.Getter;
-import lombok.ToString;
-
 import org.fxmisc.richtext.StyleSpans;
 import org.fxmisc.richtext.StyleSpansBuilder;
 import org.pixelgaffer.katepartparser.context.Context;
@@ -51,6 +46,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import lombok.Getter;
+import lombok.ToString;
 
 @ToString(exclude = { "lists", "contexts" })
 public class SyntaxParser
@@ -99,12 +96,14 @@ public class SyntaxParser
 	@Getter
 	private final Map<String, NamedStyleEntry> itemDatas = new HashMap<>();
 	
-	public SyntaxParser (String filename, Style s) throws ParserConfigurationException, IOException, SAXException
+	public SyntaxParser (String filename, SyntaxFileResolver resolver, Style s)
+			throws ParserConfigurationException, IOException, SAXException
 	{
-		this(filename == null ? null : new File(filename), s);
+		this(filename == null ? null : new File(filename), resolver, s);
 	}
 	
-	public SyntaxParser (File syntaxFile, Style s) throws ParserConfigurationException, IOException, SAXException
+	public SyntaxParser (File syntaxFile, SyntaxFileResolver resolver, Style s)
+			throws ParserConfigurationException, IOException, SAXException
 	{
 		file = syntaxFile;
 		style = s;
@@ -143,19 +142,16 @@ public class SyntaxParser
 				{
 					Element e = (Element)n;
 					if (e.getTagName().equals("highlighting"))
-					{
-						parseHighlighting(e);
-					}
-					else
-					{
-						System.err.println("Unbekanntes Element: " + e);
-					}
+						parseHighlighting(e, resolver);
+//					else
+//						System.err.println("Unbekanntes Element: " + e);
 				}
 			}
 		}
 	}
 	
-	private void parseHighlighting (Element highlighting)
+	private void parseHighlighting (Element highlighting, SyntaxFileResolver resolver)
+			throws ParserConfigurationException, IOException, SAXException
 	{
 		NodeList nodeList = highlighting.getChildNodes();
 		if (nodeList != null)
@@ -196,7 +192,7 @@ public class SyntaxParser
 								Node n1 = contexts.item(j);
 								if (n1 instanceof Element)
 								{
-									Context context = parseContext((Element)n1);
+									Context context = parseContext((Element)n1, resolver);
 									this.contexts.put(context.getName(), context);
 								}
 							}
@@ -238,7 +234,7 @@ public class SyntaxParser
 										
 										if (itemData.hasAttribute("color"))
 											styleEntry.setColor(itemData.getAttribute("color"));
-										
+											
 										this.itemDatas.put(name, styleEntry);
 									}
 									catch (NoSuchMethodException nsme)
@@ -268,7 +264,8 @@ public class SyntaxParser
 		}
 	}
 	
-	private Context parseContext (Element context)
+	private Context parseContext (Element context, SyntaxFileResolver resolver)
+			throws ParserConfigurationException, IOException, SAXException
 	{
 		Context c = new Context(context.getAttribute("name"), context.getAttribute("attribute"),
 				context.getAttribute("lineEndContext"));
@@ -279,7 +276,7 @@ public class SyntaxParser
 		}
 		if (defaultContext == null)
 			defaultContext = c;
-		
+			
 		NodeList nodeList = context.getChildNodes();
 		if (nodeList != null)
 		{
@@ -291,7 +288,38 @@ public class SyntaxParser
 					Element e = (Element)n;
 					if (e.getTagName().equals("IncludeRules"))
 					{
-						Context toInclude = contexts.get(e.getAttribute("context"));
+						String contextName = e.getAttribute("context");
+						Context toInclude = null;
+						if (contextName.startsWith("##"))
+						{
+							SyntaxParser other = new SyntaxParser(
+									resolver.getSyntaxFile(contextName.substring(2)), resolver, getStyle());
+									
+							for (String list : other.getLists().keySet())
+							{
+								if (lists.containsKey(list))
+									lists.get(list).addAll(other.getLists().get(list));
+								else
+									lists.put(list, other.getLists().get(list));
+							}
+							for (String itemData : other.getItemDatas().keySet())
+								if (!itemDatas.containsKey(itemData))
+									itemDatas.put(itemData, other.getItemDatas().get(itemData));
+							for (String ct : other.getContexts().keySet())
+							{
+								if (!contexts.containsKey(ct))
+									contexts.put(ct, other.getContexts().get(ct));
+//								else
+//									System.err.println(
+//											"Duplicate Context " + ct + ", ignoring imported Context from " + other.getName());
+							}
+							
+							toInclude = other.getContexts().get(c.getName());
+							if (toInclude == null)
+								toInclude = other.defaultContext;
+						}
+						else
+							toInclude = contexts.get(contextName);
 						if (toInclude == null)
 							System.err.println("Unbekannter Context in " + file.getName() + ": " + e.getAttribute("context"));
 						else
@@ -384,7 +412,8 @@ public class SyntaxParser
 							if (contexts.containsKey(c))
 								context.addFirst(contexts.get(c));
 							else
-								System.err.println("Unbekannter Context in " + file.getName() + " (referenziert von " + rule + ")");
+								System.err
+										.println("Unbekannter Context in " + file.getName() + " (referenziert von " + rule + ")");
 						}
 						
 						continue lineloop;
@@ -418,7 +447,8 @@ public class SyntaxParser
 				if (contexts.containsKey(c))
 					context.addFirst(contexts.get(c));
 				else
-					System.err.println("Unbekannter Context in " + file.getName() + " (referenziert von " + context.getFirst().getName() + ")");
+					System.err.println("Unbekannter Context in " + file.getName() + " (referenziert von "
+							+ context.getFirst().getName() + ")");
 			}
 		}
 		

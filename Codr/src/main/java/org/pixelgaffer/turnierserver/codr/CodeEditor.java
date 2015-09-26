@@ -27,6 +27,7 @@ import org.fxmisc.richtext.LineNumberFactory;
 import org.pixelgaffer.katepartparser.EmptyStyle;
 import org.pixelgaffer.katepartparser.Style;
 import org.pixelgaffer.katepartparser.Styles;
+import org.pixelgaffer.katepartparser.SyntaxFileResolver;
 import org.pixelgaffer.katepartparser.SyntaxParser;
 import org.pixelgaffer.turnierserver.codr.utilities.ErrorLog;
 import org.pixelgaffer.turnierserver.codr.utilities.Paths;
@@ -39,7 +40,6 @@ import org.xml.sax.SAXException;
  */
 public class CodeEditor
 {
-	
 	public static void writeSyntax () throws ParserConfigurationException, SAXException
 	{
 		File syntaxFolder = new File(Paths.syntaxFolder());
@@ -49,32 +49,6 @@ public class CodeEditor
 		try
 		{
 			syntaxFolder.mkdirs();
-			File tmp = File.createTempFile("syntax", ".zip");
-			tmp.deleteOnExit();
-			FileUtils.copyURLToFile(CodeEditor.class.getResource("syntax.zip"), tmp);
-			ZipFile zipFile = new ZipFile(tmp);
-			zipFile.extractAll(syntaxFolder.getAbsolutePath());
-			
-			p = new Properties();
-			for (String filename : syntaxFolder.list())
-			{
-				SyntaxParser parser = new SyntaxParser(new File(syntaxFolder, filename), new EmptyStyle());
-				if (parser.isHidden())
-					continue;
-				for (String extension : parser.getExtensions())
-				{
-					extension = extension.trim();
-					if (p.containsKey(extension))
-					{
-						if (Integer.parseInt(p.getProperty(extension + ".priority")) > parser.getPriority())
-							continue;
-					}
-					p.put(extension, filename);
-					p.put(extension + ".priority", Integer.toString(parser.getPriority()));
-				}
-			}
-			p.store(new FileOutputStream(new File(syntaxFolder, "index.prop")),
-					"Enthält alle Syntax-Dateien sortiert nach den Dateienden");
 			
 			PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(new File(syntaxFolder,
 					"_fallback.xml")), UTF_8));
@@ -93,6 +67,36 @@ public class CodeEditor
 			out.println("</language>");
 			out.close();
 			
+			File tmp = File.createTempFile("syntax", ".zip");
+			tmp.deleteOnExit();
+			FileUtils.copyURLToFile(CodeEditor.class.getResource("syntax.zip"), tmp);
+			ZipFile zipFile = new ZipFile(tmp);
+			zipFile.extractAll(syntaxFolder.getAbsolutePath());
+			
+			p = new Properties();
+			for (String filename : syntaxFolder.list())
+			{
+				if (filename.equals("_fallback.xml"))
+					continue;
+				
+				SyntaxParser parser = new SyntaxParser(new File(syntaxFolder, filename), resolver, new EmptyStyle());
+				p.put("names." + parser.getName(), filename);
+				if (parser.isHidden())
+					continue;
+				for (String extension : parser.getExtensions())
+				{
+					extension = extension.trim();
+					if (p.containsKey("extensions." + extension))
+					{
+						if (Integer.parseInt(p.getProperty("extensions." + extension + ".priority")) > parser.getPriority())
+							continue;
+					}
+					p.put("extensions." + extension, filename);
+					p.put("extensions." + extension + ".priority", Integer.toString(parser.getPriority()));
+				}
+			}
+			p.store(new FileOutputStream(new File(syntaxFolder, "index.prop")),
+					"Enthält alle Syntax-Dateien sortiert nach den Dateienden und den Namen");
 		}
 		catch (ZipException | IOException e)
 		{
@@ -102,7 +106,8 @@ public class CodeEditor
 	}
 	
 	private static Properties p = null;
-	
+	private static final SyntaxFileResolver resolver =
+			(name) -> new File(Paths.syntaxFolder(), p.getProperty("names." + name, "_fallback.xml"));
 	
 	private static Properties props () throws IOException
 	{
@@ -148,13 +153,16 @@ public class CodeEditor
 			for (Object o : props().keySet())
 			{
 				String extension = (String)o;
+				if (!extension.startsWith("extensions.") || extension.endsWith(".priority"))
+					continue;
+				extension = extension.substring("extensions.".length());
 				extension = extension.replace(".", "\\.");
 				extension = extension.replace("*", ".*");
 				Pattern pattern = Pattern.compile(extension, Pattern.CASE_INSENSITIVE);
 				Matcher matcher = pattern.matcher(doc.getName());
 				if (matcher.matches())
 				{
-					parser = new SyntaxParser(new File(Paths.syntaxFolder(), (String)props().get(o)), style);
+					parser = new SyntaxParser(new File(Paths.syntaxFolder(), (String)props().get(o)), resolver, style);
 					System.out.println("Loading " + parser.getName() + " for file " + doc);
 					break;
 				}
@@ -170,7 +178,7 @@ public class CodeEditor
 		{
 			try
 			{
-				parser = new SyntaxParser(new File(Paths.syntaxFolder(), "_fallback.xml"), style);
+				parser = new SyntaxParser(new File(Paths.syntaxFolder(), "_fallback.xml"), resolver, style);
 			}
 			catch (ParserConfigurationException | IOException | SAXException e)
 			{
