@@ -17,6 +17,7 @@ dependency-reduced-pom.xml
 *.jar
 *.orig
 PatcherBuild/
+syntax.zip
 
 # java müll
 .settings/
