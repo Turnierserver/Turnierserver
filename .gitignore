@@ -33,6 +33,7 @@ delombok/
 # c++ müll
 build-*/
 *.pro.user
+CMakeLists.txt.user
 *.o
 *.so
 *.so.*
