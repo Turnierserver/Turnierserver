@@ -59,8 +59,19 @@ public class CodeEditor
 			for (String filename : syntaxFolder.list())
 			{
 				SyntaxParser parser = new SyntaxParser(new File(syntaxFolder, filename), new EmptyStyle());
+				if (parser.isHidden())
+					continue;
 				for (String extension : parser.getExtensions())
-					p.put(extension.trim(), filename);
+				{
+					extension = extension.trim();
+					if (p.containsKey(extension))
+					{
+						if (Integer.parseInt(p.getProperty(extension + ".priority")) > parser.getPriority())
+							continue;
+					}
+					p.put(extension, filename);
+					p.put(extension + ".priority", Integer.toString(parser.getPriority()));
+				}
 			}
 			p.store(new FileOutputStream(new File(syntaxFolder, "index.prop")),
 					"Enthält alle Syntax-Dateien sortiert nach den Dateienden");
@@ -144,6 +155,7 @@ public class CodeEditor
 				if (matcher.matches())
 				{
 					parser = new SyntaxParser(new File(Paths.syntaxFolder(), (String)props().get(o)), style);
+					System.out.println("Loading " + parser.getName() + " for file " + doc);
 					break;
 				}
 			}
