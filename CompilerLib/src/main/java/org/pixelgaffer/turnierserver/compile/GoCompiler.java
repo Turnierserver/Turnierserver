@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
+import org.pixelgaffer.turnierserver.compile.LibraryDownloader.LibraryDownloaderMode;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 import it.sauronsoftware.ftp4j.FTPAbortedException;
 import it.sauronsoftware.ftp4j.FTPDataTransferException;
@@ -58,12 +59,16 @@ public class GoCompiler extends Compiler
 		Path wrapperdir = Files.createTempDirectory("go-wrapper-");
 		File wrappersrc = new File(wrapperdir.toFile(), "src/main");
 		Files.createDirectories(wrappersrc.toPath());
-		try {
-			DatastoreFtpClient.retrieveAiLibrary(getGame(), getLanguage(), wrappersrc);
-		} catch (FTPIllegalReplyException | FTPException | FTPDataTransferException | FTPAbortedException
-				| FTPListParseException e) {
-			output.println("FTP-Fehler " + e.toString());
-			return false;
+		if (libraryDownloader.getMode() == LibraryDownloaderMode.EVERYTHING) {
+			FileUtils.copyFileToDirectory(libraryDownloader.getAiLibFile(getLanguage(), "wrapper.go"), wrappersrc);
+		} else {
+			try {
+				DatastoreFtpClient.retrieveAiLibrary(getGame(), getLanguage(), wrappersrc);
+			} catch (FTPIllegalReplyException | FTPException | FTPDataTransferException | FTPAbortedException
+					| FTPListParseException e) {
+				output.println("FTP-Fehler " + e.toString());
+				return false;
+			}
 		}
 		output.println("fertig");
 

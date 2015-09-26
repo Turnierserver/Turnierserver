@@ -71,7 +71,7 @@ Die Klasse kann hierbei einen beliebigen Namen und Pfad haben.
 
 **Python:**
 
-Bei einer Python AI muss einfach folgendes in die erste Zeile geschrieben werden:
+Bei einer Python KI muss einfach folgendes in die erste Zeile geschrieben werden:
 ```
 filename=name_der_datei.py
 ```
@@ -81,6 +81,11 @@ Die Datei kann hierbei einen beliebigen Namen und Pfad haben. Bei Ordnern sollte
 
 Bei einer C(++)-KI ist enthält diese Datei eine optionale Zeile, mit der man angeben kann, ob die KI mit Debugging-Symbolane (`-g`)
 oder optimiert (`-O2`) gebaut wird. Allerdings gibt es aktuell keine Möglichkeit die KI zu debuggen.
+
+**Go:**
+
+Bei einer Go KI sollte darauf geachtet werden, dass die Hauptdatei der KI im Paket 'ai' (src/ai/ai.go) ist.
+Es ist auch möglich die Netzwerklogik zu ersetzen. Dazu muss ein Paket 'main' (src/main/main.go) angelegt werden.
 
 ----------------------------------------------------------
 

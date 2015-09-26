@@ -103,6 +103,9 @@ def inprogress_game_mini(id):
 	stream = url_for("api.game_inprogress_log", id=game.id)
 	return render_template(game.type.viz, game=game, inprogress=True, ai0=game.ais[0], ai1=game.ais[1], stream=stream, mini=True)
 
+@anonymous_blueprint.route("/tutorial")
+def tutorial():
+	return render_template("tutorial.html", gameType=GameType.selected())
 
 
 def crossdomain(origin=None, methods=None, headers=None,
