@@ -310,6 +310,7 @@ class AI(db.Model):
 	version_list = db.relationship("AI_Version", primaryjoin="AI.id == AI_Version.ai_id", order_by="AI_Version.id", backref="AI", cascade="all, delete, delete-orphan", lazy="joined")
 	game_assocs = db.relationship("AI_Game_Assoc", order_by="AI_Game_Assoc.game_id", cascade="all, delete, delete-orphan")
 	_active_version_id = db.Column(db.Integer, db.ForeignKey("t_ai_versions.id"), nullable=True,)
+	_rank = None
 
 	def __init__(self, *args, **kwargs):
 		super(AI, self).__init__(*args, **kwargs)
@@ -474,9 +475,9 @@ class AI(db.Model):
 
 	@property
 	def rank(self):
-		## Schlaues caching
-		sub = db.session.query(AI.id, db.func.row_number().over(order_by=db.desc(AI.elo)).label('pos')).filter(AI.type == self.type).subquery()
-		return db.session.query(sub.c.pos).filter(sub.c.id==self.id).scalar()
+		if not self._rank:
+			self.type.update_ai_ranks()
+		return self._rank
 
 	def available_extras(self):
 		return Library.query.filter(Library.lang == self.latest_version().lang)
@@ -674,6 +675,7 @@ class Game(db.Model):
 		ai0.elo = ai0eloneu
 		ai1.elo = ai1eloneu
 		db.session.commit()
+		ai0.type.update_ai_ranks()
 		logger.info("ai elo updated")
 
 	@classmethod
@@ -802,6 +804,14 @@ class GameType(db.Model):
 			ai.delete()
 		db.session.delete(self)
 		db.session.commit()
+
+	def update_ai_ranks(self):
+		ais = AI.query.filter(AI.type == self)
+		ais = list(filter(lambda ai: ai.active_version() is not None, ais))
+		elos = sorted([ai.elo for ai in ais])
+		for ai in ais:
+			ai._rank = elos.index(ai.elo) + 1
+		logger.info("updated ai ranks")
 
 	def __repr__(self):
 		return "<GameType(id={}, name={})>".format(self.id, self.name)
