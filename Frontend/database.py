@@ -808,7 +808,7 @@ class GameType(db.Model):
 	def update_ai_ranks(self):
 		ais = AI.query.filter(AI.type == self)
 		ais = list(filter(lambda ai: ai.active_version() is not None, ais))
-		elos = sorted([ai.elo for ai in ais])
+		elos = sorted([ai.elo for ai in ais])[::-1]
 		for ai in ais:
 			ai._rank = elos.index(ai.elo) + 1
 		logger.info("updated ai ranks")
