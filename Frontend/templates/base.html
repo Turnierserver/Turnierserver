@@ -8,7 +8,7 @@
 
 {% if current_user and current_user.is_authenticated %}
 	{% if current_user.admin %}
-		{% do nav_menu.append((url_for("authenticated.admin"), "admin", "Admin-Interface")) %}
+		{% do nav_menu.append((url_for("authenticated.admin"), "admin", "Adminoberfläche")) %}
 	{% endif %}
 	{% do nav_menu.append((url_for("authenticated.current_profile"), "profile", current_user.name)) %}
 {% endif %}
@@ -31,6 +31,9 @@
 	<nav class="ui menu inverted navbar page grid">
 		<a href="{{ url_for("anonymous.index") }}" class="brand {{'active' if active_page == 'index'}} item">
 			<img src="/static/BwInf-Kopf.svg">
+		</a>
+		<a href="{{ url_for("anonymous.tutorial") }}" class="{{'active' if active_page == 'tutorial'}} item">
+			Tutorial
 		</a>
 		<div class="right menu">
 			{% for url, id, name in nav_menu %}
