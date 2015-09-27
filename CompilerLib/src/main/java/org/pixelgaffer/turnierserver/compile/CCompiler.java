@@ -1,3 +1,21 @@
+/*
+ * CCompiler.java
+ *
+ * Copyright (C) 2015 Pixelgaffer
+ *
+ * This work is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or any later
+ * version.
+ *
+ * This work is distributed in the hope that it will be useful, but without
+ * any warranty; without even the implied warranty of merchantability or
+ * fitness for a particular purpose. See version 2 and version 3 of the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.pixelgaffer.turnierserver.compile;
 
 import java.io.File;
@@ -119,7 +137,8 @@ public class CCompiler extends Compiler
 				boolean c = filename.endsWith(".c");
 				List<String> command = new LinkedList<>();
 				command.add(c ? "gcc" : "g++");
-				command.add("-std=c++11");
+				if (!filename.endsWith(".c"))
+					command.add("-std=c++11");
 				File out = new File(bindir, filename.substring(0, filename.lastIndexOf('.')) + ".o");
 				command.add("-o");
 				command.add(out.getName());

@@ -74,7 +74,7 @@ public class LGPL
 	{
 		if (f.getName().endsWith(".py"))
 			handlePython(f);
-		if (!f.getName().endsWith(".java") && !f.getName().endsWith(".cpp") && !f.getName().endsWith(".h"))
+		if (!f.getName().endsWith(".java") && !f.getName().endsWith(".cpp") && !f.getName().endsWith(".c") && !f.getName().endsWith(".h"))
 			return;
 		System.out.println(f);
 		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(f), UTF_8));
