@@ -1,5 +1,5 @@
 /*
- * test1.c
+ * output.h
  *
  * Copyright (C) 2015 Pixelgaffer
  *
@@ -16,16 +16,29 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "../properties.h"
+#ifndef OUTPUT_H
+#define OUTPUT_H
 
-#include <stdio.h>
+char* itos (int i);
+char* dtos (double d);
 
-int main ()
+struct _output_buffer
 {
-	char *text1 = "key\\= :\\=value\\n2ndval\\";
-	char *text2 = "\tue";
-	printf("%s\n%s\n", text1, text2);
-	Element *elem = parseLine(text1, 0);
-	elem = parseLine(text2, elem);
-	printf("'%s'='%s'\n", elem->key, elem->value);
-}
+	char *buf;
+};
+typedef struct _output_buffer OutputBuffer;
+
+#define OB_KEEP_STR 0
+#define OB_CLEAR_STR 1
+#define OB_RETURN_REF 0
+#define OB_RETURN_COPY 2
+
+OutputBuffer* createBuffer ();
+char* readBuffer (OutputBuffer *buf, unsigned char mode);
+void destroyBuffer (OutputBuffer *buf);
+
+OutputBuffer* appendi (OutputBuffer *buf, int i);
+OutputBuffer* appendd (OutputBuffer *buf, double d);
+OutputBuffer* append (OutputBuffer *buf, char *str);
+
+#endif

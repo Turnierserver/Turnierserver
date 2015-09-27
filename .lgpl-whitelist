@@ -1,4 +1,5 @@
 Backend/
+CAiLibrary/
 Codr/src/main/java/org/pixelgaffer/turnierserver/codr/CodeEditor.java
 Codr/src/main/java/org/pixelgaffer/turnierserver/codr/simulator/
 CompilerLib/
