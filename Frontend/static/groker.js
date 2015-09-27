@@ -205,22 +205,19 @@ $(document).ready(function () {
 		pane.data.push(d);
 		//NProgress.set(d.progress);
 		$("#step_slider").slider("option", "max", pane.data.length-1);
-		var values = map_sorted(d.wonChips, return_val);
+		var wonChips = map_sorted(d.wonChips, return_val);
+		var chips = map_sorted(d.chips, return_val);
 		var calculationPoints = map_sorted(d.calculationPoints, return_val);
 		var labels = map_sorted(d.calculationPoints, function(key, value) {
 			var id = key.slice(0, key.indexOf("v"));
 			return ais[id];
 		});
 		var d = {};
-		d.diff = Math.abs(values[0] - values[1]);
-		d.ai1_abs = values[0];
-		d.ai2_abs = values[1];
-		d.ai1_gain = values[0];
-		d.ai2_gain = values[1];
-		if (data.length > 0) {
-			d.ai1_gain -= data[data.length-1].ai1_abs;
-			d.ai2_gain -= data[data.length-1].ai2_abs;
-		}
+		d.diff = Math.abs(wonChips[0] - wonChips[1]);
+		d.ai1_abs = wonChips[0];
+		d.ai2_abs = wonChips[1];
+		d.ai1_gain = chips[0];
+		d.ai2_gain = chips[1];
 		d.ai1_tabs = calculationPoints[0];
 		d.ai2_tabs = calculationPoints[1];
 		d.ai1_td = 0;
