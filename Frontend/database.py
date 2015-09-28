@@ -851,7 +851,8 @@ def populate():
 	db_save([
 		Lang(name="Python", ace_name="python", url="https://www.python.org"),
 		Lang(name="Java", ace_name="java", url="https://www.java.com"),
-		Lang(name="Go", ace_name="golang", url="https://www.golang.org")
+		Lang(name="Go", ace_name="golang", url="https://www.golang.org"),
+		Lang(name="C", ace_name="c_cpp", url="https://isocpp.org")
 	])
 	db_save([GameType(name="Groker")])
 
