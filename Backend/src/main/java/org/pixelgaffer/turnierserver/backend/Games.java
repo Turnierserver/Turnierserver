@@ -34,6 +34,8 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Parsers;
+import static org.pixelgaffer.turnierserver.PropertyUtils.*;
+import org.pixelgaffer.turnierserver.backend.Games.GameImpl.GameState;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
 import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendCommandProcessed;
 import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendResult;
@@ -52,6 +54,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Games
@@ -77,17 +80,9 @@ public class Games
 	private static final Map<UUID, AiWrapper> aiWrappers = new HashMap<>();
 	
 	/** Die AI mit der angegebenen UUID hat sich disconnected. */
-	public static void aiDisconnected (UUID uuid, WorkerConnection worker)
+	public static void aiDisconnected (UUID uuid)
 	{
 		new Thread( () -> {
-			synchronized (lock)
-			{
-				if (aiWrappers.containsKey(uuid))
-				{
-					worker.aiFinished();
-				}
-			}
-			
 			// die ki noch 1 min speichern um laggs in der verbindung zu
 			// vermeiden
 			try
@@ -111,28 +106,97 @@ public class Games
 	
 	/**
 	 * Die AI mit der angegebenen UUID wurde von Backend/Worker/Sandbox
-	 * beendet
-	 * und das Spiel muss neu gestartet werden.
+	 * beendet und das Spiel oder die KI muss neu gestartet werden.
 	 */
-	public static void aiTerminated (UUID uuid) throws IOException, InstantiationException, IllegalAccessException
+	public static void aiTerminated (UUID uuid)
 	{
-		AiWrapper aiw;
-		synchronized (lock)
-		{
-			aiw = getAiWrapper(uuid);
-		}
-		if (aiw == null)
-		{
-			BackendMain.getLogger().critical("Konnte KI mit der UUID " + uuid + " nicht finden");
-			return;
-		}
-		GameImpl game = aiw.getGame();
-		if (game == null)
-		{
-			BackendMain.getLogger().critical("Die KI " + uuid + " hat kein Spiel");
-			return;
-		}
-		game.restart();
+		new Thread( () -> {
+			AiWrapper aiw;
+			synchronized (lock)
+			{
+				aiw = getAiWrapper(uuid);
+			}
+			if (aiw == null)
+			{
+				BackendMain.getLogger().critical("Konnte KI mit der UUID " + uuid + " nicht finden");
+				return;
+			}
+			GameImpl game = aiw.getGame();
+			if (game == null)
+			{
+				BackendMain.getLogger().critical("Die KI " + uuid + " hat kein Spiel");
+				return;
+			}
+			
+			game.attempts++;
+			if (game.attempts > getInt(BACKEND_RESTART_ATTEMPTS, 5))
+			{
+				BackendMain.getLogger().warning("Maximales Limit an Spiel-Restart übertroffen");
+				BackendFrontendResult result = new BackendFrontendResult(game.getRequestId(), false,
+						"The maximum limit of restart attempts was hit.");
+				try
+				{
+					BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result, false));
+					game.finishGame(false);
+				}
+				catch (IOException e1)
+				{
+					Airbrake.log(e1).printStackTrace();
+				}
+				return;
+			}
+			
+			if (game.getState() == GameState.WAITING)
+			{
+				aiDisconnected(uuid);
+				aiw.setUuid(randomUuid());
+				synchronized (lock)
+				{
+					aiWrappers.put(aiw.getUuid(), aiw);
+				}
+				WorkerConnection w = Workers.getStartableWorker(aiw.getLang());
+				try
+				{
+					w.addJob(aiw, game.getGameId());
+				}
+				catch (Exception e)
+				{
+					Airbrake.log(e).printStackTrace();
+					BackendFrontendResult result = new BackendFrontendResult(game.getRequestId(), false, e);
+					try
+					{
+						BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result, false));
+						game.finishGame(false);
+					}
+					catch (IOException e1)
+					{
+						Airbrake.log(e1).printStackTrace();
+					}
+				}
+				aiw.setConnection(w);
+			}
+			else
+			{
+				try
+				{
+					game.restart();
+				}
+				catch (Exception e)
+				{
+					Airbrake.log(e).printStackTrace();
+					BackendFrontendResult result = new BackendFrontendResult(game.getRequestId(), false, e);
+					try
+					{
+						BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result, false));
+						game.finishGame(false);
+					}
+					catch (IOException e1)
+					{
+						Airbrake.log(e1).printStackTrace();
+					}
+				}
+			}
+		}).start();
 	}
 	
 	/** Das zur UUID gehörende Spiel. */
@@ -216,6 +280,11 @@ public class Games
 		@Getter
 		private GameLogic<?, ?> logic;
 		
+		/** Die Anzahl der Versuche, das Spiel zu starten. Dies wird NICHT von der GameImpl Klasse selbst verwaltet. */
+		@Getter
+		@Setter(AccessLevel.PACKAGE)
+		private int attempts = 0;
+		
 		/** Gibt an ob das Spiel schon gestartet wurde. */
 		@Getter
 		private GameState state = GameState.WAITING;
@@ -263,6 +332,11 @@ public class Games
 		@Override
 		public void finishGame () throws IOException
 		{
+			finishGame(true);
+		}
+		
+		public void finishGame (boolean success) throws IOException
+		{
 			BackendMain.getLogger().info("finishGame() wurde für das Spiel " + getUuid() + " aufgerufen");
 			for (AiWrapper ai : ais)
 				ai.disconnect();
@@ -270,15 +344,14 @@ public class Games
 			{
 				BackendMain.getLogger().info("alle kis disconnected, sende success an frontend");
 				BackendFrontendConnectionHandler.getFrontend().sendMessage(
-						Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), true), false));
+						Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), success), false));
 				synchronized (lock)
 				{
 					games.remove(getUuid());
 					uuids.remove(getUuid());
 				}
-				
-				state = GameState.FINISHED;
 			}
+			state = GameState.FINISHED;
 		}
 		
 		/**

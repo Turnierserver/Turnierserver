@@ -20,7 +20,6 @@ package org.pixelgaffer.turnierserver.backend;
 
 import static org.pixelgaffer.turnierserver.networking.bwprotocol.WorkerCommandAnswer.SUCCESS;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.COMPILE;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -31,11 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-
 import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
@@ -176,69 +173,72 @@ public class Jobs
 					}
 				}
 			}
-				else if (cmd.getAction().equals("start"))
+			else if (cmd.getAction().equals("start"))
+			{
+				try
 				{
+					Games.startGame(cmd.getGametype(), cmd.getRequestid(), cmd.getLanguages(), cmd.getAis());
+					BackendFrontendConnectionHandler.getFrontend().sendMessage(
+							Parsers.getFrontend().parse(
+									new BackendFrontendCommandProcessed(cmd.getRequestid()), false));
+				}
+				catch (Exception e)
+				{
+					Airbrake.log(e).printStackTrace();
+					BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
 					try
 					{
-						Games.startGame(cmd.getGametype(), cmd.getRequestid(), cmd.getLanguages(), cmd.getAis());
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(
-								Parsers.getFrontend().parse(
-										new BackendFrontendCommandProcessed(cmd.getRequestid()), false));
+								Parsers.getFrontend().parse(result, false));
 					}
-					catch (Exception e)
+					catch (IOException e1)
 					{
-						Airbrake.log(e).printStackTrace();
-						BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
-						try
-						{
-							BackendFrontendConnectionHandler.getFrontend().sendMessage(
-									Parsers.getFrontend().parse(result, false));
-						}
-						catch (IOException e1)
-						{
-							Airbrake.log(e1).printStackTrace();
-						}
+						Airbrake.log(e1).printStackTrace();
 					}
 				}
-				else if (cmd.getAction().equals("qualify"))
+			}
+			else if (cmd.getAction().equals("qualify"))
+			{
+				try
 				{
+					Games.startQualifyGame(cmd.getGametype(), cmd.getRequestid(), cmd.getLanguage(), cmd.getId(),
+							cmd.getQualilang());
+					BackendFrontendConnectionHandler.getFrontend().sendMessage(
+							Parsers.getFrontend().parse(
+									new BackendFrontendCommandProcessed(cmd.getRequestid()), false));
+				}
+				catch (Exception e)
+				{
+					Airbrake.log(e).printStackTrace();
+					BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
 					try
 					{
-						Games.startQualifyGame(cmd.getGametype(), cmd.getRequestid(), cmd.getLanguage(), cmd.getId(), cmd.getQualilang());
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(
-								Parsers.getFrontend().parse(
-										new BackendFrontendCommandProcessed(cmd.getRequestid()), false));
+								Parsers.getFrontend().parse(result, false));
 					}
-					catch (Exception e)
+					catch (IOException e1)
 					{
-						Airbrake.log(e).printStackTrace();
-						BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
-						try
-						{
-							BackendFrontendConnectionHandler.getFrontend().sendMessage(
-									Parsers.getFrontend().parse(result, false));
-						}
-						catch (IOException e1)
-						{
-							Airbrake.log(e1).printStackTrace();
-						}
+						Airbrake.log(e1).printStackTrace();
 					}
 				}
-				else {
-					BackendMain.getLogger().critical("Unknown action from Frontend: " + cmd.getAction());
-					Airbrake.log("Unknown action from Frontend: " + cmd.getAction());
-				}
-				
-				synchronized (pending)
-				{
-					pending.remove(cmd);
-				}
-				
-			}, "JobProcessor").start();
+			}
+			else
+			{
+				BackendMain.getLogger().critical("Unknown action from Frontend: " + cmd.getAction());
+				Airbrake.log("Unknown action from Frontend: " + cmd.getAction());
+			}
+			
+			synchronized (pending)
+			{
+				pending.remove(cmd);
+			}
+			
+		} , "JobProcessor").start();
 	}
 	
 	/**
-	 * Muss aufgerufen werden, wenn ein Job fertig ist. Entfernt den Job aus der
+	 * Muss aufgerufen werden, wenn ein Job fertig ist. Entfernt den Job aus
+	 * der
 	 * Liste und benachrichtigt das Frontend.
 	 */
 	public static void jobFinished (@NonNull WorkerCommandAnswer answer) throws IOException
@@ -253,7 +253,7 @@ public class Jobs
 		
 		if (job.getWorkerCommand().getAction() == COMPILE)
 			job.getWorker().setCompiling(false);
-		
+			
 		int requestId = job.getRequestId();
 		BackendFrontendResult result = new BackendFrontendResult(requestId,
 				answer.getWhat() == SUCCESS);

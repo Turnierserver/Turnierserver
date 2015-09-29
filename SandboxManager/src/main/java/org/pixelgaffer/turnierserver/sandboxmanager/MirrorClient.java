@@ -65,7 +65,6 @@ public class MirrorClient
 			{
 				byte buf[] = new byte[min(toRead, 8192)];
 				int read = client.in.read(buf);
-				System.out.println(read + " (" + written + "/" + size + ")");
 				if (read < 0)
 				{
 					file.close();

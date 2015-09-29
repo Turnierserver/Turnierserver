@@ -43,6 +43,7 @@ public class PropertyUtils
 	public static final String BACKEND_FRONTEND_SERVER_PORT = BACKEND_FRONTEND_SERVER_BASE + "port";
 	public static final String BACKEND_WORKER_SERVER_PORT = BACKEND_WORKER_SERVER_BASE + "port";
 	public static final String BACKEND_WORKER_SERVER_MAX_CLIENTS = BACKEND_WORKER_SERVER_BASE + "maxClients";
+	public static final String BACKEND_RESTART_ATTEMPTS = BACKEND_BASE + "restartAttempts";
 	public static final String WORKER_HOST = WORKER_BASE + "host";
 	public static final String WORKER_SERVER_PORT = WORKER_SERVER_BASE + "port";
 	public static final String WORKER_SERVER_MAX_CLIENTS = WORKER_SERVER_BASE + "maxClients";

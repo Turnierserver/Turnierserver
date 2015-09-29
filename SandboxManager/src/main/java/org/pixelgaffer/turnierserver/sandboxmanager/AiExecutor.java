@@ -123,11 +123,13 @@ public class AiExecutor implements Runnable
 	{
 		try
 		{
+//			if (getJob().getId() < 0)
+//				throw new AiStartException("Simulierter Crash");
 			download();
 			generateProps();
 			executeAi();
 		}
-		catch (Exception e)
+		catch (Throwable e)
 		{
 			Airbrake.log(e).printStackTrace();
 			jobControl.jobFinished(getJob().getUuid());

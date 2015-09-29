@@ -148,7 +148,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 						if (l.getObject(SandboxMessage.class).getEvent() == TERMINATED_AI)
 							Games.aiTerminated(l.getObject(SandboxMessage.class).getUuid());
 						else
-							Games.aiDisconnected(l.getObject(SandboxMessage.class).getUuid(), workerConnection);
+							Games.aiDisconnected(l.getObject(SandboxMessage.class).getUuid());
 						if (l.getObject(SandboxMessage.class).getEvent() == FINISHED_AI)
 						{
 							AiWrapper ai = Games.getAiWrapper(l.getObject(SandboxMessage.class).getUuid());
