@@ -188,13 +188,4 @@ public class WorkerConnection
 		// Workers notifien
 		Workers.workerIsAvailable();
 	}
-	
-	/**
-	 * Wird aufgerufen wenn eine KI fertig ist und der Worker somit die nächste
-	 * starten kann.
-	 */
-	public synchronized void aiFinished ()
-	{
-		BackendMain.getLogger().todo("Brauche ich diese Methode?");
-	}
 }

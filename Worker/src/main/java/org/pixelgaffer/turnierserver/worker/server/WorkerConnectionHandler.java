@@ -130,7 +130,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 		while ((line = buffer.readLine()) != null)
 		{
 			byte _line[] = line;
-			WorkerMain.getLogger().debug("Empfangen: " + new String(packet, UTF_8));
+			//WorkerMain.getLogger().debug("Empfangen: " + new String(packet, UTF_8));
 //			new Thread( () -> {				
 				// wenn type noch null ist, diesen lesen
 					if (type == null)

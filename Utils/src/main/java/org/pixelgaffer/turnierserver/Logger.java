@@ -70,13 +70,13 @@ public class Logger
 			switch (category)
 			{
 				case INFO:
-					System.err.print("\033[1mINFO ");
+					System.err.print("\033[1m    INFO ");
 					break;
 				case DEBUG:
-					System.err.print("\033[1mDEBUG ");
+					System.err.print("\033[1m   DEBUG ");
 					break;
 				case WARNING:
-					System.err.print("\033[1;33mWARNING ");
+					System.err.print("\033[1;33m WARNING ");
 					break;
 				case CRITICAL:
 					System.err.print("\033[1;31mCRITICAL ");
@@ -90,13 +90,13 @@ public class Logger
 			switch (category)
 			{
 				case INFO:
-					System.err.print("INFO     ");
+					System.err.print("    INFO ");
 					break;
 				case DEBUG:
-					System.err.print("DEBUG    ");
+					System.err.print("   DEBUG ");
 					break;
 				case WARNING:
-					System.err.print("WARNING  ");
+					System.err.print(" WARNING ");
 					break;
 				case CRITICAL:
 					System.err.print("CRITICAL ");

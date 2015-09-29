@@ -47,7 +47,7 @@ import lombok.ToString;
 /**
  * Repräsentiert eine Sandbox.
  */
-@ToString(exclude = { "connection" })
+@ToString(exclude = { "connection", "semaphore", "cpuTimeLock" })
 public class Sandbox
 {
 	@Getter
@@ -74,28 +74,28 @@ public class Sandbox
 				Airbrake.log(e).printStackTrace();
 			}
 		});
-		WorkerMain.getLogger().debug(
-				"Gehe in Synchronized in update " + currentJob + " in thread " + Thread.currentThread());
+//		WorkerMain.getLogger().debug(
+//				"Gehe in Synchronized in update " + currentJob + " in thread " + Thread.currentThread());
 		synchronized (cpuTimeLock)
 		{
 			try
 			{
-				WorkerMain.getLogger().debug(
-						"Warte auf notify in uuid " + currentJob + " in thread " + Thread.currentThread());
+//				WorkerMain.getLogger().debug(
+//						"Warte auf notify in uuid " + currentJob + " in thread " + Thread.currentThread());
 				sendJob.start();
 				semaphore.acquire();
 				cpuTimeLock.wait();
 				semaphore.release();
-				WorkerMain.getLogger().debug(
-						"Wurde notified in uuid " + currentJob + " in thread " + Thread.currentThread());
+//				WorkerMain.getLogger().debug(
+//						"Wurde notified in uuid " + currentJob + " in thread " + Thread.currentThread());
 			}
 			catch (InterruptedException e)
 			{
 				e.printStackTrace();
 			}
 		}
-		WorkerMain.getLogger().debug(
-				"Gehe aus Synchronized in update " + currentJob + " in thread " + Thread.currentThread());
+//		WorkerMain.getLogger().debug(
+//				"Gehe aus Synchronized in update " + currentJob + " in thread " + Thread.currentThread());
 	}
 	
 	public long getCpuTimeDiff ()
@@ -194,6 +194,7 @@ public class Sandbox
 			case FINISHED_AI:
 				try
 				{
+					WorkerMain.getLogger().info("Die KI " + answer.getUuid() + " hat sich mit " + answer.getEvent() + " beendet");
 					WorkerMain.getBackendClient().sendSandboxMessage(answer);
 				}
 				catch (IOException e)
@@ -209,16 +210,16 @@ public class Sandbox
 				break;
 			case CPU_TIME:
 				lastCpuTime = answer.getCpuTime();
-				WorkerMain.getLogger().debug(
-						"Gehe in Synchronized in " + currentJob + " in thread " + Thread.currentThread());
+//				WorkerMain.getLogger().debug(
+//						"Gehe in Synchronized in " + currentJob + " in thread " + Thread.currentThread());
 				synchronized (cpuTimeLock)
 				{
-					WorkerMain.getLogger().debug("Notify " + currentJob + " in thread " + Thread.currentThread());
+//					WorkerMain.getLogger().debug("Notify " + currentJob + " in thread " + Thread.currentThread());
 					cpuTimeLock.notifyAll();
-					WorkerMain.getLogger().debug("Notified " + currentJob + " in thread " + Thread.currentThread());
+//					WorkerMain.getLogger().debug("Notified " + currentJob + " in thread " + Thread.currentThread());
 				}
-				WorkerMain.getLogger().debug(
-						"Gehe aus Synchronized in " + currentJob + " in thread " + Thread.currentThread());
+//				WorkerMain.getLogger().debug(
+//						"Gehe aus Synchronized in " + currentJob + " in thread " + Thread.currentThread());
 				break;
 			default:
 				WorkerMain.getLogger().critical("Unknown event received:" + answer);
