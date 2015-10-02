@@ -3,7 +3,8 @@
 {% set nav_menu = [
 	(url_for("anonymous.ai_list"), "ai_list", "KIs"),
 	(url_for("anonymous.user_list"), "user_list", "Nutzer"),
-	(url_for("anonymous.game_list"), "game_list", "Spiele")
+	(url_for("anonymous.game_list"), "game_list", "Spiele"),
+	(url_for("anonymous.tournament_list"), "tournament_list", "Turniere")
 ]%}
 
 {% if current_user and current_user.is_authenticated %}

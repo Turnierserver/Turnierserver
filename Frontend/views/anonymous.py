@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, abort, flash, url_for, request, Ma
 from flask.ext.login import current_user
 from datetime import timedelta
 from functools import update_wrapper
-from database import AI, User, Game, GameType, Game_inprogress
+from database import AI, User, Game, GameType, Game_inprogress, Tournament, UserTournamentAi
 from backend import backend
 from logger import logger
 import json
@@ -102,6 +102,18 @@ def inprogress_game_mini(id):
 
 	stream = url_for("api.game_inprogress_log", id=game.id)
 	return render_template(game.type.viz, game=game, inprogress=True, ai0=game.ais[0], ai1=game.ais[1], stream=stream, mini=True)
+
+@anonymous_blueprint.route("/tournament_list")
+def tournament_list():
+	query = Tournament.query.order_by(Tournament.type_id.desc())
+	return render_template("tournament_list.html", tournament_list=query.all())
+
+@anonymous_blueprint.route("/tournament/<int:id>")
+def tournament(id):
+	tournament = Tournament.query.get(id);
+	if not tournament:
+		abort(404);
+	return render_template("tournament.html", tournament=tournament, ais=UserTournamentAi.query.filter(UserTournamentAi.type_id == tournament.type_id).all());
 
 @anonymous_blueprint.route("/tutorial")
 def tutorial():

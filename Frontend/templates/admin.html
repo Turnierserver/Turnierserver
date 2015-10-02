@@ -1,11 +1,79 @@
 {% extends "base.html" %}
 {% set active_page = "admin" %}
 {% block body %}
+
 <h4 class="ui dividing header">Admin-Panel</h4>
-<a class="ui labeled icon button" href="{{url_for("api.admin_ftp_sync")}}">
-	<i class="save icon"></i> FTP-Synchronisieren
-</a>
-<div class="ui labeled icon button">
-	<i class="server outline icon"></i> Server neustarten
+
+<div id="create_tournament_form" style="display: none; margin-top: 2em; margin-bottom: 2em;">
+	<form id="ctform" class="ui form segment" method="post" action="/api/create_tournament">
+		<div class="required field">
+			<label>Name des Turniers</label>
+			<input id="name" type="text" name="name">
+		</div>
+		<div class="required field">
+			<label>Spieltyp</label>
+			<select id="type" name="gametype">
+				{% for gametype in gametypes %}
+					<option value="{{gametype.id}}">{{gametype.name}}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<button type="submit" id="ctsubmit" class="ui labeled icon button">
+			<i class="flag icon"></i> Turnier erstellen
+		</button>
+	</form>
 </div>
+
+<div id="start_tournament_form" style="display: none; margin-top: 2em; margin-bottom: 2em;">
+	<form id="stform" class="ui form segment" method="post" action="/api/start_tournament">
+		<div class="required field">
+			<label>Name des Turniers</label>
+			<select id="id" name="id">
+				{% for tournament in tournaments %}
+					<option value="{{tournament.id}}" {% if tournament.executed %}disabled{% endif %}>{{tournament.name}}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<button type="submit" id="ctsubmit" class="ui labeled icon button">
+			<i class="flag icon"></i> Turnier starten
+		</button>
+	</form>
+</div>
+
+<div class="column" style="margin-bottom: 1em;">
+	<div id="create_tournament_button" class="ui labeled icon button"
+			title="Erstellt ein neues Turnier mit den aktuell ausgewählten KIs. Das Turnier wird nicht automatisch gestartet.">
+		<i class="flag icon"></i> Turnier erstellen
+	</div>
+	<div id="start_tournament_button" class="ui labeled icon button"
+			title="Startet ein zuvor erstelltes Turnier mit den damals aktuellen KIs.">
+		<i class="play icon"></i> Turnier starten
+	</div>
+</div>
+
+<script type="text/javascript">
+
+$("#create_tournament_button").on("click", function() {
+	if ($("#start_tournament_form").hasClass("visible"))
+		$("#start_tournament_form").transition("scale");
+	$("#create_tournament_form").transition("scale");
+});
+
+$("#start_tournament_button").on("click", function() {
+	if ($("#create_tournament_form").hasClass("visible"))
+		$("#create_tournament_form").transition("scale");
+	$("#start_tournament_form").transition("scale");
+});
+
+</script>
+
+<div class="column" style="margin-bottom: 1em;">
+	<a class="ui labeled icon button" href="{{url_for("api.admin_ftp_sync")}}">
+		<i class="refresh icon"></i> FTP-Synchronisieren
+	</a>
+	<div class="ui labeled icon button">
+		<i class="server outline icon"></i> Server neustarten
+	</div>
+</div>
+
 {% endblock %}

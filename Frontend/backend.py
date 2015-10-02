@@ -16,6 +16,7 @@ class Backend(threading.Thread):
 	daemon = True
 	game_update_queues = WeakSet()
 	sleep_time = 60
+	queued_for_reconnect = Queue()
 
 	def __init__(self):
 		threading.Thread.__init__(self)
@@ -40,6 +41,10 @@ class Backend(threading.Thread):
 			self.sock.connect((env.backend_url, env.backend_port))
 			self.sock.sendall(b"")
 			self.connected = True
+			if self.queued_for_reconnect.qsize():
+				logger.info("Sende {} gequeuete Nachrichten".format(self.queued_for_reconnect.qsize()))
+				while not self.queued_for_reconnect.empty():
+					self.send_dict(self.queued_for_reconnect.get())
 		except socket.error as e:
 			logger.warning(e)
 			self.sock = None
@@ -166,6 +171,15 @@ class Backend(threading.Thread):
 		logger.info("Backend[{}]: Quali-Spiel mit '{}' ({}) gestartet".format(reqid, ai.name, ai.lang.name))
 		return reqid
 
+	def request_tournament(self, tournament):
+		reqid = self.latest_request_id
+		self.latest_request_id += 1
+		d = {'action': 'tournament', 'tournament': tournament.id, 'gametype': tournament.type.id};
+		self.requests[reqid] = d
+		self.send_dict(d)
+		logger.info("Backend[{}]: Turnier {} gestartet".format(reqid, str(tournament)));
+		return reqid;
+
 	def send_dict(self, d):
 		if not self.is_connected():
 			self.connect()
@@ -173,6 +187,8 @@ class Backend(threading.Thread):
 			self.sock.sendall(bytes(json.dumps(d) + "\n", "utf-8"))
 			return True
 		else:
+			logger.info("Queued Backend-Message: " + str(d))
+			self.queued_for_reconnect.put(d)
 			return False
 
 	def parse(self, d):

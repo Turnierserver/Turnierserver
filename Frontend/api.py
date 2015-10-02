@@ -1352,3 +1352,48 @@ def upload_simple_player(game_id, lang):
 		return {"error": False}, 200
 
 	return CommonErrors.FTP_ERROR
+
+@api.route("/tournament/<int:tournament_id>", methods=["GET"])
+@json_out
+def api_tournament(tournament_id):
+	t = Tournament.query.get(tournament_id)
+	if not t:
+		return CommonErrors.INVALID_ID;
+	return t.info(), 200;
+
+@api.route("/create_tournament", methods=["POST"])
+@json_out
+@admin_required
+def create_tournament():
+	name = request.form.get("name")
+	if not name or name == "":
+		return {"error": "Bitte einen Namen angeben"}, 400;
+	if name in [t.name for t in Tournament.query.all()]:
+		return {"error": "Ein Turnier mit diesem Namen existiert bereits"}, 400;
+	type_id = request.form.get("gametype")
+	if not type_id:
+		return CommonErrors.INVALID_ID;
+	gametype = GameType.query.get(type_id)
+	if not gametype:
+		return CommonErrors.INVALID_ID;
+	t = Tournament(name=name, type=gametype);
+	db.session.add(t);
+	db.session.commit();
+	t.storeAis();
+	return {"error": False, "id": t.id}, 200;
+
+@api.route("/start_tournament", methods=["GET", "POST"])
+@json_out
+@admin_required
+def start_tournament():
+	id = request.form.get("id");
+	if not id:
+		return CommonErrors.INVALID_ID;
+	tournament = Tournament.query.get(id);
+	if not tournament:
+		return CommonErrors.INVALID_ID;
+	if tournament.executed:
+		return {"error": "Das Turnier wurde bereits gestartet"}, 400;
+	backend.request_tournament(tournament)
+	flash('Das Turnier "{}" wurde gestartet'.format(tournament.name), "positive");
+	return {"error": False, "tournament": tournament.info()}, 200;

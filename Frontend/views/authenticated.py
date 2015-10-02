@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, abort, redirect, url_for
 from flask.ext.login import current_user
-from database import AI, User, Game, Lang, GameType, db, ftp
+from database import AI, User, Game, Lang, GameType, Tournament, db, ftp
 from commons import authenticated_web
 from logger import logger
 from errorhandling import error
@@ -176,4 +176,4 @@ def challenge(other=None):
 def admin():
 	if not current_user.admin:
 		abort(401)
-	return render_template("admin.html")
+	return render_template("admin.html", tournaments=Tournament.query.filter(Tournament.executed == False).all())
