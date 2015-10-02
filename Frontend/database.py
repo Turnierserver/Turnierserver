@@ -232,6 +232,10 @@ class User(db.Model):
 			return None
 		return max([ai.elo for ai in ais])
 
+	@property
+	def active_ais(self):
+		return [ai for ai in self.ai_list if ai.active_version()]
+
 
 	def send_validation_mail(self):
 		return mail.send_validation(self)
@@ -903,6 +907,10 @@ class UserTournamentAi(db.Model):
 	ai = db.relationship("AI", backref=db.backref('t_user_tournament_ais', order_by=id))
 	type_id = db.Column(db.Integer, db.ForeignKey("t_gametypes.id"))
 	type = db.relationship("GameType", backref=db.backref('t_user_tournament_ais', order_by=id))
+
+	@classmethod
+	def from_ai(cls, ai):
+		return cls(user=ai.user, type=ai.type, ai=ai)
 
 	def __repr__(self):
 		return "<UserTournamentAi(id={}, user={}, ai={}, type={})>".format(self.id, self.user.name, self.ai.name, self.type.name);

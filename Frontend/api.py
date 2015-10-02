@@ -777,7 +777,7 @@ def ai_activate_version(id, version_id):
 	if not version:
 		return CommonErrors.INVALID_ID
 	if not version.compiled or not version.qualified or not version.frozen:
-		return {"error": "New version isnt frozen"}, 405
+		return {"error": "New version isnt frozen"}, 400
 
 	ai._active_version_id = version.id
 	db.session.commit()
@@ -827,6 +827,38 @@ def ai_new_version_from_zip(id):
 
 	if not ftp.upload_tree(tmpdir, "AIs/{}/v{}".format(ai.id, ai.latest_version().version_id)):
 		return CommonErrors.FTP_ERROR
+
+	return {"error": False}, 200
+
+
+
+@api.route("/ai/<int:id>/enter_tournament/<int:tournament_id>", methods=["POST"])
+@json_out
+@authenticated
+def ai_enter_tournament(id, tournament_id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+
+	if UserTournamentAi.query.filter(UserTournamentAi.ai == ai).first():
+		return {"error": "AI already entered"}, 400
+
+	## vllt doch nicht auf nur eine KI pro User pro Spieltyp limitieren
+	if UserTournamentAi.query.filter(UserTournamentAi.user == current_user).filter(UserTournamentAi.type == ai.type).first():
+		return {"error": "You can only enter with one AI"}, 400
+
+	tournament = Tournament.query.get(tournament_id)
+	if not tournament:
+		return CommonErrors.INVALID_ID
+	if not ai.active_version():
+		return {"error": "Ai isnt active"}, 400
+
+	o = UserTournamentAi.from_ai(ai)
+	db.session.add(o)
+	db.session.commit()
+	logger.info(str(current_user) + " entered a tournament w/ " + str(o))
 
 	return {"error": False}, 200
 

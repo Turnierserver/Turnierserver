@@ -110,6 +110,67 @@ list.toggle("data-elo");
 {% endif %}
 </script>
 
+{% if logged_in %}
+<a id="enter" class="ui bottom attached label">
+	<i class="flag icon"></i> Beitreten
+</a>
+
+<div id="enter_modal" class="ui modal">
+	<i class="close icon"></i>
+	<div class="ui icon header">
+		<i class="flag outline icon"></i>
+		Turnier beitreten
+	</div>
+	<div class="content">
+		<div class="description" style="text-align: center">
+			<p>Wenn das Turnier startet, wird deine KI kopiert und deine Änderungen haben im Turnier keine Wirkung.<br />Du kannst nur mit einer KI gleichzeitig angemeldet sein.</p>
+		</div>
+		<br />
+		<center>
+			<div class="ui selection dropdown">
+				<input type="hidden" name="enter_ai" id="enter_ai">
+				<i class="dropdown icon"></i>
+				<div class="default text">KI</div>
+				<div class="menu">
+					{% for ai in current_user.active_ais %}
+						<div class="item" data-value="{{ai.id}}">{{ai.name}} v{{ai.active_version().version_id}}</div>
+					{% endfor %}
+				</div>
+			</div>
+		</center>
+	</div>
+	<div class="actions">
+		<div class="ui black cancel button">
+			<i class="remove icon"></i>
+			Abbrechen
+		</div>
+		<div class="ui green ok button">
+			<i class="checkmark icon"></i>
+			Beitreten
+		</div>
+	</div>
+</div>
+
+<script>
+$(".ui.dropdown").dropdown()
+$("#enter").on("click", function() {
+	$('#enter_modal').modal({
+		onApprove: function() {
+			var aiID = $("#enter_ai").val()
+			$.post("/api/ai/" + aiID + "/enter_tournament/{{tournament.id}}").done(function(data) {
+				console.log("Code copied.");
+				location.reload();
+			}).fail(function(xhr, textStatus, errorThrown) {
+				console.log(xhr.responseText.error);
+				alert(JSON.parse(xhr.responseText).error);
+			});
+		}
+	}).modal('show');
+})
+</script>
+
+{% endif %}
+
 </div>
 
 {% endblock %}
