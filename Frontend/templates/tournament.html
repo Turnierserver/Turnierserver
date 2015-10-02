@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% set active_page = "tournament_list" %}
+
+{% block head %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
+<script src="{{ url_for('static', filename='sortablelist.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+
+<div class="ui segment">
+
+{% if current_user.admin and not tournament.executed %}
+	<a id="start-button" class="ui teal right ribbon label">Starten</a>
+	<script>
+	$('#start-button').on("click", function() {
+		$.post("/api/start_tournament", {'id': {{tournament.id}} }).done(function(data) {
+			location.reload();
+		}).fail(function(xhr, textStatus, errorThrown) {
+			console.log(xhr.responseText.error);
+			alert(JSON.parse(xhr.responseText).error);
+		});
+	});
+	</script>
+{% endif %}
+
+<h1 class="ui center aligned header" style="font-size: 4em; margin-bottom: 0px;">{{ tournament.name }}</h1>
+
+<div class="ui divider"></div>
+
+<div class="ui three statistics">
+	<div class="statistic">
+		<div class="value"> {{ ais | length }} </div>
+		<div class="label"> KIs </div>
+	</div>
+	<div class="statistic">
+		<div class="value"> {% if tournament.executed %} ja {% else %} nein {% endif %} </div>
+		<div class="label"> Gestartet </div>
+	</div>
+	<div class="statistic">
+		<div class="value"> {% if tournament.finished %} ja {% else %} nein {% endif %} </div>
+		<div class="label"> Beendet </div>
+	</div>
+</div>
+
+<div class="ui divider"></div>
+
+<h3 class="ui center aligned header">
+	{% if not tournament.executed or not tournament.finished %}
+	Aktuell angemeldete KIs:
+	{% else %}
+	Teilgenommene KIs:
+	{% endif %}
+</h3>
+
+<table id="ais" class="ui very basic sortable table">
+	<thead>
+		<tr>
+			<th class="left aligned one wide">Icon</th>
+			{% if tournament.executed and tournament.finished %}
+				<th class="center aligned one wide data-rank">Platz</th>
+			{% endif %}
+			<th class="center aligned two wide data-elo">ELO</th>
+			<th class="left aligned six wide data-name">Name</th>
+			<th class="right aligned six wide data-user">Benutzer</th>
+			<th class="center aligned three wide data-lang">Sprache</th>
+		</tr>
+	</thead>
+	<tbody class="list">
+		{% for ai in ais %}
+		<tr data-id="{{ai.id}}" {% if ai.user == current_user %} style="background-color: rgb(255, 236, 194);" {% endif %}>
+			<td>
+				<img class="ui avatar image" src="{{ url_for('api.ai_icon', id=ai.ai.id) }}">
+			</td>
+			{% if tournament.executed and tournament.finished %}
+				<td class="center aligned data-rank">
+					TODO
+				</td>
+			{% endif %}
+			<td class="center aligned data-elo">
+				{{ai.ai.elo | int}}
+			</td>
+			<td class="left aligned data-name">
+				<a class="content" href="{{url_for('anonymous.ai', id=ai.ai.id)}}">
+					<div class="header">{{ai.ai.name}}</div>
+				</a>
+			</td>
+			<td class="right aligned data-user">
+				<a class="content" href="{{url_for('anonymous.user', id=ai.user.id)}}">
+					<div class="header">{{ai.user.name}}</div>
+				</a>
+			</td>
+			<td class="right aligned data-lang">
+				<a class="content" href="{{ ai.ai.lang.url }}">
+					<div class="header">{{ ai.ai.lang.name }}</div>
+				</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<script>
+var list = sortable_list("ais");
+{% if tournament.executed and tournament.finished %}
+list.toggle("data-rank");
+{% else %}
+list.toggle("data-elo");
+list.toggle("data-elo");
+{% endif %}
+</script>
+
+</div>
+
+{% endblock %}

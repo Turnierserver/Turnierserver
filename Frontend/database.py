@@ -839,6 +839,73 @@ class Library(db.Model):
 	def __repr__(self):
 		return "<Library(id={}, name={})>".format(self.id, self.name)
 
+class Tournament(db.Model):
+	__tablename__ = 't_tournaments'
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	name = db.Column(db.Text, nullable=False)
+	timestamp = db.Column(db.BigInteger)
+	type_id = db.Column(db.Integer, db.ForeignKey("t_gametypes.id"))
+	type = db.relationship("GameType", backref=db.backref('t_tournaments', order_by=id))
+	executed = db.Column(db.Boolean, nullable=False)
+	finished = db.Column(db.Boolean, nullable=False)
+	
+	def __init__(self, *args, **kwargs):
+		super(Tournament, self).__init__(*args, **kwargs)
+		self.timestamp = timestamp()
+		if self.executed == None:
+			self.executed = False
+		self.ftp_sync()
+		db_obj_init_msg(self)
+	
+	def time(self, locale='de'):
+		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
+	
+	def info(self):
+		return {"id": self.id, "name": self.name,
+		        "timestamp": self.timestamp, "timestr": self.time(),
+		        "type": self.type.info(), "executed": self.executed};
+	
+	def __repr__(self):
+		return "<Tournament(id={}, name={}, type={})>".format(self.id, self.name, self.type.name);
+	
+	@ftp.safe
+	def ftp_sync(self):
+		logger.info("FTP-Sync von " + str(self))
+		bd = "Tournaments/" + str(self.id)
+		if not ftp.ftp_host.path.isdir(bd):
+			ftp.ftp_host.mkdir(bd)
+	
+	@ftp.safe
+	def storeAis(self):
+		self.ftp_sync()
+		bd = "Tournaments/" + str(self.id)
+		with ftp.ftp_host.open(bd + "/ais.json", "w") as f:
+			f.write(str([ {"id": uta.ai_id, "version": uta.ai.active_version().id} for uta in UserTournamentAi.query.filter(UserTournamentAi.type_id == self.type_id).all() ]))
+
+class TournamentGame(db.Model):
+	__tablename__ = 't_tournament_games'
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	tournament_id = db.Column(db.Integer, db.ForeignKey('t_tournaments.id'))
+	tournament = db.relationship("Tournament", backref=db.backref('t_tournament_games', order_by=id))
+	game_id = db.Column(db.Integer, db.ForeignKey('t_games.id'))
+	game = db.relationship("Game", backref=db.backref('t_tournament_games', order_by=id))
+	
+	def __repr__(self):
+		return "<TournamentGame(id={}, tournament={}, game={})>".format(self.id, self.tournament.name, str(self.game));
+
+class UserTournamentAi(db.Model):
+	__tablename__ = 't_user_tournament_ais'
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	user_id = db.Column(db.Integer, db.ForeignKey('t_users.id'))
+	user = db.relationship("User", backref=db.backref('t_user_tournament_ais', order_by=id))
+	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'))
+	ai = db.relationship("AI", backref=db.backref('t_user_tournament_ais', order_by=id))
+	type_id = db.Column(db.Integer, db.ForeignKey("t_gametypes.id"))
+	type = db.relationship("GameType", backref=db.backref('t_user_tournament_ais', order_by=id))
+	
+	def __repr__(self):
+		return "<UserTournamentAi(id={}, user={}, ai={}, type={})>".format(self.id, self.user.name, self.ai.name, self.type.name);
+
 
 
 def populate():

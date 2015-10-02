@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% set active_page = "admin" %}
+{% block body %}
+
+<h4 class="ui dividing header">Neues Turnier erstellen</h4>
+
+<div id="create_tournament_form" style="display: none; margin-top: 2em;">
+	<form id="ct_form">
+	</form>
+</div>
+
+<div class="column" style="margin-bottom: 1em;">
+	<div id="" class="ui labeled icon button">
+		<i class="flag icon"></i> Turnier erstellen
+	</a>
+	<a class="ui labeled icon button">
+		<i class="play icon"></i> Turnier starten
+	</a>
+</div>
+
+<div class="column">
+	<a class="ui labeled icon button" href="{{url_for("api.admin_ftp_sync")}}">
+		<i class="refresh icon"></i> FTP-Synchronisieren
+	</a>
+	<div class="ui labeled icon button">
+		<i class="server outline icon"></i> Server neustarten
+	</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% set active_page = "tournament_list" %}
+
+{% block head %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.1.1/list.min.js"></script>
+<script src="{{ url_for('static', filename='sortablelist.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+
+<h4>Turniere</h4>
+<div class="ui divider"></div>
+
+<table id="tournaments" class="ui very basic sortable table">
+	<thead>
+		<tr>
+			<th class="left aligned six wide data-name">Name</th>
+			<th class="left aligned six wide data-type">Spiel</th>
+			<th class="center aligned three wide">Ausgeführt</th>
+			<th class="center aligned two wide">Fertig</th>
+		</tr>
+	</thead>
+	<tbody class="list">
+		{% for tournament in tournament_list %}
+		<tr data-id="{{tournament.id}}">
+			<td class="left aligned data-name">
+				<a class="content" href="{{url_for('anonymous.tournament', id=tournament.id)}}">
+					<div class="header">{{tournament.name}}</div>
+				</a>
+			</td>
+			<td class="left aligned data-type">
+				<div class="content">
+					<div class="header">{{tournament.type.name}}</div>
+				</div>
+			</td>
+			<td class="center aligned">
+				{% if tournament.executed %}
+					<i class="large green checkmark icon"></i>
+				{% else %}
+					{% if current_user.admin %}
+						<div class="ui basic icon labeled start button">
+							<i class="play icon"></i>Starten
+						</div>
+					{% else %}
+						<i class="large red remove icon"></i>
+					{% endif %}
+				{% endif %}
+			</td>
+			<td class="center aligned">
+				{% if tournament.finished %}
+					<i class="large green checkmark icon"></i>
+				{% else %}
+					<i class="large red remove icon"></i>
+				{% endif %}
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<script>
+var list = sortable_list("tournaments");
+list.toggle("data-type");
+</script>
+
+{% if current_user.admin %}
+<script>
+$('.start.button').on("click", function() {
+	$.post("/api/start_tournament", {'id': $(this).parent().parent().attr('data-id')}).done(function(data) {
+		location.reload();
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error);
+		alert(JSON.parse(xhr.responseText).error);
+	});
+});
+</script>
+{% endif %}
+
+{% endblock %}
