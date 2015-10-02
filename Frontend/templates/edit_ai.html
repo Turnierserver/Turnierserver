@@ -206,14 +206,12 @@
 
 <div id="delete_modal" class="ui basic modal">
 	<i class="close icon"></i>
-	<div class="header">
+	<div class="ui icon header">
+		<i class="trash outline icon"></i>
 		KI löschen
 	</div>
 	<div class="content">
-		<div class="image">
-			<i class="trash outline icon"></i>
-		</div>
-		<div class="description">
+		<div class="description" style="text-align: center">
 			<p>Das löschen einer KI kann nicht rückgängig gemacht werden! Willst du {{ai.name}} wirklich löschen?</p>
 		</div>
 	</div>
@@ -234,15 +232,13 @@
 
 <div id="copy_simple_player_modal" class="ui basic modal">
 	<i class="close icon"></i>
-	<div class="header">
+	<div class="ui icon header">
+		<i class="copy outline icon"></i>
 		BeispielKI kopieren
 	</div>
 	<div class="content">
-		<div class="image">
-			<i class="copy outline icon"></i>
-		</div>
-		<div class="description">
-			<p>Das kopieren des Beispielcodes wird deine aktuelle Version (Version {{ai.latest_version().version_id}}) überschreiben! Bist du dir sicher?</p>
+		<div class="description" style="text-align: center">
+			<p>Das kopieren des Beispielcodes wird deine aktuelle Version (v{{ai.latest_version().version_id}}) überschreiben! Bist du dir sicher?</p>
 		</div>
 	</div>
 	<div class="actions">
