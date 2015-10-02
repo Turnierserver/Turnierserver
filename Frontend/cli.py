@@ -236,7 +236,8 @@ def manage(manager, app):
 				l.name: {"example_ai": {}, "ailib": {}} for l in Lang.query
 			} for g in GameType.query},
 			"Data": {},
-			"AIs": {}
+			"AIs": {},
+			"Tournaments": {}
 		}
 		@ftp.safe
 		def ftp_safe():
