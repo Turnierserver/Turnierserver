@@ -178,7 +178,7 @@ class Backend(threading.Thread):
 		self.requests[reqid] = d
 		self.send_dict(d)
 		logger.info("Backend[{}]: Turnier {} gestartet".format(reqid, str(tournament)));
-		return reqid;
+		return reqid
 
 	def send_dict(self, d):
 		if not self.is_connected():

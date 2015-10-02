@@ -10,13 +10,19 @@
 			<label>Name des Turniers</label>
 			<input id="name" type="text" name="name">
 		</div>
+
 		<div class="required field">
 			<label>Spieltyp</label>
-			<select id="type" name="gametype">
-				{% for gametype in gametypes %}
-					<option value="{{gametype.id}}">{{gametype.name}}</option>
-				{% endfor %}
-			</select>
+			<div class="ui selection dropdown">
+				<input type="hidden" name="gametype">
+				<i class="dropdown icon"></i>
+				<div class="default text">Spieltyp</div>
+				<div class="menu">
+					{% for gametype in gametypes %}
+						<div class="item" data-value="{{gametype.id}}">{{gametype.name}}</div>
+					{% endfor %}
+				</div>
+			</div>
 		</div>
 		<button type="submit" id="ctsubmit" class="ui labeled icon button">
 			<i class="flag icon"></i> Turnier erstellen
@@ -52,6 +58,8 @@
 </div>
 
 <script type="text/javascript">
+
+$(".ui.dropdown").dropdown()
 
 $("#create_tournament_button").on("click", function() {
 	if ($("#start_tournament_form").hasClass("visible"))
