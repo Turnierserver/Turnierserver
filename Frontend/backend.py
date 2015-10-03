@@ -177,6 +177,7 @@ class Backend(threading.Thread):
 		self.requests[reqid] = d
 		self.send_dict(d)
 		logger.info("Backend[{}]: Turnier {} gestartet".format(reqid, str(tournament)))
+		self.requests[reqid]["tournament_object"] = tournament
 		return reqid
 
 	def send_dict(self, d):
@@ -212,43 +213,55 @@ class Backend(threading.Thread):
 		#logger.info("Backend [{}]: {}".format(reqid, d))
 		pprint(d)
 
-		if "isCrash" in d and d["isCrash"]:
-			d["step"] = len(self.requests[reqid]["states"])
-			if "queues" in self.requests[reqid]:
-				for queue in self.requests[reqid]["queues"]:
-					queue.put(d)
-			self.requests[reqid]["crashes"].append(d)
+		self.requests[reqid].update(d)
+
+		if self.handleGame(self.requests[reqid], d):
+			return
+		if self.handleTournament(self.requests[reqid], d):
 			return
 
-		self.requests[reqid].update(d)
-		self.requests[reqid]["queue"].put(d)
-
-		if self.requests[reqid]["action"] in ["start", "qualify"]:
-			if "success" in d and self.requests[reqid]["action"] == "start":
-				if not self.app:
-					raise RuntimeError("Spiel vor verbindung mit App")
-				with self.app.app_context():
-					logger.info("game finished!")
-					g = Game.from_inprogress(self.requests[reqid])
-					logger.debug(g)
-					self.requests[reqid]["finished_game_obj"] = g
-					#pprint(self.requests[reqid])
-
-			if "data" in d:
-				d["data"]["calculationPoints"] = d["calculationPoints"]
-				self.requests[reqid]["states"].append(d["data"])
-
-			if "status" in d and d["status"] == "restarted":
-				self.requests[reqid]["states"] = []
-				self.requests[reqid]["crashes"] = []
-
-			for q in self.game_update_queues:
-				q.put(d)
-
+		if "queue" in self.requests[reqid]:
+			self.requests[reqid]["queue"].put(d)
 		if "queues" in self.requests[reqid]:
 			for q in self.requests[reqid]["queues"]:
 				q.put(d)
 
+	def handleGame(self, full, delta):
+		if delta.get("isCrash"):
+			delta["step"] = len(full["states"])
+			if "queues" in full:
+				for queue in full["queues"]:
+					queue.put(delta)
+			full["crashes"].append(delta)
+			return True
+
+		if full["action"] in ["start", "qualify"]:
+			if "success" in delta and full["action"] == "start":
+				if not self.app:
+					raise RuntimeError("Spiel vor verbindung mit App")
+				with self.app.app_context():
+					logger.info("game finished!")
+					g = Game.from_inprogress(full)
+					logger.debug(g)
+					full["finished_game_obj"] = g
+					#pprint(full)
+
+			if "data" in delta:
+				delta["data"]["calculationPoints"] = delta["calculationPoints"]
+				full["states"].append(delta["data"])
+
+			if "status" in delta and delta["status"] == "restarted":
+				full["states"] = []
+				full["crashes"] = []
+
+			for q in self.game_update_queues:
+				q.put(delta)
+
+	def handleTournament(self, full, delta):
+		if "exception" in delta:
+			logger.error(delta["exception"])
+			full["tournament_object"].executed = False
+			db.session.commit()
 
 	def request(self, reqid):
 		if reqid in self.requests:
@@ -344,7 +357,7 @@ class Backend(threading.Thread):
 			if not self.connected:
 				self.connect()
 			if self.connected:
-				self.sleep_time = 60
+				self.sleep_time = 5
 				r = self.sock.recv(1024*1024).decode("utf-8")
 				if r == '':
 					self.connected = False
@@ -362,7 +375,7 @@ class Backend(threading.Thread):
 					else:
 						self.parse(json.loads(d))
 			else:
-				self.sleep_time = min(self.sleep_time * 2, 60*60*3)
+				self.sleep_time = min(self.sleep_time * 3, 60*60*3)
 				logger.debug("No connection to Backend; sleeping " + str(self.sleep_time) + " seconds.")
 				time.sleep(self.sleep_time)
 
