@@ -113,7 +113,12 @@ def tournament(id):
 	tournament = Tournament.query.get(id);
 	if not tournament:
 		abort(404);
-	return render_template("tournament.html", tournament=tournament, ais=UserTournamentAi.query.filter(UserTournamentAi.type_id == tournament.type_id).all());
+	has_entered = False
+	if current_user and current_user.is_authenticated:
+		a = UserTournamentAi.query.filter(UserTournamentAi.user == current_user).filter(UserTournamentAi.type == GameType.selected()).first()
+		has_entered = a != None
+	return render_template("tournament.html", tournament=tournament, has_entered=has_entered,
+	                       ais=UserTournamentAi.query.filter(UserTournamentAi.type_id == tournament.type_id).all())
 
 @anonymous_blueprint.route("/tutorial")
 def tutorial():

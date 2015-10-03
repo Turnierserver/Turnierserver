@@ -912,6 +912,10 @@ class UserTournamentAi(db.Model):
 	def from_ai(cls, ai):
 		return cls(user=ai.user, type=ai.type, ai=ai)
 
+	def delete(self):
+		db.session.delete(self)
+		db.session.commit()
+
 	def __repr__(self):
 		return "<UserTournamentAi(id={}, user={}, ai={}, type={})>".format(self.id, self.user.name, self.ai.name, self.type.name);
 

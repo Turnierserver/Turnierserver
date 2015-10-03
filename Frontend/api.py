@@ -863,6 +863,27 @@ def ai_enter_tournament(id, tournament_id):
 	return {"error": False}, 200
 
 
+@api.route("/ai/<int:id>/exit_tournament", methods=["POST"])
+@json_out
+@authenticated
+def ai_exit_tournament(id):
+	ai = AI.query.get(id)
+	if not ai:
+		return CommonErrors.INVALID_ID
+	if not current_user.can_access(ai):
+		return CommonErrors.NO_ACCESS
+
+	o = UserTournamentAi.query.filter(UserTournamentAi.ai == ai).first()
+	if not o:
+		return {"error": "AI isnt in any tournament"}, 400
+
+	o.delete()
+
+	logger.info(str(current_user) + " exited a tournament")
+
+	return {"error": False}, 200
+
+
 @api.route("/ai/<int:id>/upload", methods=["POST"])
 @json_out
 @authenticated
