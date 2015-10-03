@@ -216,7 +216,6 @@ public class AiExecutor implements Runnable
 		aiProps.put("turnierserver.worker.host", getStringRequired("worker.host"));
 		aiProps.put("turnierserver.worker.server.port", getStringRequired("worker.port"));
 		aiProps.put("turnierserver.worker.server.aichar", "A");
-		aiProps.put("turnierserver.serializer.compress.worker", getStringRequired("turnierserver.serializer.compress.worker"));
 		aiProps.put("turnierserver.ai.uuid", getJob().getUuid().toString());
 		aiProps.put("turnierserver.debug", getString("turnierserver.debug", "false"));
 		aiProps.store(new FileOutputStream(aiProp), "GENERATED FILE - DO NOT EDIT");
