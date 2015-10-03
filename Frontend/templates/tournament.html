@@ -64,6 +64,9 @@
 			<th class="left aligned six wide data-name">Name</th>
 			<th class="right aligned six wide data-user">Benutzer</th>
 			<th class="center aligned three wide data-lang">Sprache</th>
+			{% if has_entered and not tournament.executed %}
+			<th class="center aligned three wide">Verlassen</th>
+			{% endif %}
 		</tr>
 	</thead>
 	<tbody class="list">
@@ -90,11 +93,18 @@
 					<div class="header">{{ai.user.name}}</div>
 				</a>
 			</td>
-			<td class="right aligned data-lang">
+			<td class="center aligned data-lang">
 				<a class="content" href="{{ ai.ai.lang.url }}">
 					<div class="header">{{ ai.ai.lang.name }}</div>
 				</a>
 			</td>
+			{% if has_entered and not tournament.executed %}
+			<td class="center aligned">
+				{% if current_user.can_access(ai.ai) %}
+				<a class="ui basic red button exit_tournament" data-id="{{ai.ai.id}}">Verlassen</a>
+				{% endif %}
+			</td>
+			{% endif %}
 		</tr>
 		{% endfor %}
 	</tbody>
@@ -107,6 +117,19 @@ list.toggle("data-rank");
 {% else %}
 list.toggle("data-elo");
 list.toggle("data-elo");
+{% endif %}
+{% if has_entered and not tournament.executed %}
+$("a.exit_tournament").on("click", function() {
+	$(this).addClass("loading")
+	var aiID = $(this).attr("data-id")
+	$.post("/api/ai/" + aiID + "/exit_tournament").done(function(data) {
+		console.log("entered tournament");
+		location.reload();
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error);
+		alert(JSON.parse(xhr.responseText).error);
+	});
+})
 {% endif %}
 </script>
 
@@ -123,7 +146,7 @@ list.toggle("data-elo");
 	</div>
 	<div class="content">
 		<div class="description" style="text-align: center">
-			<p>Wenn das Turnier startet, wird deine KI kopiert und deine Änderungen haben im Turnier keine Wirkung.<br />Du kannst nur mit einer KI gleichzeitig angemeldet sein.</p>
+			<p>Wenn das Turnier startet, wird die aktive Version deiner KI kopiert und deine Änderungen haben im Turnier keine Wirkung.<br />Du kannst nur mit einer KI gleichzeitig angemeldet sein.</p>
 		</div>
 		<br />
 		<center>
@@ -158,7 +181,7 @@ $("#enter").on("click", function() {
 		onApprove: function() {
 			var aiID = $("#enter_ai").val()
 			$.post("/api/ai/" + aiID + "/enter_tournament/{{tournament.id}}").done(function(data) {
-				console.log("Code copied.");
+				console.log("entered tournament");
 				location.reload();
 			}).fail(function(xhr, textStatus, errorThrown) {
 				console.log(xhr.responseText.error);
