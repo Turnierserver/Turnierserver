@@ -18,6 +18,8 @@
  */
 package org.pixelgaffer.turnierserver.networking;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -117,10 +119,15 @@ public class DatastoreFtpClient
 			con = cons.getClient();
 		FTPClient client = con.getFtpClient();
 		
-		client.download(remote, local, 0, null);
-		
-		if (conWasNull)
-			con.setBusy(false);
+		try
+		{
+			client.download(remote, local, 0, null);
+		}
+		finally
+		{
+			if (conWasNull)
+				con.setBusy(false);
+		}
 		
 		local.close();
 	}
@@ -136,10 +143,15 @@ public class DatastoreFtpClient
 			con = cons.getClient();
 		FTPClient client = con.getFtpClient();
 		
-		client.download(remote, local);
-		
-		if (conWasNull)
-			con.setBusy(false);
+		try
+		{
+			client.download(remote, local);
+		}
+		finally
+		{
+			if (conWasNull)
+				con.setBusy(false);
+		}
 	}
 	
 	/**
@@ -154,20 +166,25 @@ public class DatastoreFtpClient
 			con = cons.getClient();
 		FTPClient client = con.getFtpClient();
 		
-		String cwd = client.currentDirectory();
-		client.changeDirectory(remote);
-		local.mkdirs();
-		for (FTPFile f : client.list())
+		try
 		{
-			if (f.getType() == FTPFile.TYPE_FILE)
-				retrieveFile(f.getName(), new File(local, f.getName()), con);
-			else if (f.getType() == FTPFile.TYPE_DIRECTORY)
-				retrieveDir(f.getName(), new File(local, f.getName()), con);
+			String cwd = client.currentDirectory();
+			client.changeDirectory(remote);
+			local.mkdirs();
+			for (FTPFile f : client.list())
+			{
+				if (f.getType() == FTPFile.TYPE_FILE)
+					retrieveFile(f.getName(), new File(local, f.getName()), con);
+				else if (f.getType() == FTPFile.TYPE_DIRECTORY)
+					retrieveDir(f.getName(), new File(local, f.getName()), con);
+			}
+			client.changeDirectory(cwd);
 		}
-		client.changeDirectory(cwd);
-		
-		if (conWasNull)
-			con.setBusy(false);
+		finally
+		{
+			if (conWasNull)
+				con.setBusy(false);
+		}
 	}
 	
 	/**
@@ -234,6 +251,18 @@ public class DatastoreFtpClient
 	}
 	
 	/**
+	 * Lädt die KIs des Turniers herunter.
+	 */
+	public static String retrieveTournamentAis (int id)
+			throws IOException, FTPIllegalReplyException, FTPException, IllegalStateException,
+			FTPDataTransferException, FTPAbortedException
+	{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		retrieveFile("Tournaments/" + id + "/ais.json", baos, null);
+		return new String(baos.toByteArray(), UTF_8);
+	}
+	
+	/**
 	 * Lädt den Inhalt des InputStreams local nach remote.
 	 */
 	private static void storeFile (String remote, InputStream local, FtpConnection con)
@@ -244,11 +273,15 @@ public class DatastoreFtpClient
 			con = cons.getClient();
 		FTPClient client = con.getFtpClient();
 		
-		client.upload(remote, local, 0, 0, null);
-		
-		if (conWasNull)
-			con.setBusy(false);
-		
+		try
+		{
+			client.upload(remote, local, 0, 0, null);
+		}
+		finally
+		{
+			if (conWasNull)
+				con.setBusy(false);
+		}
 		local.close();
 	}
 	
@@ -282,11 +315,16 @@ public class DatastoreFtpClient
 			con = cons.getClient();
 		FTPClient client = con.getFtpClient();
 		
-		long retval = client.fileSize(remote);
-		
-		if (conWasNull)
-			con.setBusy(false);
-		
+		long retval;
+		try
+		{
+			retval = client.fileSize(remote);
+		}
+		finally
+		{
+			if (conWasNull)
+				con.setBusy(false);
+		}
 		return retval;
 	}
 	
