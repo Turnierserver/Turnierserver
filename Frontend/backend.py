@@ -261,7 +261,8 @@ class Backend(threading.Thread):
 		if "exception" in delta:
 			logger.error(delta["exception"])
 			full["tournament_object"].executed = False
-			db.session.commit()
+			with self.app.app_context():
+				db.session.commit()
 
 	def request(self, reqid):
 		if reqid in self.requests:
