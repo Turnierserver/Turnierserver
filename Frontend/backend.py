@@ -1,7 +1,6 @@
 from _cfg import env
 import socket
 import json
-import sys
 import time
 import threading
 from queue import Queue, Empty
@@ -174,22 +173,28 @@ class Backend(threading.Thread):
 	def request_tournament(self, tournament):
 		reqid = self.latest_request_id
 		self.latest_request_id += 1
-		d = {'action': 'tournament', 'tournament': tournament.id, 'gametype': tournament.type.id};
+		d = {'action': 'tournament', 'tournament': tournament.id, 'gametype': tournament.type.id}
 		self.requests[reqid] = d
 		self.send_dict(d)
-		logger.info("Backend[{}]: Turnier {} gestartet".format(reqid, str(tournament)));
+		logger.info("Backend[{}]: Turnier {} gestartet".format(reqid, str(tournament)))
 		return reqid
 
 	def send_dict(self, d):
 		if not self.is_connected():
 			self.connect()
 		if self.is_connected():
-			self.sock.sendall(bytes(json.dumps(d) + "\n", "utf-8"))
-			return True
+			try:
+				self.sock.sendall(bytes(json.dumps(d) + "\n", "utf-8"))
+				return True
+			except socket.error as e:
+				logger.exception(e)
+				self.connected = False
+				logger.info("Queueing message due to send error: " + str(d))
+				self.queued_for_reconnect.put(d)
 		else:
 			logger.info("Queued Backend-Message: " + str(d))
 			self.queued_for_reconnect.put(d)
-			return False
+		return False
 
 	def parse(self, d):
 		if not "requestid" in d:
