@@ -179,7 +179,7 @@ public class WorkerClient implements SocketObserver
 			catch (Exception e)
 			{
 				SandboxMain.getLogger().critical("Error while parsing: " + new String(line, UTF_8));
-				e.printStackTrace();
+				Airbrake.log(e).printStackTrace();
 			}
 		}
 	}

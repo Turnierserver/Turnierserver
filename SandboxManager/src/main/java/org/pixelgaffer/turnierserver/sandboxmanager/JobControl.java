@@ -98,7 +98,7 @@ public class JobControl
 	
 	public void jobFinished (UUID uuid)
 	{
-		if (current.getJob().getUuid().equals(uuid))
+		if (current == null || current.getJob().getUuid().equals(uuid))
 		{
 			if (queue.isEmpty())
 			{
