@@ -884,7 +884,8 @@ class Tournament(db.Model):
 		bd = "Tournaments/" + str(self.id)
 		with ftp.ftp_host.open(bd + "/ais.json", "w") as f:
 			json.dump([
-				{"id": uta.ai_id, "version": uta.ai.active_version().id} for uta in UserTournamentAi.query.filter(UserTournamentAi.type_id == self.type_id).all()
+				{"ai": "{}v{}".format(uta.ai_id, uta.ai.active_version().version_id), "lang": uta.ai.lang.name}
+				for uta in UserTournamentAi.query.filter(UserTournamentAi.type_id == self.type_id).all()
 			], f)
 
 class TournamentGame(db.Model):

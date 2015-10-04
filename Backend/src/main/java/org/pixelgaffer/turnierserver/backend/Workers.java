@@ -20,7 +20,6 @@ package org.pixelgaffer.turnierserver.backend;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -32,6 +31,17 @@ import lombok.NonNull;
 public class Workers
 {
 	private static final Object lock = new Workers();
+	
+	/**
+	 * Diese Methode wartet bis workerIsAvailable oder eine andere Methode diesen Thread notified.
+	 */
+	public static void waitForAvailableWorker () throws InterruptedException
+	{
+		synchronized (lock)
+		{
+			lock.wait();
+		}
+	}
 	
 	/**
 	 * Diese Methode registriert einen neuen Worker.
@@ -71,7 +81,7 @@ public class Workers
 	 * Gibt einen Worker mit mindestens einer unbeschäftigten Sandbox zurück.
 	 * Diese Methode blockiert, bis ein solcher Worker verfügbar ist.
 	 */
-	public static WorkerConnection getStartableWorker (String lang)
+	public static WorkerConnection getStartableWorker (String lang, boolean tournament)
 	{
 		while (true)
 		{
@@ -80,6 +90,8 @@ public class Workers
 			{
 				for (WorkerConnection worker : workerConnections)
 				{
+					if (Tournament.getCurrentTournament() != null && worker.isTournament() && !tournament)
+						continue;
 					if (worker.canStartAi(lang))
 					{
 						BackendMain.getLogger().debug(
@@ -101,6 +113,25 @@ public class Workers
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Gibt die Anzahl der unbeschäftigten Sandboxen zurück. Die
+	 * unterstürtzten Sprachen werden dabei nicht beachtet.
+	 */
+	public static int getStartableSandboxes (boolean tournament)
+	{
+		int count = 0;
+		synchronized (workerConnections)
+		{
+			for (WorkerConnection worker : workerConnections)
+			{
+				if (Tournament.getCurrentTournament() != null && worker.isTournament() && !tournament)
+					continue;
+				count += worker.getStartableSandboxes();
+			}
+		}
+		return count;
 	}
 	
 	/**

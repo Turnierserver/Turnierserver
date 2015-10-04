@@ -18,6 +18,8 @@
  */
 package org.pixelgaffer.turnierserver.backend;
 
+import static org.pixelgaffer.turnierserver.PropertyUtils.BACKEND_RESTART_ATTEMPTS;
+import static org.pixelgaffer.turnierserver.PropertyUtils.getInt;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -34,14 +36,12 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Parsers;
-import static org.pixelgaffer.turnierserver.PropertyUtils.*;
 import org.pixelgaffer.turnierserver.backend.Games.GameImpl.GameState;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
 import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendCommandProcessed;
 import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendResult;
 import org.pixelgaffer.turnierserver.gamelogic.GameLogic;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Frontend;
-import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
 import org.pixelgaffer.turnierserver.networking.messages.MessageForward;
 import it.sauronsoftware.ftp4j.FTPAbortedException;
@@ -154,7 +154,7 @@ public class Games
 				{
 					aiWrappers.put(aiw.getUuid(), aiw);
 				}
-				WorkerConnection w = Workers.getStartableWorker(aiw.getLang());
+				WorkerConnection w = Workers.getStartableWorker(aiw.getLang(), game.isTournament());
 				try
 				{
 					w.addJob(aiw, game.getGameId());
@@ -272,6 +272,10 @@ public class Games
 		@Getter
 		private int requestId;
 		
+		/** Gibt an ob dieses Spiel zu einem Turnier gehört. */
+		@Getter
+		private boolean tournament;
+		
 		/** Die Liste mit allen teilnehmenden KIs. */
 		@Getter
 		private List<AiWrapper> ais = new ArrayList<>();
@@ -293,13 +297,14 @@ public class Games
 		private GameState state = GameState.WAITING;
 		
 		private GameImpl (int gameId, @NonNull GameLogic<?, ?> logic, @NonNull UUID uuid, int requestId,
-				String[] languages, String ... ais)
+				boolean tournament, String[] languages, String ... ais)
 						throws IOException
 		{
 			this.gameId = gameId;
 			this.logic = logic;
 			this.uuid = uuid;
 			this.requestId = requestId;
+			this.tournament = tournament;
 			// die KIs erstellen
 			for (int i = 0; i < ais.length; i++)
 			{
@@ -320,7 +325,7 @@ public class Games
 				}
 				
 				// einen Worker mit der KI beauftragen
-				WorkerConnection w = Workers.getStartableWorker(aiw.getLang());
+				WorkerConnection w = Workers.getStartableWorker(aiw.getLang(), tournament);
 				w.addJob(aiw, gameId);
 				aiw.setConnection(w);
 			}
@@ -415,7 +420,7 @@ public class Games
 				}
 				
 				// einen Worker mit der KI beauftragen
-				WorkerConnection w = Workers.getStartableWorker(aiw.getLang());
+				WorkerConnection w = Workers.getStartableWorker(aiw.getLang(), tournament);
 				w.addJob(aiw, gameId);
 				aiw.setConnection(w);
 			}
@@ -463,13 +468,13 @@ public class Games
 	/**
 	 * Startet ein Spiel des angegebenen Typs mit den angegebenen KIs.
 	 */
-	public static Game startGame (int gameId, int requestId, String[] languages, String ... ais)
+	public static GameImpl startGame (int gameId, int requestId, boolean tournament, String[] languages, String ... ais)
 			throws ReflectiveOperationException, IOException, FTPIllegalReplyException, FTPException,
 			FTPDataTransferException, FTPAbortedException, FTPListParseException
 	{
 		GameLogic<?, ?> logic = loadGameLogic(gameId);
 		UUID uuid = randomUuid();
-		GameImpl game = new GameImpl(gameId, logic, uuid, requestId, languages, ais);
+		GameImpl game = new GameImpl(gameId, logic, uuid, requestId, tournament, languages, ais);
 		synchronized (lock)
 		{
 			games.put(uuid, game);
@@ -481,7 +486,7 @@ public class Games
 	 * Startet ein Qualifikations-Spiel des angegebenen Typs mit der
 	 * angegegebenen KI.
 	 */
-	public static Game startQualifyGame (int gameId, int requestId, String language, String ai, String qualilang)
+	public static GameImpl startQualifyGame (int gameId, int requestId, String language, String ai, String qualilang)
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
 			ReflectiveOperationException, FTPListParseException
 	{
@@ -496,7 +501,7 @@ public class Games
 			ais[1] = "-" + gameId + "v1";
 		String[] languages = { language, qualilang };
 		// Spiel starten
-		GameImpl game = new GameImpl(gameId, logic, uuid, requestId, languages, ais);
+		GameImpl game = new GameImpl(gameId, logic, uuid, requestId, false, languages, ais);
 		synchronized (lock)
 		{
 			games.put(uuid, game);

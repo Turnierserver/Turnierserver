@@ -52,6 +52,7 @@ public class PropertyUtils
 	public static final String WORKER_MIRROR_PASSWORD = WORKER_MIRROR_BASE + "password";
 	public static final String WORKER_MIRROR_PASSWORD_REPEATS = WORKER_MIRROR_BASE + "passwordRepeats";
 	public static final String WORKER_MIRROR_SALT_LENGTH = WORKER_MIRROR_BASE + "saltLength";
+	public static final String WORKER_TOURNAMENT = WORKER_BASE + "tournament";
 	public static final String DATASTORE_HOST = DATASTORE_BASE + "host";
 	public static final String DATASTORE_PORT = DATASTORE_BASE + "port";
 	public static final String DATASTORE_USERNAME = DATASTORE_BASE + "username";

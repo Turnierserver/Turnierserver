@@ -53,6 +53,8 @@ public class WorkerConnection
 	private long id = nid++;
 	
 	private List<SandboxInfo> sandboxes;
+	@Getter
+	private boolean tournament;
 	
 	/** Gibt an, ob gerade ein Kompilierungsauftrag läuft. */
 	@Getter
@@ -70,6 +72,7 @@ public class WorkerConnection
 	{
 		connection = con;
 		sandboxes = info.getSandboxes();
+		tournament = info.isTournament();
 		client = new WorkerClient(addr, info);
 	}
 	
@@ -99,7 +102,7 @@ public class WorkerConnection
 	}
 	
 	/**
-	 * Gibt an, ob der Worker gerade eine KI starten kann oder ob alle Worker
+	 * Gibt an, ob der Worker gerade eine KI starten kann oder ob alle Sandboxen
 	 * komplett ausgelastet sind.
 	 */
 	public synchronized boolean canStartAi (String lang)
@@ -108,6 +111,18 @@ public class WorkerConnection
 			if ((lang == null || info.getLangs().contains(lang)) && !info.isBusy())
 				return true;
 		return false;
+	}
+	
+	/**
+	 * Gibt die Anzahl der nicht ausgelasteten Sandboxen zurück.
+	 */
+	public synchronized int getStartableSandboxes ()
+	{
+		int count = 0;
+		for (SandboxInfo info : sandboxes)
+			if (!info.isBusy())
+				count++;
+		return count;
 	}
 	
 	/**
@@ -184,6 +199,7 @@ public class WorkerConnection
 	{
 		BackendMain.getLogger().info("Der Worker " + id + " hat sich geupdated: " + info);
 		sandboxes = info.getSandboxes();
+		tournament = info.isTournament();
 		
 		// Workers notifien
 		Workers.workerIsAvailable();
