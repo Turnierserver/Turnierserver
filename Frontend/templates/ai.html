@@ -15,14 +15,22 @@
 </a>
 {% endif %}
 
+<div class="ui two column very relaxed grid" style="align-items: center">
+	<div class="column">
+		<img class="ui medium image" src="/api/ai/{{ai.id}}/icon" style="float: right; width: 250px">
+	</div>
+	<div class="ui hidden vertical divider"></div>
+	<div class="column">
+		<span style="float: left">
+			<h1 class="ui center aligned header" style="font-size: 4em; margin-bottom: 0px;">{{ ai.name }}</h1>
+			<h1 class="ui center aligned sub header" style="font-size: 1.2em; margin-top: 0px;">
+				von <a href="{{ url_for('anonymous.user', id=ai.user.id) }}">{{ ai.user.name }}</a>
+			</h1>
+			<p align="middle">{{ ai.desc }}</p>
+		</span>
+	</div>
+</div>
 
-<h1 class="ui center aligned header" style="font-size: 4em; margin-bottom: 0px;">{{ ai.name }}</h1>
-<h1 class="ui center aligned sub header" style="font-size: 1.2em; margin-top: 0px;">
-	von <a href="{{ url_for('anonymous.user', id=ai.user.id) }}">{{ ai.user.name }}</a>
-</h1>
-<br />
-
-<p align="middle">{{ ai.desc }}</p>
 <div class="ui divider"></div>
 
 <div class="ui four statistics">
