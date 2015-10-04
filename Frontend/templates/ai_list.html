@@ -28,7 +28,7 @@
 	</thead>
 	<tbody class="list">
 		{% for ai in ais %}
-		<tr data-id="{{ai.id}}">
+		<tr data-id="{{ai.id}}" {% if ai.user == current_user %} style="background-color: rgb(255, 236, 194);" {% endif %}>
 			<td>
 				<img class="ui avatar image" src="{{ url_for('api.ai_icon', id=ai.id) }}">
 			</td>

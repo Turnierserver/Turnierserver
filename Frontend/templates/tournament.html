@@ -180,7 +180,7 @@ $("#enter").on("click", function() {
 	$('#enter_modal').modal({
 		onApprove: function() {
 			var aiID = $("#enter_ai").val()
-			$.post("/api/ai/" + aiID + "/enter_tournament/{{tournament.id}}").done(function(data) {
+			$.post("/api/ai/" + aiID + "/enter_tournament").done(function(data) {
 				console.log("entered tournament");
 				location.reload();
 			}).fail(function(xhr, textStatus, errorThrown) {
