@@ -832,10 +832,10 @@ def ai_new_version_from_zip(id):
 
 
 
-@api.route("/ai/<int:id>/enter_tournament/<int:tournament_id>", methods=["POST"])
+@api.route("/ai/<int:id>/enter_tournament", methods=["POST"])
 @json_out
 @authenticated
-def ai_enter_tournament(id, tournament_id):
+def ai_enter_tournament(id):
 	ai = AI.query.get(id)
 	if not ai:
 		return CommonErrors.INVALID_ID
@@ -849,9 +849,6 @@ def ai_enter_tournament(id, tournament_id):
 	if UserTournamentAi.query.filter(UserTournamentAi.user == current_user).filter(UserTournamentAi.type == ai.type).first():
 		return {"error": "You can only enter with one AI"}, 400
 
-	tournament = Tournament.query.get(tournament_id)
-	if not tournament:
-		return CommonErrors.INVALID_ID
 	if not ai.active_version():
 		return {"error": "Ai isnt active"}, 400
 

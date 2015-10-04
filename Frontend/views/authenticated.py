@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, abort, redirect, url_for
 from flask.ext.login import current_user
-from database import AI, User, Game, Lang, GameType, Tournament, db, ftp
+from database import AI, User, Game, Lang, GameType, Tournament, UserTournamentAi, db, ftp
 from commons import authenticated_web
 from logger import logger
 from errorhandling import error
@@ -48,7 +48,10 @@ def edit_ai(id):
 		abort(404)
 	if not current_user.can_access(ai):
 		abort(401)
-	return render_template("edit_ai.html", ai=ai, langs=Lang.query.all())
+	t = UserTournamentAi.query.filter(UserTournamentAi.user == current_user)\
+	    .filter(UserTournamentAi.type == ai.type).first() is None
+	t = t and ai.active_version()
+	return render_template("edit_ai.html", ai=ai, langs=Lang.query.all(), can_enter_tournament=t)
 
 @authenticated_blueprint.route("/ai/<int:id>/compile")
 @authenticated_web

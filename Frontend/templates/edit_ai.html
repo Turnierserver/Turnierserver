@@ -117,6 +117,9 @@
 		<a class="ui labeled icon submit button" href="{{url_for("authenticated.file_browser", id=ai.id, path="")}}">
 			<i class="disk outline icon"></i> Code bearbeiten
 		</a>
+		<a id="enter_tournament" class="ui {% if not can_enter_tournament %}disabled{% endif %} labeled icon submit button">
+			<i class="flag outline icon"></i> Turnier beitreten
+		</a>
 		<div id="delete" class="ui red labeled icon button">
 			<i class="trash outline icon"></i> Löschen
 		</div>
@@ -378,6 +381,20 @@ $("#zip_upload_input").change(function(e){
 	});
 	e.preventDefault();
 });
+
+
+
+$("#enter_tournament").on("click", function() {
+	$("#enter_tournament").addClass("loading")
+	$.post("/api/ai/{{ai.id}}/enter_tournament").done(function(data) {
+		console.log("entered tournament");
+		location.reload();
+	}).fail(function(xhr, textStatus, errorThrown) {
+		console.log(xhr.responseText.error);
+		alert(JSON.parse(xhr.responseText).error);
+	});
+});
+
 
 </script>
 {% endblock %}
