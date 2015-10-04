@@ -115,12 +115,20 @@
 					<td>Wann</td>
 					<td>{{game.time('de')}}</td>
 				</tr>
-				{% for assoc in game.ai_assocs %}
+				{#{% for assoc in game.ai_assocs %}
 				<tr>
 					<td>Ki{{loop.index}} - {{assoc.score}} Punkte</td>
 					<td><a href="{{url_for('anonymous.ai', id=assoc.ai.id)}}">{{assoc.ai.name}}</a></td>
 				</tr>
-				{% endfor %}
+				{% endfor %}#}
+				<tr>
+					<td>Herausforderer - {{game.ai_assocs[0].score}} Punkte</td>
+					<td><a href="{{url_for('anonymous.ai', id=game.ai_assocs[0].ai.id)}}">{{game.ai_assocs[0].ai.name}}</a></td>
+				</tr>
+				<tr>
+					<td>Gegner - {{game.ai_assocs[1].score}} Punkte</td>
+					<td><a href="{{url_for('anonymous.ai', id=game.ai_assocs[1].ai.id)}}">{{game.ai_assocs[1].ai.name}}</a></td>
+				</tr>
 				{% if game.reason %}
 				<tr>
 					<td>Beendigungsgrund</td>

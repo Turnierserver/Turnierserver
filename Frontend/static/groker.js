@@ -36,7 +36,14 @@ var diff_chart = new LineChart("#diff_chart",
 	[{
 		x: function (d) { return d.step; },
 		y: function (d) { return d.diff; },
-		label: function(d) { return "Diff: " + d.diff; }
+		label: function(d) {
+			if (d.ai1_abs > d.ai2_abs) {
+				return "Diff: +" + d.diff + " Punkte für " + d.ai1_name;
+			} else if (d.ai2_abs > d.ai1_abs) {
+				return "Diff: +" + d.diff + " Punkte für " + d.ai2_name;
+			}
+			return "Unentschieden";
+		}
 	}], data, function(d) { return "Schritt: " + d.step; }
 );
 
