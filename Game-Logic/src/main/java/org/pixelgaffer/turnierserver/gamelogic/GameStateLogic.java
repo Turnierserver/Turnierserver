@@ -28,9 +28,9 @@ public abstract class GameStateLogic<E extends AiObject, R> extends GameLogic<E,
 	protected final void sendGameState() throws IOException {
 		for (Ai ai : game.getAis()) {
 			if (!getUserObject(ai).lost) {
-				logger.debug("Sende tollen Gamestate an KI " + ai.getId());
+//				logger.debug("Sende tollen Gamestate an KI " + ai.getId());
 				sendGameState(ai);
-				logger.debug("Habe tollen Gamestate gesendet!");
+//				logger.debug("Habe tollen Gamestate gesendet!");
 			}
 		}
 	}
