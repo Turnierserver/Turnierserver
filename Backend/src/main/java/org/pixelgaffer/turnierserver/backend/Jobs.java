@@ -177,7 +177,7 @@ public class Jobs
 			{
 				try
 				{
-					Games.startGame(cmd.getGametype(), cmd.getRequestid(), cmd.getLanguages(), cmd.getAis());
+					Games.startGame(cmd.getGametype(), cmd.getRequestid(), false, cmd.getLanguages(), cmd.getAis());
 					BackendFrontendConnectionHandler.getFrontend().sendMessage(
 							Parsers.getFrontend().parse(
 									new BackendFrontendCommandProcessed(cmd.getRequestid()), false));
@@ -221,6 +221,12 @@ public class Jobs
 						Airbrake.log(e1).printStackTrace();
 					}
 				}
+			}
+			else if (cmd.getAction().equals("tournament"))
+			{
+				BackendMain.getLogger().todo("Check that no current tournament is running");
+				BackendMain.getLogger().info("Starte Turnier " + cmd.getTournament());
+				new Tournament(cmd.getTournament(), cmd.getGametype(), cmd.getRequestid());
 			}
 			else
 			{

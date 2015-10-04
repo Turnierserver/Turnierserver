@@ -61,7 +61,7 @@ public class WorkerClient implements SocketObserver
 	 */
 	public void sendMessage (MessageForward mf) throws IOException
 	{
-		BackendMain.getLogger().debug("Sende " + mf);
+//		BackendMain.getLogger().debug("Sende " + mf);
 		client.write(Parsers.getWorker().parse(mf, true));
 	}
 	

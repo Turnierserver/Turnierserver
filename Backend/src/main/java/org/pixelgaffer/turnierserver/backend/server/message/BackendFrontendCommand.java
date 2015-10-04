@@ -50,16 +50,16 @@ public class BackendFrontendCommand
 	@Getter
 	private String id;
 	
-	/** Die Sprache der Ki, beim kompilieren*/
+	/** Die Sprache der Ki, beim kompilieren */
 	@Getter
 	private String language;
-
+	
 	// action=qualify
-
+	
 	/** Die Sprache der Quali-KI */
 	@Getter
 	private String qualilang;
-
+	
 	// action=start
 	
 	/** Falls der Befehl Spiel starten ist, sind dies die beteiligten KIs. */
@@ -69,4 +69,10 @@ public class BackendFrontendCommand
 	/** Die Sprache der Ki, beim ausführen */
 	@Getter
 	private String languages[];
+	
+	// action=tournament
+	
+	/** Die ID des zu startenden Turniers. */
+	@Getter
+	private int tournament;
 }

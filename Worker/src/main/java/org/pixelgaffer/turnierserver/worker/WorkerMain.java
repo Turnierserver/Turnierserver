@@ -23,22 +23,21 @@ import static org.pixelgaffer.turnierserver.PropertyUtils.BACKEND_WORKER_SERVER_
 import static org.pixelgaffer.turnierserver.PropertyUtils.WORKER_MIRROR_PORT;
 import static org.pixelgaffer.turnierserver.PropertyUtils.WORKER_SERVER_MAX_CLIENTS;
 import static org.pixelgaffer.turnierserver.PropertyUtils.WORKER_SERVER_PORT;
+import static org.pixelgaffer.turnierserver.PropertyUtils.WORKER_TOURNAMENT;
+import static org.pixelgaffer.turnierserver.PropertyUtils.getBooleanRequired;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getInt;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getIntRequired;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
 import static org.pixelgaffer.turnierserver.PropertyUtils.loadProperties;
-
 import java.io.IOException;
-
-import lombok.Getter;
-import naga.ConnectionAcceptor;
-
 import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
 import org.pixelgaffer.turnierserver.worker.backendclient.BackendClient;
 import org.pixelgaffer.turnierserver.worker.server.MirrorServer;
 import org.pixelgaffer.turnierserver.worker.server.WorkerServer;
+import lombok.Getter;
+import naga.ConnectionAcceptor;
 
 public class WorkerMain
 {
@@ -60,6 +59,7 @@ public class WorkerMain
 	{
 		// Properties laden
 		loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
+		workerInfo.setTournament(getBooleanRequired(WORKER_TOURNAMENT));
 		
 		// Server starten
 		getLogger().info("WorkerServer starting");

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,11 +31,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Diese Klasse speichert Informationen über einen Worker.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class WorkerInfo
 {
+	/**
+	 * Informationen einer mit dem Worker verbunden Sandbox.
+	 */
 	@RequiredArgsConstructor
 	@ToString
 	@EqualsAndHashCode(of = { "id" })
@@ -60,12 +65,26 @@ public class WorkerInfo
 		}
 	}
 	
+	/**
+	 * Alle mit dem Worker verbundenen Sandboxen.
+	 */
 	@NonNull
 	@Getter
 	@Setter
 	private List<SandboxInfo> sandboxes = new ArrayList<>();
 	
+	/**
+	 * Der Port des Servers des Workers.
+	 */
 	@Getter
 	@Setter
 	private int port;
+	
+	/**
+	 * Wenn true wird der Server während eines Turniers nur für Turnier-Spiele
+	 * reserviert.
+	 */
+	@Getter
+	@Setter
+	private boolean tournament;
 }

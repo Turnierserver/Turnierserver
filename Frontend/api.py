@@ -1432,7 +1432,6 @@ def create_tournament():
 	t = Tournament(name=name, type=gametype);
 	db.session.add(t);
 	db.session.commit();
-	t.storeAis();
 	return {"error": False, "id": t.id}, 200;
 
 @api.route("/start_tournament", methods=["GET", "POST"])
@@ -1447,6 +1446,7 @@ def start_tournament():
 		return CommonErrors.INVALID_ID;
 	if tournament.executed:
 		return {"error": "Das Turnier wurde bereits gestartet"}, 400;
+	tournament.storeAis()
 	backend.request_tournament(tournament)
 	flash('Das Turnier "{}" wurde gestartet'.format(tournament.name), "positive");
 	return {"error": False, "tournament": tournament.info()}, 200;

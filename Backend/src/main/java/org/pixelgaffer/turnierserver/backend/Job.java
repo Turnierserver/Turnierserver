@@ -19,13 +19,11 @@
 package org.pixelgaffer.turnierserver.backend;
 
 import java.util.UUID;
-
+import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendCommand;
+import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
-
-import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendCommand;
-import org.pixelgaffer.turnierserver.networking.messages.WorkerCommand;
 
 @AllArgsConstructor
 @ToString
