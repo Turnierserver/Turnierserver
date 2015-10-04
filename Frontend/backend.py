@@ -173,7 +173,7 @@ class Backend(threading.Thread):
 	def request_tournament(self, tournament):
 		reqid = self.latest_request_id
 		self.latest_request_id += 1
-		d = {'action': 'tournament', 'tournament': tournament.id, 'gametype': tournament.type.id}
+		d = {'action': 'tournament', 'tournament': tournament.id, 'gametype': tournament.type.id, 'requestid': reqid}
 		self.requests[reqid] = d
 		self.send_dict(d)
 		logger.info("Backend[{}]: Turnier {} gestartet".format(reqid, str(tournament)))
