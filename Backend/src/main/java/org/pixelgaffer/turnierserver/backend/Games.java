@@ -250,7 +250,7 @@ public class Games
 	 * Diese Klasse ist die Implementation des Game-Interfaces der Game-Logic
 	 * Bibliothek.
 	 */
-	public static class GameImpl implements Game
+	public static class GameImpl implements org.pixelgaffer.turnierserver.gamelogic.interfaces.Game
 	{
 		static enum GameState
 		{
@@ -280,7 +280,10 @@ public class Games
 		@Getter
 		private GameLogic<?, ?> logic;
 		
-		/** Die Anzahl der Versuche, das Spiel zu starten. Dies wird NICHT von der GameImpl Klasse selbst verwaltet. */
+		/**
+		 * Die Anzahl der Versuche, das Spiel zu starten. Dies wird NICHT von
+		 * der GameImpl Klasse selbst verwaltet.
+		 */
 		@Getter
 		@Setter(AccessLevel.PACKAGE)
 		private int attempts = 0;
