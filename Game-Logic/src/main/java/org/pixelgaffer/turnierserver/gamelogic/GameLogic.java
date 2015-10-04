@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-
 import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.GsonGzipParser;
 import org.pixelgaffer.turnierserver.Logger;
@@ -20,9 +19,6 @@ import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 import org.pixelgaffer.turnierserver.gamelogic.messages.GameFinished;
 import org.pixelgaffer.turnierserver.gamelogic.messages.RenderData;
-
-import com.google.common.collect.Ordering;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -157,8 +153,8 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 * @param ai
 	 *            Die AI, von welcher die Nachricht kommt
 	 */
-	public void receiveMessage(byte[] message, Ai ai) {
-		logger.debug("Nachricht empfangen!");
+	public synchronized void receiveMessage(byte[] message, Ai ai) {
+//		logger.debug("Nachricht empfangen!");
 		
 		if(gameEnded) {
 			logger.warning("Game already ended!");
@@ -205,7 +201,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 			return;
 		}
 		
-		logger.debug("Empfangen: " + string);
+//		logger.debug("Empfangen: " + string);
 		
 		try {
 			receive(parse(string), ai, passedMikros);

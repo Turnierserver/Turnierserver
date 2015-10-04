@@ -35,7 +35,7 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameStat
 			logger.warning("Verlorene KI schickt noch stuff; wird ignoriert [" + ai.getId() + "]");
 			return;
 		}
-		logger.debug("Habe tolle Sachen von KI " + ai.getId() + " emfangen!");
+//		logger.debug("Habe tolle Sachen von KI " + ai.getId() + " emfangen!");
 		
 		if (received.contains(ai)) {
 			logger.critical("Habe von einer KI zweimal was emfangen: " + ai.getId());
