@@ -289,8 +289,8 @@ class AI_Game_Assoc(db.Model):
 	game = db.relationship("Game", cascade="all, delete, delete-orphan", single_parent=True)
 	ai_id = db.Column(db.Integer, db.ForeignKey('t_ais.id'))
 	ai = db.relationship("AI")
-	score = db.Column(db.Integer)
-	position = db.Column(db.Integer)
+	score = db.Column(db.Integer, default=-1)
+	position = db.Column(db.Integer, default=-1)
 	calculationPoints = db.Column(db.Integer)
 	## TODO: rechenpunkte wirklich speichern
 
