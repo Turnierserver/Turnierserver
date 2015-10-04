@@ -411,7 +411,7 @@ def api_user_create():
 	if len(password) < 3:
 		return {'error': 'Password too short'}, 400
 
-	if User.query.filter(User.name.ilike(username)).first() or User.query.filter(User.name == username):
+	if User.query.filter(User.name.ilike(username)).first() or User.query.filter(User.name == username).first():
 		return {'error': 'Username already registered'}, 400
 
 	try:
