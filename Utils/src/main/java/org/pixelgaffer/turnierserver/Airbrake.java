@@ -18,17 +18,15 @@
  */
 package org.pixelgaffer.turnierserver;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import org.apache.log4j.Logger;
 import airbrake.AirbrakeAppender;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Airbrake
+public final class Airbrake implements UncaughtExceptionHandler
 {
-	private static Logger logger = Logger.getLogger("airbrake");
+	private static org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger("airbrake");
+	private static org.pixelgaffer.turnierserver.Logger logger = new org.pixelgaffer.turnierserver.Logger();
 	
 	static
 	{
@@ -46,20 +44,26 @@ public final class Airbrake
 				appender.setEnv("unknown");
 			}
             appender.setEnabled(true);
-            logger.addAppender(appender);
+            log4jLogger.addAppender(appender);
 		}
 	}
 	
 	public static <T extends Throwable> T log (T t)
 	{
-		logger.error(t);
+		log4jLogger.error(t);
 		return t;
 	}
 	
 	public static String log (String s)
 	{
-		logger.error(s);
+		log4jLogger.error(s);
 		return s;
 	}
-	
+
+	@Override
+	public void uncaughtException (Thread thread, Throwable t)
+	{
+		logger.critical("Thread " + thread + " crasht: " + t);
+		log(t).printStackTrace();
+	}
 }
