@@ -52,6 +52,8 @@ public class BackendMain
 	
 	public static void main (String args[]) throws IOException
 	{
+		Thread.setDefaultUncaughtExceptionHandler(new Airbrake());
+		
 		// Properties laden
 		loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
 		

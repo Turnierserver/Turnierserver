@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import lombok.Getter;
-
+import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 
@@ -66,6 +66,8 @@ public class SandboxMain
 	
 	public static void main (String args[]) throws IOException
 	{
+		Thread.setDefaultUncaughtExceptionHandler(new Airbrake());
+		
 		// Properties laden
 		loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/sandbox.prop");
 		
