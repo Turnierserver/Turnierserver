@@ -24,6 +24,24 @@
 	</script>
 {% endif %}
 
+{% if current_user.admin %}
+	<br><br>
+	<a id="delete-button" class="ui red right ribbon label">Löschen</a>
+	<script>
+	$('#delete-button').on("click", function() {
+		if (confirm("Möchtest du das Turnier {{tournament.name}} wirklich löschen?"))
+		{
+			$.post("/api/delete_tournament", {'id': {{tournament.id}} }).done(function(data) {
+				location.href = "/tournament_list";
+			}).fail(function(xhr, textStatus, errorThrown) {
+				console.log(xhr.responseText.error);
+				alert(JSON.parse(xhr.responseText).error);
+			});
+		}
+	});
+	</script>
+{% endif %}
+
 <h1 class="ui center aligned header" style="font-size: 4em; margin-bottom: 0px;">{{ tournament.name }}</h1>
 
 <div class="ui divider"></div>
