@@ -1431,7 +1431,7 @@ def create_tournament():
 	db.session.commit();
 	return {"error": False, "id": t.id}, 200;
 
-@api.route("/start_tournament", methods=["GET", "POST"])
+@api.route("/start_tournament", methods=["POST"])
 @json_out
 @admin_required
 def start_tournament():
@@ -1447,3 +1447,20 @@ def start_tournament():
 	backend.request_tournament(tournament)
 	flash('Das Turnier "{}" wurde gestartet'.format(tournament.name), "positive");
 	return {"error": False, "tournament": tournament.info()}, 200;
+
+@api.route("/delete_tournament", methods=["POST"])
+@json_out
+@admin_required
+def delete_tournament():
+	id = request.form.get("id");
+	if not id:
+		return CommonErrors.INVALID_ID;
+	tournament = Tournament.query.get(id);
+	if not tournament:
+		return CommonErrors.INVALID_ID;
+	if tournament.executed and not tournament.finished:
+		return {"error": "Das Turnier wurde bereits gestartet, ist aber noch nicht fertig"}, 400;
+	db.session.delete(tournament);
+	db.session.commit();
+	flash('Das Turnier "{}" wurde gelöscht'.format(tournament.name), "positive");
+	return {"error": False}, 200;
