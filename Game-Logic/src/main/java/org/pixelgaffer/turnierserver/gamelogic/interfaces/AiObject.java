@@ -47,7 +47,7 @@ public class AiObject {
 		} catch (IOException e) {
 			Airbrake.log(e).printStackTrace();
 		}
-		logic.sendToFronted(new LostMessage(reason, ai.getId(), logic.getGame().getFrontend().getRequestId()));
+		logic.sendToFronted(new LostMessage(reason, ai.getId(), logic.getGame().getFrontend().getRequestId(), logic.getGame().getUuid()));
 		lost = true;
 		logic.lost(ai);
 	}
