@@ -2,6 +2,7 @@ package org.pixelgaffer.turnierserver.gamelogic.interfaces;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 public interface Game {
 	
@@ -24,5 +25,7 @@ public interface Game {
 	 * mit dieser nichts.
 	 */
 	public void finishGame () throws IOException;
+	
+	public UUID getUuid();
 	
 }

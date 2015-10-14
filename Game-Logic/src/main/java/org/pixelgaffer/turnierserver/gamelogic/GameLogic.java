@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
+
 import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.GsonGzipParser;
 import org.pixelgaffer.turnierserver.Logger;
@@ -247,6 +249,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		renderData.data = data;
 		renderData.requestid = game.getFrontend().getRequestId();
 		renderData.progress = progress;
+		renderData.gameId = game.getUuid();
 		if (display != null) {
 			renderData.display = display;
 		}
@@ -290,6 +293,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		message.position = new HashMap<>();
 		message.requestid = game.getFrontend().getRequestId();
 		message.reason = reason;
+		message.gameId = game.getUuid();
 
 		List<Integer> scores = new ArrayList<>();
 		for (Ai ai : game.getAis()) {

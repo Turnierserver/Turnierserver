@@ -1,6 +1,7 @@
 package org.pixelgaffer.turnierserver.gamelogic.messages;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class GameFinished {
 	
@@ -24,5 +25,9 @@ public class GameFinished {
 	 * Der Grund, warum das Spiel beendet wurde
 	 */
 	public String reason;
+	/**
+	 * Die ID des Spieles in einem Turnier
+	 */
+	public UUID gameId;
 	
 }

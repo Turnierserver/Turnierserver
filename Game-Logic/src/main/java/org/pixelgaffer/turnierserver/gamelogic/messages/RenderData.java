@@ -1,13 +1,14 @@
 package org.pixelgaffer.turnierserver.gamelogic.messages;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class RenderData {
 	
 	/**
-	 * Die ID des Spieles
+	 * Die ID des Spieles in einem Turnier
 	 */
-	public int gameId;
+	public UUID gameId;
 	/**
 	 * Die Nummer des updates
 	 */
