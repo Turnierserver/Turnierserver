@@ -1,9 +1,5 @@
 ##Tunierserver
 
-Hier der Aufbau wie er besprochen wurde:
-
-![Bild](https://github.com/LuckyLukert/Turnierserver/blob/master/turnierserver-grafik.png)
-
 Und hier die einzelnen Spezifikationen, der Module (aus [#1](https://github.com/LuckyLukert/Turnierserver/issues/1) ).
 
 - [Backend] (https://github.com/LuckyLukert/Turnierserver/blob/master/Backend/README.md)
@@ -22,6 +18,9 @@ Und hier die einzelnen Spezifikationen, der Module (aus [#1](https://github.com/
 
 FTP-Server:
 ftp://msrd0.duckdns.org/
+
+Test-Server:
+https://thuermchen.com
 
 Beispiels-Implementation von Minesweeper und Prisoners Dilemma:
 https://github.com/msrd0/Turnierserver-Examples
