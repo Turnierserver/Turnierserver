@@ -17,7 +17,6 @@ import uuid
 import os
 import shutil
 import urllib
-import unittest.mock
 import sqlalchemy.exc
 
 
@@ -250,7 +249,7 @@ class User(db.Model):
 			return obj in self.ai_list or self.admin
 		elif isinstance(obj, User):
 			return obj == self or self.admin
-		elif isinstance(obj, unittest.mock.Mock):
+		elif isinstance(obj, QualiAI):
 			return self.admin
 		else:
 			raise RuntimeError("Invalid Type: "+str(type(obj)))
@@ -561,6 +560,41 @@ class AI_Version(db.Model):
 
 	def __repr__(self):
 		return "<AI_Version(id={}, version_id={}, ai_id={}>".format(self.id, self.version_id, self.ai_id)
+
+class QualiAI:
+	def __init__(self, gametype, lang):
+		self.id = -gametype.id
+		self.lang = lang
+		self.type = gametype
+		self.name = "QualiAI-" + gametype.name
+		self.version_list = [QualiVersion(self)]
+
+	def latest_version(self):
+		return QualiVersion(self)
+
+	def active_version(self):
+		return QualiVersion(self)
+
+	def copy_example_code(self):
+		return AI.copy_example_code(self)
+
+	def ftp_sync(self):
+		return AI.ftp_sync(self)
+
+	def __repr__(self):
+		return "<QualiAI type={} lang={}>".format(self.type, self.lang)
+
+class QualiVersion:
+	def __init__(self, ai):
+		self.lang = ai.lang
+		self.version_id = 1
+		self.qualified, self.compiled, self.frozen = False, False, False
+		self.extras = []
+
+	def sync_extras(self): pass
+
+	def __repr__(self):
+		return "<QualiVersion>"
 
 class Lang(db.Model):
 	__tablename__ = "t_langs"
