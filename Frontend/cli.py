@@ -1,7 +1,6 @@
 from flask.ext.script import prompt_bool, prompt, prompt_pass
 from database import *
 from backend import backend
-from unittest.mock import Mock
 
 import os
 import shutil
@@ -115,25 +114,13 @@ def _add_gametype(name):
 	return gt
 
 def _compile_quali_ai(gt):
-	ai = Mock()
-	ai.id = -gt.id
 	lang = next(filter(None, [
 		Lang.query.filter(Lang.name == "Go").first(),
 		Lang.query.filter(Lang.name == "Python").first(),
 		Lang.query.filter(Lang.name == "Java").first(),
 		Lang.query.first()
 	]))
-	ai.lang = lang
-	ai.type = gt
-	ai.name = "QualiKi-"+gt.name
-	v = ai.latest_version()
-	v.version_id = 1
-	v.lang = ai.lang
-	v.qualified, v.compiled, v.frozen = False, False, False
-	v.extras.return_value = []
-	ai.version_list = [v]
-	ai.ftp_sync = lambda: AI.ftp_sync(ai)
-	ai.copy_example_code = lambda: AI.copy_example_code(ai)
+	ai = QualiAI(gt, lang)
 	ai.copy_example_code()
 	for data, event in backend.compile(ai):
 		print(event, ":", data)

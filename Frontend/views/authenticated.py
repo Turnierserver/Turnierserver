@@ -1,10 +1,9 @@
 from flask import Blueprint, render_template, abort, redirect, url_for
 from flask.ext.login import current_user
-from database import AI, User, Game, Lang, GameType, Tournament, UserTournamentAi, db, ftp
+from database import AI, User, Game, Lang, GameType, Tournament, UserTournamentAi, db, ftp, QualiAI
 from commons import authenticated_web
 from logger import logger
 from errorhandling import error
-from unittest import mock
 
 authenticated_blueprint = Blueprint("authenticated", __name__)
 
@@ -134,16 +133,7 @@ def qualify_ai(id):
 	if not current_user.can_access(ai):
 		abort(401)
 
-	#quali_ai = AI.query.get(-ai.type.id)
-	quali_ai = mock.Mock()
-	quali_ai.id = -ai.type.id
-	version = quali_ai.active_version()
-	version.compiled, version.qualified, version.frozen = True, True, True
-	version.version_id = 1
-	quali_ai.name = "QualiKI"
-	quali_ai.user = User.query.filter(User.admin == True).first()
-	quali_ai.lang = Lang.query.first()
-
+	quali_ai = QualiAI(ai.type, ai.lang)
 	stream = url_for("api.ai_qualify", id=id)
 
 	return render_template(ai.type.viz, qualify=True, ai0=ai, ai1=quali_ai, inprogress=True, stream=stream)
