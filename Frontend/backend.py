@@ -258,6 +258,8 @@ class Backend(threading.Thread):
 				q.put(delta)
 
 	def handleTournament(self, full, delta):
+		if not "tournament_object" in full:
+			return
 		if "exception" in delta:
 			logger.error(delta["exception"])
 			full["tournament_object"].executed = False

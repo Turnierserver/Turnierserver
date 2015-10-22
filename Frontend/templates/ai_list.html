@@ -110,12 +110,29 @@ $(".challenge.button").on("click", function() {
 			$(this).removeClass("disabled");
 		}
 	});
+	if (enemy_id == $("#own_dropdown > input").val()) {
+		$("#own_dropdown").addClass("error")
+		$("#start_challenge").addClass("disabled")
+	} else {
+		$("#own_dropdown").removeClass("error")
+		$("#start_challenge").removeClass("disabled")
+	}
 	$(this).popup({
 		popup: $('.custom.popup'),
 		on: "click",
 		position: "left center"
 	}).popup("toggle")
 });
+
+$("#own_dropdown > .menu > .item").on("click", function() {
+	if (enemy_id == $(this).attr("data-value")) {
+		$("#own_dropdown").addClass("error")
+		$("#start_challenge").addClass("disabled")
+	} else {
+		$("#own_dropdown").removeClass("error")
+		$("#start_challenge").removeClass("disabled")
+	}
+})
 
 $("#start_challenge").on("click", function() {
 	console.log(enemy_id, "vs", $("#own_ai").val())
