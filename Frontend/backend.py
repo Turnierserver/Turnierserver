@@ -250,12 +250,11 @@ class Backend(threading.Thread):
 					else:
 						logger.warning("Game.from_inprogress hat kein Spiel-Objekt zurückgegeben")
 						logger.info("Sending exception as crash")
-						for q in self.game_update_queues:
-							q.put({
-								"isCrash": True,
-								"requestid": delta["requestid"],
-								"reason": delta.get("exception", "reason missing")
-							})
+						self.handleGame(full, {
+							"isCrash": True,
+							"requestid": delta["requestid"],
+							"reason": delta.get("exception", "reason missing")
+						})
 
 			if "data" in delta:
 				delta["data"]["calculationPoints"] = delta["calculationPoints"]
