@@ -921,6 +921,26 @@ class UserTournamentAi(db.Model):
 		return "<UserTournamentAi(id={}, user={}, ai={}, type={})>".format(self.id, self.user.name, self.ai.name, self.type.name);
 
 
+class News(db.Model):
+	__tablename__ = 't_news';
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True);
+	last_edited = db.Column(db.Integer);
+	text = db.Column(db.Text, nullable=False);
+	author_id = db.Column(db.Integer, db.ForeignKey('t_users.id'));
+	author = db.relationship("User", backref=db.backref('t_news', order_by=id));
+	
+	def __init__(self, *args, **kwargs):
+		super(News, self).__init__(*args, **kwargs)
+		self.last_edited = timestamp()
+		db.session.commit() # set own ID
+		db_obj_init_msg(self)
+	
+	def edited(self, locale='de'):
+		return arrow.get(self.last_edited).to('local').humanize(locale=locale);
+	
+	def __repr__(self):
+		return "<News(id={}, last_edited={}, author={})>".format(self.id, self.edited(), self.author.name);
+
 
 def populate():
 	db.create_all()

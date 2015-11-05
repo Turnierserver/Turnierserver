@@ -1464,3 +1464,15 @@ def delete_tournament():
 	db.session.commit();
 	flash('Das Turnier "{}" wurde gelöscht'.format(tournament.name), "positive");
 	return {"error": False}, 200;
+
+@api.route("/post_news", methods=["POST"])
+@json_out
+@admin_required
+def post_news():
+	text = request.form.get("text");
+	if not text:
+		return {"error": "Kein Text empfangen"}, 400;
+	n = News(author=current_user, text=text);
+	db.session.add(n);
+	db.session.commit();
+	return {"error": False, "id": n.id}, 200;
