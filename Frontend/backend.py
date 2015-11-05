@@ -213,11 +213,13 @@ class Backend(threading.Thread):
 		#logger.info("Backend [{}]: {}".format(reqid, d))
 		pprint(d)
 
+		if self.requests[reqid]["action"] == "tournament":
+			self.handleTournament(self.requests[reqid], d)
+			return
+
 		self.requests[reqid].update(d)
 
 		if self.handleGame(self.requests[reqid], d):
-			return
-		if self.handleTournament(self.requests[reqid], d):
 			return
 
 		if "queue" in self.requests[reqid]:
@@ -243,8 +245,17 @@ class Backend(threading.Thread):
 					logger.info("game finished!")
 					g = Game.from_inprogress(full)
 					logger.debug(g)
-					full["finished_game_obj"] = g
-					#pprint(full)
+					if g:
+						full["finished_game_obj"] = g
+					else:
+						logger.warning("Game.from_inprogress hat kein Spiel-Objekt zurückgegeben")
+						logger.info("Sending exception as crash")
+						for q in self.game_update_queues:
+							q.put({
+								"isCrash": True,
+								"requestid": delta["requestid"],
+								"reason": delta.get("exception", "reason missing")
+							})
 
 			if "data" in delta:
 				delta["data"]["calculationPoints"] = delta["calculationPoints"]

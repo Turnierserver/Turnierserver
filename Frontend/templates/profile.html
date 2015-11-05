@@ -25,7 +25,7 @@
 		{% endif %}
 		<div class="row">
 			<div class="column">
-				<a class="ui tiny button m-top-10" href="{{ url_for("authenticated.create_ai" )}}">KI erstellen</a>
+				<a id="create_ai_button" class="ui tiny button" href="{{ url_for("authenticated.create_ai" )}}">KI erstellen</a>
 			</div>
 		</div>
 	</div>
@@ -161,6 +161,10 @@ $("#delete_account").on("click", function() {
 			});
 		}
 	}).modal('show');
+});
+
+$("#create_ai_button").on("click", function() {
+	$("#create_ai_button").addClass("loading");
 });
 
 </script>

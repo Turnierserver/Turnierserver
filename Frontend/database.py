@@ -685,8 +685,8 @@ class Game(db.Model):
 	@classmethod
 	def from_inprogress(cls, d):
 		if "exception" in d:
-			logger.warning("Game Exception! " + str(d["exception"]))
-			return
+			logger.error("Game Exception! " + str(d["exception"]))
+			return False
 		ais = [d["ai0"], d["ai1"]]
 		g = Game(type=ais[0].type)
 		g.log = d["states"]
