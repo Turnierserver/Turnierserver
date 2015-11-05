@@ -67,7 +67,7 @@ public class Sandbox
 				{
 					semaphore.release();
 				}
-				sendJob(new SandboxCommand(CPU_TIME, -1, -1, "", null, -1));
+				sendJob(new SandboxCommand(CPU_TIME, -1, -1, -1, "", null, -1));
 			}
 			catch (Exception e)
 			{

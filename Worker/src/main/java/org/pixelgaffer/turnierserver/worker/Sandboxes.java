@@ -21,8 +21,11 @@ package org.pixelgaffer.turnierserver.worker;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 
 import lombok.AccessLevel;
@@ -40,6 +43,38 @@ public class Sandboxes
 	private static final List<Sandbox> sandboxes = new ArrayList<>();
 	
 	public static final Map<UUID, Sandbox> sandboxJobs = new HashMap<>();
+	
+	private static final Set<Integer> isolateBoxids = new HashSet<>();
+	private static final Map<UUID, Integer> jobBoxids = new HashMap<>(); 
+	private static final Random rnd = new Random();
+	
+	/** Gibt eine freie Boxid für isolate zurück. */
+	public static int nextIsolateBoxid (UUID uuid)
+	{
+		WorkerMain.getLogger().todo("Soll diese Methode blockieren?");
+		while (true)
+		{
+			int boxid = rnd.nextInt(100);
+			synchronized (isolateBoxids)
+			{
+				if (!isolateBoxids.contains(boxid))
+				{
+					isolateBoxids.add(boxid);
+					jobBoxids.put(uuid, boxid);
+					return boxid;
+				}
+			}
+		}
+	}
+	/** Markiert die zum Job gehörende Boxid von isolate als verfügbar. */
+	public static void releaseIsolateBoxid (UUID uuid)
+	{
+		synchronized (isolateBoxids)
+		{
+			isolateBoxids.remove(jobBoxids.get(uuid));
+			jobBoxids.remove(uuid);
+		}
+	}
 	
 	/**
 	 * Fügt die Sandbox zur Liste hinzu.

@@ -79,8 +79,6 @@ public class AiExecutor implements Runnable
 	@Getter
 	private JobControl jobControl;
 	
-	@Getter
-	private int boxid;
 	private String boxdir;
 	private File dir, binArchive, binDir, aiProp;
 	private Properties start;
@@ -91,13 +89,10 @@ public class AiExecutor implements Runnable
 		this.job = job;
 		jobControl = ctrl;
 		
-		// isolate id finden
-		boxid = (getJob().getId() + 100) % 100;
-		
 		// isolate initialisieren
 		try
 		{
-			ProcessBuilder pb = new ProcessBuilder("isolate", "--cg", "--init", "-b", Integer.toString(boxid));
+			ProcessBuilder pb = new ProcessBuilder("isolate", "--cg", "--init", "-b", Integer.toString(job.getBoxid()));
 			pb.redirectError(Redirect.INHERIT);
 			System.out.println("$ " + pb.command());
 			Process p = pb.start();
@@ -256,7 +251,7 @@ public class AiExecutor implements Runnable
 		}
 		cmd.add("--run");
 		cmd.add("-b");
-		cmd.add(Integer.toString(boxid));
+		cmd.add(Integer.toString(job.getBoxid()));
 		cmd.add("--");
 		cmd.add(command);
 		for (int i = 0; i < Integer.parseInt(start.getProperty("arguments.size")); i++)
@@ -279,7 +274,7 @@ public class AiExecutor implements Runnable
 				ret = proc.waitFor();
 				SandboxMain.getLogger().debug("Die KI hat sich mit dem Statuscode " + ret + " beendet");
 				SandboxMain.getClient().sendMessage(getJob().getUuid(), 'F');
-				ProcessBuilder pb0 = new ProcessBuilder("isolate", "--cleanup", "-b", Integer.toString(boxid));
+				ProcessBuilder pb0 = new ProcessBuilder("isolate", "--cleanup", "-b", Integer.toString(job.getBoxid()));
 				SandboxMain.getLogger().debug(pb0.command());
 				pb0.redirectErrorStream(true);
 				pb0.redirectOutput(Redirect.INHERIT);

@@ -48,6 +48,10 @@ public class SandboxCommand
 	@Getter
 	private int version;
 	
+	/** Die isolate-Boxid. */
+	@Getter
+	private int boxid;
+	
 	/** Die Sprache der KI. */
 	@Getter
 	private String lang;

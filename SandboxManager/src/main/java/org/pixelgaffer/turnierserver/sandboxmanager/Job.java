@@ -33,7 +33,7 @@ import lombok.ToString;
 public class Job
 {
 	@Getter
-	private int id, version;
+	private int id, version, boxid;
 	@Getter
 	private String lang;
 	@NonNull

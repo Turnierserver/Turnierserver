@@ -150,7 +150,7 @@ public class WorkerClient implements SocketObserver
 					case RUN_AI:
 						SandboxMain.getLogger().info("Auftrag erhalten: Run AI "
 								+ cmd.getId() + "v" + cmd.getVersion() + " " + cmd.getUuid() + " " + cmd.getLang());
-						jobControl.addJob(new Job(cmd.getId(), cmd.getVersion(), cmd.getLang(), cmd.getUuid(),
+						jobControl.addJob(new Job(cmd.getId(), cmd.getVersion(), cmd.getBoxid(), cmd.getLang(), cmd.getUuid(),
 								cmd.getMaxRuntime()));
 						break;
 						
@@ -167,7 +167,7 @@ public class WorkerClient implements SocketObserver
 					case CPU_TIME:
 						SandboxMain.getLogger().info("Auftrag erhalten: CPU-Time herausfinden");
 					{
-						long time = CpuTimer.getCpuTime(jobControl.getCurrent().getBoxid());
+						long time = CpuTimer.getCpuTime(jobControl.getCurrent().getJob().getBoxid());
 						SandboxMain.getLogger().debug(time);
 						sendMessage(jobControl.getCurrent().getJob().getUuid(), 'C', time);
 					}

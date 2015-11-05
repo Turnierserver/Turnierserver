@@ -176,7 +176,8 @@ public class BackendClient implements SocketObserver, Backend
 					try
 					{
 						SandboxCommand scmd = new SandboxCommand(RUN_AI,
-								cmd.getAiId(), cmd.getVersion(), cmd.getLang(), cmd.getUuid(), cmd.getMaxRuntime());
+								cmd.getAiId(), cmd.getVersion(), Sandboxes.nextIsolateBoxid(cmd.getUuid()),
+								cmd.getLang(), cmd.getUuid(), cmd.getMaxRuntime());
 						Sandbox s = Sandboxes.send(scmd);
 						if (s == null)
 						{
@@ -197,7 +198,7 @@ public class BackendClient implements SocketObserver, Backend
 					try
 					{
 						SandboxCommand scmd = new SandboxCommand(cmd.getAction() == TERMAI ? TERM_AI : KILL_AI,
-								cmd.getAiId(), cmd.getVersion(), cmd.getLang(), cmd.getUuid(), cmd.getMaxRuntime());
+								cmd.getAiId(), cmd.getVersion(), -1, cmd.getLang(), cmd.getUuid(), cmd.getMaxRuntime());
 						Sandbox s = Sandboxes.sandboxJobs.get(cmd.getUuid());
 						if (s == null)
 							WorkerMain.getLogger().critical("Das Backend hat mich beauftragt die unbekannte KI "
