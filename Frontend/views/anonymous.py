@@ -13,10 +13,8 @@ anonymous_blueprint = Blueprint("anonymous", __name__)
 
 @anonymous_blueprint.route("/")
 def index():
-	with codecs.open("../aktuelles.md", "r", encoding='utf-8') as f:
-		aktuelles = f.read()
-	aktuelles = Markup(markdown.markdown(aktuelles))
-	return render_template("index.html", aktuelles=aktuelles)
+
+	return render_template("index.html", aktuelles="")
 
 @anonymous_blueprint.route("/ai_list")
 def ai_list():
@@ -122,7 +120,10 @@ def tournament(id):
 
 @anonymous_blueprint.route("/tutorial")
 def tutorial():
-	return render_template("tutorial.html", gameType=GameType.selected())
+	with codecs.open("../aktuelles.md", "r", encoding='utf-8') as f:
+		tutorial = f.read()
+	tutorial = Markup(markdown.markdown(tutorial))
+	return render_template("tutorial.html", tutorial=tutorial)
 
 
 def crossdomain(origin=None, methods=None, headers=None,
