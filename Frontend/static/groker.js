@@ -240,13 +240,16 @@ $(document).ready(function () {
 		update();
 	});
 
+	// ## in ne generelle lib verschieben
 	evtSrc.addEventListener("crash", function (e) {
 		console.log(e.data);
 		d = JSON.parse(e.data);
 		ai_crashes.push(d);
 		update();
+		NProgress.done();
 	});
 
+	// ## in ne generelle lib verschieben
 	evtSrc.addEventListener("stream_stopped", function (e) {
 		console.log("stream_stopped");
 		evtSrc.close();

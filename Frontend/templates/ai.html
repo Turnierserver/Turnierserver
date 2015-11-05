@@ -75,9 +75,10 @@ Spiele:
 <table id="games" class="ui very basic sortable table">
 	<thead>
 		<tr>
-		<th class="center aligned two wide data-id">ID</th>
-		<th class="center aligned ten wide data-ai1">KI1</th>
-		<th class="left aligned ten wide data-ai2">KI2</th>
+			<th class="center aligned two wide data-id">ID</th>
+			<th class="center aligned six wide data-ai1">Herausforderer</th>
+			<th class="center aligned six wide data-ai2">Gegner</th>
+			<th class="center aligned four wide">Datum</tr>
 		</tr>
 	</thead>
 	<tbody class="list">
@@ -91,10 +92,13 @@ Spiele:
 					<div class="header">{{assoc.game.ais[0].name}}</div>
 				</a>
 			</td>
-			<td class="left aligned data-ai2">
+			<td class="center aligned data-ai2">
 				<a class="content" href="{{url_for('anonymous.ai', id=assoc.game.ais[1].id)}}">
 					<div class="header">{{assoc.game.ais[1].name}}</div>
 				</a>
+			</td>
+			<td class="center aligned">
+				{{assoc.game.time()}}
 			</td>
 		</tr>
 		{% endfor %}

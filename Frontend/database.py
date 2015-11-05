@@ -743,7 +743,7 @@ class Game(db.Model):
 
 class Game_inprogress:
 	ais = []
-	status = "1/2378"
+	status = "1/?"
 
 	def __init__(self, id, d=None):
 		self.type = GameType.latest()
