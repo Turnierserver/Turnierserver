@@ -6,7 +6,6 @@ from werkzeug.utils import secure_filename
 from sqlalchemy.orm.exc import NoResultFound
 import json
 import magic
-import time
 import zipfile
 import tempfile
 import os
@@ -352,7 +351,7 @@ def api_login():
 	user = User.query.filter(User.email.ilike(email)).first()
 
 	if not user:
-		user = User.query.filter(User.name==email).first()
+		user = User.query.filter(User.name == email).first()
 
 	if not user:
 		return {'error': 'Invalid email.'}, 404
@@ -1281,7 +1280,7 @@ def upload_lib(lang, name, version, hidden=True):
 	if not hidden:
 		l = Library.query.filter(Library.name == name).first()
 		if not l:
-			l = Library(name=name, lang_id=Lang.query.filter(Lang.name==lang).first().id)
+			l = Library(name=name, lang_id=Lang.query.filter(Lang.name == lang).first().id)
 			db.session.add(l)
 		l.display_name = l.name + " " + version
 
@@ -1291,10 +1290,10 @@ def upload_lib(lang, name, version, hidden=True):
 @json_out
 @admin_required
 def lib_register(lang, name, display_name, version):
-	lang = Lang.query.filter(Lang.name==lang).first()
+	lang = Lang.query.filter(Lang.name == lang).first()
 	if not lang:
 		return CommonErrors.INVALID_ID
-	l = Library.query.filter(Library.lang==lang).first()
+	l = Library.query.filter(Library.lang == lang).first()
 	if not l:
 		l = Library(lang=lang, name=name, display_name=display_name, version=version)
 		db.session.add(l)
@@ -1408,8 +1407,8 @@ def upload_simple_player(game_id, lang):
 def api_tournament(tournament_id):
 	t = Tournament.query.get(tournament_id)
 	if not t:
-		return CommonErrors.INVALID_ID;
-	return t.info(), 200;
+		return CommonErrors.INVALID_ID
+	return t.info(), 200
 
 @api.route("/create_tournament", methods=["POST"])
 @json_out
@@ -1417,62 +1416,83 @@ def api_tournament(tournament_id):
 def create_tournament():
 	name = request.form.get("name")
 	if not name or name == "":
-		return {"error": "Bitte einen Namen angeben"}, 400;
+		return {"error": "Bitte einen Namen angeben"}, 400
 	if name in [t.name for t in Tournament.query.all()]:
-		return {"error": "Ein Turnier mit diesem Namen existiert bereits"}, 400;
+		return {"error": "Ein Turnier mit diesem Namen existiert bereits"}, 400
 	type_id = request.form.get("gametype")
 	if not type_id:
-		return CommonErrors.INVALID_ID;
+		return CommonErrors.INVALID_ID
 	gametype = GameType.query.get(type_id)
 	if not gametype:
-		return CommonErrors.INVALID_ID;
-	t = Tournament(name=name, type=gametype);
-	db.session.add(t);
-	db.session.commit();
-	return {"error": False, "id": t.id}, 200;
+		return CommonErrors.INVALID_ID
+	t = Tournament(name=name, type=gametype)
+	db.session.add(t)
+	db.session.commit()
+	return {"error": False, "id": t.id}, 200
 
 @api.route("/start_tournament", methods=["POST"])
 @json_out
 @admin_required
 def start_tournament():
-	id = request.form.get("id");
+	id = request.form.get("id")
 	if not id:
-		return CommonErrors.INVALID_ID;
-	tournament = Tournament.query.get(id);
+		return CommonErrors.INVALID_ID
+	tournament = Tournament.query.get(id)
 	if not tournament:
-		return CommonErrors.INVALID_ID;
+		return CommonErrors.INVALID_ID
 	if tournament.executed:
-		return {"error": "Das Turnier wurde bereits gestartet"}, 400;
+		return {"error": "Das Turnier wurde bereits gestartet"}, 400
 	tournament.storeAis()
 	backend.request_tournament(tournament)
-	flash('Das Turnier "{}" wurde gestartet'.format(tournament.name), "positive");
-	return {"error": False, "tournament": tournament.info()}, 200;
+	flash('Das Turnier "{}" wurde gestartet'.format(tournament.name), "positive")
+	return {"error": False, "tournament": tournament.info()}, 200
 
 @api.route("/delete_tournament", methods=["POST"])
 @json_out
 @admin_required
 def delete_tournament():
-	id = request.form.get("id");
+	id = request.form.get("id")
 	if not id:
-		return CommonErrors.INVALID_ID;
-	tournament = Tournament.query.get(id);
+		return CommonErrors.INVALID_ID
+	tournament = Tournament.query.get(id)
 	if not tournament:
-		return CommonErrors.INVALID_ID;
+		return CommonErrors.INVALID_ID
 	if tournament.executed and not tournament.finished:
-		return {"error": "Das Turnier wurde bereits gestartet, ist aber noch nicht fertig"}, 400;
-	db.session.delete(tournament);
-	db.session.commit();
-	flash('Das Turnier "{}" wurde gelöscht'.format(tournament.name), "positive");
-	return {"error": False}, 200;
+		return {"error": "Das Turnier wurde bereits gestartet, ist aber noch nicht fertig"}, 400
+	db.session.delete(tournament)
+	db.session.commit()
+	flash('Das Turnier "{}" wurde gelöscht'.format(tournament.name), "positive")
+	return {"error": False}, 200
 
 @api.route("/post_news", methods=["POST"])
 @json_out
 @admin_required
 def post_news():
-	text = request.form.get("text");
+	text = request.form.get("text")
 	if not text:
-		return {"error": "Kein Text empfangen"}, 400;
-	n = News(author=current_user, text=text);
-	db.session.add(n);
-	db.session.commit();
-	return {"error": False, "id": n.id}, 200;
+		return {"error": "Kein Text empfangen"}, 400
+	n = News(last_edited_by=current_user, text=text)
+	db.session.add(n)
+	db.session.commit()
+	return {"error": False, "id": n.id}, 200
+
+@api.route("/news/<int:id>/update", methods=["POST"])
+@json_out
+@admin_required
+def update_news(id):
+	news = News.query.get(id)
+	if not news:
+		return CommonErrors.INVALID_ID
+
+	if not "text" in request.args:
+		return {"error": "Kein Text empfangen"}, 400
+
+	news.text = request.args["text"]
+	news.last_edited = timestamp()
+	news.last_edited_by = current_user
+	db.session.commit()
+
+	logger.info("News {} von {} bearbeitet".format(news, current_user))
+	flash("Änderungen gespeichert.", "info")
+
+	return {"error": False}, 200

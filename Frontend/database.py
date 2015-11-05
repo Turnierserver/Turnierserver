@@ -192,9 +192,6 @@ class SyncedFTP:
 
 ftp = SyncedFTP()
 
-def db_obj_init_msg(obj):
-	logger.debug(str(obj) + " erschafft.")
-
 class User(db.Model):
 	__tablename__ = 't_users'
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
@@ -212,7 +209,6 @@ class User(db.Model):
 	def __init__(self, *args, **kwargs):
 		super(User, self).__init__(*args, **kwargs)
 		self.validation_code = str(uuid.uuid4())
-		db_obj_init_msg(self)
 
 	def validate(self, uuid):
 		if self.validation_code == uuid:
@@ -337,10 +333,8 @@ class AI(db.Model):
 
 		self.copy_example_code()
 
-		db_obj_init_msg(self)
-
 	def info(self, versions=True):
-		d =  {
+		d = {
 			"id": self.id, "name": self.name,
 			"author": self.user.name,
 			"author_id": self.user.id,
@@ -509,10 +503,6 @@ class AI_Version(db.Model):
 	lang = db.relationship("Lang")
 	extras = db.relationship("Library", secondary="t_ai_versions_libraries_assoc")
 
-	def __init__(self, *args, **kwargs):
-		super(AI_Version, self).__init__(*args, **kwargs)
-		db_obj_init_msg(self)
-
 	def info(self):
 		return {
 			"id": self.version_id, "extras": self.extra_names(),
@@ -583,10 +573,6 @@ class Lang(db.Model):
 	interpreter = db.Column(db.Text)
 	compiler = db.Column(db.Text)
 
-	def __init__(self, *args, **kwargs):
-		super(Lang, self).__init__(*args, **kwargs)
-		db_obj_init_msg(self)
-
 	def info(self, extra=False):
 		if extra:
 			return dict(id=self.id, name=self.name, url=self.url, interpreter=self.interpreter, compiler=self.compiler)
@@ -610,7 +596,6 @@ class Game(db.Model):
 	def __init__(self, *args, **kwargs):
 		super(Game, self).__init__(*args, **kwargs)
 		self.timestamp = timestamp()
-		db_obj_init_msg(self)
 
 	@property
 	def ais(self):
@@ -772,7 +757,6 @@ class GameType(db.Model):
 
 	def __init__(self, *args, **kwargs):
 		super(GameType, self).__init__(*args, **kwargs)
-		db_obj_init_msg(self)
 		if not self.last_modified:
 			self.last_modified = timestamp()
 
@@ -858,7 +842,6 @@ class Tournament(db.Model):
 		self.timestamp = timestamp()
 		db.session.commit() # set own ID
 		self.ftp_sync()
-		db_obj_init_msg(self)
 
 	def time(self, locale='de'):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
@@ -866,10 +849,11 @@ class Tournament(db.Model):
 	def info(self):
 		return {"id": self.id, "name": self.name,
 		        "timestamp": self.timestamp, "timestr": self.time(),
-		        "type": self.type.info(), "executed": self.executed};
+		        "type": self.type.info(), "executed": self.executed
+		}
 
 	def __repr__(self):
-		return "<Tournament(id={}, name={}, type={})>".format(self.id, self.name, self.type.name);
+		return "<Tournament(id={}, name={}, type={})>".format(self.id, self.name, self.type.name)
 
 	@ftp.safe
 	def ftp_sync(self):
@@ -897,7 +881,7 @@ class TournamentGame(db.Model):
 	game = db.relationship("Game", backref=db.backref('t_tournament_games', order_by=id))
 
 	def __repr__(self):
-		return "<TournamentGame(id={}, tournament={}, game={})>".format(self.id, self.tournament.name, str(self.game));
+		return "<TournamentGame(id={}, tournament={}, game={})>".format(self.id, self.tournament.name, self.game)
 
 class UserTournamentAi(db.Model):
 	__tablename__ = 't_user_tournament_ais'
@@ -922,24 +906,21 @@ class UserTournamentAi(db.Model):
 
 
 class News(db.Model):
-	__tablename__ = 't_news';
-	id = db.Column(db.Integer, primary_key=True, autoincrement=True);
-	last_edited = db.Column(db.Integer);
-	text = db.Column(db.Text, nullable=False);
-	author_id = db.Column(db.Integer, db.ForeignKey('t_users.id'));
-	author = db.relationship("User", backref=db.backref('t_news', order_by=id));
-	
+	__tablename__ = 't_news'
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	last_edited = db.Column(db.BigInteger)
+	last_edited_by = db.relationship("User")
+	text = db.Column(db.Text, nullable=False)
+
 	def __init__(self, *args, **kwargs):
 		super(News, self).__init__(*args, **kwargs)
 		self.last_edited = timestamp()
-		db.session.commit() # set own ID
-		db_obj_init_msg(self)
-	
+
 	def edited(self, locale='de'):
-		return arrow.get(self.last_edited).to('local').humanize(locale=locale);
-	
+		return arrow.get(self.last_edited).to('local').humanize(locale=locale)
+
 	def __repr__(self):
-		return "<News(id={}, last_edited={}, author={})>".format(self.id, self.edited(), self.author.name);
+		return "<News(id={}, last_edited={}, author={})>".format(self.id, self.edited(), self.author.name)
 
 
 def populate():
