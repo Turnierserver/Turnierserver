@@ -918,7 +918,7 @@ class UserTournamentAi(db.Model):
 		db.session.commit()
 
 	def __repr__(self):
-		return "<UserTournamentAi(id={}, user={}, ai={}, type={})>".format(self.id, self.user.name, self.ai.name, self.type.name);
+		return "<UserTournamentAi(id={}, user={}, ai={}, type={})>".format(self.id, self.user.name, self.ai.name, self.type.name)
 
 
 

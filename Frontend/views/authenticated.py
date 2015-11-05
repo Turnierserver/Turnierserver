@@ -51,7 +51,10 @@ def edit_ai(id):
 	t = UserTournamentAi.query.filter(UserTournamentAi.user == current_user)\
 	    .filter(UserTournamentAi.type == ai.type).first() is None
 	t = t and ai.active_version()
-	return render_template("edit_ai.html", ai=ai, langs=Lang.query.all(), can_enter_tournament=t)
+	current_download = None
+	if len(ai.version_list) > 0:
+		current_download = url_for('api.download_zip', id=ai.id, version_id=ai.version_list[-1].version_id)
+	return render_template("edit_ai.html", ai=ai, langs=Lang.query.all(), can_enter_tournament=t, current_download=current_download)
 
 @authenticated_blueprint.route("/ai/<int:id>/compile")
 @authenticated_web

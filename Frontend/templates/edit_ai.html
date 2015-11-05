@@ -114,6 +114,11 @@
 		<div id="copy_code" class="ui labeled icon button">
 			<i class="copy outline icon"></i> SimplePlayer kopieren
 		</div>
+		{% if current_download %}
+		<a class="ui labeled icon submit button" href="{{current_download}}">
+			<i class="download outline icon"></i> Aktuelle Version herunterladen
+		</a>
+		{% endif %}
 		<a class="ui labeled icon submit button" href="{{url_for("authenticated.file_browser", id=ai.id, path="")}}">
 			<i class="disk outline icon"></i> Code bearbeiten
 		</a>
