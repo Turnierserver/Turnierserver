@@ -5,8 +5,8 @@ function throttle(fn, threshhold, scope) {
 			deferTimer;
 	return function () {
 		var context = scope || this;
-		var now = +new Date,
-				args = arguments;
+		var now = +new Date();
+		var args = arguments;
 		if (last && now < last + threshhold) {
 			// hold on to it
 			clearTimeout(deferTimer);
@@ -113,7 +113,7 @@ setTimeout(function() {
 function on_hover_change(index) {
 	pane.step = index;
 	$("#step_slider").slider("option", "value", index);
-	draw();
+	update();
 	$.each(charts, function () {
 		this.set_hover(index);
 	});
@@ -123,11 +123,6 @@ $.map(charts, function(chart) {
 	chart.on_hover_change = on_hover_change;
 });
 
-function draw() {
-	update();
-	//var d = pane.data[pane.step];
-}
-
 $("#step_slider").slider({
 	range: "max",
 	min: 0,
@@ -136,7 +131,7 @@ $("#step_slider").slider({
 	step: 1,
 	slide: function (event, ui) {
 		pane.step = ui.value;
-		draw();
+		update();
 		$.map(charts, function(chart) {
 			chart.set_hover(pane.step);
 		});
@@ -162,7 +157,7 @@ function update() {
 				}
 			}
 		}
-	})
+	});
 
 	if (d !== undefined) {
 		$.map(d.output, function(value, key) {
@@ -242,14 +237,14 @@ $(document).ready(function () {
 		$.map(charts, function (chart) {
 			chart.update_chart();
 		});
-		draw();
+		update();
 	});
 
 	evtSrc.addEventListener("crash", function (e) {
-		console.log(e.data)
+		console.log(e.data);
 		d = JSON.parse(e.data);
-		ai_crashes.push(d)
-		draw();
+		ai_crashes.push(d);
+		update();
 	});
 
 	evtSrc.addEventListener("stream_stopped", function (e) {
