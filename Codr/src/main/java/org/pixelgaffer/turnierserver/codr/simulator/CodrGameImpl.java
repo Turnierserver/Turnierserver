@@ -177,4 +177,9 @@ public class CodrGameImpl implements Game, Frontend
 			renderData.flush();
 		}
 	}
+
+	@Override
+	public UUID getUuid() {
+		return null;
+	}
 }
