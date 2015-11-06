@@ -3,7 +3,7 @@ from flask import Flask, got_request_exception
 from werkzeug.contrib.fixers import ProxyFix
 from werkzeug.serving import WSGIRequestHandler
 from flask.ext.login import current_user
-from flask.ext.script import Manager
+from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 
 from commons import cache
@@ -14,7 +14,7 @@ logger.info("Starte Frontend")
 from api import api, login_manager
 from views.anonymous import anonymous_blueprint
 from views.authenticated import authenticated_blueprint
-from database import db, refresh_session, GameType, Lang
+from database import *
 from backend import backend
 from _cfg import env
 from errorhandling import handle_errors
@@ -39,6 +39,11 @@ migrate = Migrate(app, db)
 
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
+
+def _make_context():
+	backend.suppress_connection_warnings = True
+	return globals()
+manager.add_command("shell", Shell(make_context=_make_context))
 
 app.jinja_env.filters["escapejs"] = lambda val: json.dumps(val)
 app.jinja_env.add_extension("jinja2.ext.do")

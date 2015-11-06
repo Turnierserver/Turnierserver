@@ -16,6 +16,7 @@ class Backend(threading.Thread):
 	game_update_queues = WeakSet()
 	sleep_time = 60
 	queued_for_reconnect = Queue()
+	suppress_connection_warnings = False
 
 	def __init__(self):
 		threading.Thread.__init__(self)
@@ -392,7 +393,8 @@ class Backend(threading.Thread):
 						self.parse(json.loads(d))
 			else:
 				self.sleep_time = min(self.sleep_time * 3, 60*60*3)
-				logger.debug("No connection to Backend; sleeping " + str(self.sleep_time) + " seconds.")
+				if not self.suppress_connection_warnings:
+					logger.debug("No connection to Backend; sleeping " + str(self.sleep_time) + " seconds.")
 				time.sleep(self.sleep_time)
 
 
