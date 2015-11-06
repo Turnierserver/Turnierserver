@@ -2,10 +2,9 @@ from flask import Blueprint, render_template, abort, flash, url_for, request, Ma
 from flask.ext.login import current_user
 from datetime import timedelta
 from functools import update_wrapper
-from database import AI, User, Game, GameType, Game_inprogress, Tournament, UserTournamentAi
+from database import AI, User, Game, GameType, Game_inprogress, Tournament, UserTournamentAi, News
 from backend import backend
 from logger import logger
-import json
 import markdown
 import codecs
 
@@ -13,8 +12,7 @@ anonymous_blueprint = Blueprint("anonymous", __name__)
 
 @anonymous_blueprint.route("/")
 def index():
-
-	return render_template("index.html", aktuelles="")
+	return render_template("index.html", news=News.query.all())
 
 @anonymous_blueprint.route("/ai_list")
 def ai_list():

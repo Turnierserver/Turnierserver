@@ -1,6 +1,6 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import current_user
-from flask import send_file, abort, request
+from flask import send_file, abort, request, Markup
 from _cfg import env
 from logger import logger
 from io import BytesIO
@@ -18,6 +18,7 @@ import os
 import shutil
 import urllib
 import sqlalchemy.exc
+import markdown
 
 
 def timestamp():
@@ -250,6 +251,8 @@ class User(db.Model):
 		elif isinstance(obj, User):
 			return obj == self or self.admin
 		elif isinstance(obj, QualiAI):
+			return self.admin
+		elif isinstance(obj, News):
 			return self.admin
 		else:
 			raise RuntimeError("Invalid Type: "+str(type(obj)))
@@ -943,6 +946,7 @@ class News(db.Model):
 	__tablename__ = 't_news'
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	last_edited = db.Column(db.BigInteger)
+	last_edited_by_id = db.Column(db.Integer, db.ForeignKey('t_users.id'))
 	last_edited_by = db.relationship("User")
 	text = db.Column(db.Text, nullable=False)
 
@@ -953,8 +957,11 @@ class News(db.Model):
 	def edited(self, locale='de'):
 		return arrow.get(self.last_edited).to('local').humanize(locale=locale)
 
+	def markup(self):
+		return Markup(markdown.markdown(self.text))
+
 	def __repr__(self):
-		return "<News(id={}, last_edited={}, author={})>".format(self.id, self.edited(), self.author.name)
+		return "<News(id={}, last_edited={}, last_edited_by={})>".format(self.id, self.edited(), self.last_edited_by)
 
 
 def populate():

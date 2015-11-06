@@ -8,7 +8,6 @@
 	<button class="ui basic red button" onclick="$.post('/api/logout').done(function() { window.location.href = '/'; });">Ausloggen</button>
 </div>
 
-{{ aktuelles }}
 {% else %}
 
 <div>
@@ -204,8 +203,57 @@ $("#reset_form_button").on("click", function() {
 });
 </script>
 
-{{aktuelles}}
+{% endif %}
 
+<div class="ui segments">
+{% for n in news %}
+	<div class="ui raised news segment" style="min-height: 10em">
+		<span id="markup" style="padding-bottom: 2em">
+			{{n.markup()}}
+			<br />
+		</span>
+		{% if current_user.is_authenticated and current_user.can_access(n) %}
+		<div id="markdown" style="display: none">
+			{{n.text}}
+		</div>
+		{% endif %}
+		{% if n.last_edited and n.last_edited_by %}
+		<div class="ui bottom left attached label">{{n.edited()}} von {{n.last_edited_by.name}} bearbeitet.</div>
+		{% endif %}
+		{% if current_user.is_authenticated and current_user.can_access(n) %}
+		<a id="edit_markdown" class="ui bottom right attached label">Bearbeiten</a>
+		{% endif %}
+	</div>
+{% endfor %}
+</div>
+{% if current_user.is_authenticated and current_user.admin %}
+<script src="https://cdn.jsdelivr.net/ace/1.1.9/noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	$(".news > #edit_markdown").on("click", function() {
+		var e_markdown = $(this).parent().find("#markdown");
+		var e_markup = $(this).parent().find("#markup");
+		if (e_markdown.attr("data-editor"))
+			return
+		e_markdown.attr("data-editor", "true")
+		e_markdown.show();
+		e_markup.hide();
+
+		var editor = ace.edit(e_markdown[0]);
+		if (Cookies.get("editor_theme"))
+			editor.setTheme(Cookies.get("editor_theme"));
+		editor.getSession().setMode("ace/mode/markdown");
+		editor.getSession().setUseSoftTabs(false);
+		editor.setOption("showInvisibles", true);
+		var font_size = 14;
+		if (Cookies.get("editor_font_size"))
+			font_size = parseInt(Cookies.get("editor_font_size"));
+		$("#editor").css("font-size", font_size);
+		window.mdEditor = editor;
+		$(this).text("Speichern");
+		$(this).on("click", function () {
+		})
+	});
+</script>
 {% endif %}
 
 {% endblock %}
