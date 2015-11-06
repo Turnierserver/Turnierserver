@@ -24,7 +24,6 @@ import static org.pixelgaffer.turnierserver.PropertyUtils.getString;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
 import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.commands;
 import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.etc;
-import static org.pixelgaffer.turnierserver.PropertyUtils.*;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;

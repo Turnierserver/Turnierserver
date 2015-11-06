@@ -33,6 +33,7 @@ import lombok.NoArgsConstructor;
 
 import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.networking.messages.SandboxCommand;
+import static org.pixelgaffer.turnierserver.PropertyUtils.*;
 
 /**
  * Diese Klasse speichert alle verbundenen Sandboxen.
@@ -48,13 +49,19 @@ public class Sandboxes
 	private static final Map<UUID, Integer> jobBoxids = new HashMap<>(); 
 	private static final Random rnd = new Random();
 	
+	private static int isolateMin = -1, isolateMax = -1;
 	/** Gibt eine freie Boxid für isolate zurück. */
 	public static int nextIsolateBoxid (UUID uuid)
 	{
 		WorkerMain.getLogger().todo("Soll diese Methode blockieren?");
+		if (isolateMin == -1)
+			isolateMin = getInt("isolate.id.min", 0);
+		if (isolateMax == -1)
+			isolateMax = getInt("isolate.id.max", 99);
 		while (true)
 		{
-			int boxid = rnd.nextInt(100);
+			int boxid = rnd.nextInt(isolateMax - isolateMin) + isolateMin;
+			WorkerMain.getLogger().info("Next isolate id: " + boxid + " (<= " + isolateMin + " >= " + isolateMax + ")");
 			synchronized (isolateBoxids)
 			{
 				if (!isolateBoxids.contains(boxid))
