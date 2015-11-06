@@ -156,7 +156,7 @@ public class JavaCompiler extends Compiler
 			// .java-Dateien kompilieren
 			if (filename.endsWith(".java"))
 			{
-				int returncode = execute(bindir, output, "javac", "-classpath", classpath, "-implicit:none", relative);
+				int returncode = execute(bindir, output, "javac", "-classpath", classpath, "-implicit:none", "-encoding", "utf8", relative);
 				if (returncode != 0)
 				{
 					output.println("Process finished with exit code " + returncode + ", aborting");
