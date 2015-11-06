@@ -24,6 +24,7 @@ import static org.pixelgaffer.turnierserver.PropertyUtils.getString;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
 import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.commands;
 import static org.pixelgaffer.turnierserver.sandboxmanager.SandboxMain.etc;
+import static org.pixelgaffer.turnierserver.PropertyUtils.*;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
@@ -92,7 +93,7 @@ public class AiExecutor implements Runnable
 		// isolate initialisieren
 		try
 		{
-			ProcessBuilder pb = new ProcessBuilder("isolate", "--cg", "--init", "-b", Integer.toString(job.getBoxid()));
+			ProcessBuilder pb = new ProcessBuilder(getString("isolate.bin", "isolate"), "--cg", "--init", "-b", Integer.toString(job.getBoxid()));
 			pb.redirectError(Redirect.INHERIT);
 			System.out.println("$ " + pb.command());
 			Process p = pb.start();
@@ -220,7 +221,7 @@ public class AiExecutor implements Runnable
 	protected void executeAi () throws IOException
 	{
 		List<String> cmd = new LinkedList<>();
-		cmd.add("isolate");
+		cmd.add(getString("isolate.bin", "isolate"));
 		String command;
 		if (commands.get(getJob().getLang()).isEmpty())
 			command = start.getProperty("command");
@@ -274,7 +275,7 @@ public class AiExecutor implements Runnable
 				ret = proc.waitFor();
 				SandboxMain.getLogger().debug("Die KI hat sich mit dem Statuscode " + ret + " beendet");
 				SandboxMain.getClient().sendMessage(getJob().getUuid(), 'F');
-				ProcessBuilder pb0 = new ProcessBuilder("isolate", "--cleanup", "-b", Integer.toString(job.getBoxid()));
+				ProcessBuilder pb0 = new ProcessBuilder(getString("isolate.bin", "isolate"), "--cleanup", "-b", Integer.toString(job.getBoxid()));
 				SandboxMain.getLogger().debug(pb0.command());
 				pb0.redirectErrorStream(true);
 				pb0.redirectOutput(Redirect.INHERIT);
