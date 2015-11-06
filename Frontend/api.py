@@ -720,9 +720,9 @@ def ai_qualify_blocking(id):
 
 
 	if not ai.latest_version().compiled:
-		return {"error": "AI_Version isnt compiled."}, 400
+		return ("AI_Version isnt compiled.", "error")
 	if ai.latest_version().frozen:
-		return {"error": "AI_Version is frozen."}, 400
+		return ("AI_Version is frozen.", "error")
 
 	reqid = backend.request_qualify(ai)
 	for data, event in backend.inprogress_log(reqid):

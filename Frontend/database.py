@@ -24,7 +24,6 @@ import markdown
 def timestamp():
 	return arrow.utcnow().timestamp
 
-
 db = SQLAlchemy(session_options={"expire_on_commit": False})
 
 def refresh_session():
@@ -48,7 +47,6 @@ class SyncedFTP:
 	def connect(self):
 		logger.info("Verbinde zum FTP @ " + env.ftp_url)
 		self.ftp_host = ftputil.FTPHost(env.ftp_url, env.ftp_uname, env.ftp_pw, timeout=10)
-
 
 	def failsafe_locked(self, meth):
 		@wraps(meth)
