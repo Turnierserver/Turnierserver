@@ -65,7 +65,7 @@ public class MainApp extends Application {
 	
 	public static Settings settings;
 	
-	public static String version = "1.0";  //VERSION//VERSION//VERSION//VERSION//VERSION//VERSION//VERSION//
+	public static String version = "1.01";  //VERSION//VERSION//VERSION//VERSION//VERSION//VERSION//VERSION//
 	
 	public static WebConnector webConnector;
 	public static GameManager gameManager = new GameManager();
@@ -95,7 +95,7 @@ public class MainApp extends Application {
 	 */
 	public void start(Stage _stage) throws Exception {
 		ErrorLog.clear();
-		ErrorLog.write("Programm startet...", true);
+		ErrorLog.write("Programm startet... (Version " + version + ")", true);
 		
 		checkNewVersion(false);
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> exit()));

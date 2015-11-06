@@ -17,7 +17,7 @@ import org.pixelgaffer.turnierserver.codr.view.ControllerStartPage;
  */
 public class Settings {
 	
-	public static String webUrl = "thuermchen.com";
+	public static String webUrl = "turnierserver.informatik-olympiade.de";
 	
 	
 	public void store(ControllerStartPage cStart) {
