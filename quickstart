@@ -4,6 +4,9 @@ im Frontendordner
 # mkdir /var/cache/worker
 # chmod 777 /var/cache/worker
 
+# mkdir /var/spool/backend
+# chmod 777 /var/spool/backend
+
 $ yaourt -S isolate-git
 
 bei PIs /boot/cmdline.txt cgroup_enable=memory (vor elevator=) einfügen
