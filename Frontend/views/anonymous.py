@@ -12,7 +12,8 @@ anonymous_blueprint = Blueprint("anonymous", __name__)
 
 @anonymous_blueprint.route("/")
 def index():
-	return render_template("index.html", news=News.query.all())
+	news = sorted(News.query, key=lambda n: -n.id)
+	return render_template("index.html", news=news)
 
 @anonymous_blueprint.route("/ai_list")
 def ai_list():

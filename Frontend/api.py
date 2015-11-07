@@ -1484,15 +1484,17 @@ def update_news(id):
 	if not news:
 		return CommonErrors.INVALID_ID
 
-	if not "text" in request.args:
+	if not "text" in request.form:
 		return {"error": "Kein Text empfangen"}, 400
 
-	news.text = request.args["text"]
+	news.text = request.form["text"]
 	news.last_edited = timestamp()
 	news.last_edited_by = current_user
+	if "visible" in request.form:
+		news.visible = request.form["visible"] in ["true", "True", "1"]
 	db.session.commit()
 
-	logger.info("News {} von {} bearbeitet".format(news, current_user))
+	logger.info("News {} von {} bearbeitet".format(news.id, current_user))
 	flash("Änderungen gespeichert.", "info")
 
 	return {"error": False}, 200

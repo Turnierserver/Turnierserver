@@ -205,29 +205,36 @@ $("#reset_form_button").on("click", function() {
 
 {% endif %}
 
-<div class="ui segments">
+<div class="ui segments" style="min-height: 5em">
+{% if current_user.is_authenticated and current_user.admin %}
+<a id="create_post" class="ui top attached label">Neuer Post</a>
+{% endif %}
 {% for n in news %}
+	{% if n.should_show() %}
 	<div class="ui raised news segment" style="min-height: 10em">
 		<span id="markup" style="padding-bottom: 2em">
 			{{n.markup()}}
 			<br />
 		</span>
 		{% if current_user.is_authenticated and current_user.can_access(n) %}
-		<div id="markdown" style="display: none">
-			{{n.text}}
-		</div>
+		<textarea id="markdown" style="display: none" data-id="{{n.id}}" data-visible="{{n.visible}}">{{n.text}}</textarea>
+		<br />
 		{% endif %}
-		{% if n.last_edited and n.last_edited_by %}
-		<div class="ui bottom left attached label">{{n.edited()}} von {{n.last_edited_by.name}} bearbeitet.</div>
+		{% if not n.visible %}
+		<div id="bottom_left_label" class="ui bottom left attached label">Dieser Post ist unsichtbar.</div>
+		{% elif n.last_edited and n.last_edited_by %}
+		<div id="bottom_left_label" class="ui bottom left attached label">{{n.edited()}} von {{n.last_edited_by.name}} bearbeitet.</div>
 		{% endif %}
 		{% if current_user.is_authenticated and current_user.can_access(n) %}
 		<a id="edit_markdown" class="ui bottom right attached label">Bearbeiten</a>
 		{% endif %}
 	</div>
+	{% endif %}
 {% endfor %}
 </div>
 {% if current_user.is_authenticated and current_user.admin %}
-<script src="https://cdn.jsdelivr.net/ace/1.1.9/noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<script src="//cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 <script>
 	$(".news > #edit_markdown").on("click", function() {
 		var e_markdown = $(this).parent().find("#markdown");
@@ -238,21 +245,47 @@ $("#reset_form_button").on("click", function() {
 		e_markdown.show();
 		e_markup.hide();
 
-		var editor = ace.edit(e_markdown[0]);
-		if (Cookies.get("editor_theme"))
-			editor.setTheme(Cookies.get("editor_theme"));
-		editor.getSession().setMode("ace/mode/markdown");
-		editor.getSession().setUseSoftTabs(false);
-		editor.setOption("showInvisibles", true);
-		var font_size = 14;
-		if (Cookies.get("editor_font_size"))
-			font_size = parseInt(Cookies.get("editor_font_size"));
-		$("#editor").css("font-size", font_size);
-		window.mdEditor = editor;
+		var markdown_editor = new SimpleMDE({ element: e_markdown[0], spellChecker: false });
+
 		$(this).text("Speichern");
+		$(this).addClass("teal");
+		var blLabel = $(this).parent().find("#bottom_left_label")
+		var toggle_text = (e_markdown.attr("data-visible") == "True") ? "Verstecken" : "Sichtbar machen";
+		blLabel.replaceWith($('<button id="toggle_public" class="ui orange bottom left attached label">' + toggle_text + '</button>'))
+		$(this).parent().find("#toggle_public").on("click", function() {
+			var d = {
+				text: markdown_editor.value(),
+				visible: (e_markdown.attr("data-visible") == "True") ? false : true
+			}
+			$.post("/api/news/" + e_markdown.attr("data-id") + "/update", d).done(function(data) {
+				location.reload();
+			}).fail(function(xhr, textStatus, errorThrown) {
+				console.log(xhr.responseText.error);
+				alert(JSON.parse(xhr.responseText).error);
+			});
+		})
 		$(this).on("click", function () {
+			var d = {
+				text: markdown_editor.value()
+			}
+			$.post("/api/news/" + e_markdown.attr("data-id") + "/update", d).done(function(data) {
+				location.reload();
+			}).fail(function(xhr, textStatus, errorThrown) {
+				console.log(xhr.responseText.error);
+				alert(JSON.parse(xhr.responseText).error);
+			});
 		})
 	});
+	$("#create_post").on("click", function() {
+		$.post("/api/post_news", {
+			"text": "## Neuer Post\nHallo"
+		}).done(function(data) {
+			location.reload();
+		}).fail(function(xhr, textStatus, errorThrown) {
+			console.log(xhr.responseText.error);
+			alert(JSON.parse(xhr.responseText).error);
+		});
+	})
 </script>
 {% endif %}
 

@@ -947,6 +947,7 @@ class News(db.Model):
 	last_edited_by_id = db.Column(db.Integer, db.ForeignKey('t_users.id'))
 	last_edited_by = db.relationship("User")
 	text = db.Column(db.Text, nullable=False)
+	visible = db.Column(db.Boolean, default=False)
 
 	def __init__(self, *args, **kwargs):
 		super(News, self).__init__(*args, **kwargs)
@@ -954,6 +955,9 @@ class News(db.Model):
 
 	def edited(self, locale='de'):
 		return arrow.get(self.last_edited).to('local').humanize(locale=locale)
+
+	def should_show(self):
+		return self.visible or (current_user.is_authenticated and current_user.admin)
 
 	def markup(self):
 		return Markup(markdown.markdown(self.text))
