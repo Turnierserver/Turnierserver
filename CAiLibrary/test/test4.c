@@ -22,18 +22,23 @@
 
 int main ()
 {
-	int num = 1234567890;
+	int num = -1234567890;
 	printf("number: %d\n", num);
 	printf("string: %s\n", itos(num));
-	double real = 13245.6789;
+	double real = -25.93333333;
 	printf("number: %f\n", real);
 	printf("string: %s\n", dtos(real));
+	double zero = 0.0;
+	printf("number: %f\n", zero);
+	printf("string: %s\n", dtos(zero));
 
 	OutputBuffer *buf = createBuffer();
 	append(buf, "number: ");
 	appendi(buf, num);
 	append(buf, "\nfloat: ");
 	appendd(buf, real);
+	append(buf, "\nzero: ");
+	appendd(buf, zero);
 	append(buf, "\n");
 	printf("buffer:\n\n%s\n", readBuffer(buf, 0));
 	destroyBuffer(buf);

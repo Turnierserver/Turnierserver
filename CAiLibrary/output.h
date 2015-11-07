@@ -19,6 +19,11 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
+#if CMAKE_BUILD_TYPE == Debug
+#  include <stdio.h>
+#  define OUTPUT_DEBUG
+#endif
+
 char* itos (int i);
 char* dtos (double d);
 

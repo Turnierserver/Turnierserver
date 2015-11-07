@@ -57,6 +57,9 @@ void destroyBuffer (OutputBuffer *buf)
 OutputBuffer* appendi (OutputBuffer *buf, int i)
 {
 	char *str = itos(i);
+#ifdef OUTPUT_DEBUG
+	printf("appendi: %d -> %s\n", i, str);
+#endif
 	append(buf, str);
 	free(str);
 	return buf;
@@ -65,6 +68,9 @@ OutputBuffer* appendi (OutputBuffer *buf, int i)
 OutputBuffer* appendd (OutputBuffer *buf, double d)
 {
 	char *str = dtos(d);
+#ifdef OUTPUT_DEBUG
+	printf("appendd: %f -> %s\n", d, str);
+#endif
 	append(buf, str);
 	free(str);
 	return buf;
