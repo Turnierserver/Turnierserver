@@ -292,7 +292,7 @@ class AI_Game_Assoc(db.Model):
 
 	@property
 	def is_winner(self):
-		return self.position == min([assoc.position for assoc in game.ai_assocs])
+		return self.position == min([assoc.position for assoc in self.game.ai_assocs])
 
 	def __repr__(self):
 		return "<AI_Game_Assoc(game={}, ai={})".format(self.game.id, self.ai.name)
