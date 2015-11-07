@@ -24,7 +24,6 @@ from sse import sse_stream
 
 
 
-
 def json_out(f):
 	@wraps(f)
 	def wrapper(*args, **kwargs):
@@ -175,7 +174,7 @@ def game_log(id):
 		yield "", "finished_transmitting"
 
 	else:
-		return CommonErrors.INVALID_ID
+		return ("Invalid ID", "error")
 
 @api.route("/game/inprogress/<int:id>/log")
 @sse_stream
@@ -185,7 +184,7 @@ def game_inprogress_log(id):
 		d, s = next(gen)
 		yield json.dumps(d), s
 	except StopIteration:
-		return CommonErrors.INVALID_ID
+		return ("Invalid ID", error)
 
 	for data, data_type in gen:
 		if data_type == "state":
@@ -632,7 +631,7 @@ def api_ai_compile(id):
 		return (CommonErrors.NO_ACCESS[0]["error"], "error")
 
 	if ai.latest_version().frozen:
-		return {"error": "AI_Version is frozen"}, 400
+		return ("AI_Version is frozen", "error")
 	ai.latest_version().compiled = True
 	ai.latest_version().qualified = False
 	db.session.commit()
@@ -645,9 +644,9 @@ def api_ai_compile(id):
 def api_ai_compile_blocking(id):
 	ai = AI.query.get(id)
 	if not ai:
-		return (CommonErrors.INVALID_ID[0]["error"], "error")
+		return CommonErrors.INVALID_ID
 	if not current_user.can_access(ai):
-		return (CommonErrors.NO_ACCESS[0]["error"], "error")
+		return CommonErrors.NO_ACCESS
 
 	if ai.latest_version().frozen:
 		return {"error": "AI_Version is frozen"}, 400
@@ -679,9 +678,9 @@ def ai_qualify(id):
 
 
 	if not ai.latest_version().compiled:
-		return {"error": "AI_Version isnt compiled."}, 400
+		return ("AI_Version isnt compiled.", "error")
 	if ai.latest_version().frozen:
-		return {"error": "AI_Version is frozen."}, 400
+		return ("AI_Version is frozen.", "error")
 
 	reqid = backend.request_qualify(ai)
 	for data, event in backend.inprogress_log(reqid):
@@ -741,7 +740,7 @@ def ai_qualify_blocking(id):
 				logger.warning("no position in finished ai_qualify_blocking")
 			db.session.commit()
 		elif event == "crash":
-			return False
+			return ("ai crashed", "error")
 
 
 

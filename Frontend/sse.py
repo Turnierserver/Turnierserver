@@ -12,7 +12,7 @@ class ServerSentEvent(object):
 	def encode(self):
 		s = ""
 		if self.event:
-			s += "event: " + self.event + "\n"
+			s += "event: " + str(self.event) + "\n"
 		if self.msg_id:
 			s += "id: " + str(self.msg_id) + "\n"
 		for line in self.data.split("\n"):
