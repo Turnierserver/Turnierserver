@@ -689,7 +689,7 @@ def ai_qualify(id):
 		elif event == "success":
 			d = backend.request(reqid)
 			if "position" in d:
-				if d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)] > d["position"][str(-ai.type.id) + "v1"]:
+				if d["position"][str(ai.id) + "v" + str(ai.latest_version().version_id)] < d["position"][str(-ai.type.id) + "v1"]:
 					yield "", "qualified"
 					ai.latest_version().compiled = True
 					ai.latest_version().qualified = True
