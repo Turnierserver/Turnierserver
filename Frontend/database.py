@@ -471,6 +471,12 @@ class AI(db.Model):
 			ai.elo = 1200
 		db.session.commit()
 
+	@classmethod
+	def recalc_all_elo(cls, gametype):
+		for game in Game.query.order_by(Game.id).all():
+			game.update_ai_elo()
+		db.session.commit()
+
 	@property
 	def rank(self):
 		if not self._rank:

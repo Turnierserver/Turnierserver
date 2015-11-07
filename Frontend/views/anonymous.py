@@ -3,6 +3,7 @@ from flask.ext.login import current_user
 from datetime import timedelta
 from functools import update_wrapper
 from database import AI, User, Game, GameType, Game_inprogress, Tournament, UserTournamentAi, News
+from sqlalchemy import desc
 from backend import backend
 from logger import logger
 import markdown
@@ -12,7 +13,7 @@ anonymous_blueprint = Blueprint("anonymous", __name__)
 
 @anonymous_blueprint.route("/")
 def index():
-	news = sorted(News.query, key=lambda n: -n.id)
+	news = News.query.order_by(desc(News.id))
 	return render_template("index.html", news=news)
 
 @anonymous_blueprint.route("/ai_list")
