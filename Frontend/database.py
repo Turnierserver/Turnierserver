@@ -290,6 +290,10 @@ class AI_Game_Assoc(db.Model):
 	calculationPoints = db.Column(db.Integer)
 	## TODO: rechenpunkte wirklich speichern
 
+	@property
+	def is_winner(self):
+		return self.position == min([assoc.position for assoc in game.ai_assocs])
+
 	def __repr__(self):
 		return "<AI_Game_Assoc(game={}, ai={})".format(self.game.id, self.ai.name)
 
@@ -691,12 +695,12 @@ class Game(db.Model):
 			logger.info("Spiel zwischen KIs vom selben Nutzer; wird nicht gewertet")
 			return
 
-		if ai0_assoc.position < ai1_assoc.position:
+		if ai0_assoc.is_winner and not ai1_assoc.is_winner:
 			ai0gewonnen = 1
-		elif ai0_assoc.position > ai1_assoc.position:
-			ai0gewonnen = 0
+		elif ai0_assoc.is_winner and ai1_assoc.is_winner:
+			a0gewonnen = 0.5
 		else:
-			ai0gewonnen = 0.5
+			ai0gewonnen = 0
 
 		ai1gewonnen = 1 - ai0gewonnen
 

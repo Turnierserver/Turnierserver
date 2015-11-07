@@ -89,7 +89,7 @@ Spiele:
 			</td>
 			<td class="center aligned data-ai1">
 				<a class="content" href="{{url_for('anonymous.ai', id=assoc.game.ais[0].id)}}">
-					{% if assoc.game.ai_assocs[0].score > assoc.game.ai_assocs[1].score %}
+					{% if assoc.game.ai_assocs[0].is_winner %}
 					<b><div class="header">{{assoc.game.ais[0].name}}</div></b>
 					{% else %}
 					<div class="header">{{assoc.game.ais[0].name}}</div>
@@ -98,7 +98,7 @@ Spiele:
 			</td>
 			<td class="center aligned data-ai2">
 				<a class="content" href="{{url_for('anonymous.ai', id=assoc.game.ais[1].id)}}">
-					{% if assoc.game.ai_assocs[0].score < assoc.game.ai_assocs[1].score %}
+					{% if assoc.game.ai_assocs[1].is_winner %}
 					<b><div class="header">{{assoc.game.ais[1].name}}</div></b>
 					{% else %}
 					<div class="header">{{assoc.game.ais[1].name}}</div>
