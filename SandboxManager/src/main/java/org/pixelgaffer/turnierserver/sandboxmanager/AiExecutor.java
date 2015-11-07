@@ -239,6 +239,7 @@ public class AiExecutor implements Runnable
 		cmd.add("-q");
 		cmd.add("0,0");
 		cmd.add("--time=" + job.getTimeout());
+		cmd.add("--wall-time=" + job.getTimeout());
 		cmd.add("--dir=/etc/=" + etc.getAbsolutePath());
 		cmd.add("--dir=/usr/lib/jvm/");
 		cmd.add("-c");
