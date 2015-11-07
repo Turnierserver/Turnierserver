@@ -1,6 +1,7 @@
 import sys
 import socket
 import json
+import traceback
 from io import StringIO
 from importlib import import_module
 from pprint import pprint
@@ -74,9 +75,10 @@ class AIWrapper:
 				self.add_output(resp, self.output.read())
 				self.send(resp)
 		except Exception as e:
-			print(e)
-			print("Sende 'CRASH " + str(e) + "'")
-			self.send("CRASH " + str(e))
+			traceback.print_exc()
+			s = self.output.read()
+			print("Sende CRASH:\n" + s)
+			self.send("CRASH " + s)
 			raise e
 
 	def getState(self, updates):
