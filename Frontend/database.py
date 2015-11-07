@@ -290,6 +290,10 @@ class AI_Game_Assoc(db.Model):
 	calculationPoints = db.Column(db.Integer)
 	## TODO: rechenpunkte wirklich speichern
 
+	@property
+	def is_winner(self):
+		return self.position == min([assoc.position for assoc in self.game.ai_assocs])
+
 	def __repr__(self):
 		return "<AI_Game_Assoc(game={}, ai={})".format(self.game.id, self.ai.name)
 
@@ -467,12 +471,15 @@ class AI(db.Model):
 
 	@classmethod
 	def reset_all_elo(cls, gametype):
+		logger.info("resetting all elo")
 		for ai in cls.query.filter(cls.type == gametype):
 			ai.elo = 1200
 		db.session.commit()
 
 	@classmethod
 	def recalc_all_elo(cls, gametype):
+		cls.reset_all_elo(gametype)
+		logger.info("recalculating elo")
 		for game in Game.query.order_by(Game.id).all():
 			game.update_ai_elo()
 		db.session.commit()
@@ -691,17 +698,19 @@ class Game(db.Model):
 			logger.info("Spiel zwischen KIs vom selben Nutzer; wird nicht gewertet")
 			return
 
-		if ai0_assoc.position < ai1_assoc.position:
+		if ai0_assoc.is_winner and not ai1_assoc.is_winner:
 			ai0gewonnen = 1
-		elif ai0_assoc.position > ai1_assoc.position:
-			ai0gewonnen = 0
+		elif ai0_assoc.is_winner and ai1_assoc.is_winner:
+			a0gewonnen = 0.5
 		else:
-			ai0gewonnen = 0.5
+			ai0gewonnen = 0
 
 		ai1gewonnen = 1 - ai0gewonnen
 
 		ai0eloneu = ai0.elo + 32 * (ai0gewonnen - 1 / (1 + 10 ** ((ai1.elo - ai0.elo) / 400)))
 		ai1eloneu = ai1.elo + 32 * (ai1gewonnen - 1 / (1 + 10 ** ((ai0.elo - ai1.elo) / 400)))
+		logger.info("ai0 ({}): {} -> {}".format(ai0.name, ai0.elo, ai0eloneu))
+		logger.info("ai0 ({}): {} -> {}".format(ai1.name, ai1.elo, ai1eloneu))
 		ai0.elo = ai0eloneu
 		ai1.elo = ai1eloneu
 		db.session.commit()

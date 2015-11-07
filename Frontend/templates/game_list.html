@@ -62,13 +62,13 @@ p.yellow {
 		{% for game in game_list %}
 		<tr>
 			<td class="left aligned">
-				<a class="{% if game.ai_assocs[0].score > game.ai_assocs[1].score %}green{% elif game.ai_assocs[0].score < game.ai_assocs[1].score %}red{% else %}yellow{% endif %} ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[0].ai.id)}}">
+				<a class="{% if game.ai_assocs[0].is_winner %}green{% elif game.ai_assocs[1].is_winner %}red{% else %}yellow{% endif %} ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[0].ai.id)}}">
 					<img class="ui right spaced image" src="/api/ai/{{ game.ai_assocs[0].ai.id }}/icon">
 					{{ game.ai_assocs[0].ai.name }}
 				</a>
 			</td>
 			<td class="left aligned">
-				<p class="{% if game.ai_assocs[0].score > game.ai_assocs[1].score %}green{% elif game.ai_assocs[0].score < game.ai_assocs[1].score %}red{% else %}yellow{% endif %}">{{ game.ai_assocs[0].score }}</p>
+				<p class="{% if game.ai_assocs[0].is_winner %}green{% elif game.ai_assocs[1].is_winner %}red{% else %}yellow{% endif %}">{{ game.ai_assocs[0].score }}</p>
 			</td>
 			<td class="center aligned">
 				<a class="ui button content" href="{{url_for("anonymous.game", id=game.id)}}">
@@ -76,10 +76,10 @@ p.yellow {
 				</a>
 			</td>
 			<td class="right aligned">
-				<p class="{% if game.ai_assocs[0].score < game.ai_assocs[1].score %}green{% elif game.ai_assocs[0].score > game.ai_assocs[1].score %}red{% else %}yellow{% endif %}">{{ game.ai_assocs[1].score }}</p>
+				<p class="{% if game.ai_assocs[0].is_winner %}green{% elif game.ai_assocs[1].is_winner %}red{% else %}yellow{% endif %}">{{ game.ai_assocs[1].score }}</p>
 			</td>
 			<td class="right aligned">
-				<a class="{% if game.ai_assocs[0].score < game.ai_assocs[1].score %}green{% elif game.ai_assocs[0].score > game.ai_assocs[1].score %}red{% else %}yellow{% endif %} ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[1].ai.id)}}">
+				<a class="{% if game.ai_assocs[1].is_winner %}green{% elif game.ai_assocs[0].is_winner %}red{% else %}yellow{% endif %} ui label" href="{{url_for("anonymous.ai", id=game.ai_assocs[1].ai.id)}}">
 					{{ game.ai_assocs[1].ai.name }}
 					<img class="ui left spaced image" src="/api/ai/{{ game.ai_assocs[1].ai.id }}/icon">
 				</a>

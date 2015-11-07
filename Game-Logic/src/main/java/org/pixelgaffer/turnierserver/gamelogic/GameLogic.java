@@ -300,6 +300,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 			scores.add(getUserObject(ai).score);
 		}
 		Collections.sort(scores);
+		Collections.reverse(scores);
 		
 		for (Ai ai : game.getAis()) {
 			message.leftoverMillis.put(ai.getId(), getUserObject(ai).mikrosLeft);
