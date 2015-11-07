@@ -706,6 +706,8 @@ class Game(db.Model):
 
 		ai0eloneu = ai0.elo + 32 * (ai0gewonnen - 1 / (1 + 10 ** ((ai1.elo - ai0.elo) / 400)))
 		ai1eloneu = ai1.elo + 32 * (ai1gewonnen - 1 / (1 + 10 ** ((ai0.elo - ai1.elo) / 400)))
+		logger.info("ai0 ({}): {} -> {}".format(ai0.name, ai0.elo, ai0eloneu))
+		logger.info("ai0 ({}): {} -> {}".format(ai1.name, ai1.elo, ai1eloneu))
 		ai0.elo = ai0eloneu
 		ai1.elo = ai1eloneu
 		db.session.commit()
