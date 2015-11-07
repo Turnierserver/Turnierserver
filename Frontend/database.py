@@ -471,12 +471,15 @@ class AI(db.Model):
 
 	@classmethod
 	def reset_all_elo(cls, gametype):
+		logger.info("resetting all elo")
 		for ai in cls.query.filter(cls.type == gametype):
 			ai.elo = 1200
 		db.session.commit()
 
 	@classmethod
 	def recalc_all_elo(cls, gametype):
+		cls.reset_all_elo(gametype)
+		logger.info("recalculating elo")
 		for game in Game.query.order_by(Game.id).all():
 			game.update_ai_elo()
 		db.session.commit()

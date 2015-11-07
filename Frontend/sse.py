@@ -26,7 +26,6 @@ def sse_stream(meth):
 	def wrapper(*args, **kwargs):
 		def gen():
 			msg_id = 0
-			print(meth)
 			gen = meth(*args, **kwargs)
 			def f(resp):
 				if isinstance(resp, tuple):
