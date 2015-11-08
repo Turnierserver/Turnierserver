@@ -5,6 +5,7 @@ from werkzeug.serving import WSGIRequestHandler
 from flask.ext.login import current_user
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
+from raven.contrib.flask import Sentry
 
 from commons import cache
 from logger import logger
@@ -20,6 +21,7 @@ from _cfg import env
 from errorhandling import handle_errors
 from cli import manage
 
+import logging
 import time
 import json
 
@@ -53,9 +55,14 @@ app.register_blueprint(anonymous_blueprint)
 app.register_blueprint(authenticated_blueprint)
 handle_errors(app)
 
+if env.SENTRY:
+	with open("../.git/refs/heads/master", "r") as f: head = f.read()
+	logger.info("Initializing Sentry")
+	sentry = Sentry(app, logging=True, level=logging.ERROR)
+	logger.info("enabled Sentry")
+
 if env.airbrake:
 	with open("../.git/refs/heads/master", "r") as f: head = f.read()
-
 	logger.info("Initializing Airbrake")
 	import airbrake
 	airbrake_logger = airbrake.getLogger(api_key=env.airbrake_key, project_id=env.airbrake_id)
