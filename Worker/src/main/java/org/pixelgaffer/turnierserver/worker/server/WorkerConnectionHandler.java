@@ -22,10 +22,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.AI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.BACKEND;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.SANDBOX;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
+import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.AiConnected;
@@ -37,7 +36,6 @@ import org.pixelgaffer.turnierserver.networking.util.DataBuffer;
 import org.pixelgaffer.turnierserver.worker.Sandbox;
 import org.pixelgaffer.turnierserver.worker.Sandboxes;
 import org.pixelgaffer.turnierserver.worker.WorkerMain;
-
 import lombok.Getter;
 import lombok.ToString;
 import naga.NIOSocket;
@@ -199,6 +197,8 @@ public class WorkerConnectionHandler extends ConnectionHandler
 									catch (Exception e)
 									{
 										WorkerMain.getLogger().critical("Fehler beim Weiterleiten: " + e);
+										Airbrake.log(e);
+										e.printStackTrace();
 									}
 								}).start();
 							}
@@ -221,6 +221,8 @@ public class WorkerConnectionHandler extends ConnectionHandler
 							catch (Exception e)
 							{
 								WorkerMain.getLogger().critical("Fehler beim Weiterleiten: " + e);
+								Airbrake.log(e);
+								e.printStackTrace();
 							}
 							break;
 						
@@ -233,6 +235,8 @@ public class WorkerConnectionHandler extends ConnectionHandler
 							catch (Exception e)
 							{
 								WorkerMain.getLogger().critical("Fehler beim Lesen der Nachricht der Sandbox: " + e);
+								Airbrake.log(e);
+								e.printStackTrace();
 							}
 							break;
 					}

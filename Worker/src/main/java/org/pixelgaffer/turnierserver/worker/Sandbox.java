@@ -194,6 +194,15 @@ public class Sandbox
 			case FINISHED_AI:
 				try
 				{
+					Sandboxes.releaseIsolateBoxid(answer.getUuid());
+				}
+				catch (Exception e)
+				{
+					WorkerMain.getLogger().critical("Fehler beim releasen der isolate boxid von " + answer.getUuid());
+					Airbrake.log(e).printStackTrace();
+				}
+				try
+				{
 					WorkerMain.getLogger().info("Die KI " + answer.getUuid() + " hat sich mit " + answer.getEvent() + " beendet");
 					WorkerMain.getBackendClient().sendSandboxMessage(answer);
 				}
