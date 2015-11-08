@@ -71,7 +71,7 @@ class AIWrapper:
 				print("Empfangen:")
 				pprint(r)
 				resp = self.update(r)
-				resp += ":" + repr(self.output.read())[1:1]
+				resp += ":" + repr(self.output.read())[1:-1]
 				print("Schicke: ", repr(resp)) # debug
 				self.output.clear() # debug
 				self.send(resp)
