@@ -114,11 +114,6 @@ def run():
 	app_run_params = dict(host="::", port=env.web_port, threaded=True)
 	if env.DEBUG and not env.USE_RELOADER:
 		app_run_params["use_reloader"] = False
-	if env.ssl:
-		import ssl
-		context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-		context.load_cert_chain('server.crt', 'server.key')
-		app_run_params["ssl_context"] = context
 	app.run(**app_run_params)
 
 manage(manager, app)
