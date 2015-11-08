@@ -30,7 +30,7 @@ import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
+import lombok.NonNull;
 import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.networking.messages.SandboxCommand;
 import static org.pixelgaffer.turnierserver.PropertyUtils.*;
@@ -74,11 +74,18 @@ public class Sandboxes
 		}
 	}
 	/** Markiert die zum Job gehörende Boxid von isolate als verfügbar. */
-	public static void releaseIsolateBoxid (UUID uuid)
+	public static void releaseIsolateBoxid (@NonNull UUID uuid)
 	{
 		synchronized (isolateBoxids)
 		{
-			isolateBoxids.remove(jobBoxids.get(uuid));
+			if (!jobBoxids.containsKey(uuid))
+			{
+				WorkerMain.getLogger().warning("Trying to release isolate boxid of unknown job " + uuid);
+				return;
+			}
+			int boxid = jobBoxids.get(uuid);
+			WorkerMain.getLogger().info("Release isolate id " + boxid);
+			isolateBoxids.remove(boxid);
 			jobBoxids.remove(uuid);
 		}
 	}
