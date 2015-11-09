@@ -671,6 +671,14 @@ class Game(db.Model):
 	def moves(self):
 		return len(self.log)
 
+	def reason_repr(self):
+		if not self.reason:
+			return
+		s = self.reason
+		for assoc in self.ai_assocs:
+			s = s.replace(str(assoc.ai.id) + "v", "'{}' v".format(assoc.ai.name))
+		return s
+
 	def time(self, locale='de'):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
 

@@ -1,4 +1,6 @@
 import logging
+from _cfg import env
+
 hellblau = "\033[36m"
 level_strings = {
 	logging.DEBUG: ("\033[1m", "DEBUG"),
@@ -59,6 +61,11 @@ ch.setLevel(logging.INFO)
 ch.setFormatter(formatter)
 wl.addHandler(ch)
 
+if env.SENTRY:
+	from raven.handlers.logging import SentryHandler
+	sentryHandler = SentryHandler(env.SENTRY_DSN)
+	sentryHandler.setLevel(logging.WARNING)
+	logger.addHandler(sentryHandler)
 
 import werkzeug.serving
 from werkzeug._internal import _log
