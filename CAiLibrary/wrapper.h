@@ -41,6 +41,9 @@ char* readLine (Wrapper *w);
 Wrapper *globalInit (int argc, char **argv);
 void globalCleanup (Wrapper **w);
 
+// define them different for use with c++
+void __c_surrender (Wrapper *w);
+void __c_crash (Wrapper *w, const char *reason);
 void surrender (Wrapper *w);
 void crash (Wrapper *w, const char *reason);
 
