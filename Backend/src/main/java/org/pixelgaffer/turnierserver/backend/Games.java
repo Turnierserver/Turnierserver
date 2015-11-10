@@ -28,14 +28,17 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import org.apache.commons.io.FileUtils;
 import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Parsers;
+import org.pixelgaffer.turnierserver.backend.Games.GameImpl.GameFinishedListener;
 import org.pixelgaffer.turnierserver.backend.Games.GameImpl.GameState;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
 import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendCommandProcessed;
@@ -54,6 +57,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -259,6 +263,15 @@ public class Games
 			FINISHED
 		}
 		
+		static interface GameFinishedListener
+		{
+			public void gameFinished (boolean success);
+		}
+		
+		@Getter
+		@Setter
+		private GameFinishedListener gameFinishedListener;
+		
 		/** Die UUID dieses Spiels. */
 		@Getter
 		@NonNull
@@ -350,6 +363,8 @@ public class Games
 				ai.disconnect();
 			if (state == GameState.STARTED) // ist beim restart auf false
 			{
+				if (gameFinishedListener != null)
+					gameFinishedListener.gameFinished(success);
 				BackendMain.getLogger().info("alle kis disconnected, sende success an frontend");
 				BackendFrontendConnectionHandler.getFrontend().sendMessage(
 						Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), success), false));
@@ -427,12 +442,44 @@ public class Games
 		}
 	}
 	
+	@RequiredArgsConstructor
+	@AllArgsConstructor
+	static class LoadedGameLogic implements GameFinishedListener
+	{
+		@NonNull
+		@Getter
+		private GameLogic<?, ?> gameLogic;
+		
+		@Getter
+		private URLClassLoader classloader;
+		
+		@Getter
+		private final List<File> toDelete = new LinkedList<>();
+		
+		@Override
+		public void gameFinished (boolean success)
+		{
+			try
+			{
+				if (classloader != null)
+					classloader.close();
+			}
+			catch (Exception e)
+			{
+				Airbrake.log(e).printStackTrace();
+			}
+			
+			for (File f : toDelete)
+				if (!FileUtils.deleteQuietly(f))
+					BackendMain.getLogger().warning("Failed to delete " + f);
+		}
+	}
+	
 	/**
 	 * Lädt die Jar-Datei der GameLogic für das angegebene Spiel herunter,
-	 * liest
-	 * die Manifest-Datei, und lädt die GameLogic-Klasse.
+	 * liest die Manifest-Datei, und lädt die GameLogic-Klasse.
 	 */
-	public static GameLogic<?, ?> loadGameLogic (int gameId) // keep in sync
+	public static LoadedGameLogic loadGameLogic (int gameId) // keep in sync
 																// with codr
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
 			ReflectiveOperationException, FTPListParseException
@@ -458,11 +505,12 @@ public class Games
 		urls.add(jar.toURI().toURL());
 		for (File entry : libDir.listFiles())
 			urls.add(entry.toURI().toURL());
-		BackendMain.getLogger().todo("Hier ist ein ResourceLeak (auch im codr fixen)");
-		@SuppressWarnings("resource")
 		URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[0]));
 		Class<?> clazz = cl.loadClass(classname);
-		return (GameLogic<?, ?>)clazz.newInstance();
+		LoadedGameLogic logic = new LoadedGameLogic((GameLogic<?, ?>)clazz.newInstance(), cl);
+		logic.getToDelete().add(jar);
+		logic.getToDelete().add(libDir);
+		return logic;
 	}
 	
 	/**
@@ -472,9 +520,10 @@ public class Games
 			throws ReflectiveOperationException, IOException, FTPIllegalReplyException, FTPException,
 			FTPDataTransferException, FTPAbortedException, FTPListParseException
 	{
-		GameLogic<?, ?> logic = loadGameLogic(gameId);
+		LoadedGameLogic logic = loadGameLogic(gameId);
 		UUID uuid = randomUuid();
-		GameImpl game = new GameImpl(gameId, logic, uuid, requestId, tournament, languages, ais);
+		GameImpl game = new GameImpl(gameId, logic.getGameLogic(), uuid, requestId, tournament, languages, ais);
+		game.setGameFinishedListener(logic);
 		synchronized (lock)
 		{
 			games.put(uuid, game);
@@ -490,18 +539,19 @@ public class Games
 			throws IOException, FTPIllegalReplyException, FTPException, FTPDataTransferException, FTPAbortedException,
 			ReflectiveOperationException, FTPListParseException
 	{
-		GameLogic<?, ?> logic = loadGameLogic(gameId);
+		LoadedGameLogic logic = loadGameLogic(gameId);
 		UUID uuid = randomUuid();
 		
 		// die KIs herausfinden. QualiKI: -gameId version 1
-		int numAis = logic.playerAmt();
+		int numAis = logic.getGameLogic().playerAmt();
 		String ais[] = new String[numAis];
 		ais[0] = ai;
 		for (int i = 1; i < numAis; i++)
 			ais[1] = "-" + gameId + "v1";
 		String[] languages = { language, qualilang };
 		// Spiel starten
-		GameImpl game = new GameImpl(gameId, logic, uuid, requestId, false, languages, ais);
+		GameImpl game = new GameImpl(gameId, logic.getGameLogic(), uuid, requestId, false, languages, ais);
+		game.setGameFinishedListener(logic);
 		synchronized (lock)
 		{
 			games.put(uuid, game);
