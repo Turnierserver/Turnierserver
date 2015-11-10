@@ -1,13 +1,14 @@
 from flask import Blueprint, render_template, abort, redirect, url_for
 from flask.ext.login import current_user
 from database import AI, User, Game, Lang, GameType, Tournament, UserTournamentAi, db, ftp, QualiAI
-from commons import authenticated_web
+from commons import authenticated_web, nocache
 from logger import logger
 from errorhandling import error
 
 authenticated_blueprint = Blueprint("authenticated", __name__)
 
 @authenticated_blueprint.route("/profile")
+@nocache
 @authenticated_web
 def current_profile():
 	user = current_user
@@ -16,6 +17,7 @@ def current_profile():
 	return render_template("profile.html", columns=columns, user=user, gametype=GameType.selected())
 
 @authenticated_blueprint.route("/profile/<int:id>")
+@nocache
 @authenticated_web
 def profile_id(id):
 	user = User.query.get(id)
