@@ -5,7 +5,6 @@ from werkzeug.serving import WSGIRequestHandler
 from flask.ext.login import current_user
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
-from raven.contrib.flask import Sentry
 
 from commons import cache
 from logger import logger
@@ -56,10 +55,20 @@ app.register_blueprint(authenticated_blueprint)
 handle_errors(app)
 
 if env.SENTRY:
-	with open("../.git/refs/heads/master", "r") as f: head = f.read()
+	from raven.contrib.flask import Sentry
+	import subprocess
+	with open("../.git/refs/heads/master", "r") as f: head = f.read().rstrip("\n")
+	dirty = subprocess.check_output(["git", "status", "--porcelain"]).decode("utf-8", "ignore").rstrip("\n").splitlines()
 	logger.info("Initializing Sentry")
-	sentry = Sentry(app, logging=True, level=logging.ERROR)
-	logger.info("enabled Sentry")
+	class MySentry(Sentry):
+		def before_request(self, *args, **kwargs):
+			Sentry.before_request(self, *args, **kwargs)
+			self.client.extra_context({
+				"commit": head,
+				"dirty": dirty,
+			})
+			self.client.tags_context({"isDirty": len(dirty) > 0})
+	sentry = MySentry(app, logging=True, level=logging.ERROR)
 
 if env.airbrake:
 	with open("../.git/refs/heads/master", "r") as f: head = f.read()

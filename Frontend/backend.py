@@ -80,6 +80,7 @@ class Backend(threading.Thread):
 				yield (".", "log")
 				timed_out += 1
 				if timed_out > 60:
+					logger.warning("compile job timed out")
 					yield ("\nDas Backend sendet nichts.", "log")
 					yield ("\nVersuch es nochmal.", "log")
 					yield ("Das Backend sendet nichts.", "error")
@@ -363,8 +364,6 @@ class Backend(threading.Thread):
 			except Empty:
 				return
 
-
-
 	def run(self):
 		logger.info("Backend Thread running!")
 		self.listen()
@@ -381,11 +380,9 @@ class Backend(threading.Thread):
 					logger.warning("connection zum backend gestorben")
 					time.sleep(1)
 					continue
-				logger.debug('recvd ' + r)
 				## zerstückelte blöcke?
 				for d in r.split("\n"):
 					if d == '':
-						##
 						continue
 					if d == '\n':
 						pass

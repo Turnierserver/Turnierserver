@@ -30,8 +30,6 @@ def profile_id(id):
 	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
 	return render_template("profile.html", columns=columns, user=user, gametype=GameType.selected())
 
-
-
 @authenticated_blueprint.route("/create_ai")
 @authenticated_web
 def create_ai():
@@ -49,9 +47,10 @@ def edit_ai(id):
 		abort(404)
 	if not current_user.can_access(ai):
 		abort(401)
-	t = UserTournamentAi.query.filter(UserTournamentAi.user == current_user)\
+	t = UserTournamentAi.query.filter(UserTournamentAi.user == current_user) \
 	    .filter(UserTournamentAi.type == ai.type).first() is None
 	t = t and ai.active_version()
+	t = t and Tournament.query.first()
 	current_download = None
 	if len(ai.version_list) > 0:
 		current_download = url_for('api.download_zip', id=ai.id, version_id=ai.version_list[-1].version_id)
