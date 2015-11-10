@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import lombok.Getter;
+import org.apache.commons.io.FileUtils;
 import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
@@ -120,6 +121,15 @@ public class SandboxMain
 			
 			getLogger().info("Received shutdown signal");
 			client.getJobControl().shutdown();
+			
+			try
+			{
+				FileUtils.deleteDirectory(etc);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 			
 		}, "SandboxMain-ShutdownHook"));
 	}
