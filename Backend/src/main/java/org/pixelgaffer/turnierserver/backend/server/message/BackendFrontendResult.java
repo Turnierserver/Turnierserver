@@ -20,7 +20,7 @@ package org.pixelgaffer.turnierserver.backend.server.message;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -38,6 +38,10 @@ public class BackendFrontendResult
 	/** Die Exception, die beim Bearbeiten aufgetreten ist, oder null. */
 	@Getter
 	private String exception;
+	
+	/** Die UUID des Spiels. */
+	@Getter
+	private UUID uuid;
 	
 	public BackendFrontendResult (int requestid, boolean success)
 	{

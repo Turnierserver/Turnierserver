@@ -137,7 +137,7 @@ public class Games
 			{
 				BackendMain.getLogger().warning("Maximales Limit an Spiel-Restart übertroffen");
 				BackendFrontendResult result = new BackendFrontendResult(game.getRequestId(), false,
-						"The maximum limit of restart attempts was hit.");
+						"The maximum limit of restart attempts was hit.", game.getUuid());
 				try
 				{
 					BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result, false));

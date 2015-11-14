@@ -218,7 +218,7 @@ public class Tournament implements Runnable
 			currentTournament = null;
 		}
 		BackendFrontendConnectionHandler.getFrontend().sendMessage(
-				Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), false, msg), false));
+				Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), false, msg, null), false));
 	}
 	
 	private void finished () throws IOException
