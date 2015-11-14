@@ -18,6 +18,7 @@
  */
 package org.pixelgaffer.turnierserver.backend.server.message;
 
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -29,6 +30,10 @@ public class BackendFrontendCommandProcessed
 	 */
 	@Getter
 	public int requestid;
+	
+	/** Die UUID des Spiels. */
+	@Getter
+	private UUID uuid;
 	
 	/**
 	 * Die 'Aktion' des Paketes (hier "processed")

@@ -43,16 +43,18 @@ public class BackendFrontendResult
 	@Getter
 	private UUID uuid;
 	
-	public BackendFrontendResult (int requestid, boolean success)
+	public BackendFrontendResult (int requestid, boolean success, UUID uuid)
 	{
 		this.requestid = requestid;
 		this.success = success;
+		this.uuid = uuid;
 	}
 	
-	public BackendFrontendResult (int requestid, boolean success, Exception exception)
+	public BackendFrontendResult (int requestid, boolean success, UUID uuid, Exception exception)
 	{
 		this.requestid = requestid;
 		this.success = success;
+		this.uuid = uuid;
 		if (exception != null)
 		{
 			StringWriter sw = new StringWriter();

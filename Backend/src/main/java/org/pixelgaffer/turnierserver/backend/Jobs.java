@@ -161,7 +161,7 @@ public class Jobs
 				catch (Exception e)
 				{
 					Airbrake.log(e).printStackTrace();
-					BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
+					BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, null, e);
 					try
 					{
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(
@@ -185,7 +185,7 @@ public class Jobs
 				catch (Exception e)
 				{
 					Airbrake.log(e).printStackTrace();
-					BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
+					BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, null, e);
 					try
 					{
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(
@@ -210,7 +210,7 @@ public class Jobs
 				catch (Exception e)
 				{
 					Airbrake.log(e).printStackTrace();
-					BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
+					BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, null, e);
 					try
 					{
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(
@@ -261,8 +261,7 @@ public class Jobs
 			job.getWorker().setCompiling(false);
 			
 		int requestId = job.getRequestId();
-		BackendFrontendResult result = new BackendFrontendResult(requestId,
-				answer.getWhat() == SUCCESS);
+		BackendFrontendResult result = new BackendFrontendResult(requestId, answer.getWhat() == SUCCESS, uuid);
 		BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result, false));
 		synchronized (jobs)
 		{
