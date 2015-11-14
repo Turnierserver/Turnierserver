@@ -276,6 +276,11 @@ $(document).ready(function () {
 		NProgress.done();
 	});
 
+	// ## in ne generelle lib verschieben
+	evtSrc.addEventListener("error", function(e) {
+		alert(e.data)
+	});
+
 	evtSrc.addEventListener("finished_transmitting", function(e) {
 		console.log("finished_transmitting");
 		NProgress.done();
