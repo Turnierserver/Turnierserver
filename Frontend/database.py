@@ -640,6 +640,8 @@ class Game(db.Model):
 	reason = db.Column(db.Text)
 	_log = db.Column(db.Text)
 	_crashes = db.Column(db.Text)
+	tournament_id = db.Column(db.Integer, db.ForeignKey("t_tournaments.id"), nullable=True)
+	tournament = db.relationship("Tournament", backref="games")
 
 	def __init__(self, *args, **kwargs):
 		super(Game, self).__init__(*args, **kwargs)
@@ -786,7 +788,7 @@ class Game(db.Model):
 
 class Game_inprogress:
 	ais = []
-	status = "1/?"
+	status = "???"
 
 	def __init__(self, id, d=None):
 		self.type = GameType.latest()
