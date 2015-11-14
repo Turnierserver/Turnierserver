@@ -40,7 +40,7 @@ import java.util.Properties;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import lombok.Getter;
 
 public class AiExecutor implements Runnable
@@ -126,7 +126,7 @@ public class AiExecutor implements Runnable
 		}
 		catch (Throwable e)
 		{
-			Airbrake.log(e).printStackTrace();
+			Sentry.log(e).printStackTrace();
 			jobControl.jobFinished(getJob().getUuid());
 			SandboxMain.getClient().sendMessage(getJob().getUuid(), 'T');
 		}
@@ -285,7 +285,7 @@ public class AiExecutor implements Runnable
 			}
 			catch (Exception e)
 			{
-				Airbrake.log(e).printStackTrace();
+				Sentry.log(e).printStackTrace();
 			}
 		} , "IsolateCleanup").start();
 	}

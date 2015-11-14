@@ -32,7 +32,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import naga.ConnectionAcceptor;
 
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendServer;
 import org.pixelgaffer.turnierserver.backend.server.BackendWorkerServer;
@@ -52,7 +52,7 @@ public class BackendMain
 	
 	public static void main (String args[]) throws IOException
 	{
-		Thread.setDefaultUncaughtExceptionHandler(new Airbrake());
+		Thread.setDefaultUncaughtExceptionHandler(new Sentry());
 		
 		// Properties laden
 		loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");
@@ -66,7 +66,7 @@ public class BackendMain
 			}
 			catch (Exception e)
 			{
-				Airbrake.log(e).printStackTrace();
+				Sentry.log(e).printStackTrace();
 			}
 			jobsStore.delete();
 		}
@@ -93,9 +93,11 @@ public class BackendMain
 			}
 			catch (Exception e)
 			{
-				Airbrake.log(e).printStackTrace();
+				Sentry.log(e).printStackTrace();
 			}
 			
 		}, "BackendMain-ShutdownHook"));
+		
+		throw new RuntimeException("test sentry");
 	}
 }

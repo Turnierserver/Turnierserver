@@ -33,7 +33,7 @@ import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
 import org.pixelgaffer.turnierserver.backend.server.message.BackendFrontendCommand;
@@ -160,7 +160,7 @@ public class Jobs
 				}
 				catch (Exception e)
 				{
-					Airbrake.log(e).printStackTrace();
+					Sentry.log(e).printStackTrace();
 					BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
 					try
 					{
@@ -169,7 +169,7 @@ public class Jobs
 					}
 					catch (IOException e1)
 					{
-						Airbrake.log(e1).printStackTrace();
+						Sentry.log(e1).printStackTrace();
 					}
 				}
 			}
@@ -184,7 +184,7 @@ public class Jobs
 				}
 				catch (Exception e)
 				{
-					Airbrake.log(e).printStackTrace();
+					Sentry.log(e).printStackTrace();
 					BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
 					try
 					{
@@ -193,7 +193,7 @@ public class Jobs
 					}
 					catch (IOException e1)
 					{
-						Airbrake.log(e1).printStackTrace();
+						Sentry.log(e1).printStackTrace();
 					}
 				}
 			}
@@ -209,7 +209,7 @@ public class Jobs
 				}
 				catch (Exception e)
 				{
-					Airbrake.log(e).printStackTrace();
+					Sentry.log(e).printStackTrace();
 					BackendFrontendResult result = new BackendFrontendResult(cmd.getRequestid(), false, e);
 					try
 					{
@@ -218,7 +218,7 @@ public class Jobs
 					}
 					catch (IOException e1)
 					{
-						Airbrake.log(e1).printStackTrace();
+						Sentry.log(e1).printStackTrace();
 					}
 				}
 			}
@@ -231,7 +231,7 @@ public class Jobs
 			else
 			{
 				BackendMain.getLogger().critical("Unknown action from Frontend: " + cmd.getAction());
-				Airbrake.log("Unknown action from Frontend: " + cmd.getAction());
+				Sentry.log("Unknown action from Frontend: " + cmd.getAction());
 			}
 			
 			synchronized (pending)

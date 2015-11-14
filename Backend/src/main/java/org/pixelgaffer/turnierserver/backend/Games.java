@@ -36,7 +36,7 @@ import java.util.UUID;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.Games.GameImpl.GameFinishedListener;
 import org.pixelgaffer.turnierserver.backend.Games.GameImpl.GameState;
@@ -145,7 +145,7 @@ public class Games
 				}
 				catch (IOException e1)
 				{
-					Airbrake.log(e1).printStackTrace();
+					Sentry.log(e1).printStackTrace();
 				}
 				return;
 			}
@@ -165,7 +165,7 @@ public class Games
 				}
 				catch (Exception e)
 				{
-					Airbrake.log(e).printStackTrace();
+					Sentry.log(e).printStackTrace();
 					BackendFrontendResult result = new BackendFrontendResult(game.getRequestId(), false, e);
 					try
 					{
@@ -174,7 +174,7 @@ public class Games
 					}
 					catch (IOException e1)
 					{
-						Airbrake.log(e1).printStackTrace();
+						Sentry.log(e1).printStackTrace();
 					}
 				}
 				aiw.setConnection(w);
@@ -187,7 +187,7 @@ public class Games
 				}
 				catch (Exception e)
 				{
-					Airbrake.log(e).printStackTrace();
+					Sentry.log(e).printStackTrace();
 					BackendFrontendResult result = new BackendFrontendResult(game.getRequestId(), false, e);
 					try
 					{
@@ -196,7 +196,7 @@ public class Games
 					}
 					catch (IOException e1)
 					{
-						Airbrake.log(e1).printStackTrace();
+						Sentry.log(e1).printStackTrace();
 					}
 				}
 			}
@@ -399,7 +399,7 @@ public class Games
 			}
 			catch (IOException e)
 			{
-				Airbrake.log(e).printStackTrace();
+				Sentry.log(e).printStackTrace();
 			}
 		}
 		
@@ -466,7 +466,7 @@ public class Games
 			}
 			catch (Exception e)
 			{
-				Airbrake.log(e).printStackTrace();
+				Sentry.log(e).printStackTrace();
 			}
 			
 			for (File f : toDelete)

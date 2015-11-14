@@ -31,7 +31,7 @@ import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import org.pixelgaffer.turnierserver.networking.messages.SandboxCommand;
 import static org.pixelgaffer.turnierserver.PropertyUtils.*;
 
@@ -107,7 +107,7 @@ public class Sandboxes
 		}
 		catch (IOException e)
 		{
-			Airbrake.log(e).printStackTrace();
+			Sentry.log(e).printStackTrace();
 		}
 		return success;
 	}
@@ -132,7 +132,7 @@ public class Sandboxes
 		}
 		catch (IOException e)
 		{
-			Airbrake.log(e).printStackTrace();
+			Sentry.log(e).printStackTrace();
 		}
 		return success;
 	}

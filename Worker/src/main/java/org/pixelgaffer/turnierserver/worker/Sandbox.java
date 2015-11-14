@@ -34,7 +34,7 @@ import java.util.UUID;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import org.pixelgaffer.turnierserver.networking.messages.SandboxCommand;
 import org.pixelgaffer.turnierserver.networking.messages.SandboxMessage;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo.SandboxInfo;
@@ -60,6 +60,7 @@ public class Sandbox
 	
 	public void updateCpuTime ()
 	{
+		WorkerMain.getLogger().stacktrace("");
 		Thread sendJob = new Thread( () -> {
 			try
 			{
@@ -71,7 +72,7 @@ public class Sandbox
 			}
 			catch (Exception e)
 			{
-				Airbrake.log(e).printStackTrace();
+				Sentry.log(e).printStackTrace();
 			}
 		});
 //		WorkerMain.getLogger().debug(
@@ -199,7 +200,7 @@ public class Sandbox
 				catch (Exception e)
 				{
 					WorkerMain.getLogger().critical("Fehler beim releasen der isolate boxid von " + answer.getUuid());
-					Airbrake.log(e).printStackTrace();
+					Sentry.log(e).printStackTrace();
 				}
 				try
 				{
@@ -209,7 +210,7 @@ public class Sandbox
 				catch (IOException e)
 				{
 					WorkerMain.getLogger().critical("Fehler beim notifien des Backends (" + answer + "): " + e);
-					Airbrake.log(e).printStackTrace();
+					Sentry.log(e).printStackTrace();
 				}
 				setBusy(false);
 				break;

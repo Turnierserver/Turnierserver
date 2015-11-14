@@ -30,7 +30,7 @@ import static org.pixelgaffer.turnierserver.PropertyUtils.getIntRequired;
 import static org.pixelgaffer.turnierserver.PropertyUtils.getStringRequired;
 import static org.pixelgaffer.turnierserver.PropertyUtils.loadProperties;
 import java.io.IOException;
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
 import org.pixelgaffer.turnierserver.networking.messages.WorkerInfo;
@@ -58,7 +58,7 @@ public class WorkerMain
 	
 	public static void main (String args[]) throws IOException
 	{
-		Thread.setDefaultUncaughtExceptionHandler(new Airbrake());
+		Thread.setDefaultUncaughtExceptionHandler(new Sentry());
 		
 		// Properties laden
 		loadProperties(args.length > 0 ? args[0] : "/etc/turnierserver/turnierserver.prop");

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Ai;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
@@ -59,7 +59,7 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameStat
 		try {
 			sendGameState();
 		} catch (IOException e) {
-			Airbrake.log(e).printStackTrace();
+			Sentry.log(e).printStackTrace();
 		}
 	}
 	
@@ -96,7 +96,7 @@ public abstract class TurnBasedGameLogic<E extends AiObject, R> extends GameStat
 			try {
 				sendGameState();
 			} catch (IOException e) {
-				Airbrake.log(e).printStackTrace();
+				Sentry.log(e).printStackTrace();
 			}
 						
 			for (Ai wrapper : game.getAis()) {

@@ -27,7 +27,7 @@ import java.nio.file.Files;
 import java.util.Deque;
 import java.util.LinkedList;
 
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import org.pixelgaffer.turnierserver.compile.CompileResult;
 import org.pixelgaffer.turnierserver.compile.Compiler;
 import org.pixelgaffer.turnierserver.networking.DatastoreFtpClient;
@@ -108,7 +108,7 @@ public class CompileQueue implements Runnable
 				catch (Exception e)
 				{
 					WorkerMain.getLogger().critical("Fehler beim Kompilieren der KI " + job.getAiId());
-					Airbrake.log(e).printStackTrace();
+					Sentry.log(e).printStackTrace();
 					
 					try
 					{
@@ -128,7 +128,7 @@ public class CompileQueue implements Runnable
 					}
 					catch (Exception e1)
 					{
-						Airbrake.log(e1).printStackTrace();
+						Sentry.log(e1).printStackTrace();
 					}
 				}
 				WorkerMain.getLogger().info("Kompilierauftrag fertig: " + job);

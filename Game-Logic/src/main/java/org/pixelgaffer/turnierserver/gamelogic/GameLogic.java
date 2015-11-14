@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import org.pixelgaffer.turnierserver.GsonGzipParser;
 import org.pixelgaffer.turnierserver.Logger;
 import org.pixelgaffer.turnierserver.Parser;
@@ -178,7 +178,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 				string = new String(message, "UTF-8");
 			}
 		} catch (IOException e1) {
-			Airbrake.log(e1).printStackTrace();
+			Sentry.log(e1).printStackTrace();
 			getUserObject(ai).loose("Die Nachricht der KI konnte nicht gelesen werden");
 			return;
 		}
@@ -208,7 +208,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		try {
 			receive(parse(string), ai, passedMikros);
 		} catch (ParseException e) {
-			getUserObject(ai).loose(Airbrake.log("Es trat ein Fehler beim parsen der Nachricht auf: " + string + "!"));
+			getUserObject(ai).loose(Sentry.log("Es trat ein Fehler beim parsen der Nachricht auf: " + string + "!"));
 		}
 	}
 	
@@ -225,7 +225,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		try {
 			game.getFrontend().sendMessage(Parsers.getFrontend().parse(object, false));
 		} catch (IOException e) {
-			Airbrake.log(e).printStackTrace();
+			Sentry.log(e).printStackTrace();
 		}
 	}
 	
@@ -313,7 +313,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		try {
 			game.finishGame();
 		} catch (IOException e) {
-			Airbrake.log(e).printStackTrace();
+			Sentry.log(e).printStackTrace();
 		}
 	}
 	

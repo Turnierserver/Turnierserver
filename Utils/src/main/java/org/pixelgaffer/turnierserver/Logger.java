@@ -108,7 +108,7 @@ public class Logger
 		System.err.println(": " + o.toString());
 	}
 	
-	public void todo (String what)
+	public synchronized void todo (String what)
 	{
 		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
 		StackTraceElement caller = stacktrace[2];
@@ -121,5 +121,29 @@ public class Logger
 		else
 			System.err.println("TODO in " + classname + "::" + caller.getMethodName() + " (" + caller.getFileName()
 					+ ":" + caller.getLineNumber() + "): " + what);
+	}
+	
+	public synchronized void stacktrace (String what)
+	{
+		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+		boolean escapeCodes = System.console() != null;
+		if (escapeCodes)
+			System.err.println("\033[1;33mSTACKTRACE\033[0m " + what);
+		else
+			System.err.println("STACKTRACE " + what);
+		for (int i = 2; i < stacktrace.length; i++)
+		{
+			if (escapeCodes)
+			{
+				String classname = stacktrace[i].getClassName();
+				String pkgname = classname.substring(0, classname.lastIndexOf('.'));
+				classname = classname.substring(pkgname.length() + 1);
+				System.err.println("  - " + pkgname + ".\033[1;32m" + classname + "::" + stacktrace[i].getMethodName()
+						+ "\033[0m (\033[32m" + stacktrace[i].getFileName() + ":" + stacktrace[i].getLineNumber() + "\033[0m)");
+			}
+			else
+				System.err.println("  - " + stacktrace[i].getClassName() + "::" + stacktrace[i].getMethodName()
+						+ " (" + stacktrace[i].getFileName() + ":" + stacktrace[i].getLineNumber() + ")");
+		}
 	}
 }

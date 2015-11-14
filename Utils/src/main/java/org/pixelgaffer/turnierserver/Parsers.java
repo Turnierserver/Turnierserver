@@ -140,7 +140,7 @@ public class Parsers {
 				out.write(b);
 			}
 		} catch (IOException e) {
-			Airbrake.log(e).printStackTrace();
+			Sentry.log(e).printStackTrace();
 		}
 	}
 	

@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.UUID;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.PropertyUtils;
 import org.pixelgaffer.turnierserver.networking.NetworkService;
@@ -105,7 +105,7 @@ public class WorkerClient implements SocketObserver
 			}
 			catch (IOException e)
 			{
-				Airbrake.log(e).printStackTrace();
+				Sentry.log(e).printStackTrace();
 			}
 			
 			try
@@ -179,7 +179,7 @@ public class WorkerClient implements SocketObserver
 			catch (Exception e)
 			{
 				SandboxMain.getLogger().critical("Error while parsing: " + new String(line, UTF_8));
-				Airbrake.log(e).printStackTrace();
+				Sentry.log(e).printStackTrace();
 			}
 		}
 	}

@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -35,7 +35,7 @@ public final class CpuTimer {
 		try {
 			return Long.parseLong(Files.readAllLines(cpuFile.toPath()).get(0));
 		} catch (NumberFormatException | IOException e) {
-			Airbrake.log(e).printStackTrace();
+			Sentry.log(e).printStackTrace();
 			return -1;
 		}
 	}

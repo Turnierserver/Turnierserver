@@ -24,7 +24,7 @@ import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnection
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerConnectionType.SANDBOX;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.networking.ConnectionHandler;
 import org.pixelgaffer.turnierserver.networking.bwprotocol.AiConnected;
@@ -80,7 +80,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 		if (type.getType() != AI)
 			WorkerMain.getLogger().warning("Schicke Nachricht an " + type.getType() + " (sollte " + AI + " sein)");
 		new Thread(() -> {
-			WorkerMain.getLogger().debug("Will message " + new String(mf.getMessage(), UTF_8) + " forwarden");
+//			WorkerMain.getLogger().debug("Will message " + new String(mf.getMessage(), UTF_8) + " forwarden");
 			try {
 				Sandbox sandbox = Sandboxes.sandboxJobs.get(mf.getAi());
 				sandbox.updateCpuTime();
@@ -89,9 +89,9 @@ public class WorkerConnectionHandler extends ConnectionHandler
 				e.printStackTrace();
 				return;
 			}
-			WorkerMain.getLogger().debug("Werde nun " + new String(mf.getMessage(), UTF_8) + " forwarden");
+//			WorkerMain.getLogger().debug("Werde nun " + new String(mf.getMessage(), UTF_8) + " forwarden");
 			getClient().write(mf.getMessage());
-			WorkerMain.getLogger().debug("Habe message " + new String(mf.getMessage(), UTF_8) + " forwarden");
+//			WorkerMain.getLogger().debug("Habe message " + new String(mf.getMessage(), UTF_8) + " forwarden");
 		}).start();
 		//getClient().write("\n".getBytes(UTF_8));
 	}
@@ -188,7 +188,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 										message.write(longString.getBytes(UTF_8));
 										message.write("|".getBytes(UTF_8));
 										message.write(_line);
-										WorkerMain.getLogger().debug("Forwarde von KI zu Backend: " + new String(message.toByteArray(), UTF_8));
+//										WorkerMain.getLogger().debug("Forwarde von KI zu Backend: " + new String(message.toByteArray(), UTF_8));
 										MessageForward mf = new MessageForward(type.getUuid(), message.toByteArray());
 										DataBuffer buf = new DataBuffer();
 										buf.add(Parsers.getWorker().parse(mf, true));
@@ -197,7 +197,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 									catch (Exception e)
 									{
 										WorkerMain.getLogger().critical("Fehler beim Weiterleiten: " + e);
-										Airbrake.log(e);
+										Sentry.log(e);
 										e.printStackTrace();
 									}
 								}).start();
@@ -221,7 +221,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 							catch (Exception e)
 							{
 								WorkerMain.getLogger().critical("Fehler beim Weiterleiten: " + e);
-								Airbrake.log(e);
+								Sentry.log(e);
 								e.printStackTrace();
 							}
 							break;
@@ -235,7 +235,7 @@ public class WorkerConnectionHandler extends ConnectionHandler
 							catch (Exception e)
 							{
 								WorkerMain.getLogger().critical("Fehler beim Lesen der Nachricht der Sandbox: " + e);
-								Airbrake.log(e);
+								Sentry.log(e);
 								e.printStackTrace();
 							}
 							break;

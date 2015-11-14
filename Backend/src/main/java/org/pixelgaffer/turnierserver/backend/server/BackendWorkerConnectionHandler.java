@@ -26,7 +26,7 @@ import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.F
 import static org.pixelgaffer.turnierserver.networking.messages.SandboxMessage.TERMINATED_AI;
 import static org.pixelgaffer.turnierserver.networking.messages.WorkerCommand.KILLAI;
 import java.io.IOException;
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.AiWrapper;
 import org.pixelgaffer.turnierserver.backend.BackendMain;
@@ -161,7 +161,7 @@ public class BackendWorkerConnectionHandler extends ConnectionHandler
 				catch (Exception e)
 				{
 					BackendMain.getLogger().critical("Failed to parse answer from Worker: " + e);
-					Airbrake.log(e).printStackTrace();
+					Sentry.log(e).printStackTrace();
 				}
 			}
 		}

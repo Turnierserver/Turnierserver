@@ -21,7 +21,7 @@ package org.pixelgaffer.turnierserver.sandboxmanager;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.UUID;
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import lombok.Getter;
 
 public class JobControl
@@ -56,7 +56,7 @@ public class JobControl
 		}
 		catch (Exception e)
 		{
-			Airbrake.log(e).printStackTrace();
+			Sentry.log(e).printStackTrace();
 			jobFinished(job.getUuid());
 			SandboxMain.getClient().sendMessage(job.getUuid(), 'T');
 		}

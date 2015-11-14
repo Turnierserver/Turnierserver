@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.pixelgaffer.turnierserver.Airbrake;
+import org.pixelgaffer.turnierserver.Sentry;
 import org.pixelgaffer.turnierserver.Parsers;
 import org.pixelgaffer.turnierserver.backend.Games.GameImpl;
 import org.pixelgaffer.turnierserver.backend.server.BackendFrontendConnectionHandler;
@@ -69,7 +69,7 @@ public class Tournament implements Runnable
 				}
 				catch (Exception e)
 				{
-					Airbrake.log(e).printStackTrace();
+					Sentry.log(e).printStackTrace();
 					_e = e;
 				}
 			}
@@ -81,7 +81,7 @@ public class Tournament implements Runnable
 				}
 				catch (IOException e)
 				{
-					Airbrake.log(e).printStackTrace();
+					Sentry.log(e).printStackTrace();
 				}
 				return;
 			}
@@ -97,7 +97,7 @@ public class Tournament implements Runnable
 			}
 			catch (IOException e)
 			{
-				Airbrake.log(e).printStackTrace();
+				Sentry.log(e).printStackTrace();
 			}
 			return;
 		}
@@ -108,7 +108,7 @@ public class Tournament implements Runnable
 		}
 		catch (IOException e)
 		{
-			Airbrake.log(e).printStackTrace();
+			Sentry.log(e).printStackTrace();
 		}
 		
 		BackendMain.getLogger().info("Starte Turnier " + this + " mit " + ais.length() + " KIs");
@@ -159,7 +159,7 @@ public class Tournament implements Runnable
 				}
 				catch (Exception e)
 				{
-					Airbrake.log(e).printStackTrace();
+					Sentry.log(e).printStackTrace();
 					// try to restart that game
 					if (++fails <= 3)
 					{
@@ -176,7 +176,7 @@ public class Tournament implements Runnable
 			}
 			catch (InterruptedException e)
 			{
-				Airbrake.log(e).printStackTrace();
+				Sentry.log(e).printStackTrace();
 			}
 			
 		} while (true);
@@ -189,7 +189,7 @@ public class Tournament implements Runnable
 		}
 		catch (IOException e)
 		{
-			Airbrake.log(e).printStackTrace();
+			Sentry.log(e).printStackTrace();
 		}
 	}
 	
