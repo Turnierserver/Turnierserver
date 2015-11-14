@@ -29,10 +29,7 @@ class Backend(threading.Thread):
 		self.app = None
 
 	def is_connected(self):
-		if self.sock:
-			return self.connected
-		else:
-			return False
+		return self.sock and self.connected
 
 	def connect(self):
 		logger.info('Verbinde zum Backend @ {}:{}'.format(env.backend_url, env.backend_port))

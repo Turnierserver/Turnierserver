@@ -37,7 +37,13 @@ def ai(id):
 	ai = AI.query.get(id)
 	if not ai:
 		abort(404)
-	return render_template("ai.html", ai=ai, version_count=len(ai.version_list), game_count=len(ai.game_assocs))
+	game_count = len(ai.game_assocs)
+	won = None
+	if game_count > 1:
+		won = sum(map(lambda g: g.is_winner, ai.game_assocs)) / game_count
+		won = '{0:.0%}'.format(won)
+	statnum = {5: "five", 4: "four", 3: "three"}.get(3 + bool(won) + bool(ai.rank))
+	return render_template("ai.html", ai=ai, version_count=len(ai.version_list), game_count=game_count, won=won, statnum=statnum)
 
 @anonymous_blueprint.route("/user_list")
 @nocache
