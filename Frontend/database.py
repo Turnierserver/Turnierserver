@@ -738,6 +738,8 @@ class Game(db.Model):
 		g.crashes = d["crashes"]
 		if "reason" in d:
 			g.reason = d["reason"]
+		if "tournament" in d:
+			g.tournament = d["tournament"]
 		db.session.add(g)
 		db.session.commit()
 		g.ai_assocs = [AI_Game_Assoc(game_id=g.id, ai_id=ai.id) for ai in ais]
@@ -767,7 +769,10 @@ class Game(db.Model):
 	def filter_crash(cls, data):
 		ai = AI.query.get(int(data["id"].split("v")[0]))
 		if not ai:
-			logger.error("crash on nonexistant ai")
+			if int(data["id"].split("v")[0]) > 0:
+				logger.error("crash on nonexistant ai")
+			else:
+				logger.error("crash on quali ai")
 			return False, None
 		data.pop("isCrash", None)
 		data.pop("requestid", None)
