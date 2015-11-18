@@ -137,7 +137,7 @@ public class Games
 			{
 				BackendMain.getLogger().warning("Maximales Limit an Spiel-Restart übertroffen");
 				BackendFrontendResult result = new BackendFrontendResult(game.getRequestId(), false,
-						"The maximum limit of restart attempts was hit.");
+						"The maximum limit of restart attempts was hit.", game.getUuid());
 				try
 				{
 					BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result, false));
@@ -166,7 +166,7 @@ public class Games
 				catch (Exception e)
 				{
 					Airbrake.log(e).printStackTrace();
-					BackendFrontendResult result = new BackendFrontendResult(game.getRequestId(), false, e);
+					BackendFrontendResult result = new BackendFrontendResult(game.getRequestId(), false, game.getUuid(), e);
 					try
 					{
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result, false));
@@ -188,7 +188,7 @@ public class Games
 				catch (Exception e)
 				{
 					Airbrake.log(e).printStackTrace();
-					BackendFrontendResult result = new BackendFrontendResult(game.getRequestId(), false, e);
+					BackendFrontendResult result = new BackendFrontendResult(game.getRequestId(), false, game.getUuid(), e);
 					try
 					{
 						BackendFrontendConnectionHandler.getFrontend().sendMessage(Parsers.getFrontend().parse(result, false));
@@ -367,7 +367,7 @@ public class Games
 					gameFinishedListener.gameFinished(success);
 				BackendMain.getLogger().info("alle kis disconnected, sende success an frontend");
 				BackendFrontendConnectionHandler.getFrontend().sendMessage(
-						Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), success), false));
+						Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), success, getUuid()), false));
 				synchronized (lock)
 				{
 					games.remove(getUuid());
@@ -395,7 +395,7 @@ public class Games
 			try
 			{
 				BackendFrontendConnectionHandler.getFrontend().sendMessage(
-						Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(getRequestId(), "started"), false));
+						Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(getRequestId(), getUuid(), "started"), false));
 			}
 			catch (IOException e)
 			{
@@ -419,7 +419,7 @@ public class Games
 			state = GameState.WAITING;
 			logic = logic.getClass().newInstance();
 			BackendFrontendConnectionHandler.getFrontend().sendMessage(
-					Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(getRequestId(), "restarted"), false));
+					Parsers.getFrontend().parse(new BackendFrontendCommandProcessed(getRequestId(), getUuid(), "restarted"), false));
 					
 			for (int i = 0; i < ais.size(); i++)
 			{

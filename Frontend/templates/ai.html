@@ -33,11 +33,13 @@
 
 <div class="ui divider"></div>
 
-<div class="ui four statistics">
+<div class="ui {{statnum}} statistics">
+	{% if ai.rank %}
 	<div class="statistic">
 		<div class="value"> {{ ai.rank }}. </div>
 		<div class="label"> Platz </div>
 	</div>
+	{% endif %}
 	<div class="statistic">
 		<div class="value"> {{ ai.elo | int }} </div>
 		<div class="label"> ELO </div>
@@ -46,6 +48,12 @@
 		<div class="value"> {% if game_count > 0 %}{{ game_count }}{% else %}Kein{% endif %} </div>
 		<div class="label"> Spiel{% if game_count > 1 %}e{% endif %} </div>
 	</div>
+	{% if won %}
+	<div class="statistic">
+		<div class="value">{{ won }}</div>
+		<div class="label">gewonnen</div>
+	</div>
+	{% endif %}
 	<div class="statistic">
 		<div class="value"> {{ version_count }} </div>
 		<div class="label"> Version{% if version_count > 1 %}en{% endif %} </div>

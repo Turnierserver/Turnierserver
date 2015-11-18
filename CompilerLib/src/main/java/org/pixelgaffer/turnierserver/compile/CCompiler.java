@@ -93,7 +93,7 @@ public class CCompiler extends Compiler
 		if (Boolean.parseBoolean(p.getProperty("debug", "false")))
 			command.add("-g");
 		else
-			command.add("-O2");
+			command.add("-Wl,-O2");
 		for (File obj : objects)
 			command.add(obj.getName());
 		command.add("-lm"); // math lib
@@ -137,8 +137,12 @@ public class CCompiler extends Compiler
 				boolean c = filename.endsWith(".c");
 				List<String> command = new LinkedList<>();
 				command.add(c ? "gcc" : "g++");
-				if (!filename.endsWith(".c"))
-					command.add("-std=c++11");
+				if (filename.endsWith(".c"))
+					command.add("-std=" + (p.getProperty("standart.c.gnu", "false").equalsIgnoreCase("true") ? "gnu" : "c")
+							+ p.getProperty("standart.c.version", "90"));
+				else
+					command.add("-std=" + (p.getProperty("standart.cpp.gnu", "false").equalsIgnoreCase("true") ? "gnu" : "c")
+							+ "++" + p.getProperty("standart.cpp.version", "98"));
 				File out = new File(bindir, filename.substring(0, filename.lastIndexOf('.')) + ".o");
 				command.add("-o");
 				command.add(out.getName());

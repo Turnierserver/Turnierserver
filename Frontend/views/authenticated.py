@@ -1,13 +1,14 @@
 from flask import Blueprint, render_template, abort, redirect, url_for
 from flask.ext.login import current_user
 from database import AI, User, Game, Lang, GameType, Tournament, UserTournamentAi, db, ftp, QualiAI
-from commons import authenticated_web
+from commons import authenticated_web, nocache
 from logger import logger
 from errorhandling import error
 
 authenticated_blueprint = Blueprint("authenticated", __name__)
 
 @authenticated_blueprint.route("/profile")
+@nocache
 @authenticated_web
 def current_profile():
 	user = current_user
@@ -16,6 +17,7 @@ def current_profile():
 	return render_template("profile.html", columns=columns, user=user, gametype=GameType.selected())
 
 @authenticated_blueprint.route("/profile/<int:id>")
+@nocache
 @authenticated_web
 def profile_id(id):
 	user = User.query.get(id)
@@ -27,8 +29,6 @@ def profile_id(id):
 	ais = AI.filtered().filter(AI.user == user).all()
 	columns = [ais[i:i+3] for i in range(0, len(ais), 3)]
 	return render_template("profile.html", columns=columns, user=user, gametype=GameType.selected())
-
-
 
 @authenticated_blueprint.route("/create_ai")
 @authenticated_web
@@ -47,9 +47,10 @@ def edit_ai(id):
 		abort(404)
 	if not current_user.can_access(ai):
 		abort(401)
-	t = UserTournamentAi.query.filter(UserTournamentAi.user == current_user)\
+	t = UserTournamentAi.query.filter(UserTournamentAi.user == current_user) \
 	    .filter(UserTournamentAi.type == ai.type).first() is None
 	t = t and ai.active_version()
+	t = t and Tournament.query.first()
 	current_download = None
 	if len(ai.version_list) > 0:
 		current_download = url_for('api.download_zip', id=ai.id, version_id=ai.version_list[-1].version_id)

@@ -17,22 +17,19 @@ class Backend(threading.Thread):
 	sleep_time = 60
 	queued_for_reconnect = Queue()
 	suppress_connection_warnings = False
+	app = None
+	sock = None
+	connected = False
+	requests = {}
+	latest_request_id = 0
 
 	def __init__(self):
 		threading.Thread.__init__(self)
-		self.sock = None
-		self.connected = False
 		self.connect()
 		self.start()
-		self.requests = {}
-		self.latest_request_id = 0
-		self.app = None
 
 	def is_connected(self):
-		if self.sock:
-			return self.connected
-		else:
-			return False
+		return self.sock and self.connected
 
 	def connect(self):
 		logger.info('Verbinde zum Backend @ {}:{}'.format(env.backend_url, env.backend_port))
@@ -79,7 +76,8 @@ class Backend(threading.Thread):
 			if not resp:
 				yield (".", "log")
 				timed_out += 1
-				if timed_out > 60:
+				if timed_out > 30:
+					logger.warning("compile job timed out")
 					yield ("\nDas Backend sendet nichts.", "log")
 					yield ("\nVersuch es nochmal.", "log")
 					yield ("Das Backend sendet nichts.", "error")
@@ -179,6 +177,7 @@ class Backend(threading.Thread):
 		self.send_dict(d)
 		logger.info("Backend[{}]: Turnier {} gestartet".format(reqid, str(tournament)))
 		self.requests[reqid]["tournament_object"] = tournament
+		self.requests[reqid]["games"] = {}
 		return reqid
 
 	def send_dict(self, d):
@@ -274,7 +273,36 @@ class Backend(threading.Thread):
 	def handleTournament(self, full, delta):
 		if not "tournament_object" in full:
 			return
-		if "exception" in delta:
+		if "gameid" in delta and "ais" in delta:
+			logger.info("new game in tournament " + delta["gameid"])
+			with self.app.app_context():
+				ais = [AI.query.get(s.split("v")[0]) for s in delta["ais"]]
+			if any([not ai for ai in ais]):
+				logger.error("game in tournament missing ais ({})".format(delta["ais"]))
+				return
+			full["games"][delta["gameid"]] = {
+				'action': 'start',
+				'ais': delta["ais"],
+				'languages': None,
+				'gametype': ais[0].type.id,
+				'requestid': None,
+				"queue": Queue(),
+				"queues": WeakSet(),
+				"ai0": ais[0],
+				"ai1": ais[1],
+				"ai_objs": ais,
+				"states": [],
+				"crashes": [],
+				"status_text": "In Wartschlange",
+				"tournament": full["tournament_object"]
+			}
+		elif "uuid" in delta:
+			uuid = delta["uuid"]
+			if not uuid in full["games"]:
+				logger.warning("ignoring unknown uuid")
+				return
+			self.handleGame(full["games"][uuid], delta)
+		elif "exception" in delta:
 			logger.error(delta["exception"])
 			full["tournament_object"].executed = False
 			with self.app.app_context():
@@ -289,7 +317,7 @@ class Backend(threading.Thread):
 		try:
 			return self.requests[reqid]["queue"].get(timeout=timeout)
 		except Empty:
-			logger.debug("TIMEOUT FOR " + str(reqid))
+			logger.debug(str(timeout) + " sec timeout for request queue " + str(reqid))
 			return False
 
 	def subscribe_game_update(self):
@@ -321,6 +349,18 @@ class Backend(threading.Thread):
 				status=r["status_text"],
 				inqueue=r["status"] == "processed"
 			))
+
+		# handle tournament games
+		for req in self.requests.values():
+			if "games" in req:
+				for k, v in req["games"].items():
+					games.append(dict(
+						id=v["uuid"],
+						ai0=v["ai0"],
+						ai1=v["ai1"],
+						status=v["status_text"],
+						inqueue=v["status"] == "processed"
+					))
 		return games
 
 
@@ -363,8 +403,6 @@ class Backend(threading.Thread):
 			except Empty:
 				return
 
-
-
 	def run(self):
 		logger.info("Backend Thread running!")
 		self.listen()
@@ -381,11 +419,9 @@ class Backend(threading.Thread):
 					logger.warning("connection zum backend gestorben")
 					time.sleep(1)
 					continue
-				logger.debug('recvd ' + r)
 				## zerstückelte blöcke?
 				for d in r.split("\n"):
 					if d == '':
-						##
 						continue
 					if d == '\n':
 						pass

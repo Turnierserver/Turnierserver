@@ -1443,6 +1443,8 @@ def start_tournament():
 		return {"error": "Das Turnier wurde bereits gestartet"}, 400
 	tournament.storeAis()
 	backend.request_tournament(tournament)
+	tournament.executed = True
+	db.session.commit()
 	flash('Das Turnier "{}" wurde gestartet'.format(tournament.name), "positive")
 	return {"error": False, "tournament": tournament.info()}, 200
 

@@ -640,6 +640,8 @@ class Game(db.Model):
 	reason = db.Column(db.Text)
 	_log = db.Column(db.Text)
 	_crashes = db.Column(db.Text)
+	tournament_id = db.Column(db.Integer, db.ForeignKey("t_tournaments.id"), nullable=True)
+	tournament = db.relationship("Tournament", backref="games")
 
 	def __init__(self, *args, **kwargs):
 		super(Game, self).__init__(*args, **kwargs)
@@ -670,6 +672,14 @@ class Game(db.Model):
 	@property
 	def moves(self):
 		return len(self.log)
+
+	def reason_repr(self):
+		if not self.reason:
+			return
+		s = self.reason
+		for assoc in self.ai_assocs:
+			s = s.replace(str(assoc.ai.id) + "v", "'{}' v".format(assoc.ai.name))
+		return s
 
 	def time(self, locale='de'):
 		return arrow.get(self.timestamp).to('local').humanize(locale=locale)
@@ -710,7 +720,7 @@ class Game(db.Model):
 		ai0eloneu = ai0.elo + 32 * (ai0gewonnen - 1 / (1 + 10 ** ((ai1.elo - ai0.elo) / 400)))
 		ai1eloneu = ai1.elo + 32 * (ai1gewonnen - 1 / (1 + 10 ** ((ai0.elo - ai1.elo) / 400)))
 		logger.info("ai0 ({}): {} -> {}".format(ai0.name, ai0.elo, ai0eloneu))
-		logger.info("ai0 ({}): {} -> {}".format(ai1.name, ai1.elo, ai1eloneu))
+		logger.info("ai1 ({}): {} -> {}".format(ai1.name, ai1.elo, ai1eloneu))
 		ai0.elo = ai0eloneu
 		ai1.elo = ai1eloneu
 		db.session.commit()
@@ -728,6 +738,8 @@ class Game(db.Model):
 		g.crashes = d["crashes"]
 		if "reason" in d:
 			g.reason = d["reason"]
+		if "tournament" in d:
+			g.tournament = d["tournament"]
 		db.session.add(g)
 		db.session.commit()
 		g.ai_assocs = [AI_Game_Assoc(game_id=g.id, ai_id=ai.id) for ai in ais]
@@ -757,7 +769,10 @@ class Game(db.Model):
 	def filter_crash(cls, data):
 		ai = AI.query.get(int(data["id"].split("v")[0]))
 		if not ai:
-			logger.error("crash on nonexistant ai")
+			if int(data["id"].split("v")[0]) > 0:
+				logger.error("crash on nonexistant ai")
+			else:
+				logger.error("crash on quali ai")
 			return False, None
 		data.pop("isCrash", None)
 		data.pop("requestid", None)
@@ -778,7 +793,7 @@ class Game(db.Model):
 
 class Game_inprogress:
 	ais = []
-	status = "1/?"
+	status = "???"
 
 	def __init__(self, id, d=None):
 		self.type = GameType.latest()

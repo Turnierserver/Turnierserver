@@ -1,5 +1,5 @@
 from database import db
-from flask import abort
+from flask import abort, make_response, Response
 from flask.ext.login import current_user
 from flask.ext.cache import Cache
 from functools import wraps
@@ -44,6 +44,17 @@ def authenticated_web(f):
 					db.session.rollback()
 					raise
 		return abort(401)
+	return wrapper
+
+def nocache(f):
+	@wraps(f)
+	def wrapper(*args, **kwargs):
+		resp = f(*args, **kwargs)
+		if not isinstance(resp, Response):
+			resp = make_response(resp)
+		resp.cache_control.no_cache = True
+		resp.cache_control.no_store = True
+		return resp
 	return wrapper
 
 cache = Cache(config={'CACHE_TYPE': 'simple'})

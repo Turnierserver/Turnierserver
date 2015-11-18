@@ -92,9 +92,9 @@
 			console.log("File uploaded.", data)
 			location.href = "{{url_for('authenticated.compile_ai', id=ai.id)}}"
 		}).fail(function(xhr, textStatus, errorThrown) {
-			console.log(xhr.responseText.error)
-			alert(JSON.parse(xhr.responseText).error)
 			$("#code-seg").removeClass("loading");
+			console.log(xhr.responseText)
+			alert(xhr.responseText)
 		});
 	}
 
@@ -180,8 +180,8 @@
 					console.log("AI changed.");
 					location.reload();
 				}).fail(function(xhr, textStatus, errorThrown) {
-					console.log(xhr.responseText.error);
-					alert(JSON.parse(xhr.responseText).error);
+					console.log(xhr.responseText);
+					alert(xhr.responseText);
 					$("#extras").removeClass("loading");
 				});
 			});

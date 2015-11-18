@@ -125,19 +125,24 @@ void globalCleanup (Wrapper **w)
 	*w = 0;
 }
 
-void surrender (Wrapper *w)
+void __c_surrender (Wrapper *w)
 {
+	printf("sende surrender nachricht\n");
 	char *msg = "SURRENDER\n";
 	if (write(w->socketfd, msg, strlen(msg)) == -1)
 		perror("Fehler beim Senden");
 }
+void surrender (Wrapper *w) { __c_surrender(w); }
 
-void crash (Wrapper *w, const char *reason)
+void __c_crash (Wrapper *w, const char *reason)
 {
-	char *msg = malloc(strlen(reason) + 7);
+	printf("sende crash nachricht\n");
+	char *msg = malloc(strlen(reason) + 8);
 	strcpy(msg, "CRASH ");
 	strcat(msg, reason);
 	strcat(msg, "\n");
 	if (write(w->socketfd, msg, strlen(msg)) == -1)
 		perror("Fehler beim Senden");
+	free(msg);
 }
+void crash (Wrapper *w, const char *reason) { __c_crash(w, reason); }

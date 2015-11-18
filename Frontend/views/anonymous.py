@@ -6,6 +6,7 @@ from database import AI, User, Game, GameType, Game_inprogress, Tournament, User
 from sqlalchemy import desc
 from backend import backend
 from logger import logger
+from commons import nocache
 import markdown
 import codecs
 
@@ -17,6 +18,7 @@ def index():
 	return render_template("index.html", news=news)
 
 @anonymous_blueprint.route("/ai_list")
+@nocache
 def ai_list():
 	ais = AI.filtered().all()
 	ais = [ai for ai in ais if ai.active_version()]
@@ -35,9 +37,16 @@ def ai(id):
 	ai = AI.query.get(id)
 	if not ai:
 		abort(404)
-	return render_template("ai.html", ai=ai, version_count=len(ai.version_list), game_count=len(ai.game_assocs))
+	game_count = len(ai.game_assocs)
+	won = None
+	if game_count > 1:
+		won = sum(map(lambda g: g.is_winner, ai.game_assocs)) / game_count
+		won = '{0:.0%}'.format(won)
+	statnum = {5: "five", 4: "four", 3: "three"}.get(3 + bool(won) + bool(ai.rank))
+	return render_template("ai.html", ai=ai, version_count=len(ai.version_list), game_count=game_count, won=won, statnum=statnum)
 
 @anonymous_blueprint.route("/user_list")
+@nocache
 def user_list():
 	return render_template("user_list.html", user_list=User.query.all())
 
@@ -49,6 +58,7 @@ def user(id):
 	return render_template("user.html", user=user)
 
 @anonymous_blueprint.route("/game_list")
+@nocache
 def game_list():
 	query = Game.query.order_by(Game.id.desc())
 	gametype = GameType.selected()

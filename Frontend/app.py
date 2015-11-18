@@ -20,6 +20,7 @@ from _cfg import env
 from errorhandling import handle_errors
 from cli import manage
 
+import logging
 import time
 import json
 
@@ -53,9 +54,24 @@ app.register_blueprint(anonymous_blueprint)
 app.register_blueprint(authenticated_blueprint)
 handle_errors(app)
 
+if env.SENTRY:
+	from raven.contrib.flask import Sentry
+	import subprocess
+	with open("../.git/refs/heads/master", "r") as f: head = f.read().rstrip("\n")
+	dirty = subprocess.check_output(["git", "status", "--porcelain"]).decode("utf-8", "ignore").rstrip("\n").splitlines()
+	logger.info("Initializing Sentry")
+	class MySentry(Sentry):
+		def before_request(self, *args, **kwargs):
+			Sentry.before_request(self, *args, **kwargs)
+			self.client.extra_context({
+				"commit": head,
+				"dirty": dirty,
+			})
+			self.client.tags_context({"isDirty": len(dirty) > 0})
+	sentry = MySentry(app, logging=True, level=logging.ERROR)
+
 if env.airbrake:
 	with open("../.git/refs/heads/master", "r") as f: head = f.read()
-
 	logger.info("Initializing Airbrake")
 	import airbrake
 	airbrake_logger = airbrake.getLogger(api_key=env.airbrake_key, project_id=env.airbrake_id)
@@ -114,11 +130,6 @@ def run():
 	app_run_params = dict(host="::", port=env.web_port, threaded=True)
 	if env.DEBUG and not env.USE_RELOADER:
 		app_run_params["use_reloader"] = False
-	if env.ssl:
-		import ssl
-		context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-		context.load_cert_chain('server.crt', 'server.key')
-		app_run_params["ssl_context"] = context
 	app.run(**app_run_params)
 
 manage(manager, app)

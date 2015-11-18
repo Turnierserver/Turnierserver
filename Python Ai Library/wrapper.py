@@ -1,6 +1,7 @@
 import sys
 import socket
 import json
+import traceback
 from io import StringIO
 from importlib import import_module
 from pprint import pprint
@@ -70,13 +71,16 @@ class AIWrapper:
 				print("Empfangen:")
 				pprint(r)
 				resp = self.update(r)
-				print("Antwort: ", repr(resp))
-				self.add_output(resp, self.output.read())
+				resp += ":" + repr(self.output.read())[1:-1]
+				print("Schicke: ", repr(resp)) # debug
+				self.output.clear() # debug
 				self.send(resp)
 		except Exception as e:
-			print(e)
-			print("Sende 'CRASH " + str(e) + "'")
-			self.send("CRASH " + str(e))
+			traceback.print_exc()
+			s = self.output.read()
+			s = repr(s)[1:-1]
+			print("Sende CRASH:\n" + s)
+			self.send("CRASH " + s)
 			raise e
 
 	def getState(self, updates):
@@ -91,10 +95,6 @@ class AIWrapper:
 		"""ACHTUNG: Mit dieser Methode gibt die KI auf"""
 		self.send("SURRENDER")
 		raise RuntimeError("SURRENDERED")
-
-	def add_output(self, d, o):
-		"""Diese Methode nimmt eine Antwort und Output und hängt das Output an die Antwort."""
-		raise NotImplementedError()
 
 
 if __name__ == '__main__':

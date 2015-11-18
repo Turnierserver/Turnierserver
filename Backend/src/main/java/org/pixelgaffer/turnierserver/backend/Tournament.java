@@ -207,7 +207,7 @@ public class Tournament implements Runnable
 			currentTournament = null;
 		}
 		BackendFrontendConnectionHandler.getFrontend().sendMessage(
-				Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), false, e), false));
+				Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), false, null, e), false));
 	}
 	
 	private void crashed (String msg) throws IOException
@@ -218,7 +218,7 @@ public class Tournament implements Runnable
 			currentTournament = null;
 		}
 		BackendFrontendConnectionHandler.getFrontend().sendMessage(
-				Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), false, msg), false));
+				Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), false, msg, null), false));
 	}
 	
 	private void finished () throws IOException
@@ -229,6 +229,6 @@ public class Tournament implements Runnable
 			currentTournament = null;
 		}
 		BackendFrontendConnectionHandler.getFrontend().sendMessage(
-				Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), true), false));
+				Parsers.getFrontend().parse(new BackendFrontendResult(getRequestId(), true, null), false));
 	}
 }
