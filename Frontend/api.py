@@ -184,7 +184,7 @@ def game_inprogress_log(id):
 		d, s = next(gen)
 		yield json.dumps(d), s
 	except StopIteration:
-		return ("Invalid ID", error)
+		return ("Invalid ID", "error")
 
 	for data, data_type in gen:
 		if data_type == "state":
