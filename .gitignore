@@ -9,6 +9,7 @@ Games/
 Codr/errorLog.txt
 Codr/session.conf
 Codr/settings.txt
+Codr/cookies.txt
 test.db
 gen/
 GameBuilder/Makefile
@@ -46,11 +47,13 @@ Makefile
 *.iml
 META-INF
 
+#Frontend stuff
 Frontend/nginx.access
 Frontend/nginx.err
 Frontend/tmp
 Frontend/tmpfile
 Frontend/.data_and_stuff
+venv
 
 # anderer müll
 GameBuilder/buildgame
