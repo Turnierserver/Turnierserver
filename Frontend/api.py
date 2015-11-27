@@ -639,8 +639,8 @@ def api_ai_compile(id):
 	yield from backend.compile(ai)
 
 @api.route("/ai/<int:id>/compile_blocking", methods=["GET"])
-@authenticated
 @json_out
+@authenticated
 def api_ai_compile_blocking(id):
 	ai = AI.query.get(id)
 	if not ai:
@@ -660,7 +660,7 @@ def api_ai_compile_blocking(id):
 		if event == "log":
 			compile_log += data
 		if event == "error":
-			return {"error": data, "compilelog": compile_log}
+			return {"error": data, "compilelog": compile_log}, 200
 
 	return {"error": None, "compilelog": compile_log}, 200
 
