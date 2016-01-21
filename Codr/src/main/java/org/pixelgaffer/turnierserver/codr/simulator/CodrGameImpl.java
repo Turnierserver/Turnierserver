@@ -180,6 +180,6 @@ public class CodrGameImpl implements Game, Frontend
 
 	@Override
 	public UUID getUuid() {
-		return null;
+		return UUID.randomUUID();
 	}
 }
