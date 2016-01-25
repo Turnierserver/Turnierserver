@@ -8,6 +8,7 @@ SOURCES ?= src/main/${LANG}
 
 # wenn das bin-Verzeichnis nicht festgelegt wurde auf bin/ setzen
 BINDIR ?= bin/
+absolute BINDIR
 
 # das bin-Verzeichnis anlegen
 build: mkdir ${BINDIR}

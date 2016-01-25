@@ -27,6 +27,9 @@ FLAGS += -target ${JAVAVERSION} -source ${JAVAVERSION}
 # den Kompilierungsvorgang aufrufen
 build: compile
 
+# die Resource-Dateien kopieren
+for RESFILES as RFILE build: exec in "${SOURCES}" cp "${RFILE}" "${BINDIR}/classes"
+
 # das Jar-Archiv packen
 # zuerst das Manifest anlegen
 MANIFEST ?= ${BINDIR}/Manifest.mf
