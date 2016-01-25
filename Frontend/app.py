@@ -135,6 +135,5 @@ def run():
 manage(manager, app)
 
 logger.info("Module geladen")
-
 if __name__ == '__main__':
 	manager.run()

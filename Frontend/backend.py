@@ -144,12 +144,14 @@ class Backend(threading.Thread):
 		if ai.latest_version().frozen:
 			logger.error("request_qualify mit freigegebener KI aufgerufen!")
 
-		quali_lang = next(filter(None, [
-			Lang.query.filter(Lang.name == "Go").first(),
-			Lang.query.filter(Lang.name == "Python").first(),
-			Lang.query.filter(Lang.name == "Java").first(),
-			Lang.query.first()
-		]))
+		quali_lang = None
+		for lname in env.quali_lang_hierarchy:
+			quali_lang = Lang.query.filter(Lang.name == lname).first()
+			if lang:
+				break
+		if not lang:
+			quali_lang = Lang.query.first()
+
 		logger.info("Erwarte, dass Quali-KI als {}-SimplePlayer kompiliert wurde".format(quali_lang.name))
 
 		reqid = self.latest_request_id
