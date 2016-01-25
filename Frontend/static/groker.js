@@ -1,3 +1,5 @@
+'use strict'
+
 // https://remysharp.com/2010/07/21/throttling-function-calls
 function throttle (fn, threshhold, scope) {
 	threshhold || (threshhold = 250)
@@ -25,7 +27,6 @@ function throttle (fn, threshhold, scope) {
 var pane = {
 	step: 0,
 	data: [],
-	name: name,
 	is_playing: false,
 };
 
