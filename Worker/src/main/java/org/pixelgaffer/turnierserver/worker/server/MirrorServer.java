@@ -73,13 +73,14 @@ public class MirrorServer extends Thread
 				Socket client = server.accept();
 				WorkerMain.getLogger().info(client.getInetAddress().getHostAddress() + " hat sich verbunden");
 				new Thread( () -> {
+					
+					boolean ai = true;
+					int id = 0, version = 0; // ai
+					String name = "nonexistent-library", language = "nonexistent-language"; // lib
+					
 					try
 					{
 						BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-						
-						boolean ai = true;
-						int id = 0, version = 0; // ai
-						String name = "nonexistent-library", language = "nonexistent-language"; // lib
 						
 						String line = in.readLine();
 						if (line == null)
@@ -148,6 +149,8 @@ public class MirrorServer extends Thread
 					}
 					catch (Exception e)
 					{
+						WorkerMain.getLogger().critical("Die angeforderte " + (ai ? "KI " + id + "v" + version :
+							"Bibliothek " + language + "/" + name) + " konnte nicht gesendet werden: " + e);
 						Airbrake.log(e).printStackTrace();
 					}
 					finally
