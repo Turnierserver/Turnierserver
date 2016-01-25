@@ -115,9 +115,16 @@ int Evaluator::target(const QString &target)
 	return 0;
 }
 
-int Evaluator::target(const QString &target, LangSpec *spec)
+int Evaluator::target(const QString &target, LangSpec *spec, int depth)
 {
-	printf("Baue Ziel %s für %s\n", qPrintable(target), qPrintable(spec->lang()));
+#ifdef Q_OS_UNIX
+	bool tty = isatty(STDOUT_FILENO);
+#else
+	bool tty = false;
+#endif
+	for (int i = 0; i < depth; i++)
+		printf("  ");
+	printf("%s ==> Baue Ziel %s für %s%s\n", tty?"\033[1;33m":"", qPrintable(target), qPrintable(spec->lang()), tty?"\033[0m":"");
 	QStringList commands = spec->targetCommands(target);
 	for (QString command : commands)
 	{
@@ -404,7 +411,7 @@ int Evaluator::target(const QString &target, LangSpec *spec)
 			}
 			else
 			{
-				int ret = this->target(command, spec);
+				int ret = this->target(command, spec, depth+1);
 				if (ret != 0)
 					return ret;
 			}
