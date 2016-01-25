@@ -1,24 +1,24 @@
 // https://remysharp.com/2010/07/21/throttling-function-calls
-function throttle(fn, threshhold, scope) {
-	threshhold || (threshhold = 250);
-	var last,
-			deferTimer;
+function throttle (fn, threshhold, scope) {
+	threshhold || (threshhold = 250)
+	let last
+	let	deferTimer
 	return function () {
-		var context = scope || this;
-		var now = +new Date();
-		var args = arguments;
+		var context = scope || this
+		var now = +new Date()
+		var args = arguments
 		if (last && now < last + threshhold) {
 			// hold on to it
-			clearTimeout(deferTimer);
+			clearTimeout(deferTimer)
 			deferTimer = setTimeout(function () {
-				last = now;
-				fn.apply(context, args);
-			}, threshhold);
+				last = now
+				fn.apply(context, args)
+			}, threshhold)
 		} else {
-			last = now;
-			fn.apply(context, args);
+			last = now
+			fn.apply(context, args)
 		}
-	};
+	}
 }
 
 
@@ -34,39 +34,39 @@ var ai_crashes = [];
 
 var diff_chart = new LineChart("#diff_chart",
 	[{
-		x: function (d) { return d.step; },
-		y: function (d) { return d.diff; },
+		x: function (d) { return d.step },
+		y: function (d) { return d.diff },
 		label: function(d) {
 			if (d.ai1_abs > d.ai2_abs) {
 				return "Diff: +" + d.diff + " Punkte für " + d.ai1_name;
 			} else if (d.ai2_abs > d.ai1_abs) {
 				return "Diff: +" + d.diff + " Punkte für " + d.ai2_name;
 			}
-			return "Unentschieden";
+			return "Unentschieden"
 		}
-	}], data, function(d) { return "Schritt: " + d.step; }
+	}], data, function(d) { return "Schritt: " + d.step }
 );
 
-$("#spielspezifisch").on("click", diff_chart.on_resize);
-$(window).on("resize", throttle(diff_chart.on_resize, 1000));
-diff_chart.update_chart = throttle(diff_chart.update_chart, 750);
+$("#spielspezifisch").on("click", diff_chart.on_resize)
+$(window).on("resize", throttle(diff_chart.on_resize, 1000))
+diff_chart.update_chart = throttle(diff_chart.update_chart, 750)
 
 var gain_chart = new LineChart("#gain_chart",
 	[{
-		x: function (d) { return d.step; },
-		y: function (d) { return d.ai1_gain; },
-		label: function(d) { return d.ai1_name + ": " + d.ai1_gain; }
+		x: function (d) { return d.step },
+		y: function (d) { return d.ai1_gain },
+		label: function(d) { return d.ai1_name + ": " + d.ai1_gain }
 	},
 	{
-		x: function (d) { return d.step; },
-		y: function (d) { return d.ai2_gain; },
-		label: function(d) { return d.ai2_name + ": " + d.ai2_gain; }
-	}], data, function(d) { return "Schritt: " + d.step; }
+		x: function (d) { return d.step },
+		y: function (d) { return d.ai2_gain },
+		label: function(d) { return d.ai2_name + ": " + d.ai2_gain }
+	}], data, function(d) { return "Schritt: " + d.step }
 );
 
-$("#spielspezifisch").on("click", gain_chart.on_resize);
-$(window).on("resize", throttle(gain_chart.on_resize, 1000));
-gain_chart.update_chart = throttle(gain_chart.update_chart, 750);
+$("#spielspezifisch").on("click", gain_chart.on_resize)
+$(window).on("resize", throttle(gain_chart.on_resize, 1000))
+gain_chart.update_chart = throttle(gain_chart.update_chart, 750)
 
 var td_chart = new LineChart("#td_chart",
 	[{

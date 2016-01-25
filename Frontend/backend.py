@@ -147,9 +147,9 @@ class Backend(threading.Thread):
 		quali_lang = None
 		for lname in env.quali_lang_hierarchy:
 			quali_lang = Lang.query.filter(Lang.name == lname).first()
-			if lang:
+			if quali_lang:
 				break
-		if not lang:
+		if not quali_lang:
 			quali_lang = Lang.query.first()
 
 		logger.info("Erwarte, dass Quali-KI als {}-SimplePlayer kompiliert wurde".format(quali_lang.name))
