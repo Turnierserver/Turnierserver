@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.GsonGzipParser;
@@ -21,6 +21,7 @@ import org.pixelgaffer.turnierserver.gamelogic.interfaces.AiObject;
 import org.pixelgaffer.turnierserver.gamelogic.interfaces.Game;
 import org.pixelgaffer.turnierserver.gamelogic.messages.GameFinished;
 import org.pixelgaffer.turnierserver.gamelogic.messages.RenderData;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -299,8 +300,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		for (Ai ai : game.getAis()) {
 			scores.add(getUserObject(ai).score);
 		}
-		Collections.sort(scores);
-		Collections.reverse(scores);
+		scores = scores.stream().distinct().sorted(Collections.reverseOrder()).collect(Collectors.toList());
 		
 		for (Ai ai : game.getAis()) {
 			message.leftoverMillis.put(ai.getId(), getUserObject(ai).mikrosLeft);
@@ -327,6 +327,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		this.game = game;
 		for (Ai ai : game.getAis()) {
 			ai.setObject(createUserObject(ai));
+			ai.getObject().setAi(ai);
 			getUserObject(ai).setLogic(this);
 			getUserObject(ai).setAi(ai);
 		}

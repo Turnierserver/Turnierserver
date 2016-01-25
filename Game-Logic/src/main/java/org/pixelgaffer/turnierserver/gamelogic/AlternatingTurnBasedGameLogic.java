@@ -20,7 +20,7 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 	private Ai turn;
 	
 	/**
-	 * Wird aufgerufen, wenn alle AIs geantwortet haben, und der Gamestate geupdated werden muss
+	 * Wird aufgerufen, wenn eine AI geantwortet hat
 	 * 
 	 * @return Das Objekt für den renderer, wenn null wird nichts gesendet
 	 */
@@ -40,6 +40,8 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 		gamestate.applyChanges(response, ai);
 		
 		Object update = update();
+		if(gameEnded)
+			return;
 		if (update != null) {
 			sendRenderData(update);
 		}
@@ -48,11 +50,11 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 	}
 	
 	private void turn(Ai ai) {
-		turn = game.getAis().get((ai.getIndex() + 1) % game.getAis().size());
+		turn = ai;
 		try {
 			sendGameState(ai);
 		} catch (IOException e) {
-			getUserObject(ai).loose("Es gab ein Problem mit der Kommunikation mit der KI");
+			getUserObject(ai).loose("Es gab ein Problem bei der Kommunikation mit der KI");
 		}
 	}
 	
@@ -62,7 +64,7 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 			return;
 		}
 		if (turn.getIndex() == game.getAis().size() - 1) {
-			if (maxTurns == playedRounds) {
+			if (allRoundsPlayed()) {
 				endGame("Die maximale Anzahl an Runden (" + maxTurns + ") wurde gespielt");
 				return;
 			}
