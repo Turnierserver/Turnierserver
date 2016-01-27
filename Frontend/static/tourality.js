@@ -8,9 +8,9 @@ var EventSource
 var alert
 
 const CELL_TYPE = {
-  EMPTY: 0,
-  COIN: 1,
-  OBSTACLE: 2
+  EMPTY: 'FREI',
+  COIN: 'COIN',
+  OBSTACLE: 'STEIN'
 }
 
 const FIELD_SIZE = 20
