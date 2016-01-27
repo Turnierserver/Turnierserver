@@ -51,6 +51,7 @@ public class BackendWorkerServer extends Server<BackendWorkerConnectionPool>
 	public BackendWorkerServer (int port, int maxClients) throws IOException
 	{
 		super(port, new BackendWorkerConnectionPool(), maxClients);
+		BackendMain.getLogger().info("BackendServer opened successfully on port " + port);
 	}
 	
 	@Override

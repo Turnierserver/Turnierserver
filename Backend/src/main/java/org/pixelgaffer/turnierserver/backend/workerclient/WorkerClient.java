@@ -102,6 +102,7 @@ public class WorkerClient implements SocketObserver
 				try
 				{
 					MessageForward mf = Parsers.getWorker().parse(_line, MessageForward.class);
+					BackendMain.getLogger().debug("Habe MessageForward von " + mf.getAi() + " erhalten: " + new String(mf.getMessage()));
 					Games.receiveMessage(mf);
 				}
 				catch (IOException e)

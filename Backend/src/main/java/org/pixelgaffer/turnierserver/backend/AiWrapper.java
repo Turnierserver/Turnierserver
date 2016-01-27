@@ -101,6 +101,8 @@ public class AiWrapper implements Ai
 	{
 		if (getGame().getLogic().isStarted())
 			getGame().getLogic().receiveMessage(message, this);
+		else
+			BackendMain.getLogger().warning("received message but game wasn't started");
 	}
 	
 	/** Sendet eine Nachricht an die KI. */
