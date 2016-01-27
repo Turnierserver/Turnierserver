@@ -63,6 +63,13 @@
 	height: auto;
 	min-height: 20em;
 }
+
+canvas {
+	width: 100%;
+	height: 500px;
+	background: green;
+}
+
 </style>
 
 {% macro render_output(ai, side, desc) -%}
@@ -81,13 +88,17 @@
 
 <div {% if mini %}style="padding: 1rem;"{% else %}class="ui segment"{% endif %}>
 	<div class="ui pointing secondary menu">
-		<div class="active item" data-tab="spielspezifisch" id="spielspezifisch">Spielspezifisch</div>
+		<div class="active item" data-tab="spielfeld" id="spielfeld">Spielfeld</div>
+		<div class="item" data-tab="spielspezifisch" id="spielspezifisch">Spielspezifisch</div>
 		{% if not qualify and not inprogress %}
 		<div class="item" data-tab="spielinfos">Spielinfos</div>
 		{% endif %}
 		<div class="item" data-tab="rechenpunkte" id="rechenpunkte">Rechenpunkte</div>
 	</div>
-	<div class="ui bottom attached active tab segment" data-tab="spielspezifisch">
+	<div class="ui bottom attached active tab segment" data-tab="spielfeld">
+		<canvas id="game_canvas">
+	</div>
+	<div class="ui bottom attached tab segment" data-tab="spielspezifisch">
 		<center>
 			<div class="divider">Punktedifferenz</div>
 			<div class="chart" id="diff_chart"></div>
@@ -172,6 +183,7 @@
 		"{{ai0.id}}": {{ai0.name | escapejs | safe}},
 		"{{ai1.id}}": {{ai1.name | escapejs | safe}}
 	};
+	var ais_list = ["{{ai0.id}}", "{{ai1.id}}"]
 </script>
 <script id="game_script" type="text/javascript" src="{{url_for('static', filename='tourality.js')}}" stream="{{stream}}"></script>
 

@@ -5,12 +5,15 @@ var LineChart
 var ais
 var NProgress
 var EventSource
+var alert
 
 const CELL_TYPE = {
   EMPTY: 0,
   COIN: 1,
   OBSTACLE: 2
 }
+
+const FIELD_SIZE = 20
 
 // https://remysharp.com/2010/07/21/throttling-function-calls
 function throttle (fn, threshhold, scope) {
@@ -39,8 +42,11 @@ let pane = {
   step: 0,
   data: [],
   is_playing: false,
-  canvas: {}
+  canvas: document.getElementById('game_canvas'),
+  field: null
 }
+pane.ctx = pane.canvas.getContext('2d')
+window.pane = pane
 
 let data = []
 let ai_crashes = []
@@ -159,28 +165,40 @@ function drawEmpty (ctx, c_x, c_y, c_sx, c_sy, edgesize) {
   ctx.fillStyle = 'rgb(200, 200, 200)'
   ctx.fillRect(c_x, c_y, c_sx, c_sy)
   ctx.fillStyle = 'rgb(220, 220, 220)'
-  ctx.fillRect(c_x+c_sx*edgesize*0.5, c_y+c_sy*edgesize*0.5, c_sx-c_sx*edgesize, c_sy-c_sy*edgesize)
+  ctx.fillRect(c_x + c_sx * edgesize * 0.5, c_y + c_sy * edgesize * 0.5, c_sx - c_sx * edgesize, c_sy - c_sy * edgesize)
 }
 
 function drawCovered (ctx, c_x, c_y, c_sx, c_sy, edgesize) {
   ctx.fillStyle = 'rgb(200, 200, 200)'
   ctx.fillRect(c_x, c_y, c_sx, c_sy)
   ctx.fillStyle = 'black'
-  ctx.fillRect(c_x+c_sx*edgesize*0.5, c_y+c_sy*edgesize*0.5, c_sx-c_sx*edgesize, c_sy-c_sy*edgesize)
+  ctx.fillRect(c_x + c_sx * edgesize * 0.5, c_y + c_sy * edgesize * 0.5, c_sx - c_sx * edgesize, c_sy - c_sy * edgesize)
+}
+
+function drawCoin (ctx, c_x, c_y, c_sx, c_sy, edgesize) {
+  ctx.fillStyle = 'rgb(200, 2, 200)'
+  ctx.fillRect(c_x, c_y, c_sx, c_sy)
+  ctx.fillStyle = 'blue'
+  ctx.fillRect(c_x + c_sx * edgesize * 0.5, c_y + c_sy * edgesize * 0.5, c_sx - c_sx * edgesize, c_sy - c_sy * edgesize)
+}
+
+function drawPlayer (ctx, c_x, c_y, c_sx, c_sy, edgesize) {
+  ctx.fillStyle = 'rgb(200, 2, 200)'
+  ctx.fillRect(c_x, c_y, c_sx, c_sy)
+  ctx.fillStyle = 'red'
+  ctx.fillRect(c_x + c_sx * edgesize * 0.5, c_y + c_sy * edgesize * 0.5, c_sx - c_sx * edgesize, c_sy - c_sy * edgesize)
 }
 
 function draw (data) {
-
-  pane.canvas.width = $('#canvas').width()
-  pane.canvas.height = $('#canvas').height()
+  window.curr = data
+  pane.canvas.width = $(pane.canvas).width()
+  pane.canvas.height = $(pane.canvas).height()
 
   if (pane.data.length < 1) return
   let d = pane.data[pane.step]
 
   let SX = pane.canvas.width
   let SY = pane.canvas.height
-
-  let FIELD_SIZE = d.field.length
 
   let c_sx = SX / FIELD_SIZE
   let c_sy = SY / FIELD_SIZE
@@ -196,11 +214,12 @@ function draw (data) {
     for (let y = FIELD_SIZE - 1; y >= 0; y--) {
       let c_x = x * c_sx
       let c_y = y * c_sy
-      switch (d.field[x][y].type) {
+      switch (pane.field[x][y]) {
         case CELL_TYPE.EMPTY:
+          drawEmpty(ctx, c_x, c_y, c_sx, c_sy, edgesize)
           break
         case CELL_TYPE.COIN:
-          drawEmpty(ctx, c_x, c_y, c_sx, c_sy, edgesize, d.field[x][y].bombsAround)
+          // drawUsedCoin(ctx, c_x, c_y, c_sx, c_sy, edgesize)
           break
         case CELL_TYPE.OBSTACLE:
           drawCovered(ctx, c_x, c_y, c_sx, c_sy, edgesize)
@@ -208,7 +227,19 @@ function draw (data) {
       }
     }
   }
+
+  d.coins.forEach((pos) => {
+    drawCoin(ctx, pos.x * c_sx, pos.y * c_sy, c_sx, c_sy, edgesize)
+  })
+
+  Object.keys(d.position).forEach((ai) => {
+    let pos = d.position[ai]
+    let x = pos.x * c_sy
+    let y = pos.y * c_sy
+    drawPlayer(ctx, x, y, c_sx, c_sy, edgesize)
+  })
 }
+draw = throttle(draw, 25)
 
 function update () {
   let d = pane.data[pane.step]
@@ -238,14 +269,6 @@ function update () {
       $('#ai_' + id + '_output').val(value)
     })
   }
-
-  if (pane.is_playing) {
-    $('#play_button').addClass('active')
-    $('#pause_button').removeClass('active')
-  } else {
-    $('#play_button').removeClass('active')
-    $('#pause_button').addClass('active')
-  }
 }
 
 function map_sorted (obj, func) {
@@ -269,26 +292,28 @@ $(document).ready(function () {
     NProgress.done()
   }
 
-  evtSrc.addEventListener('state', function(e) {
-    d = JSON.parse(e.data)
-    NProgress.set(d.progress)
-    console.log(d)
-    pane.data.push(d)
-    //NProgress.set(d.progress)
-    $('#step_slider').slider('option', 'max', pane.data.length-1)
-    let wonChips = map_sorted(d.wonChips, return_val)
-    let chips = map_sorted(d.chips, return_val)
-    let calculationPoints = map_sorted(d.calculationPoints, return_val)
-    let labels = map_sorted(d.calculationPoints, function(key, value) {
+  evtSrc.addEventListener('state', function (e) {
+    let parsed = JSON.parse(e.data)
+    NProgress.set(parsed.progress)
+    console.log(parsed)
+    pane.data.push(parsed)
+    if (parsed.field) {
+      pane.field = parsed.field
+    }
+    // NProgress.set(d.progress)
+    $('#step_slider').slider('option', 'max', pane.data.length - 1)
+    let score = map_sorted(parsed.score, return_val)
+    let calculationPoints = map_sorted(parsed.calculationPoints, return_val)
+    let labels = map_sorted(parsed.calculationPoints, function (key, value) {
       let id = key.slice(0, key.indexOf('v'))
       return ais[id]
     })
     let d = {}
-    d.diff = Math.abs(wonChips[0] - wonChips[1])
-    d.ai1_abs = wonChips[0]
-    d.ai2_abs = wonChips[1]
-    d.ai1_gain = chips[0]
-    d.ai2_gain = chips[1]
+    d.diff = Math.abs(score[0] - score[1])
+    d.ai1_abs = score[0]
+    d.ai2_abs = score[1]
+    d.ai1_gain = 0xdeadbeef
+    d.ai2_gain = 0xdeadbeef
     d.ai1_tabs = calculationPoints[0]
     d.ai2_tabs = calculationPoints[1]
     d.ai1_td = 0
@@ -306,13 +331,13 @@ $(document).ready(function () {
     $.map(charts, function (chart) {
       chart.update_chart()
     })
-    update()
+    update() // TODO: debounce
   })
 
   // ## in ne generelle lib verschieben
   evtSrc.addEventListener('crash', function (e) {
     console.log(e.data)
-    d = JSON.parse(e.data)
+    let d = JSON.parse(e.data)
     ai_crashes.push(d)
     update()
     NProgress.done()
@@ -326,7 +351,7 @@ $(document).ready(function () {
   })
 
   // ## in ne generelle lib verschieben
-  evtSrc.addEventListener('game_finished', function(e) {
+  evtSrc.addEventListener('game_finished', function (e) {
     console.log('game_finished', e.data)
     $('#finished_message').show()
     $('#finished_message').find('a').attr('href', e.data)
@@ -334,23 +359,23 @@ $(document).ready(function () {
   })
 
   // ## in ne generelle lib verschieben
-  evtSrc.addEventListener('qualified', function(e) {
+  evtSrc.addEventListener('qualified', function (e) {
     $('#qualified_message').show()
     NProgress.done()
   })
 
   // ## in ne generelle lib verschieben
-  evtSrc.addEventListener('failed', function(e) {
+  evtSrc.addEventListener('failed', function (e) {
     $('#failed_message').show()
     NProgress.done()
   })
 
   // ## in ne generelle lib verschieben
-  evtSrc.addEventListener('error', function(e) {
+  evtSrc.addEventListener('error', function (e) {
     alert(e.data)
   })
 
-  evtSrc.addEventListener('finished_transmitting', function(e) {
+  evtSrc.addEventListener('finished_transmitting', function (e) {
     console.log('finished_transmitting')
     NProgress.done()
   })
