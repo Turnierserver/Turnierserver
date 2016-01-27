@@ -185,7 +185,7 @@ canvas {
 		"{{ai0.id}}": {{ai0.name | escapejs | safe}},
 		"{{ai1.id}}": {{ai1.name | escapejs | safe}}
 	};
-	var ais_list = ["{{ai0.id}}", "{{ai1.id}}"]
+	var ai_list = ["{{ai0.id}}", "{{ai1.id}}"]
 </script>
 <script id="game_script" type="text/javascript" src="{{url_for('static', filename='tourality.js')}}" stream="{{stream}}"></script>
 

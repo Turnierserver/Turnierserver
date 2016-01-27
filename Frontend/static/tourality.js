@@ -3,6 +3,7 @@
 var $
 var LineChart
 var ais
+var ai_list
 var NProgress
 var EventSource
 var alert
@@ -182,10 +183,10 @@ function drawCoin (ctx, c_x, c_y, c_sx, c_sy, edgesize) {
   ctx.fillRect(c_x + c_sx * edgesize * 0.5, c_y + c_sy * edgesize * 0.5, c_sx - c_sx * edgesize, c_sy - c_sy * edgesize)
 }
 
-function drawPlayer (ctx, c_x, c_y, c_sx, c_sy, edgesize) {
+function drawPlayer (ctx, c_x, c_y, c_sx, c_sy, edgesize, player) {
   ctx.fillStyle = 'rgb(200, 2, 200)'
   ctx.fillRect(c_x, c_y, c_sx, c_sy)
-  ctx.fillStyle = 'red'
+  ctx.fillStyle = player.slice(0, player.indexOf('v')) === ai_list[0] ? 'red' : 'green'
   ctx.fillRect(c_x + c_sx * edgesize * 0.5, c_y + c_sy * edgesize * 0.5, c_sx - c_sx * edgesize, c_sy - c_sy * edgesize)
 }
 
@@ -236,7 +237,7 @@ function draw (data) {
     let pos = d.position[ai]
     let x = pos.x * c_sx
     let y = pos.y * c_sy
-    drawPlayer(ctx, x, y, c_sx, c_sy, edgesize)
+    drawPlayer(ctx, x, y, c_sx, c_sy, edgesize, ai)
   })
 }
 draw = throttle(draw, 25)
