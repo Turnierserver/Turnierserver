@@ -234,7 +234,7 @@ function draw (data) {
 
   Object.keys(d.position).forEach((ai) => {
     let pos = d.position[ai]
-    let x = pos.x * c_sy
+    let x = pos.x * c_sx
     let y = pos.y * c_sy
     drawPlayer(ctx, x, y, c_sx, c_sy, edgesize)
   })
@@ -277,6 +277,12 @@ function map_sorted (obj, func) {
     return func(key, obj[key])
   })
 }
+
+$(window).on('resize', throttle(() => {
+  let c = $(pane.canvas)
+  c.width(c.height())
+}, 1000))
+$(pane.canvas).width($(pane.canvas).height())
 
 let return_val = (k, v) => v
 
