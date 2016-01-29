@@ -137,12 +137,14 @@ void surrender (Wrapper *w) { __c_surrender(w); }
 void __c_crash (Wrapper *w, const char *reason)
 {
 	printf("sende crash nachricht\n");
-	char *msg = malloc(strlen(reason) + 8);
+	char *ereason = escape(reason);
+	char *msg = malloc(strlen(ereason) + 8);
 	strcpy(msg, "CRASH ");
-	strcat(msg, reason);
+	strcat(msg, ereason);
 	strcat(msg, "\n");
 	if (write(w->socketfd, msg, strlen(msg)) == -1)
 		perror("Fehler beim Senden");
+	free(ereason);
 	free(msg);
 }
 void crash (Wrapper *w, const char *reason) { __c_crash(w, reason); }

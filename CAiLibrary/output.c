@@ -78,10 +78,14 @@ OutputBuffer* appendd (OutputBuffer *buf, double d)
 
 OutputBuffer* append (OutputBuffer *buf, char *str)
 {
+#ifdef OUTPUT_DEBUG
+	printf("append: %s\n", str);
+#endif
 	char *nbuf = malloc(strlen(buf->buf) + strlen(str) + 1);
 	strcpy(nbuf, buf->buf);
 	strcat(nbuf, str);
 	nbuf[strlen(buf->buf) + strlen(str)] = 0;
+	// TODO: sometimes this free seems to be invalid
 	free(buf->buf);
 	buf->buf = nbuf;
 	return buf;
