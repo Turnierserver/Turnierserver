@@ -73,17 +73,17 @@ $('#spielspezifisch').on('click', diff_chart.on_resize)
 $(window).on('resize', throttle(diff_chart.on_resize, 1000))
 diff_chart.update_chart = throttle(diff_chart.update_chart, 750)
 
-let gain_chart = new LineChart('#gain_chart',
+let gain_chart = new LineChart('#score_chart',
   [
     {
       x: function (d) { return d.step },
-      y: function (d) { return d.ai1_gain },
-      label: function (d) { return d.ai1_name + ': ' + d.ai1_gain }
+      y: function (d) { return d.ai1_abs },
+      label: function (d) { return d.ai1_name + ': ' + d.ai1_abs }
     },
     {
       x: function (d) { return d.step },
-      y: function (d) { return d.ai2_gain },
-      label: function (d) { return d.ai2_name + ': ' + d.ai2_gain }
+      y: function (d) { return d.ai2_abs },
+      label: function (d) { return d.ai2_name + ': ' + d.ai2_abs }
     }
   ], data, function (d) { return 'Schritt: ' + d.step }
 )
@@ -319,15 +319,14 @@ $(document).ready(function () {
     d.diff = Math.abs(score[0] - score[1])
     d.ai1_abs = score[0]
     d.ai2_abs = score[1]
-    d.ai1_gain = 0xdeadbeef
-    d.ai2_gain = 0xdeadbeef
     d.ai1_tabs = calculationPoints[0]
     d.ai2_tabs = calculationPoints[1]
     d.ai1_td = 0
     d.ai2_td = 0
     if (data.length > 0) {
-      d.ai1_td = Math.round((data[data.length - 1].ai1_tabs - calculationPoints[0]) * 100) / 100
-      d.ai2_td = Math.round((data[data.length - 1].ai2_tabs - calculationPoints[1]) * 100) / 100
+      let prev_data = data[data.length - 1]
+      d.ai1_td = Math.round((prev_data.ai1_tabs - calculationPoints[0]) * 100) / 100
+      d.ai2_td = Math.round((prev_data.ai2_tabs - calculationPoints[1]) * 100) / 100
     }
 
     d.ai1_name = labels[0]
