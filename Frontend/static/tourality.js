@@ -7,6 +7,8 @@ var ai_list
 var NProgress
 var EventSource
 var alert
+var coin_image
+var ai_imgs
 
 const CELL_TYPE = {
   EMPTY: 'FREI',
@@ -177,20 +179,21 @@ function drawCovered (ctx, c_x, c_y, c_sx, c_sy, edgesize) {
 }
 
 function drawCoin (ctx, c_x, c_y, c_sx, c_sy, edgesize) {
-  ctx.fillStyle = 'rgb(200, 2, 200)'
-  ctx.fillRect(c_x, c_y, c_sx, c_sy)
-  ctx.fillStyle = 'blue'
-  ctx.fillRect(c_x + c_sx * edgesize * 0.5, c_y + c_sy * edgesize * 0.5, c_sx - c_sx * edgesize, c_sy - c_sy * edgesize)
+  ctx.drawImage(coin_image, c_x, c_y, c_sx, c_sy)
 }
 
 function drawPlayer (ctx, c_x, c_y, c_sx, c_sy, edgesize, player) {
+  let pindex = player.slice(0, player.indexOf('v')) === ai_list[0] ? 0 : 1
   ctx.fillStyle = 'rgb(200, 2, 200)'
   ctx.fillRect(c_x, c_y, c_sx, c_sy)
-  ctx.fillStyle = player.slice(0, player.indexOf('v')) === ai_list[0] ? 'red' : 'green'
+  ctx.fillStyle = {0: 'red', 1: 'green'}[pindex]
   ctx.fillRect(c_x + c_sx * edgesize * 0.5, c_y + c_sy * edgesize * 0.5, c_sx - c_sx * edgesize, c_sy - c_sy * edgesize)
+  if (ai_imgs[pindex].height) {
+    ctx.drawImage(ai_imgs[pindex], c_x, c_y, c_sx, c_sy)
+  }
 }
 
-function draw (data) {
+let draw = throttle(function (data) {
   window.curr = data
   pane.canvas.width = $(pane.canvas).width()
   pane.canvas.height = $(pane.canvas).height()
@@ -215,10 +218,8 @@ function draw (data) {
     for (let y = FIELD_SIZE - 1; y >= 0; y--) {
       let c_x = x * c_sx
       let c_y = y * c_sy
+      drawEmpty(ctx, c_x, c_y, c_sx, c_sy, edgesize)
       switch (pane.field[x][y]) {
-        case CELL_TYPE.EMPTY:
-          drawEmpty(ctx, c_x, c_y, c_sx, c_sy, edgesize)
-          break
         case CELL_TYPE.COIN:
           // drawUsedCoin(ctx, c_x, c_y, c_sx, c_sy, edgesize)
           break
@@ -239,8 +240,7 @@ function draw (data) {
     let y = pos.y * c_sy
     drawPlayer(ctx, x, y, c_sx, c_sy, edgesize, ai)
   })
-}
-draw = throttle(draw, 25)
+}, 25)
 
 function update () {
   let d = pane.data[pane.step]
