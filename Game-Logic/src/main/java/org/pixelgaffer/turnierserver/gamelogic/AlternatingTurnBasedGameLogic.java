@@ -51,14 +51,11 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 	
 	private void turn(Ai ai) {
 		turn = ai;
-		logger.debug("switching turn to " + ai.getId());
 		if(getUserObject(ai).lost) {
-			logger.debug("this ai has already lost, nex turn");
 			turn();
 			return;
 		}
 		
-		logger.debug("Succesfuly changed turn");
 		try {
 			sendGameState(ai);
 		} catch (IOException e) {
@@ -67,9 +64,7 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 	}
 	
 	private void turn() {
-		logger.debug("turn");
 		if (turn == null) {
-			logger.debug("No ai has played yet, so its the first ais turn");
 			turn(game.getAis().get(0));
 			return;
 		}
@@ -80,8 +75,6 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 			}
 			round();
 		}
-		logger.debug("its currently " + turn.getIndex() + "'s turn");
-		logger.debug("calling turn(" + (turn.getIndex() + 1) % game.getAis().size() + ")");
 		turn(game.getAis().get((turn.getIndex() + 1) % game.getAis().size()));
 	}
 	
