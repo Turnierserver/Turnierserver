@@ -28,20 +28,26 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 	
 	@Override
 	protected final void receive(R response, Ai ai, int passedMikros) {
+		logger.debug("got message from " + ai.getId());
 		if (turn == null || turn != ai) {
 			logger.critical("Die AI ist nicht an der Reihe, und hat trotzdem etwas gesendet");
 			return;
 		}
 		
 		if(getUserObject(ai).subtractMikros(passedMikros)) {
+			logger.debug("timeout");
 			return;
 		}
-		
+		logger.debug("applying changes");
 		gamestate.applyChanges(response, ai);
+		logger.debug("applied changes");
 		
 		Object update = update();
-		if(gameEnded)
+		logger.debug("updated");
+		if(gameEnded) {
+			logger.debug("game ended");
 			return;
+		}
 		if (update != null) {
 			sendRenderData(update);
 		}
@@ -50,6 +56,7 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 	}
 	
 	private void turn(Ai ai) {
+		logger.debug("turn(" + ai.getId() + ")");
 		turn = ai;
 		if(getUserObject(ai).lost) {
 			turn();
@@ -64,6 +71,7 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 	}
 	
 	private void turn() {
+		logger.debug("turn()");
 		if (turn == null) {
 			turn(game.getAis().get(0));
 			return;
