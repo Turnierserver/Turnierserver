@@ -200,7 +200,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		}
 		
 		if (string.startsWith("CRASH ")) {
-			getUserObject(ai).loose("Die KI ist gecrashed: " + string.substring("CRASH ".length()).replace("\\\\", "\\").replace("\\n", "\n"));
+			getUserObject(ai).loose("Die KI ist gecrashed: " + string.substring("CRASH ".length()));
 			return;
 		}
 		
