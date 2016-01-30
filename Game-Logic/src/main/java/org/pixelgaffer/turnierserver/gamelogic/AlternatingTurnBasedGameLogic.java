@@ -50,6 +50,11 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 	}
 	
 	private void turn(Ai ai) {
+		if(getUserObject(ai).lost) {
+			turn();
+			return;
+		}
+			
 		turn = ai;
 		try {
 			sendGameState(ai);
