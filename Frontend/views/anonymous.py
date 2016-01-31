@@ -62,7 +62,7 @@ def user(id):
 def game_list():
 	query = Game.query.order_by(Game.id.desc())
 	gametype = GameType.selected()
-	query = query.filter(Game.type == gametype)
+	query = query.filter(Game.type == gametype).filter(Game.tournament == None)
 
 	return render_template("game_list.html", game_list=query.all(), in_progress_games=backend.inprogress_games(), gametype=gametype)
 

@@ -296,8 +296,16 @@ class Backend(threading.Thread):
 				"states": [],
 				"crashes": [],
 				"status_text": "In Wartschlange",
-				"tournament": full["tournament_object"]
+				"tournament": full["tournament_object"],
+				'uuid': delta["gameid"],
+				'status': ''
 			}
+		elif "position" in delta or "scores" in delta:
+			logger.info('tournament scores recieved')
+			if not delta["gameId"] in full["games"]:
+				logger.error('missing gameid!')
+				return
+			full["games"][delta["gameId"]].update(delta)
 		elif "uuid" in delta:
 			uuid = delta["uuid"]
 			if not uuid in full["games"]:
