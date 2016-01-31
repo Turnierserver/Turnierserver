@@ -33,9 +33,12 @@ def profile_id(id):
 @authenticated_blueprint.route("/create_ai")
 @authenticated_web
 def create_ai():
+	gametype = GameType.selected()
+	if not gametype:
+		abort(400)
 	ai = AI(user=current_user, name="Unbenannte KI",
 			desc="Unbeschriebene KI", lang=Lang.query.first(),
-			type=GameType.selected())
+			type=gametype)
 	db.session.commit()
 	return redirect(url_for("authenticated.edit_ai", id=ai.id))
 

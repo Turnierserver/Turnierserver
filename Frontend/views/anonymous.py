@@ -118,9 +118,9 @@ def tournament_list():
 
 @anonymous_blueprint.route("/tournament/<int:id>")
 def tournament(id):
-	tournament = Tournament.query.get(id);
+	tournament = Tournament.query.get(id)
 	if not tournament:
-		abort(404);
+		abort(404)
 	has_entered = False
 	if current_user and current_user.is_authenticated:
 		a = UserTournamentAi.query.filter(UserTournamentAi.user == current_user).filter(UserTournamentAi.type == GameType.selected()).first()

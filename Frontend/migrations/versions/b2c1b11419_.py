@@ -29,7 +29,7 @@ def upgrade():
       REFERENCES t_gametypes (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT t_tournaments_name_key UNIQUE (name)
-);""");
+);""")
 	db.engine.execute("""CREATE TABLE t_tournament_games
 (
   id serial NOT NULL,
@@ -42,7 +42,7 @@ def upgrade():
   CONSTRAINT t_tournament_games_tournament_id_fkey FOREIGN KEY (tournament_id)
       REFERENCES t_tournaments (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
-);""");
+);""")
 	db.engine.execute("""CREATE TABLE t_user_tournament_ais
 (
   id serial NOT NULL,
@@ -59,7 +59,7 @@ def upgrade():
   CONSTRAINT t_user_tournament_ais_user_id_fkey FOREIGN KEY (user_id)
       REFERENCES t_users (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
-)""");
+)""")
 	op.add_column('t_games', sa.Column('tournament_game_id', sa.INTEGER(), autoincrement=False, nullable=True))
 	op.create_foreign_key('t_games_tournament_game_id_fkey', 't_games', 't_tournament_games', ['tournament_game_id'], ['id'])
 
@@ -67,6 +67,6 @@ def upgrade():
 def downgrade():
 	op.drop_constraint('t_games_tournament_game_id_fkey', 't_games', type_='foreignkey')
 	op.drop_column('t_games', 'tournament_game_id')
-	db.engine.execute("DROP TABLE t_user_tournament_ais;");
-	db.engine.execute("DROP TABLE t_tournament_games;");
-	db.engine.execute("DROP TABLE t_tournaments;");
+	db.engine.execute("DROP TABLE t_user_tournament_ais;")
+	db.engine.execute("DROP TABLE t_tournament_games;")
+	db.engine.execute("DROP TABLE t_tournaments;")

@@ -221,6 +221,8 @@ class User(db.Model):
 
 	@property
 	def elo(self):
+		if not GameType.selected():
+			return 0
 		ais = AI.query.filter(AI.user == self).filter(AI.type == GameType.selected()).all()
 		if len(ais) == 0:
 			return None
@@ -836,6 +838,7 @@ class GameType(db.Model):
 
 	@classmethod
 	def selected(cls, gametype=None, latest_on_none=True):
+		return None
 		if not gametype:
 			if "gametype" in request.cookies:
 				gt = urllib.parse.unquote(request.cookies["gametype"])
@@ -1009,7 +1012,6 @@ def populate():
 		Lang(name="Go", ace_name="golang", url="https://www.golang.org"),
 		Lang(name="C", ace_name="c_cpp", url="https://isocpp.org")
 	])
-	db_save([GameType(name="Groker")])
 
 	admin = User(name="admin", admin=True, email="admin@ad.min")
 	admin.set_pw("admin")
