@@ -25,7 +25,7 @@
 {% macro render_settings(gametypes, current_gametype) %}
 <script src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.0.0-beta.1/js.cookie.min.js"></script>
 <div class="ui right inverted menu">
-	<div class="ui dropdown item" id="gametype">
+	<div class="ui dropdown item" id="gametype_selector_menubar">
 		<i class="settings icon"></i>
 		<div class="menu transition hidden">
 			<div class="item">
@@ -46,7 +46,7 @@
 	</div>
 </div>
 <script>
-$("#gametype").dropdown({
+$("#gametype_selector_menubar").dropdown({
 	onChange: function(text, value, elem) {
 		console.log(text, value, elem)
 		if ($(elem).hasClass("gt_select")) {

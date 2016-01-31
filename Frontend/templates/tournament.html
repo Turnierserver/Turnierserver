@@ -174,7 +174,9 @@ $("a.exit_tournament").on("click", function() {
 				<div class="default text">KI</div>
 				<div class="menu">
 					{% for ai in current_user.active_ais %}
+					{% if ai.type == gametype %}
 						<div class="item" data-value="{{ai.id}}">{{ai.name}} v{{ai.active_version().version_id}}</div>
+					{% endif %}
 					{% endfor %}
 				</div>
 			</div>

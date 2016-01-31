@@ -643,7 +643,7 @@ class Game(db.Model):
 	_log = db.Column(db.Text)
 	_crashes = db.Column(db.Text)
 	tournament_id = db.Column(db.Integer, db.ForeignKey("t_tournaments.id"), nullable=True)
-	tournament = db.relationship("Tournament", backref="games")
+	tournament = db.relationship("Tournament", backref=db.backref('t_tournaments', order_by=id))
 
 	def __init__(self, *args, **kwargs):
 		super(Game, self).__init__(*args, **kwargs)
@@ -736,23 +736,28 @@ class Game(db.Model):
 			return False
 		ais = [d["ai0"], d["ai1"]]
 		g = Game(type=ais[0].type)
+		db.session.add(g)
 		g.log = d["states"]
 		g.crashes = d["crashes"]
 		if "reason" in d:
 			g.reason = d["reason"]
 		if "tournament" in d:
-			g.tournament = d["tournament"]
-		db.session.add(g)
+			g.tournament = Tournament.query.get(d["tournament"])
 		db.session.commit()
 		g.ai_assocs = [AI_Game_Assoc(game_id=g.id, ai_id=ai.id) for ai in ais]
-		db.session.add(g)
 		db.session.commit()
-		for ai, score in d["scores"].items():
-			ai = AI.query.get(int(ai.split("v")[0]))
-			AI_Game_Assoc.query.filter(AI_Game_Assoc.game == g).filter(AI_Game_Assoc.ai == ai).one().score = score
-		for ai, position in d["position"].items():
-			ai = AI.query.get(int(ai.split("v")[0]))
-			AI_Game_Assoc.query.filter(AI_Game_Assoc.game == g).filter(AI_Game_Assoc.ai == ai).one().position = position
+		if "scores" in d:
+			for ai, score in d["scores"].items():
+				ai = AI.query.get(int(ai.split("v")[0]))
+				AI_Game_Assoc.query.filter(AI_Game_Assoc.game == g).filter(AI_Game_Assoc.ai == ai).one().score = score
+		else:
+			logger.error("game without scores!")
+		if "position" in d:
+			for ai, position in d["position"].items():
+				ai = AI.query.get(int(ai.split("v")[0]))
+				AI_Game_Assoc.query.filter(AI_Game_Assoc.game == g).filter(AI_Game_Assoc.ai == ai).one().position = position
+		else:
+			logger.error("game without position!")
 		g.update_ai_elo()
 		db.session.add(g)
 		db.session.commit()
@@ -819,7 +824,7 @@ class GameType(db.Model):
 	__tablename__ = 't_gametypes'
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	name = db.Column(db.Text, nullable=False)
-	games = db.relationship("Game", order_by="Game.id", backref="GameType", cascade="all, delete, delete-orphan")
+	games = db.relationship("Game", order_by="Game.id", cascade="all, delete, delete-orphan")
 	last_modified = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
 	def __init__(self, *args, **kwargs):
@@ -903,6 +908,7 @@ class Tournament(db.Model):
 	type = db.relationship("GameType", backref=db.backref('t_tournaments', order_by=id))
 	executed = db.Column(db.Boolean, nullable=False, default=False)
 	finished = db.Column(db.Boolean, nullable=False, default=False)
+	games = db.relationship("Game", order_by="Game.id", backref="Tournament", cascade="all, delete, delete-orphan")
 
 	def __init__(self, *args, **kwargs):
 		super(Tournament, self).__init__(*args, **kwargs)

@@ -193,7 +193,7 @@ function drawPlayer (ctx, c_x, c_y, c_sx, c_sy, edgesize, player) {
   }
 }
 
-let draw = throttle(function (data) {
+let draw = throttle(function draw (data) {
   window.curr = data
   pane.canvas.width = $(pane.canvas).width()
   pane.canvas.height = $(pane.canvas).height()
@@ -242,7 +242,7 @@ let draw = throttle(function (data) {
   })
 }, 25)
 
-function update () {
+let update = throttle(function update () {
   let d = pane.data[pane.step]
 
   $.map(ais, function (ai_name, ai_id) {
@@ -270,7 +270,7 @@ function update () {
       $('#ai_' + id + '_output').val(value)
     })
   }
-}
+}, 25)
 
 function map_sorted (obj, func) {
   let sorted_keys = $.map(obj, (e, i) => i).sort()
@@ -334,6 +334,13 @@ $(document).ready(function () {
 
     d.step = pane.data.length
     data.push(d)
+    if (pane.step >= data.length - 3) {
+      pane.step = data.length - 1
+      $.map(charts, function (chart) {
+        chart.set_hover(pane.step)
+      })
+      $('#step_slider').slider('option', 'value', pane.step)
+    }
     $.map(charts, function (chart) {
       chart.update_chart()
     })
