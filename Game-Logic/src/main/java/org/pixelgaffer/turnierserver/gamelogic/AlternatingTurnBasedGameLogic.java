@@ -19,12 +19,30 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 	 */
 	private Ai turn;
 	
+	private AbortableTimer responseTimer = new AbortableTimer(maxResponseTime(), () -> {
+		aiAnswerTimeout(turn);
+		if(!gameEnded)
+			turn();
+	});
+	
 	/**
 	 * Wird aufgerufen, wenn eine AI geantwortet hat
 	 * 
 	 * @return Das Objekt für den renderer, wenn null wird nichts gesendet
 	 */
 	protected abstract Object update();
+	
+	/**
+	 * @return Die maximale Zeit die eine KI zum antworten hat, bevor aiAnswerTimeout aufgerufen wird
+	 */
+	protected abstract int maxResponseTime();
+	
+	/**
+	 * Wird aufgerufen wenn eine KI zu lange zum Antworten braucht
+	 * 
+	 * @param ai Die KI die zu lange zum Antworten gebraucht hat
+	 */
+	protected abstract void aiAnswerTimeout(Ai ai);
 	
 	@Override
 	protected final void receive(R response, Ai ai, int passedMikros) {
@@ -33,6 +51,8 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 			logger.critical("Die AI ist nicht an der Reihe, und hat trotzdem etwas gesendet");
 			return;
 		}
+		
+		responseTimer.abort();
 		
 		if(getUserObject(ai).subtractMikros(passedMikros)) {
 			logger.debug("timeout");
@@ -65,6 +85,7 @@ public abstract class AlternatingTurnBasedGameLogic<E extends AiObject, R> exten
 		
 		try {
 			sendGameState(ai);
+			responseTimer.restart();
 		} catch (IOException e) {
 			getUserObject(ai).loose("Es gab ein Problem bei der Kommunikation mit der KI");
 		}
