@@ -838,7 +838,6 @@ class GameType(db.Model):
 
 	@classmethod
 	def selected(cls, gametype=None, latest_on_none=True):
-		return None
 		if not gametype:
 			if "gametype" in request.cookies:
 				gt = urllib.parse.unquote(request.cookies["gametype"])

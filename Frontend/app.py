@@ -123,7 +123,7 @@ def refresh_db_session():
 def run():
 	"Startet den Server."
 
-	if not (Lang.query.first() and GameType.query.first()):
+	if not Lang.query.first():
 		logger.critical("Missing Lang(s) / GameType(s)")
 		exit()
 
