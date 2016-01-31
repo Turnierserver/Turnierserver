@@ -1,3 +1,4 @@
+from collections import defaultdict
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import current_user
 from flask import send_file, abort, request, Markup
@@ -763,7 +764,8 @@ class Game(db.Model):
 				AI_Game_Assoc.query.filter(AI_Game_Assoc.game == g).filter(AI_Game_Assoc.ai == ai).one().position = position
 		else:
 			logger.error("game without position!")
-		g.update_ai_elo()
+		if not "tournament" in d:
+			g.update_ai_elo()
 		db.session.add(g)
 		db.session.commit()
 		logger.info("neues Spiel " + str(g))
@@ -914,6 +916,8 @@ class Tournament(db.Model):
 	executed = db.Column(db.Boolean, nullable=False, default=False)
 	finished = db.Column(db.Boolean, nullable=False, default=False)
 	games = db.relationship("Game", order_by="Game.id", backref="Tournament", cascade="all, delete, delete-orphan")
+	_ranks = None
+	_elo = None
 
 	def __init__(self, *args, **kwargs):
 		super(Tournament, self).__init__(*args, **kwargs)
@@ -929,6 +933,56 @@ class Tournament(db.Model):
 		        "timestamp": self.timestamp, "timestr": self.time(),
 		        "type": self.type.info(), "executed": self.executed
 		}
+
+	def compute_ranks(self):
+		elo = defaultdict(lambda: 1200)
+		for game in self.games:
+			ai0_assoc = game.ai_assocs[0]
+			ai1_assoc = game.ai_assocs[1]
+			ai0 = ai0_assoc.ai
+			ai1 = ai1_assoc.ai
+
+			ai0elo = elo[ai0.id]
+			ai1elo = elo[ai1.id]
+
+			if ai0.user == ai1.user:
+				logger.info("Spiel zwischen KIs vom selben Nutzer; wird nicht gewertet")
+				return
+
+			ai0gewonnen = None
+			if ai0_assoc.is_winner and not ai1_assoc.is_winner:
+				ai0gewonnen = 1
+			elif ai0_assoc.is_winner and ai1_assoc.is_winner:
+				a0gewonnen = 0.5
+			else:
+				ai0gewonnen = 0
+			if ai0gewonnen == None:
+				logger.error("missing ai_assoc.is_winner! -> aborting compute_ranks")
+				return
+
+			ai1gewonnen = 1 - ai0gewonnen
+
+			elo[ai0.id] = ai0elo + 32 * (ai0gewonnen - 1 / (1 + 10 ** ((ai1elo - ai0elo) / 400)))
+			elo[ai1.id] = ai1elo + 32 * (ai1gewonnen - 1 / (1 + 10 ** ((ai0elo - ai1elo) / 400)))
+
+		self._elo = elo
+
+		ais = list(elo.keys())
+		elos = sorted(list(elo.values()))[::-1]
+		self._ranks = {}
+		for ai in ais:
+			self._ranks[ai] = elos.index(elo[ai]) + 1
+
+	def rank(self, ai):
+		if not self._ranks or ai.id not in self._ranks:
+			self.compute_ranks()
+		return self._ranks.get(ai.id)
+
+
+	def elo(self, ai):
+		if not self._elo or ai.id not in self._elo:
+			self.compute_ranks()
+		return self._elo.get(ai.id)
 
 	def __repr__(self):
 		return "<Tournament(id={}, name={}, type={})>".format(self.id, self.name, self.type.name)
