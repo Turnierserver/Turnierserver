@@ -155,7 +155,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 *            Die AI, von welcher die Nachricht kommt
 	 */
 	public synchronized void receiveMessage(byte[] message, Ai ai) {
-		logger.debug("Nachricht empfangen: " + new String(message));
+//		logger.debug("Nachricht empfangen: " + new String(message));
 		
 		if(gameEnded) {
 			logger.warning("Game already ended!");
