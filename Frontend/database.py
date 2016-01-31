@@ -638,12 +638,12 @@ class Game(db.Model):
 	timestamp = db.Column(db.BigInteger)
 	status = db.Column(db.Text)
 	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
-	type = db.relationship("GameType", backref=db.backref('t_games', order_by=id))
+	type = db.relationship("GameType", backref=db.backref('t_games', order_by='GameType.id'))
 	reason = db.Column(db.Text)
 	_log = db.Column(db.Text)
 	_crashes = db.Column(db.Text)
 	tournament_id = db.Column(db.Integer, db.ForeignKey("t_tournaments.id"), nullable=True)
-	tournament = db.relationship("Tournament", backref=db.backref('t_tournaments', order_by=id))
+	tournament = db.relationship("Tournament", backref=db.backref('t_tournaments', order_by='Tournament.id'))
 
 	def __init__(self, *args, **kwargs):
 		super(Game, self).__init__(*args, **kwargs)
@@ -710,12 +710,16 @@ class Game(db.Model):
 			logger.info("Spiel zwischen KIs vom selben Nutzer; wird nicht gewertet")
 			return
 
+		ai0gewonnen = None
 		if ai0_assoc.is_winner and not ai1_assoc.is_winner:
 			ai0gewonnen = 1
 		elif ai0_assoc.is_winner and ai1_assoc.is_winner:
 			a0gewonnen = 0.5
 		else:
 			ai0gewonnen = 0
+		if ai0gewonnen == None:
+			logger.error("missing ai_assoc.is_winner! -> aborting update_ai_elo")
+			return
 
 		ai1gewonnen = 1 - ai0gewonnen
 
@@ -741,8 +745,9 @@ class Game(db.Model):
 		g.crashes = d["crashes"]
 		if "reason" in d:
 			g.reason = d["reason"]
+		db.session.commit()
 		if "tournament" in d:
-			g.tournament = Tournament.query.get(d["tournament"])
+			g.tournament = Tournament.query.get(d["tournament"].id)
 		db.session.commit()
 		g.ai_assocs = [AI_Game_Assoc(game_id=g.id, ai_id=ai.id) for ai in ais]
 		db.session.commit()
@@ -905,7 +910,7 @@ class Tournament(db.Model):
 	name = db.Column(db.Text, nullable=False)
 	timestamp = db.Column(db.BigInteger)
 	type_id = db.Column(db.Integer, db.ForeignKey("t_gametypes.id"))
-	type = db.relationship("GameType", backref=db.backref('t_tournaments', order_by=id))
+	type = db.relationship("GameType", backref=db.backref('t_tournaments', order_by=id), lazy="joined")
 	executed = db.Column(db.Boolean, nullable=False, default=False)
 	finished = db.Column(db.Boolean, nullable=False, default=False)
 	games = db.relationship("Game", order_by="Game.id", backref="Tournament", cascade="all, delete, delete-orphan")
