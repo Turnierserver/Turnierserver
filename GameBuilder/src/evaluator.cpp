@@ -359,7 +359,6 @@ int Evaluator::target(const QString &target, LangSpec *spec, int depth)
 				}
 				
 			}
-			destination.replace("<gameid>", QString::number(gameid));
 			
 			if (!gameExists)
 			{
@@ -380,6 +379,8 @@ int Evaluator::target(const QString &target, LangSpec *spec, int depth)
 				else
 					return 1;
 			}
+			
+			destination.replace("<gameid>", QString::number(gameid));
 			
 			if (QFileInfo(file).isDir())
 			{
