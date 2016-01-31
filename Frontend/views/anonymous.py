@@ -126,7 +126,8 @@ def tournament(id):
 		a = UserTournamentAi.query.filter(UserTournamentAi.user == current_user).filter(UserTournamentAi.type == GameType.selected()).first()
 		has_entered = a != None
 	return render_template("tournament.html", tournament=tournament, has_entered=has_entered,
-	                       ais=UserTournamentAi.query.filter(UserTournamentAi.type_id == tournament.type_id).all())
+	                       ais=UserTournamentAi.query.filter(UserTournamentAi.type_id == tournament.type_id).all(),
+	                       gametype=GameType.selected())
 
 @anonymous_blueprint.route("/tutorial")
 def tutorial():
