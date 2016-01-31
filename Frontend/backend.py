@@ -369,17 +369,6 @@ class Backend(threading.Thread):
 				inqueue=r["status"] == "processed"
 			))
 
-		# handle tournament games
-		for req in self.requests.values():
-			if "games" in req:
-				for k, v in req["games"].items():
-					games.append(dict(
-						id=v["uuid"],
-						ai0=v["ai0"],
-						ai1=v["ai1"],
-						status=v["status_text"],
-						inqueue=v["status"] == "processed"
-					))
 		return games
 
 
