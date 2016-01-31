@@ -167,6 +167,11 @@ public class WorkerClient implements SocketObserver
 					case CPU_TIME:
 						SandboxMain.getLogger().info("Auftrag erhalten: CPU-Time herausfinden");
 					{
+						if (jobControl.getCurrent() == null)
+						{
+							SandboxMain.getLogger().warning("Attempting to get time of an exited sandbox");
+							break;
+						}
 						long time = CpuTimer.getCpuTime(jobControl.getCurrent().getJob().getBoxid());
 						SandboxMain.getLogger().debug(time);
 						sendMessage(jobControl.getCurrent().getJob().getUuid(), 'C', time);
