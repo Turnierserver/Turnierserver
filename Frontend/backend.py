@@ -5,7 +5,7 @@ import time
 import threading
 from queue import Queue, Empty
 from weakref import WeakSet
-from database import db, Game, AI, Lang
+from database import db, Game, AI, Lang, Tournament
 from logger import logger
 
 from pprint import pprint
@@ -314,8 +314,17 @@ class Backend(threading.Thread):
 			self.handleGame(full["games"][uuid], delta)
 		elif "exception" in delta:
 			logger.error(delta["exception"])
-			full["tournament_object"].executed = False
 			with self.app.app_context():
+				t = Tournament.query.get(full["tournament_object"].id)
+				t.executed = False
+				db.session.commit()
+		elif "success" in delta:
+			logger.info("finished tournament!")
+			# TODO: elo berechnen
+			with self.app.app_context():
+				t = Tournament.query.get(full["tournament_object"].id)
+				t.executed = True
+				t.finished = True
 				db.session.commit()
 
 	def request(self, reqid):
