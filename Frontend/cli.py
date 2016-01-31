@@ -1,6 +1,7 @@
 from flask.ext.script import prompt_bool, prompt, prompt_pass
 from database import *
 from backend import backend
+from _cfg import env
 
 import os
 import shutil
@@ -114,12 +115,13 @@ def _add_gametype(name):
 	return gt
 
 def _compile_quali_ai(gt):
-	lang = next(filter(None, [
-		Lang.query.filter(Lang.name == "Go").first(),
-		Lang.query.filter(Lang.name == "Python").first(),
-		Lang.query.filter(Lang.name == "Java").first(),
-		Lang.query.first()
-	]))
+	lang = None
+	for lname in env.quali_lang_hierarchy:
+		lang = Lang.query.filter(Lang.name == lname).first()
+		if lang:
+			break
+	if not lang:
+		lang = Lang.query.first()
 	ai = QualiAI(gt, lang)
 	ai.copy_example_code()
 	for data, event in backend.compile(ai):

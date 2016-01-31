@@ -358,7 +358,7 @@ public class Games
 		
 		public void finishGame (boolean success) throws IOException
 		{
-			BackendMain.getLogger().info("finishGame() wurde für das Spiel " + getUuid() + " aufgerufen");
+			BackendMain.getLogger().stacktrace("finishGame() wurde für das Spiel " + getUuid() + " aufgerufen");
 			for (AiWrapper ai : ais)
 				ai.disconnect();
 			if (state == GameState.STARTED) // ist beim restart auf false

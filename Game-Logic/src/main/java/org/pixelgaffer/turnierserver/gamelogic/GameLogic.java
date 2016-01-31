@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
-
+import java.util.stream.Collectors;
 import org.pixelgaffer.turnierserver.Airbrake;
 import org.pixelgaffer.turnierserver.GsonGzipParser;
 import org.pixelgaffer.turnierserver.Logger;
@@ -156,7 +155,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 	 *            Die AI, von welcher die Nachricht kommt
 	 */
 	public synchronized void receiveMessage(byte[] message, Ai ai) {
-//		logger.debug("Nachricht empfangen!");
+//		logger.debug("Nachricht empfangen: " + new String(message));
 		
 		if(gameEnded) {
 			logger.warning("Game already ended!");
@@ -199,7 +198,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		}
 		
 		if (string.startsWith("CRASH ")) {
-			getUserObject(ai).loose("Die KI ist gecrashed: " + string.substring("CRASH ".length()));
+			getUserObject(ai).loose("Die KI ist gecrashed: " + string.substring("CRASH ".length()).replace("\\\\", "\\").replace("\\n", "\n"));
 			return;
 		}
 		
@@ -299,8 +298,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		for (Ai ai : game.getAis()) {
 			scores.add(getUserObject(ai).score);
 		}
-		Collections.sort(scores);
-		Collections.reverse(scores);
+		scores = scores.stream().distinct().sorted(Collections.reverseOrder()).collect(Collectors.toList());
 		
 		for (Ai ai : game.getAis()) {
 			message.leftoverMillis.put(ai.getId(), getUserObject(ai).mikrosLeft);
@@ -327,6 +325,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		this.game = game;
 		for (Ai ai : game.getAis()) {
 			ai.setObject(createUserObject(ai));
+			ai.getObject().setAi(ai);
 			getUserObject(ai).setLogic(this);
 			getUserObject(ai).setAi(ai);
 		}
@@ -339,6 +338,7 @@ public abstract class GameLogic<E extends AiObject, R> {
 		}
 		setup();
 		sendFirstRenderData();
+		setStarted(true);
 	}
 	
 	/**

@@ -136,7 +136,7 @@ public class Tournament implements Runnable
 					aiIds[j - 1]++;
 					aiIds[j] = aiIds[j - 1] + 1;
 				}
-				BackendMain.getLogger().critical("aiIds=" + Arrays.toString(aiIds) + "; c=" + c);
+				BackendMain.getLogger().debug("aiIds=" + Arrays.toString(aiIds) + "; c=" + c);
 				String[] languages = new String[aisPerGame], aiNames = new String[aisPerGame];
 				for (int j = 0; j < aisPerGame; j++)
 				{
@@ -144,7 +144,7 @@ public class Tournament implements Runnable
 					languages[j] = ai.getString("lang");
 					aiNames[j] = ai.getString("ai");
 				}
-				BackendMain.getLogger().critical("startGame(gameId=" + gameId + ", requestId=" + requestId
+				BackendMain.getLogger().debug("startGame(gameId=" + gameId + ", requestId=" + requestId
 						+ ", tournament=true, languages=" + Arrays.toString(languages) + ", ais=" + Arrays.toString(aiNames));
 				try
 				{

@@ -47,7 +47,7 @@ public:
 	void setHost (const QString &val) { host = val; }
 	
 private:
-	int target(const QString &target, LangSpec *spec);
+	int target(const QString &target, LangSpec *spec, int depth = 0);
 	
 	QPair<QString, QByteArray> apiGetCall(const QString &destination)
 	{

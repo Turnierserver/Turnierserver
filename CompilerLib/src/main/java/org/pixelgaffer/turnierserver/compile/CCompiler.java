@@ -91,7 +91,10 @@ public class CCompiler extends Compiler
 		command.add("-o");
 		command.add(exec.getName());
 		if (Boolean.parseBoolean(p.getProperty("debug", "false")))
+		{
 			command.add("-g");
+			command.add("-rdynamic");
+		}
 		else
 			command.add("-Wl,-O2");
 		for (File obj : objects)

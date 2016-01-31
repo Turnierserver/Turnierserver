@@ -50,8 +50,8 @@ public abstract class GameStateLogic<E extends AiObject, R> extends GameLogic<E,
 	
 	@Override
 	public void startGame(Game game) {
-		super.startGame(game);
 		gamestate = createGameState();
+		super.startGame(game);
 	}
 	
 }

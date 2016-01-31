@@ -5,7 +5,7 @@ import time
 import threading
 from queue import Queue, Empty
 from weakref import WeakSet
-from database import db, Game, AI, Lang
+from database import db, Game, AI, Lang, Tournament
 from logger import logger
 
 from pprint import pprint
@@ -144,12 +144,14 @@ class Backend(threading.Thread):
 		if ai.latest_version().frozen:
 			logger.error("request_qualify mit freigegebener KI aufgerufen!")
 
-		quali_lang = next(filter(None, [
-			Lang.query.filter(Lang.name == "Go").first(),
-			Lang.query.filter(Lang.name == "Python").first(),
-			Lang.query.filter(Lang.name == "Java").first(),
-			Lang.query.first()
-		]))
+		quali_lang = None
+		for lname in env.quali_lang_hierarchy:
+			quali_lang = Lang.query.filter(Lang.name == lname).first()
+			if quali_lang:
+				break
+		if not quali_lang:
+			quali_lang = Lang.query.first()
+
 		logger.info("Erwarte, dass Quali-KI als {}-SimplePlayer kompiliert wurde".format(quali_lang.name))
 
 		reqid = self.latest_request_id
@@ -294,8 +296,16 @@ class Backend(threading.Thread):
 				"states": [],
 				"crashes": [],
 				"status_text": "In Wartschlange",
-				"tournament": full["tournament_object"]
+				"tournament": full["tournament_object"],
+				'uuid': delta["gameid"],
+				'status': ''
 			}
+		elif "position" in delta or "scores" in delta:
+			logger.info('tournament scores recieved')
+			if not delta["gameId"] in full["games"]:
+				logger.error('missing gameid!')
+				return
+			full["games"][delta["gameId"]].update(delta)
 		elif "uuid" in delta:
 			uuid = delta["uuid"]
 			if not uuid in full["games"]:
@@ -304,8 +314,17 @@ class Backend(threading.Thread):
 			self.handleGame(full["games"][uuid], delta)
 		elif "exception" in delta:
 			logger.error(delta["exception"])
-			full["tournament_object"].executed = False
 			with self.app.app_context():
+				t = Tournament.query.get(full["tournament_object"].id)
+				t.executed = False
+				db.session.commit()
+		elif "success" in delta:
+			logger.info("finished tournament!")
+			# TODO: elo berechnen
+			with self.app.app_context():
+				t = Tournament.query.get(full["tournament_object"].id)
+				t.executed = True
+				t.finished = True
 				db.session.commit()
 
 	def request(self, reqid):
@@ -350,17 +369,6 @@ class Backend(threading.Thread):
 				inqueue=r["status"] == "processed"
 			))
 
-		# handle tournament games
-		for req in self.requests.values():
-			if "games" in req:
-				for k, v in req["games"].items():
-					games.append(dict(
-						id=v["uuid"],
-						ai0=v["ai0"],
-						ai1=v["ai1"],
-						status=v["status_text"],
-						inqueue=v["status"] == "processed"
-					))
 		return games
 
 

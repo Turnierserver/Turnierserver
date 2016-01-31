@@ -453,13 +453,16 @@ def api_ai_create():
 	if not lang:
 		return {'error': 'Invalid Language'}, 404
 
-	gametype = request.args.get('type')
-	if gametype:
-		gametype = GameType.query.get(gametype)
+	gametype = None
+	if request.args.get('type'):
+		gametype = GameType.query.get(request.args.get('type'))
 		if not gametype:
 			return {"error": "Invalid type."}, 400
 	else:
 		gametype = GameType.selected()
+
+	if not gametype:
+		return {"error": "Could't assign GameType"}, 400
 
 	ai = AI(name=name, user=current_user, desc=desc, lang=lang, type=gametype)
 	db.session.add(ai)

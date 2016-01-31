@@ -50,12 +50,18 @@ public class MirrorClient
 		client.out.println(lib);
 		client.out.println(language);
 		
-		byte salt[] = Base64.getDecoder().decode(client.in.readLine());
+		String line = client.in.readLine();
+		if (line == null)
+			throw new EOFException();
+		byte salt[] = Base64.getDecoder().decode(line);
 		client.out.println(Base64.getEncoder().encodeToString(SHA256.sha256(
 				getStringRequired("worker.mirror.password").getBytes(UTF_8), salt,
 				getIntRequired("worker.mirror.password.repeats"))));
 		
-		long size = Long.parseLong(client.in.readLine());
+		line = client.in.readLine();
+		if (line == null)
+			throw new EOFException();
+		long size = Long.parseLong(line);
 		OutputStream file = new FileOutputStream(filename);
 		long written = 0;
 		while (written < size)

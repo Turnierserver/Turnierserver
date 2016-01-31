@@ -62,7 +62,7 @@ def user(id):
 def game_list():
 	query = Game.query.order_by(Game.id.desc())
 	gametype = GameType.selected()
-	query = query.filter(Game.type == gametype)
+	query = query.filter(Game.type == gametype).filter(Game.tournament == None)
 
 	return render_template("game_list.html", game_list=query.all(), in_progress_games=backend.inprogress_games(), gametype=gametype)
 
@@ -118,15 +118,16 @@ def tournament_list():
 
 @anonymous_blueprint.route("/tournament/<int:id>")
 def tournament(id):
-	tournament = Tournament.query.get(id);
+	tournament = Tournament.query.get(id)
 	if not tournament:
-		abort(404);
+		abort(404)
 	has_entered = False
 	if current_user and current_user.is_authenticated:
 		a = UserTournamentAi.query.filter(UserTournamentAi.user == current_user).filter(UserTournamentAi.type == GameType.selected()).first()
 		has_entered = a != None
 	return render_template("tournament.html", tournament=tournament, has_entered=has_entered,
-	                       ais=UserTournamentAi.query.filter(UserTournamentAi.type_id == tournament.type_id).all())
+	                       ais=UserTournamentAi.query.filter(UserTournamentAi.type_id == tournament.type_id).all(),
+	                       gametype=GameType.selected())
 
 @anonymous_blueprint.route("/tutorial")
 def tutorial():

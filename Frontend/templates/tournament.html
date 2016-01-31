@@ -77,8 +77,8 @@
 			<th class="left aligned one wide">Icon</th>
 			{% if tournament.executed and tournament.finished %}
 				<th class="center aligned one wide data-rank">Platz</th>
+				<th class="center aligned two wide data-elo">ELO</th>
 			{% endif %}
-			<th class="center aligned two wide data-elo">ELO</th>
 			<th class="left aligned six wide data-name">Name</th>
 			<th class="right aligned six wide data-user">Benutzer</th>
 			<th class="center aligned three wide data-lang">Sprache</th>
@@ -95,12 +95,12 @@
 			</td>
 			{% if tournament.executed and tournament.finished %}
 				<td class="center aligned data-rank">
-					TODO
+					{{tournament.rank(ai.ai) | int}}
+				</td>
+				<td class="center aligned data-elo">
+					{{tournament.elo(ai.ai) | int}}
 				</td>
 			{% endif %}
-			<td class="center aligned data-elo">
-				{{ai.ai.elo | int}}
-			</td>
 			<td class="left aligned data-name">
 				<a class="content" href="{{url_for('anonymous.ai', id=ai.ai.id)}}">
 					<div class="header">{{ai.ai.name}}</div>
@@ -174,7 +174,9 @@ $("a.exit_tournament").on("click", function() {
 				<div class="default text">KI</div>
 				<div class="menu">
 					{% for ai in current_user.active_ais %}
+					{% if ai.type == gametype %}
 						<div class="item" data-value="{{ai.id}}">{{ai.name}} v{{ai.active_version().version_id}}</div>
+					{% endif %}
 					{% endfor %}
 				</div>
 			</div>

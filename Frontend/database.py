@@ -1,3 +1,4 @@
+from collections import defaultdict
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import current_user
 from flask import send_file, abort, request, Markup
@@ -221,6 +222,8 @@ class User(db.Model):
 
 	@property
 	def elo(self):
+		if not GameType.selected():
+			return 0
 		ais = AI.query.filter(AI.user == self).filter(AI.type == GameType.selected()).all()
 		if len(ais) == 0:
 			return None
@@ -636,12 +639,12 @@ class Game(db.Model):
 	timestamp = db.Column(db.BigInteger)
 	status = db.Column(db.Text)
 	type_id = db.Column(db.Integer, db.ForeignKey('t_gametypes.id'))
-	type = db.relationship("GameType", backref=db.backref('t_games', order_by=id))
+	type = db.relationship("GameType", backref=db.backref('t_games', order_by='GameType.id'))
 	reason = db.Column(db.Text)
 	_log = db.Column(db.Text)
 	_crashes = db.Column(db.Text)
 	tournament_id = db.Column(db.Integer, db.ForeignKey("t_tournaments.id"), nullable=True)
-	tournament = db.relationship("Tournament", backref="games")
+	tournament = db.relationship("Tournament", backref=db.backref('t_tournaments', order_by='Tournament.id'))
 
 	def __init__(self, *args, **kwargs):
 		super(Game, self).__init__(*args, **kwargs)
@@ -708,12 +711,16 @@ class Game(db.Model):
 			logger.info("Spiel zwischen KIs vom selben Nutzer; wird nicht gewertet")
 			return
 
+		ai0gewonnen = None
 		if ai0_assoc.is_winner and not ai1_assoc.is_winner:
 			ai0gewonnen = 1
 		elif ai0_assoc.is_winner and ai1_assoc.is_winner:
 			a0gewonnen = 0.5
 		else:
 			ai0gewonnen = 0
+		if ai0gewonnen == None:
+			logger.error("missing ai_assoc.is_winner! -> aborting update_ai_elo")
+			return
 
 		ai1gewonnen = 1 - ai0gewonnen
 
@@ -734,24 +741,31 @@ class Game(db.Model):
 			return False
 		ais = [d["ai0"], d["ai1"]]
 		g = Game(type=ais[0].type)
+		db.session.add(g)
 		g.log = d["states"]
 		g.crashes = d["crashes"]
 		if "reason" in d:
 			g.reason = d["reason"]
+		db.session.commit()
 		if "tournament" in d:
-			g.tournament = d["tournament"]
-		db.session.add(g)
+			g.tournament = Tournament.query.get(d["tournament"].id)
 		db.session.commit()
 		g.ai_assocs = [AI_Game_Assoc(game_id=g.id, ai_id=ai.id) for ai in ais]
-		db.session.add(g)
 		db.session.commit()
-		for ai, score in d["scores"].items():
-			ai = AI.query.get(int(ai.split("v")[0]))
-			AI_Game_Assoc.query.filter(AI_Game_Assoc.game == g).filter(AI_Game_Assoc.ai == ai).one().score = score
-		for ai, position in d["position"].items():
-			ai = AI.query.get(int(ai.split("v")[0]))
-			AI_Game_Assoc.query.filter(AI_Game_Assoc.game == g).filter(AI_Game_Assoc.ai == ai).one().position = position
-		g.update_ai_elo()
+		if "scores" in d:
+			for ai, score in d["scores"].items():
+				ai = AI.query.get(int(ai.split("v")[0]))
+				AI_Game_Assoc.query.filter(AI_Game_Assoc.game == g).filter(AI_Game_Assoc.ai == ai).one().score = score
+		else:
+			logger.error("game without scores!")
+		if "position" in d:
+			for ai, position in d["position"].items():
+				ai = AI.query.get(int(ai.split("v")[0]))
+				AI_Game_Assoc.query.filter(AI_Game_Assoc.game == g).filter(AI_Game_Assoc.ai == ai).one().position = position
+		else:
+			logger.error("game without position!")
+		if not "tournament" in d:
+			g.update_ai_elo()
 		db.session.add(g)
 		db.session.commit()
 		logger.info("neues Spiel " + str(g))
@@ -817,7 +831,7 @@ class GameType(db.Model):
 	__tablename__ = 't_gametypes'
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	name = db.Column(db.Text, nullable=False)
-	games = db.relationship("Game", order_by="Game.id", backref="GameType", cascade="all, delete, delete-orphan")
+	games = db.relationship("Game", order_by="Game.id", cascade="all, delete, delete-orphan")
 	last_modified = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
 	def __init__(self, *args, **kwargs):
@@ -898,9 +912,12 @@ class Tournament(db.Model):
 	name = db.Column(db.Text, nullable=False)
 	timestamp = db.Column(db.BigInteger)
 	type_id = db.Column(db.Integer, db.ForeignKey("t_gametypes.id"))
-	type = db.relationship("GameType", backref=db.backref('t_tournaments', order_by=id))
+	type = db.relationship("GameType", backref=db.backref('t_tournaments', order_by=id), lazy="joined")
 	executed = db.Column(db.Boolean, nullable=False, default=False)
 	finished = db.Column(db.Boolean, nullable=False, default=False)
+	games = db.relationship("Game", order_by="Game.id", backref="Tournament", cascade="all, delete, delete-orphan")
+	_ranks = None
+	_elo = None
 
 	def __init__(self, *args, **kwargs):
 		super(Tournament, self).__init__(*args, **kwargs)
@@ -916,6 +933,56 @@ class Tournament(db.Model):
 		        "timestamp": self.timestamp, "timestr": self.time(),
 		        "type": self.type.info(), "executed": self.executed
 		}
+
+	def compute_ranks(self):
+		elo = defaultdict(lambda: 1200)
+		for game in self.games:
+			ai0_assoc = game.ai_assocs[0]
+			ai1_assoc = game.ai_assocs[1]
+			ai0 = ai0_assoc.ai
+			ai1 = ai1_assoc.ai
+
+			ai0elo = elo[ai0.id]
+			ai1elo = elo[ai1.id]
+
+			if ai0.user == ai1.user:
+				logger.info("Spiel zwischen KIs vom selben Nutzer; wird nicht gewertet")
+				return
+
+			ai0gewonnen = None
+			if ai0_assoc.is_winner and not ai1_assoc.is_winner:
+				ai0gewonnen = 1
+			elif ai0_assoc.is_winner and ai1_assoc.is_winner:
+				a0gewonnen = 0.5
+			else:
+				ai0gewonnen = 0
+			if ai0gewonnen == None:
+				logger.error("missing ai_assoc.is_winner! -> aborting compute_ranks")
+				return
+
+			ai1gewonnen = 1 - ai0gewonnen
+
+			elo[ai0.id] = ai0elo + 32 * (ai0gewonnen - 1 / (1 + 10 ** ((ai1elo - ai0elo) / 400)))
+			elo[ai1.id] = ai1elo + 32 * (ai1gewonnen - 1 / (1 + 10 ** ((ai0elo - ai1elo) / 400)))
+
+		self._elo = elo
+
+		ais = list(elo.keys())
+		elos = sorted(list(elo.values()))[::-1]
+		self._ranks = {}
+		for ai in ais:
+			self._ranks[ai] = elos.index(elo[ai]) + 1
+
+	def rank(self, ai):
+		if not self._ranks or ai.id not in self._ranks:
+			self.compute_ranks()
+		return self._ranks.get(ai.id)
+
+
+	def elo(self, ai):
+		if not self._elo or ai.id not in self._elo:
+			self.compute_ranks()
+		return self._elo.get(ai.id)
 
 	def __repr__(self):
 		return "<Tournament(id={}, name={}, type={})>".format(self.id, self.name, self.type.name)
@@ -1009,7 +1076,6 @@ def populate():
 		Lang(name="Go", ace_name="golang", url="https://www.golang.org"),
 		Lang(name="C", ace_name="c_cpp", url="https://isocpp.org")
 	])
-	db_save([GameType(name="Groker")])
 
 	admin = User(name="admin", admin=True, email="admin@ad.min")
 	admin.set_pw("admin")
