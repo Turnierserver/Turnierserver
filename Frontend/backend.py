@@ -435,7 +435,10 @@ class Backend(threading.Thread):
 					if d == '\n':
 						pass
 					else:
-						self.parse(json.loads(d))
+						try:
+							self.parse(json.loads(d))
+						except Exception as e:
+							logger.exception("failed to parse backend message")
 			else:
 				self.sleep_time = min(self.sleep_time * 3, 60*60*3)
 				if not self.suppress_connection_warnings:
