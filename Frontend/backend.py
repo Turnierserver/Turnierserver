@@ -213,7 +213,7 @@ class Backend(threading.Thread):
 			return
 
 		#logger.info("Backend [{}]: {}".format(reqid, d))
-		if "HIDE_BACKEND_PPRINT" not in env or env.HIDE_BACKEND_PPRINT:
+		if hasattr(env, 'BACKEND_PPRINT'):
 			pprint(d)
 
 		if self.requests[reqid]["action"] == "tournament":
