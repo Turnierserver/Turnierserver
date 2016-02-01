@@ -1152,6 +1152,9 @@ def game_list_sse():
 				if update["status"] == "processed":
 					render_inprogress_game = get_template_attribute("game_list.html", "render_inprogress_game")
 					r = backend.request(update["requestid"])
+					if any([k not in r for k in ["requestid", "ai0", "ai1", "status"]]):
+						logger.error('game_list_sse missing object key!')
+						continue
 					html = render_inprogress_game(
 						dict(
 							id=r["requestid"],
