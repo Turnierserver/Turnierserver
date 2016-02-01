@@ -22,6 +22,10 @@ class Backend(threading.Thread):
 	connected = False
 	requests = {}
 	latest_request_id = 0
+	_send_dict_masked_attrs = [
+		"queue", "queues", "ai0", "ai1", "ai_objs", "crashes", "states", "status_text",
+		"tournament_object", "games"
+	]
 
 	def __init__(self):
 		threading.Thread.__init__(self)
@@ -56,9 +60,9 @@ class Backend(threading.Thread):
 			'action': 'compile', 'id':str(ai.id)+'v'+str(ai.latest_version().version_id),
 			'requestid': reqid, 'gametype': ai.type.id, 'language': ai.latest_version().lang.name
 		}
+		d["queue"] = Queue()
 		self.requests[reqid] = d
 		self.send_dict(d)
-		self.requests[reqid]["queue"] = Queue()
 		logger.info("Backend [{}]: Kompilierung von {} gestartet".format(reqid, ai.name))
 		return reqid
 
@@ -127,16 +131,13 @@ class Backend(threading.Thread):
 				raise RuntimeError("Nich fertige KI in request_game()")
 			d['ais'].append(str(ai.id) + 'v' + str(ai.active_version().version_id))
 			d['languages'].append(ai.active_version().lang.name)
+		d.update({
+			"queue": Queue(), "queues": WeakSet(),
+			"ai0": ais[0], "ai1": ais[1], "ai_objs": ais,
+			"states": [], "crashes": [], "status_text": "In Queue"
+		})
 		self.requests[reqid] = d
 		self.send_dict(d)
-		self.requests[reqid]["queue"] = Queue()
-		self.requests[reqid]["queues"] = WeakSet()
-		self.requests[reqid]["ai0"] = ais[0]
-		self.requests[reqid]["ai1"] = ais[1]
-		self.requests[reqid]["ai_objs"] = ais
-		self.requests[reqid]["states"] = []
-		self.requests[reqid]["crashes"] = []
-		self.requests[reqid]["status_text"] = "In Wartschlange"
 		logger.info("Backend[{}]: Spiel mit {} gestartet".format(reqid, [ai.name for ai in ais]))
 		return reqid
 
@@ -156,30 +157,35 @@ class Backend(threading.Thread):
 
 		reqid = self.latest_request_id
 		self.latest_request_id += 1
-		d = {'action': 'qualify', 'id': str(ai.id)+'v'+str(ai.latest_version().version_id),
+		d = {
+			'action': 'qualify', 'id': str(ai.id)+'v'+str(ai.latest_version().version_id),
 			'gametype': ai.type.id, "language": ai.latest_version().lang.name,
-			"requestid": reqid, "qualilang": quali_lang.name}
+			"requestid": reqid, "qualilang": quali_lang.name
+		}
+		d.update({
+			"queue": Queue(), "queues": WeakSet(),
+			"ai0": ai, "ai1": AI.query.get(-ai.type.id),
+			"states": [], "crashes": []
+		})
+		d["ai_objs"] = [d["ai0"], d["ai1"]]
 		self.requests[reqid] = d
 		self.send_dict(d)
-		self.requests[reqid]["queue"] = Queue()
-		self.requests[reqid]["queues"] = WeakSet()
-		self.requests[reqid]["ai0"] = ai
-		self.requests[reqid]["ai1"] = AI.query.get(-ai.type.id)
-		self.requests[reqid]["ai_objs"] = [ai, AI.query.get(-ai.type.id)]
-		self.requests[reqid]["states"] = []
-		self.requests[reqid]["crashes"] = []
 		logger.info("Backend[{}]: Quali-Spiel mit '{}' ({}) gestartet".format(reqid, ai.name, ai.lang.name))
 		return reqid
 
 	def request_tournament(self, tournament):
 		reqid = self.latest_request_id
 		self.latest_request_id += 1
-		d = {'action': 'tournament', 'tournament': tournament.id, 'gametype': tournament.type.id, 'requestid': reqid}
+		d = {
+			'action': 'tournament', 'tournament': tournament.id,
+			'gametype': tournament.type.id, 'requestid': reqid
+		}
+		d.update({
+			'tournament_object': tournament, 'games': {}
+		})
 		self.requests[reqid] = d
 		self.send_dict(d)
 		logger.info("Backend[{}]: Turnier {} gestartet".format(reqid, str(tournament)))
-		self.requests[reqid]["tournament_object"] = tournament
-		self.requests[reqid]["games"] = {}
 		return reqid
 
 	def send_dict(self, d):
@@ -187,7 +193,11 @@ class Backend(threading.Thread):
 			self.connect()
 		if self.is_connected():
 			try:
-				self.sock.sendall(bytes(json.dumps(d) + "\n", "utf-8"))
+				masked = {}
+				for key, val in d.items():
+					if key not in self._send_dict_masked_attrs:
+						masked[key] = val
+				self.sock.sendall(bytes(json.dumps(masked) + "\n", "utf-8"))
 				return True
 			except socket.error as e:
 				logger.exception(e)
@@ -422,7 +432,7 @@ class Backend(threading.Thread):
 				self.connect()
 			if self.connected:
 				self.sleep_time = 5
-				r = self.sock.recv(1024*1024).decode("utf-8")
+				r = self.sock.recv(1024*1024*10).decode("utf-8")
 				if r == '':
 					self.connected = False
 					logger.warning("connection zum backend gestorben")
