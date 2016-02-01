@@ -1155,6 +1155,9 @@ def game_list_sse():
 					if any([k not in r for k in ["requestid", "ai0", "ai1", "status"]]):
 						logger.error('game_list_sse missing object key!')
 						continue
+					if not r["ai0"] or not r["ai1"]:
+						logger.error('game_list_sse missing ai object')
+						continue
 					html = render_inprogress_game(
 						dict(
 							id=r["requestid"],
