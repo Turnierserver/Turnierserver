@@ -213,7 +213,8 @@ class Backend(threading.Thread):
 			return
 
 		#logger.info("Backend [{}]: {}".format(reqid, d))
-		pprint(d)
+		if hasattr(env, 'BACKEND_PPRINT'):
+			pprint(d)
 
 		if self.requests[reqid]["action"] == "tournament":
 			self.handleTournament(self.requests[reqid], d)
