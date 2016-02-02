@@ -419,6 +419,7 @@ class Backend(threading.Thread):
 						logger.error("finished_game_obj is None")
 						continue
 					yield (d["finished_game_obj"], "finished_game_obj")
+					return
 			except Empty:
 				return
 
