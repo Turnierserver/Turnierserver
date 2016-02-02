@@ -385,7 +385,11 @@ $(document).ready(function () {
 
   // ## in ne generelle lib verschieben
   evtSrc.addEventListener('error', function (e) {
-    alert(e.data)
+    if (e.data) {
+      alert(e.data)
+    } else {
+      console.log('evtSrc: error', e)
+    }
   })
 
   evtSrc.addEventListener('finished_transmitting', function (e) {
