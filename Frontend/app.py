@@ -124,7 +124,7 @@ def run():
 	"Startet den Server."
 
 	if not Lang.query.first():
-		logger.critical("Missing Lang(s) / GameType(s)")
+		logger.critical("Missing Lang(s)")
 		exit()
 
 	app_run_params = dict(host="::", port=env.web_port, threaded=True)
