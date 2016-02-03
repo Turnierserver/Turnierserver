@@ -50,7 +50,7 @@ def edit_ai(id):
 		abort(404)
 	if not current_user.can_access(ai):
 		abort(401)
-	t = UserTournamentAi.query.filter(UserTournamentAi.user == current_user) \
+	t = UserTournamentAi.query.filter(UserTournamentAi.user == ai.user) \
 	    .filter(UserTournamentAi.type == ai.type).first() is None
 	t = t and ai.active_version()
 	t = t and Tournament.query.first()
