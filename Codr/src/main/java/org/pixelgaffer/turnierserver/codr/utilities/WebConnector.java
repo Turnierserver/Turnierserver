@@ -78,7 +78,7 @@ public class WebConnector {
 	 * Erstellt einen neuen Web Connector
 	 * 
 	 * @param url
-	 *            Die URL der API (z.B. http://www.thuermchen.com/api/ <- Der
+	 *            Die URL der API (z.B. http://www.turnierserver.informatik-olympiade.de/api/ <- Der
 	 *            '/' muss da sein)
 	 */
 	public WebConnector(final String url) {
@@ -960,7 +960,7 @@ public class WebConnector {
 	 * 
 	 * @param command
 	 *            Das Kommando (z.B. login für
-	 *            http://www.thuermchen.com/api/login)
+	 *            http://www.turnierserver.informatik-olympiade.de/api/login)
 	 * @param data
 	 *            Die Daten, die per POST übegeben werden sollen
 	 * @return Die Antwort als byte[]
@@ -1014,7 +1014,7 @@ public class WebConnector {
 	 * 
 	 * @param command
 	 *            Das Kommando (z.B. logout für
-	 *            http://www.thuermchen.com/api/logout)
+	 *            http://www.turnierserver.informatik-olympiade.de/api/logout)
 	 * @param data
 	 *            Die Daten, die per GET übegeben werden sollen
 	 * @return Die Antwort als byte[]

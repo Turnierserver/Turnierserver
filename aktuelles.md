@@ -97,6 +97,6 @@ Frontend API
 
 Wir stellen euch sämtliche Funktionen dieser Webseite auch als API zur Verfügung.
 
-Status der Dokumentation: <img src="http://online.swagger.io/validator?url=http://thuermchen.com/api.yaml">
+Status der Dokumentation: <img src="http://online.swagger.io/validator?url=http://turnierserver.informatik-olympiade.de/api.yaml">
 
-Die Dokumentation ist [hier](http://thuermchen.com/api) online erreichbar.
+Die Dokumentation ist [hier](http://turnierserver.informatik-olympiade.de/api) online erreichbar.

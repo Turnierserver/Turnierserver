@@ -4,7 +4,7 @@ info:
   title: Turnierserver
   description: Turnierserver API
   version: "494212a9f0"
-host: thuermchen.com
+host: turnierserver.informatik-olympiade.de
 tags:
 - name: "KI"
   description: "Zeugs mit KIs"

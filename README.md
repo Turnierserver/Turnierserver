@@ -20,7 +20,7 @@ FTP-Server:
 ftp://msrd0.duckdns.org/
 
 Test-Server:
-https://thuermchen.com
+https://turnierserver.informatik-olympiade.de
 
 Beispiels-Implementation von Minesweeper und Prisoners Dilemma:
 https://github.com/msrd0/Turnierserver-Examples
